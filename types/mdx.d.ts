@@ -5,5 +5,6 @@ declare module '*.md' {
 
 declare module '*.mdx' {
   const MDXComponent: import('react').ComponentType<Record<string, unknown>>;
+  export const metadata: unknown;
   export default MDXComponent;
 }

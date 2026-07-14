@@ -38,7 +38,7 @@ describe('static portfolio architecture', () => {
     );
   });
 
-  it('keeps the legacy browser suite explicitly deferred for migration', () => {
+  it('runs Call Agent coverage from the native Next route suite', () => {
     const playwrightConfig = fs.readFileSync(
       path.join(root, 'playwright.config.mjs'),
       'utf8',
@@ -48,12 +48,11 @@ describe('static portfolio architecture', () => {
       'utf8',
     );
 
-    expect(fs.existsSync(path.join(root, 'tests/case-study.spec.mjs'))).toBe(
-      true,
-    );
-    expect(playwrightConfig).toContain(
-      'Legacy Call Agent browser coverage remains tracked for Task 8 migration.',
-    );
+    expect(fs.existsSync(path.join(root, 'tests/case-study.spec.mjs'))).toBe(false);
+    expect(
+      fs.existsSync(path.join(root, 'tests/e2e/call-agent.spec.ts')),
+    ).toBe(true);
+    expect(playwrightConfig).toContain("testDir: './tests/e2e'");
     expect(exportPlaywrightConfig).toContain('reuseExistingServer: false');
   });
 });

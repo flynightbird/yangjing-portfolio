@@ -1,0 +1,67 @@
+@page {
+  size: A4 portrait;
+  margin: 14mm 13mm 16mm;
+}
+
+@media print {
+  html {
+    background: #fff;
+    color: #111;
+    font-size: 10pt;
+  }
+
+  body {
+    background: #fff;
+    color: #111;
+  }
+
+  body > .skip-link,
+  body > header,
+  body > footer,
+  [data-case-web-control],
+  [role='dialog'] {
+    display: none !important;
+  }
+
+  main,
+  article[data-case-study] {
+    min-height: 0;
+  }
+
+  article[data-case-study] > header,
+  article[data-case-study] > section {
+    padding-block: 8mm !important;
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  article[data-case-study] > header {
+    padding-block-start: 0 !important;
+    break-after: page;
+  }
+
+  article[data-case-study] > section h2,
+  article[data-case-study] > section h3,
+  article[data-case-study] figure,
+  article[data-case-study] figcaption,
+  article[data-case-study] [class*='journey'],
+  article[data-case-study] [class*='feedback-loop'],
+  article[data-case-study] [class*='ownership-note'] {
+    break-inside: avoid;
+  }
+
+  article[data-case-study] h2,
+  article[data-case-study] h3 {
+    break-after: avoid;
+  }
+
+  article[data-case-study] img {
+    max-height: 115mm;
+    object-fit: contain;
+  }
+
+  article[data-case-study] a {
+    color: inherit;
+    text-decoration: none;
+  }
+}

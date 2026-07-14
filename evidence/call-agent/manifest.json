@@ -1,7 +1,7 @@
 {
   "assets": [
     {
-      "source": "/Users/admin/Desktop/声网 作品集 整理/studio 截图/Screenshot 2026-07-13 at 2.46.48 PM.png",
+      "source": "声网 作品集 整理/studio 截图/Screenshot 2026-07-13 at 2.46.48 PM.png",
       "output": "ai-preview-live.png",
       "chapter": "overview",
       "purpose": "展示 AI 配置与实时 Preview 的反馈闭环",
@@ -9,7 +9,7 @@
       "redactions": [{ "left": 230, "top": 82, "width": 940, "height": 72, "color": "#f8fafc" }]
     },
     {
-      "source": "/Users/admin/Desktop/Screenshot 2026-07-13 at 6.33.57 PM.png",
+      "source": "Screenshot 2026-07-13 at 6.33.57 PM.png",
       "output": "product-switcher.png",
       "chapter": "decision-path",
       "purpose": "说明 AI Studio 与呼叫智能体的产品边界",
@@ -18,7 +18,7 @@
       "redactions": []
     },
     {
-      "source": "/Users/admin/Desktop/声网 作品集 整理/studio 旧版/资源-我的已创建资源.jpg",
+      "source": "声网 作品集 整理/studio 旧版/资源-我的已创建资源.jpg",
       "output": "before-resource-management.jpg",
       "chapter": "decision-path",
       "purpose": "展示旧版以资源分类为中心的信息架构",
@@ -27,7 +27,7 @@
       "redactions": []
     },
     {
-      "source": "/Users/admin/Desktop/声网 作品集 整理/studio 截图/Screenshot 2026-07-13 at 5.23.45 PM.png",
+      "source": "声网 作品集 整理/studio 截图/Screenshot 2026-07-13 at 5.23.45 PM.png",
       "output": "after-resource-management.png",
       "chapter": "decision-path",
       "purpose": "展示新版统一资源入口与供应商信息",
@@ -35,7 +35,7 @@
       "redactions": [{ "left": 0, "top": 1320, "width": 530, "height": 148, "color": "#f8fafc" }]
     },
     {
-      "source": "/Users/admin/Desktop/声网 作品集 整理/studio 旧版/呼叫历史.png",
+      "source": "声网 作品集 整理/studio 旧版/呼叫历史.png",
       "output": "before-call-history.png",
       "chapter": "decision-operate",
       "purpose": "展示旧版呼叫历史中碎片化筛选与诊断信息",
@@ -44,7 +44,7 @@
       "redactions": []
     },
     {
-      "source": "/Users/admin/Desktop/声网 作品集 整理/studio 截图/Screenshot 2026-07-13 at 5.20.12 PM.png",
+      "source": "声网 作品集 整理/studio 截图/Screenshot 2026-07-13 at 5.20.12 PM.png",
       "output": "after-call-history-filters.png",
       "chapter": "decision-operate",
       "purpose": "展示新版呼叫历史的分层筛选与状态标签",
@@ -53,7 +53,7 @@
       "redactions": []
     },
     {
-      "source": "/Users/admin/Desktop/声网 作品集 整理/studio 截图/Screenshot 2026-07-13 at 2.49.57 PM.png",
+      "source": "声网 作品集 整理/studio 截图/Screenshot 2026-07-13 at 2.49.57 PM.png",
       "output": "outbound-task-creation.png",
       "chapter": "decision-operate",
       "purpose": "展示从智能体发布到外呼任务创建的运营路径",
@@ -63,7 +63,7 @@
   ],
   "excluded": [
     {
-      "source": "/Users/admin/Desktop/声网 作品集 整理/studio 截图/Screenshot 2026-07-13 at 5.17.38 PM.png",
+      "source": "声网 作品集 整理/studio 截图/Screenshot 2026-07-13 at 5.17.38 PM.png",
       "reason": "contains a visible authorization token"
     }
   ]

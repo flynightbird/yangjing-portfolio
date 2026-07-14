@@ -19,17 +19,34 @@ export function validateManifestEntry(entry) {
 }
 
 export function validateSite() {
-  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-  const manifest = JSON.parse(fs.readFileSync(path.join(root, 'assets/manifest.json'), 'utf8'));
-  const errors = [...findSensitiveText(html)];
+  const contentPaths = [
+    path.join(root, 'content/work/call-agent.en.mdx'),
+    path.join(root, 'content/work/call-agent.zh.mdx'),
+  ];
+  const contents = contentPaths.map((contentPath) =>
+    fs.readFileSync(contentPath, 'utf8'),
+  );
+  const manifest = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'evidence/call-agent/manifest.json'),
+      'utf8',
+    ),
+  );
+  const errors = contents.flatMap(findSensitiveText);
   for (const entry of manifest.assets) {
     errors.push(...validateManifestEntry(entry).map((error) => `${entry.output}: ${error}`));
-    if (!fs.existsSync(path.join(root, 'public/images', entry.output))) {
+    if (!fs.existsSync(path.join(root, 'public/images/call-agent', entry.output))) {
       errors.push(`missing processed image ${entry.output}`);
     }
   }
   const ids = ['overview', 'context-role', 'design-thesis', 'decision-path', 'decision-preview', 'decision-operate', 'system-delivery', 'outcome-learnings'];
-  for (const id of ids) if (!html.includes(`id="${id}"`)) errors.push(`missing chapter ${id}`);
+  for (const [index, content] of contents.entries()) {
+    for (const id of ids) {
+      if (!content.includes(`id="${id}"`)) {
+        errors.push(`missing chapter ${id} in ${path.basename(contentPaths[index])}`);
+      }
+    }
+  }
   return errors;
 }
 

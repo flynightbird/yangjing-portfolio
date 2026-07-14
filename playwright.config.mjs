@@ -1,7 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  // Legacy Call Agent browser coverage remains tracked for Task 8 migration.
   testDir: './tests/e2e',
   testMatch: '**/*.spec.ts',
   // Next dev cannot represent the static export's unknown-path fallback.

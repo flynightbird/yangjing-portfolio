@@ -27,7 +27,7 @@ Open the production preview, select `导出 PDF`, choose A4 portrait, enable bac
 
 ## Privacy
 
-Only processed files from `public/images/` may be deployed. Never place source screenshots directly in `public/`. The source screenshot containing an authorization token is explicitly excluded from `assets/manifest.json`.
+Only processed files from `public/images/call-agent/` may be deployed. Never place source screenshots directly in `public/`. The source screenshot containing an authorization token is explicitly excluded from `evidence/call-agent/manifest.json`.
 
 ## Evidence boundary
 

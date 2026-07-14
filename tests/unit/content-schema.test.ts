@@ -186,17 +186,18 @@ describe('content metadata', () => {
 });
 
 describe('content registry', () => {
-  it('starts empty and resolves entries from an explicitly created registry', () => {
+  it('registers the bilingual production case and resolves explicit registries', () => {
     const registry = createRegistry(pairedEntries);
 
-    expect(contentEntries).toEqual([]);
+    expect(contentEntries).toHaveLength(2);
+    expect(contentEntries.map(({ meta }) => meta.locale)).toEqual(['en', 'zh']);
     expect(registry.get('work', 'call-agent', 'zh')).toBe(pairedEntries[1]);
     expect(registry.get('work', 'meeting', 'en')).toBeUndefined();
   });
 
-  it('throws a clear error when a required production entry is absent', () => {
-    expect(() => getEntry('work', 'call-agent', 'en')).toThrow(
-      /content entry.*work\/call-agent.*en/i,
+  it('throws a clear error when a requested production entry is absent', () => {
+    expect(() => getEntry('work', 'meeting', 'en')).toThrow(
+      /content entry.*work\/meeting.*en/i,
     );
   });
 

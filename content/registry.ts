@@ -1,6 +1,12 @@
 import type { ComponentType } from 'react';
 
-import type { ContentMeta } from '@/content/schema';
+import CallAgentEn, {
+  metadata as callAgentEnMetadata,
+} from '@/content/work/call-agent.en.mdx';
+import CallAgentZh, {
+  metadata as callAgentZhMetadata,
+} from '@/content/work/call-agent.zh.mdx';
+import { contentMetaSchema, type ContentMeta } from '@/content/schema';
 import type {
   ContentKind,
   Locale,
@@ -59,7 +65,16 @@ export function createRegistry(
   };
 }
 
-export const contentEntries: readonly ContentEntry[] = [];
+export const contentEntries: readonly ContentEntry[] = [
+  {
+    meta: contentMetaSchema.parse(callAgentEnMetadata),
+    Component: CallAgentEn,
+  },
+  {
+    meta: contentMetaSchema.parse(callAgentZhMetadata),
+    Component: CallAgentZh,
+  },
+];
 export const contentRegistry = createRegistry(contentEntries);
 
 export function getContentEntry<Kind extends ContentKind>(
