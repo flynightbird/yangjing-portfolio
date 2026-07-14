@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Call Agent 作品集结构</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #17191c; color: #f4f7fa; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 0; }
+    main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 58px 0 90px; }
+    h1 { font-size: clamp(30px, 4vw, 52px); margin: 0 0 12px; letter-spacing: 0; }
+    .subtitle { color: #9fa9b5; font-size: 16px; margin: 0 0 40px; }
+    .story-map { border-top: 1px solid #3f4852; }
+    .chapter { display: grid; grid-template-columns: 90px 1.05fr 1.6fr; gap: 24px; align-items: start; padding: 24px 10px; border-bottom: 1px solid #3f4852; }
+    .num { font: 600 12px/1.2 ui-monospace, monospace; color: #50dfb8; padding-top: 5px; }
+    h2 { font-size: 20px; margin: 0; letter-spacing: 0; }
+    .prefix { display: block; color: #50dfb8; font: 600 11px/1.2 ui-monospace, monospace; text-transform: uppercase; margin-bottom: 8px; }
+    .chapter p { margin: 0; color: #aeb8c3; line-height: 1.65; font-size: 14px; }
+    .hero { background: #0e171e; padding: 30px 24px; }
+    .hero h2 { font-size: 29px; }
+    .focus { background: #122b26; border-left: 4px solid #4ee0b7; padding-left: 20px; }
+    .tag { display: inline-block; margin-top: 10px; padding: 4px 8px; border: 1px solid #4b9f89; color: #64e2bf; font-size: 11px; }
+    @media (max-width: 760px) {
+      main { width: min(100% - 28px, 620px); padding-top: 36px; }
+      .chapter { grid-template-columns: 46px 1fr; gap: 12px; }
+      .chapter p { grid-column: 2; }
+      .hero h2 { font-size: 23px; }
+    }
+    @media print {
+      body { background: white; color: #15202d; }
+      main { width: 100%; padding: 0; }
+      .subtitle, .chapter p { color: #52606d; }
+      .chapter { break-inside: avoid; border-color: #cfd6df; }
+      .hero, .focus { background: #f4f7fa; }
+      .num, .tag { color: #08775f; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>招聘导向的案例结构</h1>
+  <p class="subtitle">招聘方先看到项目价值与个人贡献，再进入三个核心设计挑战。预计桌面阅读 8–10 分钟，PDF 约 16–20 页。</p>
+  <div class="story-map">
+    <section class="chapter hero"><div class="num">00 / HERO</div><h2><span class="prefix">项目概览</span>让 AI 在发布前<br>可被看见与验证</h2><p>声网智能呼叫中心 V1.0。首屏直接呈现项目价值、个人角色与范围：9 个月、约 8 轮迭代、唯一设计师、有限客户灰度。</p></section>
+    <section class="chapter"><div class="num">01</div><h2><span class="prefix">背景与机会</span>从通用 AI 能力到呼叫场景产品化</h2><p>解释业务目标、目标用户和产品边界：呼叫场景成为团队主推产品，并从 AI Studio 中抽离为清晰的专用入口。</p></section>
+    <section class="chapter"><div class="num">02</div><h2><span class="prefix">问题定义</span>企业客户为何难以自主接入</h2><p>聚焦一个关键问题：客户必须跨文档、API、多供应商资源与号码配置完成接入，流程碎片化且难以独立验证。</p></section>
+    <section class="chapter"><div class="num">03</div><h2><span class="prefix">设计策略</span>构建可配置、可验证、可运营的 AI 工作流</h2><p>给出全案的三项设计原则，并用一张主任务链路连接资源、智能体、预览、发布、呼叫与分析。</p></section>
+    <section class="chapter"><div class="num">04</div><h2><span class="prefix">核心挑战 01</span>用渐进式配置降低专业门槛</h2><p>模板起步、基础与高级配置分层、共享资源管理，让客户快速开始，同时保留模型、语音和开发配置的专业控制。</p></section>
+    <section class="chapter focus"><div class="num">05 / CORE</div><h2><span class="prefix">核心挑战 02</span>以实时预览建立 AI 反馈闭环</h2><p>以左右分屏为核心证据，说明 Prompt、模型与语音调整如何通过实时通话、状态、转写与错误反馈立即被验证。<br><span class="tag">全篇视觉与叙事中心</span></p></section>
+    <section class="chapter"><div class="num">06</div><h2><span class="prefix">核心挑战 03</span>从发布延伸到呼叫运营闭环</h2><p>发布检查、号码、外呼任务、失败原因、通话记录、信息采集与数据分析，证明产品从 AI Demo 走向可运营工具。</p></section>
+    <section class="chapter"><div class="num">07</div><h2><span class="prefix">设计演进</span>关键版本对比与设计取舍</h2><p>选择导航、号码详情、资源管理和外呼监控中的 2–3 组高价值前后对比；约 8 轮迭代作为过程证据出现。</p></section>
+    <section class="chapter"><div class="num">08</div><h2><span class="prefix">结果与反思</span>有限灰度中的交付、边界与判断</h2><p>总结 V1.0 产品闭环与跨团队交付；说明少量客户灰度、缺少规模验证的限制，以及交接给团队的评估指标。</p></section>
+  </div>
+</main>
+</body>
+</html>
