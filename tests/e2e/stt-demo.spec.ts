@@ -2,16 +2,19 @@ import { expect, test, type Page } from '@playwright/test';
 
 test.setTimeout(60_000);
 
-function observeRuntime(page: Page) {
+function observeRuntime(page: Page, baseURL: string | undefined) {
+  if (!baseURL) throw new Error('STT E2E requires a configured base URL');
+
   const consoleErrors: string[] = [];
   const failedLocalRequests: string[] = [];
+  const localOrigin = new URL(baseURL).origin;
 
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text());
   });
   page.on('requestfailed', (request) => {
     const requestUrl = new URL(request.url());
-    if (requestUrl.origin === 'http://localhost:4174') {
+    if (requestUrl.origin === localOrigin) {
       failedLocalRequests.push(
         `${requestUrl.pathname}: ${request.failure()?.errorText ?? 'failed'}`,
       );
@@ -25,8 +28,8 @@ for (const locale of ['en', 'zh'] as const) {
   test.describe(`${locale} STT Build Lab`, () => {
     test('renders the truthful case, provenance, and correct actions', async ({
       page,
-    }) => {
-      const runtime = observeRuntime(page);
+    }, testInfo) => {
+      const runtime = observeRuntime(page, testInfo.project.use.baseURL);
       const response = await page.goto(`/${locale}/build/stt-demo/`, {
         waitUntil: 'networkidle',
       });
@@ -99,8 +102,8 @@ for (const locale of ['en', 'zh'] as const) {
 
 test('the direct pinned prototype loads a nonblank same-origin artifact', async ({
   page,
-}) => {
-  const runtime = observeRuntime(page);
+}, testInfo) => {
+  const runtime = observeRuntime(page, testInfo.project.use.baseURL);
   const response = await page.goto('/demos/stt-demo/index.html', {
     waitUntil: 'networkidle',
   });

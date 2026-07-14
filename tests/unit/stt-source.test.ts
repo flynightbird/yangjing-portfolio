@@ -8,6 +8,7 @@ import fsPromises, {
   symlink,
   writeFile,
 } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import type { PathLike, RmOptions } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
@@ -213,6 +214,35 @@ describe('STT demo source provenance', () => {
     await expect(validateSttDemoPublication(rootDir)).resolves.toEqual(
       expect.arrayContaining([
         expect.stringMatching(/published.*commit.*e5e840a/i),
+      ]),
+    );
+  });
+
+  it('rejects a same-prefix revision even when its approved checksum matches', async () => {
+    const rootDir = await createSttPublicationFixture();
+    const revisionPath = resolve(
+      rootDir,
+      'public/demos/stt-demo/source-revision.json',
+    );
+    const contractPath = resolve(rootDir, 'evidence/stt-demo/checksums.json');
+    const revision = JSON.parse(await readFile(revisionPath, 'utf8'));
+    revision.commit = 'e5e840a-not-a-full-git-sha';
+    const revisionBytes = Buffer.from(`${JSON.stringify(revision, null, 2)}\n`);
+    await writeFile(revisionPath, revisionBytes);
+
+    const contract = JSON.parse(await readFile(contractPath, 'utf8'));
+    const approvedRevision = contract.files.find(
+      (file: { path: string }) => file.path === 'source-revision.json',
+    );
+    approvedRevision.sha256 = createHash('sha256')
+      .update(revisionBytes)
+      .digest('hex');
+    await writeFile(contractPath, JSON.stringify(contract));
+
+    const { validateSttDemoPublication } = await loadContentValidator();
+    await expect(validateSttDemoPublication(rootDir)).resolves.toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(new RegExp(`published.*commit.*${fullCommit}`, 'i')),
       ]),
     );
   });

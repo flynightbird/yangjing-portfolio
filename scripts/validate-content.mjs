@@ -5,6 +5,7 @@ import sharp from 'sharp';
 import { fileURLToPath } from 'node:url';
 
 import {
+  STT_DEMO_FULL_COMMIT,
   loadApprovedChecksums,
   validatePublishedSttDirectory,
 } from './sync-stt-demo.mjs';
@@ -140,10 +141,10 @@ export async function validateSttDemoPublication(rootDir = root) {
     }
     if (
       typeof revision.commit !== 'string' ||
-      !revision.commit.startsWith(expectedSource.commit)
+      revision.commit !== STT_DEMO_FULL_COMMIT
     ) {
       errors.push(
-        `published STT commit must begin ${expectedSource.commit}`,
+        `published STT commit must equal ${STT_DEMO_FULL_COMMIT}`,
       );
     }
   }

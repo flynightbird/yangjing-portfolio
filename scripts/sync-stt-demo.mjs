@@ -9,7 +9,8 @@ const execFileAsync = promisify(execFile);
 const scriptPath = fileURLToPath(import.meta.url);
 const root = path.resolve(path.dirname(scriptPath), '..');
 const pinnedCommit = 'e5e840a';
-const fullCommit = 'e5e840af62622123380bb0ef9d016b8da71cfb1c';
+export const STT_DEMO_FULL_COMMIT =
+  'e5e840af62622123380bb0ef9d016b8da71cfb1c';
 const repository = 'https://github.com/flynightbird/stt-demo';
 const kind = 'interactive-static-prototype';
 
@@ -285,9 +286,9 @@ async function validateSource(sourceRootValue) {
   if (gitRoot !== realSourceRoot) {
     throw new Error('STT_DEMO_SOURCE must be the repository root.');
   }
-  if (commit !== fullCommit) {
+  if (commit !== STT_DEMO_FULL_COMMIT) {
     throw new Error(
-      `STT demo source commit must equal ${fullCommit}; received ${commit}.`,
+      `STT demo source commit must equal ${STT_DEMO_FULL_COMMIT}; received ${commit}.`,
     );
   }
 
