@@ -36,12 +36,16 @@ interface LocaleSwitcherControlProps {
   readonly locale: Locale;
   readonly pathname: string;
   readonly replace: Replace;
+  readonly active?: boolean;
+  readonly onActiveChange?: (isActive: boolean) => void;
 }
 
 interface PendingFallback {
   readonly locale: Locale;
   readonly href: string;
 }
+
+type LocalePanel = 'choices' | 'fallback' | null;
 
 function dictionaryFor(locale: Locale) {
   return locale === 'zh' ? zhDictionary : enDictionary;
@@ -55,12 +59,38 @@ export function LocaleSwitcherControl({
   locale,
   pathname,
   replace,
+  active,
+  onActiveChange,
 }: LocaleSwitcherControlProps) {
   const dictionary = dictionaryFor(locale);
   const choicesId = useId();
-  const [open, setOpen] = useState(false);
+  const [internalActive, setInternalActive] = useState(false);
+  const [panel, setPanel] = useState<LocalePanel>(null);
   const [pendingFallback, setPendingFallback] =
     useState<PendingFallback | null>(null);
+  const panelActive = active ?? internalActive;
+  const visiblePanel = panelActive ? panel : null;
+
+  const setPanelActive = (isActive: boolean) => {
+    if (active === undefined) {
+      setInternalActive(isActive);
+    }
+
+    onActiveChange?.(isActive);
+  };
+
+  const toggleChoices = () => {
+    if (panelActive) {
+      setPanel(null);
+      setPendingFallback(null);
+      setPanelActive(false);
+      return;
+    }
+
+    setPendingFallback(null);
+    setPanel('choices');
+    setPanelActive(true);
+  };
 
   const persistAndReplace = (targetLocale: Locale, href: string) => {
     try {
@@ -81,9 +111,12 @@ export function LocaleSwitcherControl({
 
     if (result.fellBack) {
       setPendingFallback({ locale: targetLocale, href: result.href });
+      setPanel('fallback');
       return;
     }
 
+    setPanel(null);
+    setPanelActive(false);
     persistAndReplace(targetLocale, result.href);
   };
 
@@ -96,15 +129,15 @@ export function LocaleSwitcherControl({
       <button
         type="button"
         aria-controls={choicesId}
-        aria-expanded={open}
+        aria-expanded={visiblePanel === 'choices'}
         aria-label={dictionary.localeSwitcher.label}
         title={dictionary.localeSwitcher.label}
-        onClick={() => setOpen((isOpen) => !isOpen)}
+        onClick={toggleChoices}
       >
         <Languages aria-hidden="true" size={18} />
         <span>{dictionary.languages[locale]}</span>
       </button>
-      <ul id={choicesId} hidden={!open}>
+      <ul id={choicesId} hidden={visiblePanel !== 'choices'}>
         {(['en', 'zh'] as const).map((choice) => (
           <li key={choice}>
             <button
@@ -117,7 +150,7 @@ export function LocaleSwitcherControl({
           </li>
         ))}
       </ul>
-      {pendingFallback ? (
+      {visiblePanel === 'fallback' && pendingFallback ? (
         <div>
           <p role="status">
             {interpolate(
@@ -144,9 +177,15 @@ export function LocaleSwitcherControl({
 
 interface LocaleSwitcherProps {
   readonly locale: Locale;
+  readonly active?: boolean;
+  readonly onActiveChange?: (isActive: boolean) => void;
 }
 
-export function LocaleSwitcher({ locale }: LocaleSwitcherProps) {
+export function LocaleSwitcher({
+  locale,
+  active,
+  onActiveChange,
+}: LocaleSwitcherProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -155,6 +194,8 @@ export function LocaleSwitcher({ locale }: LocaleSwitcherProps) {
       locale={locale}
       pathname={pathname}
       replace={(href) => router.replace(href)}
+      active={active}
+      onActiveChange={onActiveChange}
     />
   );
 }

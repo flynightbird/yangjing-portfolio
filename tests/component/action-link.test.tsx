@@ -82,4 +82,14 @@ describe('ActionLink', () => {
     await user.click(link);
     expect(onClick).not.toHaveBeenCalled();
   });
+
+  it('requires href for enabled links while allowing disabled placeholders', () => {
+    const disabledLink = <ActionLink disabled>Unavailable work</ActionLink>;
+
+    // @ts-expect-error Enabled ActionLink instances must provide href.
+    const enabledWithoutHref = <ActionLink>View work</ActionLink>;
+
+    expect(disabledLink.props.disabled).toBe(true);
+    expect(enabledWithoutHref).toBeTruthy();
+  });
 });

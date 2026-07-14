@@ -1,4 +1,7 @@
+'use client';
+
 import { Menu } from 'lucide-react';
+import { type SyntheticEvent, useState } from 'react';
 
 import { LocaleSwitcher } from '@/components/shell/locale-switcher';
 import { ResumeMenu } from '@/components/shell/resume-menu';
@@ -12,9 +15,36 @@ interface SiteHeaderProps {
   readonly locale: Locale;
 }
 
+type ActivePanel = 'navigation' | 'locale' | null;
+
 export function SiteHeader({ locale }: SiteHeaderProps) {
   const dictionary = locale === 'zh' ? zhDictionary : enDictionary;
   const localeRoot = `/${locale}/`;
+  const [activePanel, setActivePanel] = useState<ActivePanel>(null);
+
+  const handleNavigationToggle = (
+    event: SyntheticEvent<HTMLDetailsElement>,
+  ) => {
+    const isOpen = event.currentTarget.open;
+
+    setActivePanel((currentPanel) => {
+      if (isOpen) {
+        return 'navigation';
+      }
+
+      return currentPanel === 'navigation' ? null : currentPanel;
+    });
+  };
+
+  const handleLocaleActiveChange = (isActive: boolean) => {
+    setActivePanel((currentPanel) => {
+      if (isActive) {
+        return 'locale';
+      }
+
+      return currentPanel === 'locale' ? null : currentPanel;
+    });
+  };
 
   return (
     <header className={styles.root}>
@@ -25,7 +55,10 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
       >
         {dictionary.site.name}
       </a>
-      <details>
+      <details
+        open={activePanel === 'navigation'}
+        onToggle={handleNavigationToggle}
+      >
         <summary>
           <Menu aria-hidden="true" size={20} />
           <span>{dictionary.menu.label}</span>
@@ -49,7 +82,11 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
           </ul>
         </nav>
       </details>
-      <LocaleSwitcher locale={locale} />
+      <LocaleSwitcher
+        locale={locale}
+        active={activePanel === 'locale'}
+        onActiveChange={handleLocaleActiveChange}
+      />
     </header>
   );
 }

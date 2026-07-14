@@ -13,13 +13,25 @@ import styles from './action-link.module.css';
 type ActionLinkVariant = 'primary' | 'secondary' | 'text';
 
 interface ActionLinkBaseProps
-  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'aria-disabled'> {
+  extends Omit<
+    AnchorHTMLAttributes<HTMLAnchorElement>,
+    'aria-disabled' | 'href'
+  > {
   readonly variant?: ActionLinkVariant;
   readonly icon?: LucideIcon;
-  readonly disabled?: boolean;
 }
 
 type ActionLinkProps = ActionLinkBaseProps &
+  (
+    | {
+        readonly disabled: true;
+        readonly href?: string;
+      }
+    | {
+        readonly disabled?: false;
+        readonly href: string;
+      }
+  ) &
   (
     | {
         readonly external: true;
