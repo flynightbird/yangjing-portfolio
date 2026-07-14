@@ -36,11 +36,116 @@ function isInside(parent, candidate) {
   );
 }
 
+export async function validateSttDemoPublication(rootDir = root) {
+  const errors = [];
+  const expectedSource = {
+    repository: 'https://github.com/flynightbird/stt-demo',
+    commit: 'e5e840a',
+    demoPath: '/demos/stt-demo/index.html',
+    kind: 'interactive-static-prototype',
+  };
+  const requiredPaths = [
+    'index.html',
+    'styles.css',
+    'app.js',
+    'assets/agora-logo.svg',
+    'assets/participants/video-1.jpg',
+    'assets/participants/video-2.jpg',
+    'assets/participants/video-3.jpg',
+    'stt-ui-component-library/packages/stt-ui/src/tokens/tokens.css',
+    'stt-ui-component-library/packages/stt-ui/src/styles/components.css',
+    'poster.png',
+    'source-revision.json',
+  ];
+
+  let source;
+  try {
+    source = JSON.parse(
+      await fsPromises.readFile(
+        path.join(rootDir, 'evidence/stt-demo/source.json'),
+        'utf8',
+      ),
+    );
+  } catch {
+    errors.push('missing or invalid STT source provenance');
+  }
+  if (source && JSON.stringify(source) !== JSON.stringify(expectedSource)) {
+    errors.push('STT source provenance does not match the approved pin');
+  }
+
+  const demoRoot = path.join(rootDir, 'public/demos/stt-demo');
+  let realRootDir;
+  try {
+    realRootDir = await fsPromises.realpath(rootDir);
+  } catch {
+    return [...errors, 'unable to resolve site root for STT publication'];
+  }
+
+  for (const relativePath of requiredPaths) {
+    const absolutePath = path.resolve(demoRoot, relativePath);
+    if (!isInside(demoRoot, absolutePath)) {
+      errors.push(`STT demo path escapes publication root: ${relativePath}`);
+      continue;
+    }
+    try {
+      const stat = await fsPromises.lstat(absolutePath);
+      const realPath = await fsPromises.realpath(absolutePath);
+      if (!isInside(realRootDir, realPath)) {
+        errors.push(`STT demo file resolves outside site root: ${relativePath}`);
+      } else if (stat.isSymbolicLink() || !stat.isFile()) {
+        errors.push(`STT demo file is not regular: ${relativePath}`);
+      }
+    } catch (error) {
+      errors.push(
+        error?.code === 'ENOENT'
+          ? `missing STT demo file: ${relativePath}`
+          : `unable to inspect STT demo file: ${relativePath}`,
+      );
+    }
+  }
+
+  let revision;
+  try {
+    revision = JSON.parse(
+      await fsPromises.readFile(
+        path.join(demoRoot, 'source-revision.json'),
+        'utf8',
+      ),
+    );
+  } catch {
+    if (!errors.some((error) => error.includes('source-revision.json'))) {
+      errors.push('missing or invalid published STT source revision');
+    }
+  }
+  if (revision) {
+    if (
+      revision.repository !== expectedSource.repository ||
+      revision.kind !== expectedSource.kind ||
+      revision.pinnedCommit !== expectedSource.commit
+    ) {
+      errors.push('published STT revision metadata does not match provenance');
+    }
+    if (
+      typeof revision.commit !== 'string' ||
+      !revision.commit.startsWith(expectedSource.commit)
+    ) {
+      errors.push(
+        `published STT commit must begin ${expectedSource.commit}`,
+      );
+    }
+  }
+
+  return errors;
+}
+
 export async function validateSite(options = {}) {
   const rootDir = options.rootDir ?? root;
+  const usesDefaultContentPaths = options.contentPaths === undefined;
   const contentPaths = options.contentPaths ?? [
     'content/work/call-agent.en.mdx',
     'content/work/call-agent.zh.mdx',
+    'content/build/stt-demo.en.mdx',
+    'content/build/stt-demo.zh.mdx',
   ];
   const resolvedContentPaths = contentPaths.map((contentPath) =>
     path.isAbsolute(contentPath) ? contentPath : path.join(rootDir, contentPath),
@@ -66,6 +171,9 @@ export async function validateSite(options = {}) {
     ...contents.flatMap(findSensitiveText),
     ...findSensitiveText(manifestText),
   ];
+  if (usesDefaultContentPaths) {
+    errors.push(...await validateSttDemoPublication(rootDir));
+  }
 
   if (!Array.isArray(manifest.assets)) {
     errors.push('manifest assets must be an array');
@@ -214,8 +322,10 @@ export async function validateSite(options = {}) {
     }
   }
 
-  const ids = ['overview', 'context-role', 'design-thesis', 'decision-path', 'decision-preview', 'decision-operate', 'system-delivery', 'outcome-learnings'];
   for (const [index, content] of contents.entries()) {
+    const ids = resolvedContentPaths[index].includes('/content/build/')
+      ? ['overview', 'setup', 'session', 'build-system', 'evidence-boundary']
+      : ['overview', 'context-role', 'design-thesis', 'decision-path', 'decision-preview', 'decision-operate', 'system-delivery', 'outcome-learnings'];
     for (const id of ids) {
       if (!content.includes(`id="${id}"`)) {
         errors.push(`missing chapter ${id} in ${path.basename(resolvedContentPaths[index])}`);

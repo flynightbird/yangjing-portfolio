@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STT · Realtime Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="stt-ui-component-library/packages/stt-ui/src/tokens/tokens.css?v=20260610-toast-spec" />
+  <link rel="stylesheet" href="stt-ui-component-library/packages/stt-ui/src/styles/components.css?v=20260610-toast-spec" />
+  <link rel="stylesheet" href="styles.css?v=20260709-room-info-popover" />
+</head>
+<body data-page="landing">
+  <!-- Ambient backdrop — static stage light, not animated -->
+  <div class="bg-fx" aria-hidden="true">
+    <div class="bg-vignette"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow--brand"></div>
+    <div class="bg-glow bg-glow--cyan"></div>
+    <div class="bg-pointer"></div>
+  </div>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <!-- =================================================================
+       PAGE 1 · LANDING (Hero only — single screen)
+       ================================================================= -->
+  <section class="landing" id="pageLanding">
+    <header class="land-bar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <img src="assets/agora-logo.svg" alt="" class="brand-logo" />
+        </span>
+        <span class="brand-name">STT & 同声传译</span>
+      </div>
+      <div class="land-actions">
+        <button class="icon-btn" id="landLangBtn" aria-label="Language">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3c2.5 3 2.5 15 0 18M12 3c-2.5 3-2.5 15 0 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+        <div class="land-lang-pop custom-select-pop stt-root-popover stt-choice__popover stt-choice__popover--content-aware hidden" id="landLangPopover" role="listbox" aria-label="Language options">
+          <button type="button" class="custom-select-option selected" data-land-locale="zh" role="option" aria-selected="true"><span>中文</span><span class="custom-select-check" aria-hidden="true">✓</span></button>
+          <button type="button" class="custom-select-option" data-land-locale="en" role="option" aria-selected="false"><span>English</span><span class="custom-select-check" aria-hidden="true">✓</span></button>
+        </div>
+        <button class="land-login-btn stt-button stt-button--white stt-button--md" id="landLoginBtn"><span class="stt-button__content">注册/登录</span></button>
+        <button class="land-user-avatar hidden" id="landUserAvatar" aria-label="已登录用户">刘</button>
+      </div>
+    </header>
+
+    <main class="land-main">
+      <div class="land-copy">
+        <div class="land-kicker"><span class="dot-live"></span><span>MULTI-SPEAKER · BILINGUAL STAGE</span></div>
+
+        <h1 class="land-headline">
+          多人语聊房
+        </h1>
+
+        <p class="land-sub">
+          多人实时语音转录与翻译房间，最多支持 8 名参会者同时在线，试试识别每个人的发言与翻译成目标语言。
+        </p>
+
+        <div class="land-cta">
+          <button class="btn-primary" id="landCtaBtn">
+            <span class="cta-label">立即体验</span>
+            <span class="cta-icon" aria-hidden="true">
+              <svg class="cta-icon-up" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg class="cta-icon-right" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- HERO VISUAL: cropped real-product screenshot feel -->
+      <div class="land-visual" aria-hidden="true">
+        <div class="snip">
+          <!-- Faint topbar slice -->
+          <div class="snip-topbar">
+            <div class="snip-brand">
+              <span class="snip-mark"></span>
+              <div>
+                <strong>STT</strong>
+                <span class="snip-room">A7Q3K9</span>
+              </div>
+            </div>
+            <div class="snip-status">
+              <span class="dot-live small"></span>
+              <span class="snip-status-text">正在运行</span>
+              <span class="snip-divider"></span>
+              <span class="mono">09:42</span>
+            </div>
+          </div>
+
+          <!-- Main stage region — the protagonist -->
+          <div class="snip-stage">
+            <div class="snip-speaker">
+              <div class="snip-avatar" style="--av:linear-gradient(135deg, #e0e7ff, #c7d2fe)">T</div>
+              <div class="snip-speaker-meta">
+                <strong>Tony</strong>
+                <div class="snip-speaker-sub">
+                  <span>CURRENT SPEAKER · 中文</span>
+                  <div class="snip-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="snip-original">现在发言、转录与翻译<br/>在同一块舞台同步呈现。</div>
+            <div class="snip-translation">Speech, transcription, and translation now arrive together on the same stage.</div>
+          </div>
+
+          <!-- Side panel sliver -->
+          <div class="snip-side">
+            <div class="snip-side-head">参会信息 · 8</div>
+            <div class="snip-side-rows">
+              <div class="snip-side-row active"><span></span>Tony</div>
+              <div class="snip-side-row"><span></span>尹希尔</div>
+              <div class="snip-side-row"><span></span>苏先生</div>
+              <div class="snip-side-row"><span></span>Dr. Lee</div>
+            </div>
+          </div>
+
+          <!-- Dock peek -->
+          <div class="snip-dock">
+            <span class="snip-dock-btn snip-dock-mic"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11.9998 1C14.7612 1 16.9998 3.23858 16.9998 6V10C16.9998 12.7614 14.7612 15 11.9998 15C9.23833 15 6.99976 12.7614 6.99976 10V6C6.99976 3.23858 9.23833 1 11.9998 1ZM3.05469 11H5.07065C5.55588 14.3923 8.47329 17 11.9998 17C15.5262 17 18.4436 14.3923 18.9289 11H20.9448C20.4837 15.1716 17.1714 18.4839 12.9998 18.9451V23H10.9998V18.9451C6.82814 18.4839 3.51584 15.1716 3.05469 11Z"/></svg></span>
+            <span class="snip-dock-btn snip-dock-cam"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17 9.2L22.2133 5.55071C22.4395 5.39235 22.7513 5.44737 22.9096 5.6736C22.9684 5.75764 23 5.85774 23 5.96033V18.0397C23 18.3158 22.7761 18.5397 22.5 18.5397C22.3974 18.5397 22.2973 18.5081 22.2133 18.4493L17 14.8V19C17 19.5523 16.5523 20 16 20H2C1.44772 20 1 19.5523 1 19V5C1 4.44772 1.44772 4 2 4H16C16.5523 4 17 4.44772 17 5V9.2ZM5 8V10H7V8H5Z"/></svg></span>
+            <span class="snip-dock-btn danger snip-dock-hangup"><svg width="14" height="14" viewBox="0 0 1024 1024" fill="currentColor"><path d="M908.8 444.8c60.8 60.8 60.8 150.4 28.8 204.8-19.2 32-48 48-73.6 44.8-12.8-3.2-32-12.8-60.8-28.8-3.2-3.2-48-32-112-76.8v-102.4l-16-6.4c-99.2-41.6-224-38.4-329.6 0l-19.2 6.4v112c-22.4 12.8-67.2 38.4-76.8 44.8-38.4 19.2-73.6 41.6-89.6 41.6-19.2 3.2-38.4-3.2-54.4-19.2-6.4-6.4-9.6-12.8-16-19.2-28.8-44.8-35.2-118.4 9.6-179.2 64-83.2 236.8-144 406.4-140.8 179.2 3.2 316.8 41.6 396.8 108.8 0 3.2 3.2 6.4 6.4 9.6z"/></svg></span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- =================================================================
+       PAGE 2 · PRODUCT (before-start + in-session)
+       ================================================================= -->
+  <section class="product hidden" id="pageProduct">
+
+    <!-- ============== TOPBAR ============== -->
+    <header class="topbar glass stt-top-status" data-migrated-component="TopStatusBar">
+      <div class="tb-left stt-top-status__brand">
+        <button class="tool-btn icon-only prestart-back-btn" id="prestartBackBtn" aria-label="返回首页">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m12 19-7-7 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M19 12H5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="brand tight">
+          <span class="brand-mark" aria-hidden="true">
+            <img src="assets/agora-logo.svg" alt="" class="brand-logo" />
+          </span>
+          <div class="brand-stack">
+            <strong>STT & 同声传译 - 多人语聊房</strong>
+            <div class="brand-room mono hidden" id="topbarRoomLabel">
+              <span class="brand-room-title" id="topbarRoomTitle">房间号</span>
+              <span id="topbarRoomText">A7Q3K9</span>
+              <button class="copy-btn" id="copyRoomBtn" aria-label="复制房间号">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M5 15V6a2 2 0 0 1 2-2h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </button>
+              <button class="room-info-btn" id="roomInfoBtn" type="button" aria-label="查看房间信息" aria-describedby="roomInfoPopover">
+                <span aria-hidden="true">!</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tb-right stt-top-status__tools">
+        <div class="status-pill hidden stt-top-status__status" id="statusPill">
+          <span class="dot-live"></span>
+          <span>免费体验</span>
+          <span class="tb-divider"></span>
+          <span class="mono" id="countdownText">10:00</span>
+        </div>
+
+        <div class="pop-anchor hidden" id="accessAnchor">
+          <button class="tool-btn stt-arrow-button stt-top-status__plugin" id="accessBtn" aria-haspopup="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 17V16H13V13H16V15H18V17H17V19H15V21H13V18H15V17H16ZM21 21H17V19H19V17H21V21ZM3 3H11V11H3V3ZM13 3H21V11H13V3ZM3 13H11V21H3V13ZM18 13H21V15H18V13ZM6 6V8H8V6H6ZM6 16V18H8V16H6ZM16 6V8H18V6H16Z"/></svg>
+            <span>字幕插件</span>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+          <div class="pop hidden" id="accessMenu">
+            <button class="pop-item" data-access="plugin">
+              <span class="pop-item-main">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 3v3a2 2 0 0 1-4 0V3M15 3v3a2 2 0 0 0 4 0V3M9 21v-3a2 2 0 0 0-4 0v3M15 21v-3a2 2 0 0 1 4 0v3M3 9h18M3 15h18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                <span>悬浮字幕插件</span>
+              </span>
+              <span class="pop-meta">.app · .exe</span>
+            </button>
+            <button class="pop-item" data-access="qr">
+              <span class="pop-item-main">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M14 14h3v3M21 17v4h-4M14 21v-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                <span>扫码查看字幕</span>
+              </span>
+              <span class="pop-meta">手机</span>
+            </button>
+          </div>
+        </div>
+
+        <button class="tool-btn icon-only stt-top-status__square-button hidden" id="sideToggleBtn" aria-label="切换侧栏">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M15 5v14" stroke="currentColor" stroke-width="1.6"/></svg>
+        </button>
+
+        <div class="pop-anchor">
+          <button class="avatar-btn stt-top-status__avatar" id="avatarBtn" aria-haspopup="true">刘</button>
+          <div class="pop hidden right" id="avatarMenu">
+            <button class="pop-item" id="logoutBtn">
+              <span class="pop-item-main">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l-5-5 5-5M15 12H4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>退出登录</span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============== MAIN LAYOUT ============== -->
+    <div class="layout" id="layout">
+
+      <!-- ====== LEFT: stage ====== -->
+      <section class="stage-area">
+        <div class="prestart-responsive-status hidden" id="prestartResponsiveStatus" aria-label="会前状态摘要">
+          <div class="prestart-responsive-status__main">
+            <span class="prestart-responsive-status__mode" id="prestartResponsiveMode">创建房间</span>
+            <span class="prestart-responsive-status__room mono" id="prestartResponsiveRoom">房间号 A7Q3K9</span>
+          </div>
+          <div class="prestart-responsive-status__meta">
+            <span id="prestartResponsiveRecognition">自动识别</span>
+            <span aria-hidden="true">·</span>
+            <span id="prestartResponsiveTarget">翻译为 英语</span>
+          </div>
+        </div>
+
+        <!-- Empty (pre-start) -->
+        <div class="empty-stage" id="emptyStage">
+          <div class="empty-stage-inner">
+            <div class="land-kicker mini"><span class="dot-live muted"></span><span>STAGE · STAND BY</span></div>
+            <h2 class="empty-headline">让双语实时字幕<br/>成为会议本身的一部分。</h2>
+            <p class="empty-body">右侧配置参数，启动对话</p>
+            <div class="empty-rail" aria-hidden="true" id="emptyRail"></div>
+          </div>
+        </div>
+
+        <!-- Session (in-session) -->
+        <div class="session-stage hidden" id="sessionStage">
+          <div class="session-aura-field" aria-hidden="true">
+            <span class="session-aura session-aura--one"></span>
+            <span class="session-aura session-aura--two"></span>
+            <span class="session-aura session-aura--three"></span>
+            <span class="session-aura session-aura--four"></span>
+          </div>
+
+          <!-- Stage toolbar -->
+          <div class="stage-toolbar">
+            <div class="stage-chip ghost">
+              <span id="stageSourceLabel">中文</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <span id="stageTargetLabel">English</span>
+            </div>
+            <div class="stage-dropdown-group" role="group" aria-label="舞台字幕控制">
+              <div class="stage-dropdown">
+                <button class="stage-dropdown-trigger stt-arrow-button" id="stageSubtitleDisplayBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="原文显示">
+                  <span class="stt-arrow-button__label" id="stageSubtitleDisplayLabel">原文显示：双语</span>
+                  <span class="stt-arrow-button__chevrons" aria-hidden="true"><span></span><span></span></span>
+                </button>
+                <div class="stage-dropdown-pop custom-select-pop stt-root-popover stt-choice__popover stt-select__popover hidden" id="stageSubtitleDisplayPopover" role="listbox" aria-label="原文显示选项"></div>
+              </div>
+              <div class="stage-dropdown">
+                <button class="stage-dropdown-trigger stt-arrow-button" id="stageTargetLanguageBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="翻译目标语言">
+                  <span class="stt-arrow-button__label" id="stageTargetLanguageLabel">翻译为:英语</span>
+                  <span class="stt-arrow-button__chevrons" aria-hidden="true"><span></span><span></span></span>
+                </button>
+                <div class="stage-dropdown-pop custom-select-pop stt-root-popover stt-choice__popover stt-select__popover hidden" id="stageTargetLanguagePopover" role="listbox" aria-label="翻译目标语言选项"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-body">
+            <div class="subtitle-flow" id="subtitleFlow">
+              <div class="history-track" id="historyTrack"></div>
+
+              <article class="current-utterance" id="currentUtt">
+                <header class="utt-speaker">
+                  <div class="utt-avatar-shell">
+                    <div class="utt-avatar-ring" aria-hidden="true"></div>
+                    <div class="utt-avatar" id="uttAvatar" style="--av:linear-gradient(135deg, #e0e7ff, #c7d2fe)">W</div>
+                  </div>
+                  <div class="utt-speaker-meta">
+                    <strong id="uttSpeakerName">王静</strong>
+                    <div class="utt-speaker-sub">
+                      <span id="uttSpeakerRole">CURRENT SPEAKER · 中文</span>
+                      <div class="utt-wave" id="uttWave">
+                        <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                      </div>
+                    </div>
+                  </div>
+                </header>
+
+                <div class="pre-receive" id="preReceive">
+                  <div class="pulse-line"></div>
+                  <span class="pre-receive-text mono">RECEIVING</span>
+                </div>
+
+                <h2 class="utt-original" id="uttOriginal" aria-live="polite"></h2>
+                <div class="utt-translation" id="uttTranslation" aria-live="polite"></div>
+              </article>
+            </div>
+            <button class="subtitle-jump-bottom hidden" id="subtitleJumpBottom" aria-label="回到当前字幕">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 5v14M6 13l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Bottom dock -->
+          <div class="dock stt-control-dock stt-control-dock--session" id="dock">
+            <div class="dock-cluster">
+              <button class="dock-btn stt-icon-button" id="dockMicBtn" aria-label="麦克风">
+                <span class="dock-icon" id="dockMicIcon"></span>
+              </button>
+              <button class="dock-chev stt-control-dock__menu" id="dockMicChev" aria-label="麦克风设备">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+            <div class="dock-cluster">
+              <button class="dock-btn stt-icon-button" id="dockCamBtn" aria-label="摄像头">
+                <span class="dock-icon" id="dockCamIcon"></span>
+              </button>
+              <button class="dock-chev stt-control-dock__menu" id="dockCamChev" aria-label="摄像头设备">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+            <span class="dock-divider stt-control-dock__divider"></span>
+            <button class="dock-btn dock-hangup stt-icon-button stt-control-dock__hangup" id="hangupBtn" aria-label="挂断">
+              <svg width="22" height="22" viewBox="0 0 1024 1024" fill="currentColor"><path d="M908.8 444.8c60.8 60.8 60.8 150.4 28.8 204.8-19.2 32-48 48-73.6 44.8-12.8-3.2-32-12.8-60.8-28.8-3.2-3.2-48-32-112-76.8v-102.4l-16-6.4c-99.2-41.6-224-38.4-329.6 0l-19.2 6.4v112c-22.4 12.8-67.2 38.4-76.8 44.8-38.4 19.2-73.6 41.6-89.6 41.6-19.2 3.2-38.4-3.2-54.4-19.2-6.4-6.4-9.6-12.8-16-19.2-28.8-44.8-35.2-118.4 9.6-179.2 64-83.2 236.8-144 406.4-140.8 179.2 3.2 316.8 41.6 396.8 108.8 0 3.2 3.2 6.4 6.4 9.6z"/></svg>
+            </button>
+
+            <!-- Mic device popover -->
+            <div class="dock-pop hidden" id="dockMicPop"></div>
+            <!-- Cam device popover -->
+            <div class="dock-pop hidden" id="dockCamPop"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== RIGHT: side panel ====== -->
+      <aside class="side-area" id="sideArea">
+        <!-- Pre-start panel -->
+        <div class="prestart glass stt-prestart-panel" id="prestartPanel" data-migrated-component="PrestartPanel"></div>
+
+        <!-- In-session panel -->
+        <div class="side-panel glass hidden stt-participants-panel stt-participants-panel--session" id="sessionPanel" data-migrated-component="ParticipantsPanel">
+          <div class="session-drawer-head">
+            <div class="seg stt-participants-panel__tabs stt-tabs stt-tabs--fill" role="tablist" aria-label="会话侧栏" data-migrated-component="Tabs" style="--stt-tabs-count: 2; --stt-tabs-indicator-shift: calc(0% + (var(--stt-component-tabs-gap) * 0));">
+              <button class="seg-btn active is-active" role="tab" aria-selected="true" data-tab="participants"><span>参会信息</span></button>
+              <button class="seg-btn" role="tab" aria-selected="false" data-tab="settings"><span>设置</span></button>
+            </div>
+            <button class="session-drawer-close" id="sessionDrawerCloseBtn" type="button" aria-label="关闭设置抽屉">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <div class="seg-body" id="segBody"></div>
+        </div>
+      </aside>
+      <button class="session-drawer-backdrop hidden" id="sessionDrawerBackdrop" type="button" aria-label="关闭侧栏"></button>
+    </div>
+  </section>
+
+  <div class="room-info-popover stt-root-popover stt-choice__popover stt-choice__popover--content-aware hidden" id="roomInfoPopover" role="tooltip" aria-label="房间信息">
+    <div class="room-info-popover__row">
+      <span>Room</span>
+      <strong class="mono" id="roomInfoRoom">A7Q3K9</strong>
+      <button type="button" class="room-info-popover__copy" data-room-detail-copy="room" aria-label="复制 Room">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M5 15V6a2 2 0 0 1 2-2h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="room-info-popover__row">
+      <span>UID</span>
+      <strong class="mono" id="roomInfoUid">157720</strong>
+      <button type="button" class="room-info-popover__copy" data-room-detail-copy="uid" aria-label="复制 UID">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M5 15V6a2 2 0 0 1 2-2h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="room-info-popover__row">
+      <span>Agent ID</span>
+      <strong class="mono" id="roomInfoAgent">A42AF77KN62NJ85VP42DD44PA97EJ47C</strong>
+      <button type="button" class="room-info-popover__copy" data-room-detail-copy="agent" aria-label="复制 Agent ID">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M5 15V6a2 2 0 0 1 2-2h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- =================================================================
+       OVERLAYS
+       ================================================================= -->
+  <div class="overlay stt-overlay hidden" id="pluginOverlay" data-overlay="pluginOverlay" data-migrated-component="Overlay">
+    <div class="dialog glass stt-dialog" role="dialog" aria-labelledby="pluginTitle" data-migrated-component="Dialog">
+      <button class="dialog-close stt-surface-close" data-close="pluginOverlay" aria-label="关闭">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <div class="dialog-head stt-dialog__head">
+        <div class="dialog-head-icon stt-dialog__head-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 3v3a2 2 0 0 1-4 0V3M15 3v3a2 2 0 0 0 4 0V3M9 21v-3a2 2 0 0 0-4 0v3M15 21v-3a2 2 0 0 1 4 0v3M3 9h18M3 15h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <h2 id="pluginTitle">悬浮字幕插件</h2>
+          <p>在任意应用窗口之上实时展示字幕，需要安装系统级插件。</p>
+        </div>
+      </div>
+      <div class="dialog-body stt-dialog__body">
+        <ol class="steps stt-surface-steps">
+          <li><i>1</i><span>下载并安装对应系统的悬浮字幕插件。</span></li>
+          <li><i>2</i><span>启动插件后，自动连接当前页面会话。</span></li>
+          <li><i>3</i><span>切换到「悬浮字幕」模式，字幕实时推送至插件窗口。</span></li>
+        </ol>
+        <div class="download-grid stt-surface-download-grid">
+          <button class="download-card stt-surface-download-card">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11"/></svg>
+            <div>
+              <strong>下载 Mac 版</strong>
+              <span class="mono">.app · macOS 12+</span>
+            </div>
+          </button>
+          <button class="download-card stt-surface-download-card">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.1L10.7 4v7.4H3M11.4 3.9l9.6-1.4v9H11.4M3 12.4h7.7v7.4L3 18.7M11.4 12.6H21V21l-9.6-1.3"/></svg>
+            <div>
+              <strong>下载 Windows 版</strong>
+              <span class="mono">.exe · Windows 10+</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay stt-overlay hidden" id="qrOverlay" data-overlay="qrOverlay" data-migrated-component="Overlay">
+    <div class="qr-dialog glass stt-dialog stt-dialog--qr" role="dialog" aria-labelledby="qrTitle" data-migrated-component="Dialog">
+      <button class="dialog-close stt-surface-close" data-close="qrOverlay" aria-label="关闭">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <h2 id="qrTitle">扫码查看字幕</h2>
+      <div class="qr-box">
+        <svg width="220" height="220" viewBox="0 0 190 190" aria-hidden="true">
+          <rect width="190" height="190" rx="6" fill="#fff"/>
+          <path fill="#000" d="M14 14h54v54H14zM26 26h30v30H26zM122 14h54v54h-54zM134 26h30v30h-30zM14 122h54v54H14zM26 134h30v30H26zM86 86h12v12H86zM98 98h12v12H98zM110 86h12v12h-12zM122 98h12v12h-12zM134 86h12v12h-12zM86 110h12v12H86zM110 110h12v12h-12zM122 122h12v12h-12zM134 134h12v12h-12zM146 98h12v12h-12zM158 110h12v12h-12zM146 146h12v12h-12zM98 134h12v12H98zM86 146h12v12H86zM110 158h12v12h-12zM122 146h12v12h-12zM158 134h12v12h-12zM86 122h12v12H86z"/>
+        </svg>
+      </div>
+      <p>使用手机扫描二维码，实时查看当前房间字幕。</p>
+      <div class="qr-room">Room · <strong class="mono" id="qrRoomId">A7Q3K9</strong></div>
+    </div>
+  </div>
+
+  <div class="overlay stt-overlay hidden" id="advOverlay" data-overlay="advOverlay" data-migrated-component="Overlay">
+    <div class="dialog wide glass stt-dialog stt-dialog--wide" role="dialog" aria-labelledby="advTitle" data-migrated-component="Dialog">
+      <button class="dialog-close stt-surface-close" data-close="advOverlay" aria-label="关闭">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <div class="dialog-head plain stt-dialog__head stt-dialog__head--plain">
+        <div>
+          <h2 id="advTitle">转录翻译高级设置</h2>
+          <p>以下 4 项修改后只影响后续新产生的字幕结果。</p>
+        </div>
+      </div>
+      <div class="dialog-body stt-dialog__body">
+        <div class="adv-grid" id="advGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Side drawer for advanced editing -->
+  <div class="drawer glass stt-drawer hidden" id="drawer" data-migrated-component="Drawer">
+    <header class="drawer-head stt-drawer__head">
+      <div>
+        <h3 id="drawerTitle">通用上下文</h3>
+        <p id="drawerDesc">领域、主题、角色等结构化数据</p>
+        <div class="scope-chip stt-drawer__scope">当前房间共享</div>
+      </div>
+      <button class="icon-btn ghost stt-surface-close" id="drawerCloseBtn" aria-label="关闭">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </header>
+    <div class="drawer-body stt-drawer__body">
+      <div class="drawer-toolbar stt-drawer__toolbar">
+        <button class="mini-btn" id="formatJsonBtn">格式化</button>
+        <span class="json-hint mono">JSON · 实时校验</span>
+        <span class="validity" id="jsonValidity">有效</span>
+      </div>
+      <textarea class="json-editor mono stt-json-editor stt-drawer__content" id="jsonEditor" spellcheck="false"></textarea>
+    </div>
+    <footer class="drawer-foot stt-drawer__foot">
+      <button class="btn-ghost stt-button stt-button--tertiary" id="drawerCancelBtn"><span class="stt-button__content">取消</span></button>
+      <button class="btn-primary stt-button stt-button--primary" id="drawerSaveBtn"><span class="stt-button__content">保存并应用</span></button>
+    </footer>
+  </div>
+
+  <!-- Source language change confirm -->
+  <div class="overlay stt-overlay hidden" id="confirmOverlay" data-overlay="confirmOverlay" data-migrated-component="Overlay">
+    <div class="dialog narrow glass stt-dialog stt-dialog--confirm" role="dialog" aria-labelledby="confirmTitle" aria-describedby="confirmText" data-migrated-component="DialogConfirm">
+      <div class="dialog-head stt-dialog__head">
+        <div class="dialog-head-icon stt-dialog__head-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 7C3 5.067 4.567 3.5 6.5 3.5C8.433 3.5 10 5.067 10 7C10 8.933 8.433 10.5 6.5 10.5C4.567 10.5 3 8.933 3 7ZM20 8H12V6H20V8ZM14 17C14 15.067 15.567 13.5 17.5 13.5C19.433 13.5 21 15.067 21 17C21 18.933 19.433 20.5 17.5 20.5C15.567 20.5 14 18.933 14 17ZM12 16V18H4V16H12Z"></path></svg>
+        </div>
+        <div>
+          <h2 id="confirmTitle">应用设置？</h2>
+          <p id="confirmText">修改将影响当前房间后续新产生的字幕结果。</p>
+        </div>
+      </div>
+      <div class="dialog-actions stt-dialog__foot">
+        <button class="btn-ghost stt-button stt-button--tertiary" id="confirmCancel"><span class="stt-button__content">取消</span></button>
+        <button class="btn-primary stt-button stt-button--primary" id="confirmApply"><span class="stt-button__content">确认并应用</span></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js?v=20260709-room-info-popover"></script>
+</body>
+</html>

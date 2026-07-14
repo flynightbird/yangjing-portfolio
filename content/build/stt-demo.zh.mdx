@@ -1,0 +1,105 @@
+import { DemoFrame } from '@/components/build-lab/demo-frame'
+import { EvidenceLedger } from '@/components/build-lab/evidence-ledger'
+
+export const metadata = {
+  type: 'build',
+  slug: 'stt-demo',
+  locale: 'zh',
+  translationKey: 'build.stt-demo',
+  title: 'STT Demo：让双语对话在发生时清晰可读',
+  proposition: '一个固定版本的交互原型，把房间设置、语音识别、转写、翻译和访问层组织成连贯的会议界面。',
+  role: '产品设计与 AI 辅助原型构建',
+  duration: '探索性构建',
+  status: '固定版本静态原型',
+  disclosure: '本案例记录仓库版本 e5e840a 的交互有效静态原型，不代表已接入服务、已有客户使用或产生可量化结果。',
+  heroMedia: '/demos/stt-demo/poster.png',
+  evidenceLevel: 'prototype',
+  featuredOrder: 1,
+  caseLabel: 'BUILD LAB / STT DEMO',
+  facts: [
+    { label: '源码', value: 'flynightbird/stt-demo @ e5e840a' },
+    { label: '产物', value: '同源静态副本' },
+  ],
+  chapters: [
+    { id: 'overview', label: '原型' },
+    { id: 'setup', label: '会前设置' },
+    { id: 'session', label: '会中体验' },
+    { id: 'build-system', label: '构建系统' },
+    { id: 'evidence-boundary', label: '证据与边界' },
+  ],
+}
+
+<section id="overview">
+  <header className="section-heading">
+    <p className="section-index">01 / 原型</p>
+    <h2>用一个界面完成双语对话的准备、阅读与分享</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">原型面向需要在多语言对话发生时读取转写与翻译字幕的主持人和参与者。</p>
+    <p>它连接了聚焦的首页、会前房间设置和会中字幕舞台。下方产物固定于一个经过核对的仓库版本并从本地提供，因此交互原型与源码可以分别检查。</p>
+  </div>
+  <DemoFrame locale="zh" />
+</section>
+
+<section id="setup">
+  <header className="section-heading">
+    <p className="section-index">02 / 会前设置</p>
+    <h2>在房间开始前明确语音识别的成立条件</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">开始前，主持人可在同一设置面板检查房间号、身份、麦克风、摄像头、源语言、目标语言和识别模式。</p>
+    <p>识别控制覆盖自动语言识别，以及带搜索选择器的指定单语种模式。设备状态包括授权指引、麦克风音量反馈、摄像头预览、完整设置和快捷设备菜单；开始操作会反映必要设置是否就绪。</p>
+  </div>
+  <div className="journey" aria-label="会前设置顺序">
+    <div className="journey-step"><span>01</span><b>房间与身份</b><small>检查或重新生成房间号，并设置昵称。</small></div>
+    <div className="journey-step journey-step--core"><span>02</span><b>设备</b><small>入会前处理麦克风与摄像头状态。</small></div>
+    <div className="journey-step"><span>03</span><b>识别</b><small>选择自动识别或指定单语种识别。</small></div>
+    <div className="journey-step"><span>04</span><b>翻译</b><small>设置字幕目标语言并开始。</small></div>
+  </div>
+</section>
+
+<section id="session" className="band--dark">
+  <header className="section-heading">
+    <p className="section-index">03 / 会中体验</p>
+    <h2>让当前发言保持主导，同时保留可触达的房间上下文</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">会中舞台为当前发言者配对显示原文转写与翻译，较早的发言则退入历史轨道。</p>
+    <p>原型表达等待、双语文本最终提交、翻译超时仅保留原文，以及发言者切换等状态。参会者与设置面板保留房间上下文，但不与字幕舞台竞争。插件与二维码层则展示把字幕带离主浏览器视图的两条访问路径。</p>
+  </div>
+  <div className="feedback-loop">
+    <article><span>LISTEN</span><h3>识别状态</h3><p>波形与等待反馈让当前处理状态可见。</p></article>
+    <article><span>PAIR</span><h3>转写 + 翻译</h3><p>条件满足时，原文与译文作为一个阅读单元提交。</p></article>
+    <article><span>CONTEXT</span><h3>参会者 + 设置</h3><p>侧面板让人员、语言与设备控制保持可触达。</p></article>
+    <article><span>ACCESS</span><h3>插件 + 二维码层</h3><p>静态浮层表达预期访问路径，不宣称其完整内部流程。</p></article>
+  </div>
+</section>
+
+<section id="build-system">
+  <header className="section-heading">
+    <p className="section-index">04 / 构建系统</p>
+    <h2>把 AI 辅助放入可审计的设计与工程闭环</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">这项工作组合了结构化产品需求、交互状态规格、实现与复核，而不是把生成结果直接当作最终产物。</p>
+    <p>AI 辅助用于迭代静态界面和交互状态。组件库提供共享 token 与组件样式，设计审计包记录机器可读检查，视觉回归基线覆盖关键的首页、会前、会中、访问层和字幕语言状态。根原型始终是视觉事实来源。</p>
+  </div>
+  <div className="delivery-flow" aria-label="AI 辅助原型工作流">
+    <div><span>01</span><b>结构化</b><small>把 PRD 转为明确的页面、状态与排除项。</small></div>
+    <div><span>02</span><b>构建</b><small>用可复用 token 与组件实现交互故事。</small></div>
+    <div><span>03</span><b>审计</b><small>检查设计一致性并把报告保留为证据。</small></div>
+    <div><span>04</span><b>回归</b><small>用已批准视觉基线比较关键状态。</small></div>
+  </div>
+</section>
+
+<section id="evidence-boundary">
+  <header className="section-heading">
+    <p className="section-index">05 / 证据与边界</p>
+    <h2>把可检查的证据与尚未实现的能力明确分开</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">仓库、精确版本、本地产物、组件样式、审计报告与视觉基线均为可检查证据；原型规格定义了功能边界。</p>
+    <p>不包含真实后端集成。不包含真实 SSO 跳转。不包含实际 RTC 入会。不包含实际 STT 流。不包含完整插件内部流程。不包含移动端字幕页完整详情流程。</p>
+  </div>
+  <EvidenceLedger locale="zh" />
+</section>

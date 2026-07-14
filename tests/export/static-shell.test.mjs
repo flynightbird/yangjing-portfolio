@@ -45,3 +45,35 @@ test('unregistered work routes are not emitted as soft-404 artifacts', () => {
     }
   }
 });
+
+test('the bilingual STT Build Lab routes and pinned demo are emitted', () => {
+  for (const locale of ['en', 'zh']) {
+    const buildPage = readOutput(`${locale}/build/stt-demo/index.html`);
+    assert.match(buildPage, /STT Demo|STT Demo：/);
+    assert.match(buildPage, /e5e840a/);
+    assert.match(buildPage, /\/demos\/stt-demo\/index\.html/);
+  }
+
+  for (const asset of [
+    'demos/stt-demo/index.html',
+    'demos/stt-demo/styles.css',
+    'demos/stt-demo/app.js',
+    'demos/stt-demo/source-revision.json',
+    'demos/stt-demo/stt-ui-component-library/packages/stt-ui/src/tokens/tokens.css',
+    'demos/stt-demo/stt-ui-component-library/packages/stt-ui/src/styles/components.css',
+  ]) {
+    assert.ok(fs.existsSync(path.join(outputPath, asset)), `${asset} must be exported`);
+  }
+});
+
+test('unknown Build Lab routes are not emitted', () => {
+  for (const locale of ['en', 'zh']) {
+    for (const slug of ['second-build', 'stt-demo-live', 'unknown']) {
+      assert.equal(
+        fs.existsSync(path.join(outputPath, locale, 'build', slug, 'index.html')),
+        false,
+        `${locale}/build/${slug} must not be exported`,
+      );
+    }
+  }
+});

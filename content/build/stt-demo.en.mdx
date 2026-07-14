@@ -1,0 +1,105 @@
+import { DemoFrame } from '@/components/build-lab/demo-frame'
+import { EvidenceLedger } from '@/components/build-lab/evidence-ledger'
+
+export const metadata = {
+  type: 'build',
+  slug: 'stt-demo',
+  locale: 'en',
+  translationKey: 'build.stt-demo',
+  title: 'STT Demo: make bilingual conversation legible in the moment',
+  proposition: 'A pinned interactive prototype that explores room setup, speech recognition, transcription, translation, and access layers as one coherent meeting surface.',
+  role: 'Product design and AI-assisted prototyping',
+  duration: 'Exploratory build',
+  status: 'Pinned static prototype',
+  disclosure: 'This case documents an interaction-valid static prototype at repository revision e5e840a. It does not claim a connected service, customer use, or measured outcomes.',
+  heroMedia: '/demos/stt-demo/poster.png',
+  evidenceLevel: 'prototype',
+  featuredOrder: 1,
+  caseLabel: 'BUILD LAB / STT DEMO',
+  facts: [
+    { label: 'Source', value: 'flynightbird/stt-demo @ e5e840a' },
+    { label: 'Artifact', value: 'Same-origin static copy' },
+  ],
+  chapters: [
+    { id: 'overview', label: 'Prototype' },
+    { id: 'setup', label: 'Before start' },
+    { id: 'session', label: 'In session' },
+    { id: 'build-system', label: 'Build system' },
+    { id: 'evidence-boundary', label: 'Evidence & boundary' },
+  ],
+}
+
+<section id="overview">
+  <header className="section-heading">
+    <p className="section-index">01 / PROTOTYPE</p>
+    <h2>A single surface for preparing, reading, and sharing bilingual conversation</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">The prototype is for hosts and participants who need transcription and translated subtitles while a multilingual conversation is unfolding.</p>
+    <p>It connects a focused homepage, a pre-start room setup, and an in-session subtitle stage. The artifact is preserved from one audited repository revision and served locally below, so the interactive prototype and its source can be inspected independently.</p>
+  </div>
+  <DemoFrame locale="en" />
+</section>
+
+<section id="setup">
+  <header className="section-heading">
+    <p className="section-index">02 / BEFORE START</p>
+    <h2>Expose the conditions of recognition before a room begins</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">Before starting, a host can inspect the room ID, identity, microphone, camera, source language, target language, and recognition mode in one setup panel.</p>
+    <p>The recognition controls cover automatic language recognition and a specified single-language mode with a searchable selector. Device states include authorization guidance, microphone level feedback, camera preview, full settings, and quick device menus. The start action reflects whether the required setup is ready.</p>
+  </div>
+  <div className="journey" aria-label="Pre-start setup sequence">
+    <div className="journey-step"><span>01</span><b>Room &amp; identity</b><small>Review or regenerate the room ID and set a nickname.</small></div>
+    <div className="journey-step journey-step--core"><span>02</span><b>Devices</b><small>Resolve microphone and camera states before entry.</small></div>
+    <div className="journey-step"><span>03</span><b>Recognition</b><small>Choose automatic or specified-language recognition.</small></div>
+    <div className="journey-step"><span>04</span><b>Translation</b><small>Set the target subtitle language and begin.</small></div>
+  </div>
+</section>
+
+<section id="session" className="band--dark">
+  <header className="section-heading">
+    <p className="section-index">03 / IN SESSION</p>
+    <h2>Keep the current utterance dominant while room context stays reachable</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">The in-session stage pairs original transcription with translation for the current speaker, while earlier utterances recede into a history track.</p>
+    <p>The prototype represents waiting, paired final text, original-only timeout, and speaker handoff states. Participant and settings panels retain room context without competing with the subtitle stage. Plugin and QR layers demonstrate two access paths for taking subtitles beyond the main browser view.</p>
+  </div>
+  <div className="feedback-loop">
+    <article><span>LISTEN</span><h3>Recognition state</h3><p>Waveform and waiting feedback make the current processing state visible.</p></article>
+    <article><span>PAIR</span><h3>Transcription + translation</h3><p>Original and translated text commit as one readable unit when available.</p></article>
+    <article><span>CONTEXT</span><h3>Participants + settings</h3><p>Side panels keep people, language, and device controls within reach.</p></article>
+    <article><span>ACCESS</span><h3>Plugin + QR layers</h3><p>Static overlays show intended subtitle access routes without claiming their full workflows.</p></article>
+  </div>
+</section>
+
+<section id="build-system">
+  <header className="section-heading">
+    <p className="section-index">04 / BUILD SYSTEM</p>
+    <h2>Use AI assistance inside an auditable design and engineering loop</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">The work combined structured product requirements, interaction-state specification, implementation, and review rather than treating generation as the final artifact.</p>
+    <p>AI assistance supported iteration across the static interface and interaction states. A component library supplied shared tokens and component styles; a design-audit package recorded machine-readable checks; and visual regression baselines captured critical homepage, pre-start, session, access-layer, and subtitle-language states. The root demo remains the visual source of truth.</p>
+  </div>
+  <div className="delivery-flow" aria-label="AI-assisted prototype workflow">
+    <div><span>01</span><b>Structure</b><small>Translate the PRD into explicit pages, states, and exclusions.</small></div>
+    <div><span>02</span><b>Build</b><small>Implement the interaction story with reusable tokens and components.</small></div>
+    <div><span>03</span><b>Audit</b><small>Inspect design consistency and preserve the report as evidence.</small></div>
+    <div><span>04</span><b>Regress</b><small>Compare critical states against approved visual baselines.</small></div>
+  </div>
+</section>
+
+<section id="evidence-boundary">
+  <header className="section-heading">
+    <p className="section-index">05 / EVIDENCE &amp; BOUNDARY</p>
+    <h2>Separate what can be inspected from what has not been implemented</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">The repository, exact revision, local artifact, component styles, audit report, and visual baselines are inspectable evidence. The prototype specification sets the functional boundary.</p>
+    <p>No true backend integration. No real SSO jump. No actual RTC join. No actual STT stream. No full plugin inner workflow. No mobile subtitle page full detail flow.</p>
+  </div>
+  <EvidenceLedger locale="en" />
+</section>

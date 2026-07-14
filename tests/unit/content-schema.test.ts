@@ -186,11 +186,19 @@ describe('content metadata', () => {
 });
 
 describe('content registry', () => {
-  it('registers the bilingual production case and resolves explicit registries', () => {
+  it('registers the bilingual work and Build Lab entries and resolves explicit registries', () => {
     const registry = createRegistry(pairedEntries);
 
-    expect(contentEntries).toHaveLength(2);
-    expect(contentEntries.map(({ meta }) => meta.locale)).toEqual(['en', 'zh']);
+    expect(
+      contentEntries.map(
+        ({ meta }) => `${meta.type}/${meta.slug}:${meta.locale}`,
+      ),
+    ).toEqual([
+      'work/call-agent:en',
+      'work/call-agent:zh',
+      'build/stt-demo:en',
+      'build/stt-demo:zh',
+    ]);
     expect(registry.get('work', 'call-agent', 'zh')).toBe(pairedEntries[1]);
     expect(registry.get('work', 'meeting', 'en')).toBeUndefined();
   });

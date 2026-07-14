@@ -6,6 +6,12 @@ import CallAgentEn, {
 import CallAgentZh, {
   metadata as callAgentZhMetadata,
 } from '@/content/work/call-agent.zh.mdx';
+import SttDemoEn, {
+  metadata as sttDemoEnMetadata,
+} from '@/content/build/stt-demo.en.mdx';
+import SttDemoZh, {
+  metadata as sttDemoZhMetadata,
+} from '@/content/build/stt-demo.zh.mdx';
 import { CallAgentActions } from '@/components/case-study/call-agent-actions';
 import { contentMetaSchema, type ContentMeta } from '@/content/schema';
 import type {
@@ -78,6 +84,14 @@ export const contentEntries: readonly ContentEntry[] = [
     meta: contentMetaSchema.parse(callAgentZhMetadata),
     Component: CallAgentZh,
     Actions: CallAgentActions,
+  },
+  {
+    meta: contentMetaSchema.parse(sttDemoEnMetadata),
+    Component: SttDemoEn,
+  },
+  {
+    meta: contentMetaSchema.parse(sttDemoZhMetadata),
+    Component: SttDemoZh,
   },
 ];
 export const contentRegistry = createRegistry(contentEntries);
