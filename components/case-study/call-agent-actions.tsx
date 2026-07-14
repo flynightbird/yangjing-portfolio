@@ -7,11 +7,11 @@ import type { Locale } from '@/content/types';
 
 import styles from './case-layout.module.css';
 
-interface CaseActionsProps {
+interface CallAgentActionsProps {
   readonly locale: Locale;
 }
 
-export function CaseActions({ locale }: CaseActionsProps) {
+export function CallAgentActions({ locale }: CallAgentActionsProps) {
   const text =
     locale === 'zh'
       ? {

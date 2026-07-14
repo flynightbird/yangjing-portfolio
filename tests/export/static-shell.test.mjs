@@ -33,3 +33,15 @@ test('root resolver and custom bilingual 404 remain static artifacts', () => {
   assert.match(notFound, /href="\/en\/"/);
   assert.match(notFound, /<a href="\/zh\/" lang="zh-CN">中文<\/a>/);
 });
+
+test('unregistered work routes are not emitted as soft-404 artifacts', () => {
+  for (const locale of ['en', 'zh']) {
+    for (const slug of ['bytedance', 'meeting']) {
+      assert.equal(
+        fs.existsSync(path.join(outputPath, locale, 'work', slug, 'index.html')),
+        false,
+        `${locale}/work/${slug} must not be exported`,
+      );
+    }
+  }
+});

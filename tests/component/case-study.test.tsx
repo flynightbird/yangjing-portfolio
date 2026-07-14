@@ -1,10 +1,12 @@
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { ChapterNav } from '@/components/case-study/chapter-nav';
+import { CaseLayout } from '@/components/case-study/case-layout';
 import { EvidenceFigure } from '@/components/case-study/evidence-figure';
 import { Lightbox } from '@/components/media/lightbox';
+import type { ContentMeta } from '@/content/schema';
 
 const chapters = [
   { id: 'overview', label: 'Overview' },
@@ -12,6 +14,7 @@ const chapters = [
 ];
 
 afterEach(() => {
+  cleanup();
   document.body.removeAttribute('style');
 });
 
@@ -30,6 +33,45 @@ describe('ChapterNav', () => {
 
     await user.click(screen.getByRole('link', { name: 'Preview decision' }));
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  });
+});
+
+describe('CaseLayout', () => {
+  it('does not leak Call Agent copy, facts, actions, or neighbors into another case', () => {
+    const meetingMeta = {
+      type: 'work',
+      slug: 'meeting',
+      locale: 'en',
+      translationKey: 'work.meeting',
+      title: 'Meeting collaboration',
+      proposition: 'Keep real-time collaboration visible and controllable.',
+      role: 'Product designer',
+      duration: '6 months',
+      status: 'Shipped',
+      disclosure: 'Public retrospective.',
+      heroMedia: '/images/meeting/hero.png',
+      evidenceLevel: 'retrospective',
+      featuredOrder: 3,
+      previousSlug: 'call-agent',
+      caseLabel: 'MEETING / REAL-TIME COLLABORATION',
+      facts: [{ label: 'Complexity', value: 'Real-time state' }],
+    } as ContentMeta & {
+      caseLabel: string;
+      facts: readonly { label: string; value: string }[];
+    };
+
+    render(
+      <CaseLayout meta={meetingMeta} locale="en">
+        <section id="overview">Meeting evidence</section>
+      </CaseLayout>,
+    );
+
+    expect(screen.getByText('MEETING / REAL-TIME COLLABORATION')).toBeVisible();
+    expect(screen.getByText('Real-time state')).toBeVisible();
+    expect(screen.queryByText(/CALL AGENT/)).not.toBeInTheDocument();
+    expect(screen.queryByText('Approximately 8 iterations')).not.toBeInTheDocument();
+    expect(screen.queryByText(/case-study PDF/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'Project navigation' })).not.toBeInTheDocument();
   });
 });
 
@@ -72,6 +114,7 @@ describe('Lightbox', () => {
         alt="Agent configuration next to a live call preview"
         triggerLabel="Enlarge live preview evidence"
         dialogLabel="Product interface detail"
+        closeLabel="Close image"
       />,
     );
 
@@ -88,5 +131,98 @@ describe('Lightbox', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(trigger).toHaveFocus();
     expect(document.body.style.overflow).toBe('clip');
+  });
+
+  it('traps forward and backward keyboard focus inside the open modal', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <>
+        <Lightbox
+          src="/images/call-agent/ai-preview-live.png"
+          width={2934}
+          height={1466}
+          alt="First product interface"
+          triggerLabel="Enlarge first evidence"
+          dialogLabel="First interface detail"
+          closeLabel="Close image"
+        />
+        <Lightbox
+          src="/images/call-agent/product-switcher.png"
+          width={560}
+          height={420}
+          alt="Second product interface"
+          triggerLabel="Enlarge second evidence"
+          dialogLabel="Second interface detail"
+          closeLabel="Close image"
+        />
+      </>,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Enlarge first evidence' }),
+    );
+
+    const close = screen.getByRole('button', { name: 'Close image' });
+    const backgroundTrigger = screen.getByRole('button', {
+      name: 'Enlarge second evidence',
+    });
+    expect(close).toHaveFocus();
+
+    await user.tab();
+    expect(close).toHaveFocus();
+    expect(backgroundTrigger).not.toHaveFocus();
+
+    await user.tab({ shift: true });
+    expect(close).toHaveFocus();
+    expect(backgroundTrigger).not.toHaveFocus();
+    expect(
+      screen.queryByRole('dialog', { name: 'Second interface detail' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('uses the explicit localized close label without inferring from dialog copy', async () => {
+    const user = userEvent.setup();
+    render(
+      <Lightbox
+        src="/images/call-agent/ai-preview-live.png"
+        width={2934}
+        height={1466}
+        alt="Localized interface"
+        triggerLabel="Open localized evidence"
+        dialogLabel="Product interface detail"
+        closeLabel="关闭图片"
+      />,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Open localized evidence' }),
+    );
+    expect(screen.getByRole('button', { name: '关闭图片' })).toHaveFocus();
+  });
+
+  it('restores the exact body overflow when unmounted while open', async () => {
+    const user = userEvent.setup();
+    document.body.style.overflow = 'auto';
+    const { unmount } = render(
+      <Lightbox
+        src="/images/call-agent/ai-preview-live.png"
+        width={2934}
+        height={1466}
+        alt="Agent configuration next to a live call preview"
+        triggerLabel="Enlarge evidence before unmount"
+        dialogLabel="Unmount interface detail"
+        closeLabel="Close image"
+      />,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Enlarge evidence before unmount' }),
+    );
+    expect(document.body.style.overflow).toBe('hidden');
+
+    unmount();
+    expect(document.body.style.overflow).toBe('auto');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

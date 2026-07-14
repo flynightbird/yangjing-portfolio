@@ -1,8 +1,19 @@
-import { readFileSync } from 'node:fs';
+import {
+  cpSync,
+  mkdtempSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
 
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import {
   findSensitiveText,
@@ -28,6 +39,91 @@ const manifestPath = path.join(
   repositoryRoot,
   'evidence/call-agent/manifest.json',
 );
+const temporaryRoots: string[] = [];
+const approvedFiles = [
+  ['public/files/call-agent-case-study-zh.pdf', 'a46c9fb22780c5241e9edd1cd3c74b30f797b84a72700619214094a98b1f8aeb', 'pdf'],
+  ['public/images/call-agent/after-call-history-filters.png', '7925ccd1dcb95645f1164d875700798b0d4021b6d1544bc3e8f15b87fdd11466', 'image'],
+  ['public/images/call-agent/after-resource-management.png', '8ebd00de296362f0c48b3bd47ae1245bb5f20f7c8808a270b2d9397e6e02b85f', 'image'],
+  ['public/images/call-agent/ai-preview-live.png', 'ab1676c09e8ae997c9b9963c17b65d86ed850e6944b42d7b1513a69e6f7d78fc', 'image'],
+  ['public/images/call-agent/before-call-history.png', 'cfd882f8b268b9c9b3ed09936a7215318d000a4c1ecca8f8472c2a7a65f5e285', 'image'],
+  ['public/images/call-agent/before-resource-management.jpg', 'b08a0f770d1272b776e84b0580489b067d6a381d4dcf6b5ae039b402ff6879b1', 'image'],
+  ['public/images/call-agent/outbound-task-creation.png', 'ad2460f796027c168635cbd9bc095b535ba01e0dab573ff5125748befb356c8d', 'image'],
+  ['public/images/call-agent/product-switcher.png', 'fbad19d8fb06a40de9e5ebadeb1ac672ef6cb87896bf36dd9ce98f18cddbe92a', 'image'],
+] as const;
+
+function createTemporaryRoot(prefix: string): string {
+  const temporaryRoot = mkdtempSync(path.join(tmpdir(), prefix));
+  temporaryRoots.push(temporaryRoot);
+  return temporaryRoot;
+}
+
+function createValidationFixture() {
+  const fixtureRoot = createTemporaryRoot('call-agent-validation-');
+  mkdirSync(path.join(fixtureRoot, 'evidence/call-agent'), { recursive: true });
+  mkdirSync(path.join(fixtureRoot, 'public/files'), { recursive: true });
+  mkdirSync(path.join(fixtureRoot, 'public/images/call-agent'), {
+    recursive: true,
+  });
+  cpSync(
+    path.join(repositoryRoot, 'evidence/call-agent/manifest.json'),
+    path.join(fixtureRoot, 'evidence/call-agent/manifest.json'),
+  );
+  for (const [relativePath] of approvedFiles) {
+    cpSync(
+      path.join(repositoryRoot, relativePath),
+      path.join(fixtureRoot, relativePath),
+    );
+  }
+  writeFileSync(
+    path.join(fixtureRoot, 'evidence/call-agent/checksums.json'),
+    JSON.stringify({
+      version: 1,
+      files: approvedFiles.map(([file, sha256, kind]) => ({
+        path: file,
+        sha256,
+        kind,
+      })),
+    }),
+  );
+  return fixtureRoot;
+}
+
+async function validateFixture(rootDir: string): Promise<string[]> {
+  const validate = validateSite as unknown as (options: {
+    rootDir: string;
+    contentPaths?: readonly string[];
+  }) => Promise<string[]> | string[];
+  return await validate({ rootDir, contentPaths: [] });
+}
+
+function runPrepareAssets(options: {
+  sourceRoot: string;
+  manifestPath: string;
+  outputDir: string;
+}) {
+  const scriptUrl = pathToFileURL(
+    path.join(repositoryRoot, 'scripts/prepare-call-agent-assets.mjs'),
+  ).href;
+  const invocation = `
+    import { prepareCallAgentAssets } from ${JSON.stringify(scriptUrl)};
+    await prepareCallAgentAssets(${JSON.stringify(options)});
+  `;
+  return spawnSync(
+    process.execPath,
+    ['--input-type=module', '--eval', invocation],
+    {
+      cwd: repositoryRoot,
+      env: { ...process.env, CALL_AGENT_SOURCE_ROOT: options.sourceRoot },
+      encoding: 'utf8',
+    },
+  );
+}
+
+afterEach(() => {
+  for (const temporaryRoot of temporaryRoots.splice(0)) {
+    rmSync(temporaryRoot, { recursive: true, force: true });
+  }
+});
 
 function readManifest(): CallAgentManifest {
   return JSON.parse(readFileSync(manifestPath, 'utf8')) as CallAgentManifest;
@@ -93,7 +189,176 @@ describe('Call Agent privacy controls', () => {
     );
   });
 
-  it('validates the migrated bilingual case and processed evidence', () => {
-    expect(validateSite()).toEqual([]);
+  it('rejects a same-name public asset whose approved bytes changed', async () => {
+    const fixtureRoot = createValidationFixture();
+    writeFileSync(
+      path.join(
+        fixtureRoot,
+        'public/images/call-agent/ai-preview-live.png',
+      ),
+      'unapproved replacement',
+    );
+
+    expect(await validateFixture(fixtureRoot)).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/checksum mismatch.*ai-preview-live\.png/i),
+      ]),
+    );
+  });
+
+  it('rejects duplicate manifest outputs before publication', async () => {
+    const fixtureRoot = createValidationFixture();
+    const fixtureManifestPath = path.join(
+      fixtureRoot,
+      'evidence/call-agent/manifest.json',
+    );
+    const manifest = JSON.parse(readFileSync(fixtureManifestPath, 'utf8'));
+    manifest.assets.push({ ...manifest.assets[0] });
+    writeFileSync(fixtureManifestPath, JSON.stringify(manifest));
+
+    expect(await validateFixture(fixtureRoot)).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/duplicate output.*ai-preview-live\.png/i),
+      ]),
+    );
+  });
+
+  it('requires an approved checksum for the public PDF', async () => {
+    const fixtureRoot = createValidationFixture();
+    const checksumPath = path.join(
+      fixtureRoot,
+      'evidence/call-agent/checksums.json',
+    );
+    const contract = JSON.parse(readFileSync(checksumPath, 'utf8'));
+    contract.files = contract.files.filter(
+      ({ kind }: { kind: string }) => kind !== 'pdf',
+    );
+    writeFileSync(checksumPath, JSON.stringify(contract));
+
+    expect(await validateFixture(fixtureRoot)).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/missing approved checksum.*\.pdf/i),
+      ]),
+    );
+  });
+
+  it('rejects source symlinks that resolve outside the source root', () => {
+    const fixtureRoot = createTemporaryRoot('call-agent-symlink-');
+    const sourceRoot = path.join(fixtureRoot, 'source');
+    const outsideRoot = path.join(fixtureRoot, 'outside');
+    const outputDir = path.join(fixtureRoot, 'output');
+    mkdirSync(sourceRoot);
+    mkdirSync(outsideRoot);
+    cpSync(
+      path.join(
+        repositoryRoot,
+        'public/images/call-agent/product-switcher.png',
+      ),
+      path.join(outsideRoot, 'outside.png'),
+    );
+    symlinkSync(
+      path.join(outsideRoot, 'outside.png'),
+      path.join(sourceRoot, 'linked.png'),
+    );
+    const fixtureManifestPath = path.join(fixtureRoot, 'manifest.json');
+    writeFileSync(
+      fixtureManifestPath,
+      JSON.stringify({
+        assets: [{ source: 'linked.png', output: 'linked.png' }],
+      }),
+    );
+
+    const result = runPrepareAssets({
+      sourceRoot,
+      manifestPath: fixtureManifestPath,
+      outputDir,
+    });
+    expect(result.status).toBe(1);
+    expect(`${result.stdout}\n${result.stderr}`).toMatch(
+      /source.*symlink|resolves outside|escapes.*source root/i,
+    );
+  });
+
+  it('rejects duplicate outputs before processing any asset', () => {
+    const fixtureRoot = createTemporaryRoot('call-agent-collision-');
+    const sourceRoot = path.join(fixtureRoot, 'source');
+    const outputDir = path.join(fixtureRoot, 'output');
+    mkdirSync(sourceRoot);
+    mkdirSync(outputDir);
+    cpSync(
+      path.join(
+        repositoryRoot,
+        'public/images/call-agent/product-switcher.png',
+      ),
+      path.join(sourceRoot, 'source.png'),
+    );
+    writeFileSync(path.join(outputDir, 'approved.png'), 'approved bytes');
+    const fixtureManifestPath = path.join(fixtureRoot, 'manifest.json');
+    writeFileSync(
+      fixtureManifestPath,
+      JSON.stringify({
+        assets: [
+          { source: 'source.png', output: 'collision.png' },
+          { source: 'source.png', output: 'collision.png' },
+        ],
+      }),
+    );
+
+    const result = runPrepareAssets({
+      sourceRoot,
+      manifestPath: fixtureManifestPath,
+      outputDir,
+    });
+    expect(result.status).toBe(1);
+    expect(`${result.stdout}\n${result.stderr}`).toMatch(
+      /duplicate manifest output.*collision\.png/i,
+    );
+    expect(readFileSync(path.join(outputDir, 'approved.png'), 'utf8')).toBe(
+      'approved bytes',
+    );
+  });
+
+  it('preserves approved outputs when any source fails preflight', () => {
+    const fixtureRoot = createTemporaryRoot('call-agent-transaction-');
+    const sourceRoot = path.join(fixtureRoot, 'source');
+    const outputDir = path.join(fixtureRoot, 'output');
+    mkdirSync(sourceRoot);
+    mkdirSync(outputDir);
+    cpSync(
+      path.join(
+        repositoryRoot,
+        'public/images/call-agent/product-switcher.png',
+      ),
+      path.join(sourceRoot, 'source.png'),
+    );
+    writeFileSync(path.join(outputDir, 'existing.png'), 'approved original');
+    const fixtureManifestPath = path.join(fixtureRoot, 'manifest.json');
+    writeFileSync(
+      fixtureManifestPath,
+      JSON.stringify({
+        assets: [
+          { source: 'source.png', output: 'existing.png' },
+          { source: 'missing.png', output: 'missing.png' },
+        ],
+      }),
+    );
+
+    const result = runPrepareAssets({
+      sourceRoot,
+      manifestPath: fixtureManifestPath,
+      outputDir,
+    });
+    expect(result.status).toBe(1);
+    expect(`${result.stdout}\n${result.stderr}`).toContain('missing.png');
+    expect(readFileSync(path.join(outputDir, 'existing.png'), 'utf8')).toBe(
+      'approved original',
+    );
+    expect(
+      readdirSync(fixtureRoot).some((name) => name.includes('.tmp-')),
+    ).toBe(false);
+  });
+
+  it('validates the migrated bilingual case and processed evidence', async () => {
+    expect(await validateSite()).toEqual([]);
   });
 });

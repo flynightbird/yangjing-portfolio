@@ -95,8 +95,8 @@
   display: grid;
   gap: var(--space-2);
   margin-block-start: var(--space-5);
-  padding-inline-start: var(--space-4);
-  border-inline-start: 3px solid var(--color-coral);
+  padding-block-start: var(--space-4);
+  border-block-start: 1px solid var(--color-border-strong);
 }
 
 .disclosure p {
@@ -360,9 +360,8 @@
 
 .case :global(.ownership-note) {
   margin-block-start: var(--space-5);
-  padding: var(--space-4);
-  border-inline-start: 3px solid var(--color-coral);
-  background: rgba(16, 17, 15, 0.04);
+  padding-block: var(--space-4);
+  border-block: 1px solid var(--color-border-strong);
 }
 
 .case :global(.outcome-statement) {

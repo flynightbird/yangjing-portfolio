@@ -71,14 +71,13 @@ for (const locale of ['en', 'zh'] as const) {
         expect(size.naturalHeight).toBeGreaterThan(0);
       }
 
-      await expect(page.locator('[data-project-previous]')).toHaveAttribute(
-        'href',
-        `/${locale}/work/bytedance/`,
-      );
-      await expect(page.locator('[data-project-next]')).toHaveAttribute(
-        'href',
-        `/${locale}/work/meeting/`,
-      );
+      await expect(page.locator('[data-project-previous]')).toHaveCount(0);
+      await expect(page.locator('[data-project-next]')).toHaveCount(0);
+      await expect(
+        page.getByRole('navigation', {
+          name: locale === 'zh' ? '项目导航' : 'Project navigation',
+        }),
+      ).toHaveCount(0);
     });
 
     test('opens and dismisses evidence with the keyboard without losing scroll state', async ({ page }) => {
@@ -88,6 +87,22 @@ for (const locale of ['en', 'zh'] as const) {
       await page.keyboard.press('Enter');
       await expect(page.getByRole('dialog')).toBeVisible();
       await expect(page.locator('body')).toHaveCSS('overflow', 'hidden');
+
+      const close = page.getByRole('button', {
+        name: locale === 'zh' ? '关闭图片' : 'Close image',
+      });
+      const backgroundTrigger = page
+        .getByRole('button', {
+          name: locale === 'zh' ? /放大查看/ : /Enlarge/,
+        })
+        .nth(1);
+      await expect(close).toBeFocused();
+      await page.keyboard.press('Tab');
+      await expect(close).toBeFocused();
+      await expect(backgroundTrigger).not.toBeFocused();
+      await page.keyboard.press('Shift+Tab');
+      await expect(close).toBeFocused();
+      await expect(backgroundTrigger).not.toBeFocused();
 
       await page.keyboard.press('Escape');
       await expect(page.getByRole('dialog')).toBeHidden();

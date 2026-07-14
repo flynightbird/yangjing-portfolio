@@ -6,6 +6,7 @@ import CallAgentEn, {
 import CallAgentZh, {
   metadata as callAgentZhMetadata,
 } from '@/content/work/call-agent.zh.mdx';
+import { CallAgentActions } from '@/components/case-study/call-agent-actions';
 import { contentMetaSchema, type ContentMeta } from '@/content/schema';
 import type {
   ContentKind,
@@ -14,10 +15,12 @@ import type {
 } from '@/content/types';
 
 export type MdxContentComponent = ComponentType<Record<string, unknown>>;
+export type ContentActionsComponent = ComponentType<{ readonly locale: Locale }>;
 
 export interface ContentEntry {
   readonly meta: ContentMeta;
   readonly Component: MdxContentComponent;
+  readonly Actions?: ContentActionsComponent;
 }
 
 export interface ContentRegistry {
@@ -69,10 +72,12 @@ export const contentEntries: readonly ContentEntry[] = [
   {
     meta: contentMetaSchema.parse(callAgentEnMetadata),
     Component: CallAgentEn,
+    Actions: CallAgentActions,
   },
   {
     meta: contentMetaSchema.parse(callAgentZhMetadata),
     Component: CallAgentZh,
+    Actions: CallAgentActions,
   },
 ];
 export const contentRegistry = createRegistry(contentEntries);

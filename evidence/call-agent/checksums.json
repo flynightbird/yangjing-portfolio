@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "files": [
+    {
+      "path": "public/files/call-agent-case-study-zh.pdf",
+      "sha256": "a46c9fb22780c5241e9edd1cd3c74b30f797b84a72700619214094a98b1f8aeb",
+      "kind": "pdf"
+    },
+    {
+      "path": "public/images/call-agent/after-call-history-filters.png",
+      "sha256": "7925ccd1dcb95645f1164d875700798b0d4021b6d1544bc3e8f15b87fdd11466",
+      "kind": "image"
+    },
+    {
+      "path": "public/images/call-agent/after-resource-management.png",
+      "sha256": "8ebd00de296362f0c48b3bd47ae1245bb5f20f7c8808a270b2d9397e6e02b85f",
+      "kind": "image"
+    },
+    {
+      "path": "public/images/call-agent/ai-preview-live.png",
+      "sha256": "ab1676c09e8ae997c9b9963c17b65d86ed850e6944b42d7b1513a69e6f7d78fc",
+      "kind": "image"
+    },
+    {
+      "path": "public/images/call-agent/before-call-history.png",
+      "sha256": "cfd882f8b268b9c9b3ed09936a7215318d000a4c1ecca8f8472c2a7a65f5e285",
+      "kind": "image"
+    },
+    {
+      "path": "public/images/call-agent/before-resource-management.jpg",
+      "sha256": "b08a0f770d1272b776e84b0580489b067d6a381d4dcf6b5ae039b402ff6879b1",
+      "kind": "image"
+    },
+    {
+      "path": "public/images/call-agent/outbound-task-creation.png",
+      "sha256": "ad2460f796027c168635cbd9bc095b535ba01e0dab573ff5125748befb356c8d",
+      "kind": "image"
+    },
+    {
+      "path": "public/images/call-agent/product-switcher.png",
+      "sha256": "fbad19d8fb06a40de9e5ebadeb1ac672ef6cb87896bf36dd9ce98f18cddbe92a",
+      "kind": "image"
+    }
+  ]
+}

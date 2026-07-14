@@ -52,6 +52,11 @@ export const chapterMetaSchema = z.object({
   label: nonEmptyString,
 });
 
+export const caseFactSchema = z.object({
+  label: nonEmptyString,
+  value: nonEmptyString,
+});
+
 const sharedContentMetaSchema = z.object({
   locale: z.enum(locales),
   translationKey: nonEmptyString,
@@ -69,6 +74,8 @@ const sharedContentMetaSchema = z.object({
   previousSlug: z.enum(contentSlugs).optional(),
   nextSlug: z.enum(contentSlugs).optional(),
   chapters: z.array(chapterMetaSchema).optional(),
+  caseLabel: nonEmptyString.optional(),
+  facts: z.array(caseFactSchema).optional(),
 });
 
 export const contentMetaSchema = z.discriminatedUnion('type', [
@@ -83,4 +90,5 @@ export const contentMetaSchema = z.discriminatedUnion('type', [
 ]);
 
 export type ChapterMeta = z.infer<typeof chapterMetaSchema>;
+export type CaseFact = z.infer<typeof caseFactSchema>;
 export type ContentMeta = z.infer<typeof contentMetaSchema>;

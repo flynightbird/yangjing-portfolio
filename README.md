@@ -1,34 +1,48 @@
-# Yangjing Portfolio · Call Agent
+# Yang Jing Bilingual Portfolio
 
-Responsive Chinese case study for Agora Call Agent V1.0. The page is designed for browser reading and A4 PDF export.
+Static bilingual portfolio built with Next.js and MDX. The production registry currently publishes the English and Chinese Call Agent case study.
 
-## Local review
+## Local development
 
 ```bash
 npm install
-npm run assets
 npm run dev
 ```
 
-Open `http://127.0.0.1:5173/`.
+Open `http://localhost:3000`.
+
+## Evidence assets
+
+Approved public evidence is already stored under `public/images/call-agent/` and `public/files/`. Rebuild it only when the private source captures or redaction instructions change:
+
+```bash
+CALL_AGENT_SOURCE_ROOT="/absolute/path/to/source-captures" npm run prepare:assets
+```
+
+`CALL_AGENT_SOURCE_ROOT` must be a readable directory. The preparation script rejects sources that resolve outside it and replaces public image output only after every asset passes preflight and processing.
 
 ## Verification
 
 ```bash
+npm run validate:content
+npm run lint
 npm test
-npm run validate
+npm run verify:export
 npm run test:e2e
-npm run build
 ```
 
-## PDF export
+Run the complete current publication pipeline with:
 
-Open the production preview, select `导出 PDF`, choose A4 portrait, enable background graphics, use 100% scale, and save the PDF.
+```bash
+npm run verify:publish
+```
 
-## Privacy
+## PDF
 
-Only processed files from `public/images/call-agent/` may be deployed. Never place source screenshots directly in `public/`. The source screenshot containing an authorization token is explicitly excluded from `evidence/call-agent/manifest.json`.
+The Call Agent page provides localized controls to view or download the existing approved Chinese PDF at `public/files/call-agent-case-study-zh.pdf`.
 
-## Evidence boundary
+## Privacy and evidence boundary
 
-The public version does not claim scaled business impact, engineering-efficiency gains, or prototype-to-production fidelity metrics. Add design/prototype comparisons or anonymized engineering feedback only when those materials can be verified and safely published.
+Only files covered by `evidence/call-agent/checksums.json` may be published as Call Agent evidence. Source screenshots never belong in `public/`; the manifest explicitly excludes the capture containing an authorization token.
+
+The public case does not claim scaled business impact, engineering-efficiency gains, or prototype-to-production fidelity metrics. Add comparisons or anonymized engineering feedback only when they can be verified and safely published.
