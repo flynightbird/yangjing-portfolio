@@ -6,6 +6,8 @@ import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
 import type { Locale } from '@/content/types';
 
+import styles from './site-header.module.css';
+
 interface SiteHeaderProps {
   readonly locale: Locale;
 }
@@ -15,8 +17,12 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
   const localeRoot = `/${locale}/`;
 
   return (
-    <header>
-      <a href={localeRoot} aria-label={dictionary.site.homeLabel}>
+    <header className={styles.root}>
+      <a
+        className={styles.home}
+        href={localeRoot}
+        aria-label={dictionary.site.homeLabel}
+      >
         {dictionary.site.name}
       </a>
       <details>

@@ -3,6 +3,8 @@ import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
 import type { Locale } from '@/content/types';
 
+import styles from './site-footer.module.css';
+
 interface SiteFooterProps {
   readonly locale: Locale;
 }
@@ -12,7 +14,7 @@ export function SiteFooter({ locale }: SiteFooterProps) {
   const localeRoot = `/${locale}/`;
 
   return (
-    <footer>
+    <footer className={styles.root}>
       <nav>
         <ul>
           <li>

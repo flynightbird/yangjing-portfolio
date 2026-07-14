@@ -9,7 +9,7 @@ const testStorage = {
   clear: () => storedValues.clear(),
   getItem: (key: string) => storedValues.get(key) ?? null,
   setItem: (key: string, value: string) => storedValues.set(key, value),
-} as Storage;
+} as unknown as Storage;
 
 afterEach(cleanup);
 
