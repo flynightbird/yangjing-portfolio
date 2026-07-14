@@ -1,4 +1,9 @@
 export interface Dictionary {
+  site: {
+    name: string;
+    homeLabel: string;
+    skipToContent: string;
+  };
   navigation: {
     work: string;
     about: string;
@@ -9,9 +14,26 @@ export interface Dictionary {
     en: string;
     zh: string;
   };
+  localeSwitcher: {
+    label: string;
+    fallbackNotice: string;
+    fallbackAction: string;
+  };
   menu: {
+    label: string;
     open: string;
     close: string;
+  };
+  resume: {
+    englishPdf: string;
+    chinesePdf: string;
+  };
+  home: {
+    title: string;
+    description: string;
+  };
+  footer: {
+    privacy: string;
   };
   actions: {
     viewWork: string;
@@ -38,6 +60,11 @@ export interface Dictionary {
 }
 
 export const enDictionary = {
+  site: {
+    name: 'Yang Jing',
+    homeLabel: 'Yang Jing home',
+    skipToContent: 'Skip to main content',
+  },
   navigation: {
     work: 'Work',
     about: 'About',
@@ -48,9 +75,27 @@ export const enDictionary = {
     en: 'English',
     zh: 'Simplified Chinese',
   },
+  localeSwitcher: {
+    label: 'Select language',
+    fallbackNotice: 'This page is not available in {language}.',
+    fallbackAction: 'Open the {language} homepage',
+  },
   menu: {
+    label: 'Menu',
     open: 'Open menu',
     close: 'Close menu',
+  },
+  resume: {
+    englishPdf: 'English PDF',
+    chinesePdf: 'Chinese PDF',
+  },
+  home: {
+    title: 'Yang Jing',
+    description: 'Product Designer and AI-native Builder.',
+  },
+  footer: {
+    privacy:
+      'This static site uses Cloudflare Web Analytics and has no contact form.',
   },
   actions: {
     viewWork: 'View work',

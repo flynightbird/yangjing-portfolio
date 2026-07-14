@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   description: 'Product design portfolio by Yang Jing.',
 };
 
-type RootLayoutProps = Readonly<{
-  children: ReactNode;
-}>;
+interface RootLayoutProps {
+  readonly children: ReactNode;
+}
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (

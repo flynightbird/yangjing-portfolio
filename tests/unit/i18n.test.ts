@@ -89,5 +89,6 @@ describe('shell dictionaries', () => {
     expect(enDictionary.actions).toHaveProperty('next');
     expect(enDictionary.notFound).toHaveProperty('title');
     expect(enDictionary.directContact).toHaveProperty('email');
+    expect(enDictionary.menu.label).toBe('Menu');
   });
 });

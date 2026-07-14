@@ -6,13 +6,17 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:framework": "next build",
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "test:export": "node --test tests/export/*.test.mjs",
+    "test:e2e:export": "playwright test --config=playwright.export.config.mjs",
     "test:visual": "playwright test tests/visual",
     "prepare:assets": "node scripts/prepare-call-agent-assets.mjs",
     "sync:stt": "node scripts/sync-stt-demo.mjs",
-    "verify:publish": "node scripts/validate-publication.mjs && npm run lint && npm test && npm run build && npm run test:e2e"
+    "verify:export": "npm run build:framework && npm run test:export && npm run test:e2e:export",
+    "verify:publish": "node scripts/validate-publication.mjs && npm run lint && npm test && npm run verify:export && npm run test:e2e"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",

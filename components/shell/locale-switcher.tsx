@@ -1,0 +1,160 @@
+'use client';
+
+import { Languages } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useId, useState } from 'react';
+
+import { enDictionary } from '@/content/dictionaries/en';
+import { zhDictionary } from '@/content/dictionaries/zh';
+import type { Locale } from '@/content/types';
+import { resolveTranslatedPath } from '@/lib/i18n/locales';
+
+const localeStorageKey = 'yj-locale';
+
+export const launchLocaleRoutes = [
+  '/en/',
+  '/zh/',
+  '/en/about/',
+  '/zh/about/',
+  '/en/work/',
+  '/zh/work/',
+  '/en/work/bytedance/',
+  '/zh/work/bytedance/',
+  '/en/work/call-agent/',
+  '/zh/work/call-agent/',
+  '/en/work/meeting/',
+  '/zh/work/meeting/',
+  '/en/build/',
+  '/zh/build/',
+  '/en/build/stt-demo/',
+  '/zh/build/stt-demo/',
+] as const;
+
+type Replace = (href: string) => void;
+
+interface LocaleSwitcherControlProps {
+  readonly locale: Locale;
+  readonly pathname: string;
+  readonly replace: Replace;
+}
+
+interface PendingFallback {
+  readonly locale: Locale;
+  readonly href: string;
+}
+
+function dictionaryFor(locale: Locale) {
+  return locale === 'zh' ? zhDictionary : enDictionary;
+}
+
+function interpolate(template: string, language: string): string {
+  return template.replace('{language}', language);
+}
+
+export function LocaleSwitcherControl({
+  locale,
+  pathname,
+  replace,
+}: LocaleSwitcherControlProps) {
+  const dictionary = dictionaryFor(locale);
+  const choicesId = useId();
+  const [open, setOpen] = useState(false);
+  const [pendingFallback, setPendingFallback] =
+    useState<PendingFallback | null>(null);
+
+  const persistAndReplace = (targetLocale: Locale, href: string) => {
+    try {
+      window.localStorage.setItem(localeStorageKey, targetLocale);
+    } catch {
+      // Navigation remains available when storage is unavailable.
+    }
+
+    replace(href);
+  };
+
+  const chooseLocale = (targetLocale: Locale) => {
+    const result = resolveTranslatedPath(
+      pathname,
+      targetLocale,
+      launchLocaleRoutes,
+    );
+
+    if (result.fellBack) {
+      setPendingFallback({ locale: targetLocale, href: result.href });
+      return;
+    }
+
+    persistAndReplace(targetLocale, result.href);
+  };
+
+  const pendingLanguage = pendingFallback
+    ? dictionary.languages[pendingFallback.locale]
+    : '';
+
+  return (
+    <div>
+      <button
+        type="button"
+        aria-controls={choicesId}
+        aria-expanded={open}
+        aria-label={dictionary.localeSwitcher.label}
+        title={dictionary.localeSwitcher.label}
+        onClick={() => setOpen((isOpen) => !isOpen)}
+      >
+        <Languages aria-hidden="true" size={18} />
+        <span>{dictionary.languages[locale]}</span>
+      </button>
+      <ul id={choicesId} hidden={!open}>
+        {(['en', 'zh'] as const).map((choice) => (
+          <li key={choice}>
+            <button
+              type="button"
+              aria-pressed={choice === locale}
+              onClick={() => chooseLocale(choice)}
+            >
+              {dictionary.languages[choice]}
+            </button>
+          </li>
+        ))}
+      </ul>
+      {pendingFallback ? (
+        <div>
+          <p role="status">
+            {interpolate(
+              dictionary.localeSwitcher.fallbackNotice,
+              pendingLanguage,
+            )}
+          </p>
+          <button
+            type="button"
+            onClick={() =>
+              persistAndReplace(pendingFallback.locale, pendingFallback.href)
+            }
+          >
+            {interpolate(
+              dictionary.localeSwitcher.fallbackAction,
+              pendingLanguage,
+            )}
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+interface LocaleSwitcherProps {
+  readonly locale: Locale;
+}
+
+export function LocaleSwitcher({ locale }: LocaleSwitcherProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  return (
+    <LocaleSwitcherControl
+      locale={locale}
+      pathname={pathname}
+      replace={(href) => router.replace(href)}
+    />
+  );
+}

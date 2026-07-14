@@ -8,6 +8,7 @@ const withMDX = createMDX({
 
 export default withMDX({
   output: 'export',
+  experimental: { globalNotFound: true },
   trailingSlash: true,
   images: { unoptimized: true },
   pageExtensions: ['ts', 'tsx', 'md', 'mdx'],

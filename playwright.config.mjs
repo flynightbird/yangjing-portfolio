@@ -1,15 +1,18 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: './tests',
-  testMatch: '**/*.spec.mjs',
+  // Legacy Call Agent browser coverage remains tracked for Task 8 migration.
+  testDir: './tests/e2e',
+  testMatch: '**/*.spec.ts',
+  // Next dev cannot represent the static export's unknown-path fallback.
+  testIgnore: '**/not-found.spec.ts',
   use: {
-    baseURL: 'http://127.0.0.1:4174',
+    baseURL: 'http://localhost:4174',
     trace: 'retain-on-failure'
   },
   webServer: {
     command: 'npm run dev -- --port 4174',
-    url: 'http://127.0.0.1:4174',
+    url: 'http://localhost:4174',
     reuseExistingServer: true
   },
   projects: [

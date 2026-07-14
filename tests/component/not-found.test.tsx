@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import NotFound from '@/app/not-found';
+import { NotFoundContent } from '@/components/shell/not-found-content';
 
 describe('NotFound', () => {
   it('links to both locales and identifies Chinese text', () => {
-    render(<NotFound />);
+    render(<NotFoundContent />);
 
     expect(screen.getByRole('link', { name: 'English' })).toHaveAttribute(
       'href',

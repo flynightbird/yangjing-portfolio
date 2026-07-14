@@ -1,6 +1,11 @@
 import type { Dictionary } from '@/content/dictionaries/en';
 
 export const zhDictionary = {
+  site: {
+    name: 'Yang Jing',
+    homeLabel: 'Yang Jing 首页',
+    skipToContent: '跳到主要内容',
+  },
   navigation: {
     work: '作品',
     about: '关于',
@@ -11,9 +16,27 @@ export const zhDictionary = {
     en: '英语',
     zh: '简体中文',
   },
+  localeSwitcher: {
+    label: '选择语言',
+    fallbackNotice: '此页面暂无{language}版本。',
+    fallbackAction: '打开{language}首页',
+  },
   menu: {
+    label: '导航',
     open: '打开菜单',
     close: '关闭菜单',
+  },
+  resume: {
+    englishPdf: '英文 PDF',
+    chinesePdf: '中文 PDF',
+  },
+  home: {
+    title: 'Yang Jing',
+    description: '产品设计师 × AI 原生构建者。',
+  },
+  footer: {
+    privacy:
+      '本静态网站使用 Cloudflare Web Analytics，不设联系表单。',
   },
   actions: {
     viewWork: '查看作品',
