@@ -1,7 +1,7 @@
 # Yang Jing Portfolio Design Specification
 
 Date: 2026-07-14
-Status: Approved design, awaiting implementation plan
+Status: Approved design, amended to one confirmed Build Lab project, awaiting implementation plan
 Primary repository: `https://github.com/flynightbird/yangjing-portfolio`
 Languages: English default, complete Simplified Chinese equivalent
 Initial hosting: Cloudflare Pages free `*.pages.dev` address
@@ -26,7 +26,7 @@ The work demonstrates four complementary capabilities:
 - Large-scale consumer product design through ByteDance experience.
 - AI and complex B2B system design through Call Agent.
 - High-complexity interaction design through Meeting.
-- Hands-on AI-assisted building through two live Build Lab projects.
+- Hands-on AI-assisted building through the live STT Demo project.
 
 The site is the actual portfolio experience. It must not open with a marketing landing page or a generic introduction to the site's features.
 
@@ -51,7 +51,7 @@ Within 60–90 seconds:
 - Has she worked at consumer scale?
 - Can she handle AI/B2B system complexity?
 - Can she model difficult real-time interactions?
-- Are the Build Lab projects real and usable?
+- Is the Build Lab project real and usable?
 
 Before leaving:
 
@@ -118,7 +118,7 @@ The site must not show fabricated packages, prices, client logos, testimonials, 
 /[locale]/build/[slug]
 ```
 
-There are exactly two Build Lab detail entries at launch. Their public titles and slugs come from the user's two existing AI-built projects during content ingestion; the content model does not invent project identities.
+There is exactly one Build Lab detail entry at launch: `STT Demo` at `/[locale]/build/stt-demo`. The content model does not invent a second project identity to fill a layout.
 
 ### Global navigation
 
@@ -137,7 +137,7 @@ Navigation stays compact and predictable. It may become sticky after the Hero, b
 3. ByteDance flagship entry.
 4. Call Agent flagship entry.
 5. Meeting Interaction Deep Dive entry.
-6. Build Lab with two live projects.
+6. Build Lab with the live STT Demo project.
 7. Short About preview.
 8. Product design + AI prototyping collaboration statement.
 9. Direct contact region.
@@ -172,7 +172,7 @@ Pointer movement creates a restrained offset in the scan layer only. It must not
 
 ### Featured work behavior
 
-ByteDance and Call Agent use large editorial sections rather than repeated cards. Meeting uses a shorter but more animated interaction section. Build Lab uses two compact interactive entries with direct demo access.
+ByteDance and Call Agent use large editorial sections rather than repeated cards. Meeting uses a shorter but more animated interaction section. Build Lab uses one focused interactive STT Demo entry with direct demo and source access.
 
 Each homepage project entry communicates:
 
@@ -308,7 +308,7 @@ Detail structure:
 
 ### Build Lab
 
-Each of the two Build Lab projects includes:
+The STT Demo Build Lab entry includes:
 
 - Problem and target user.
 - Live interactive demo.
@@ -499,7 +499,7 @@ Use Playwright to verify:
 ## 15. Deployment
 
 - Repository: `flynightbird/yangjing-portfolio`.
-- The repository is empty at design approval time and has no legacy code constraints.
+- The repository already contains the completed Vite-based Call Agent case study on `main`; portfolio implementation migrates that work in place into Next.js while preserving its public assets, privacy pipeline, PDF, and verification coverage.
 - The production branch is `main` after repository initialization.
 - Cloudflare Pages build command: `npm run build`.
 - Static output directory: `out`.
@@ -516,7 +516,7 @@ Use Playwright to verify:
 - ByteDance sanitized PDF wrapper.
 - Native Call Agent case.
 - Native Meeting Interaction Deep Dive.
-- Two Build Lab detail pages.
+- One STT Demo Build Lab detail page.
 - About, bilingual resumes, direct contact, analytics, tests, and Cloudflare deployment.
 
 ### Phase 2: ByteDance native migration
@@ -535,7 +535,7 @@ Before Phase 1 can be considered publication-ready, the repository must receive:
 - Chinese and English resume PDFs.
 - Public email, LinkedIn URL, and WeChat ID/QR asset.
 - Complete Meeting Figma source or exported interaction evidence.
-- Titles, descriptions, demo URLs, and disclosure boundaries for the two Build Lab projects.
+- Confirmed STT Demo title, description, public demo/source URLs, and disclosure boundary from `https://github.com/flynightbird/stt-demo`.
 - Call Agent source evidence listed in the approved Call Agent specification.
 
 Missing content may be represented in local development data, but no unfinished placeholder is permitted in a public build.
@@ -545,7 +545,7 @@ Missing content may be represented in local development data, but no unfinished 
 The design is implemented successfully when:
 
 1. The first viewport clearly communicates Product Designer × AI-native Builder and reveals the next section.
-2. ByteDance, Call Agent, Meeting, and two Build Lab projects have stable detail routes or approved first-phase PDF behavior.
+2. ByteDance, Call Agent, Meeting, and STT Demo have stable detail routes or approved first-phase PDF behavior.
 3. Recruiting and freelance paths are equally visible without creating two separate personal brands.
 4. English and Chinese routes are complete and remain aligned.
 5. Call Agent preserves evidence boundaries and does not overstate limited beta.
