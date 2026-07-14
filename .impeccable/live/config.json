@@ -1,0 +1,10 @@
+{
+  "files": [
+    "app/(root)/layout.tsx",
+    "app/(localized)/[locale]/layout.tsx",
+    "app/global-not-found.tsx"
+  ],
+  "insertBefore": "</body>",
+  "commentSyntax": "jsx",
+  "cspChecked": true
+}
