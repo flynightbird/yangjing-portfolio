@@ -1,0 +1,20 @@
+{
+  "name": "yangjing-call-agent-case-study",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "npm run validate && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "assets": "node scripts/prepare-assets.mjs",
+    "validate": "node scripts/validate-content.mjs",
+    "test": "node --test tests/content.test.mjs",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.1",
+    "sharp": "^0.34.3",
+    "vite": "^7.0.5"
+  }
+}
