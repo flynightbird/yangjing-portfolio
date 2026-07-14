@@ -21,6 +21,56 @@ async function readableDirectory(directory) {
   return stat.isDirectory();
 }
 
+async function removeBackup(fileSystem, backupDir) {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      await fileSystem.rm(backupDir, { recursive: true, force: true });
+      return;
+    } catch (error) {
+      if (attempt === 1) {
+        console.warn(
+          `Unable to remove private asset backup ${backupDir}: ${error instanceof Error ? error.message : String(error)}`,
+        );
+      }
+    }
+  }
+}
+
+export async function commitPreparedDirectory({
+  fileSystem = fs,
+  outputDir,
+  temporaryDir,
+  backupDir,
+}) {
+  let hasBackup = false;
+  try {
+    await fileSystem.rename(outputDir, backupDir);
+    hasBackup = true;
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+  }
+
+  try {
+    await fileSystem.rename(temporaryDir, outputDir);
+  } catch (installError) {
+    if (hasBackup) {
+      try {
+        await fileSystem.rm(outputDir, { recursive: true, force: true });
+        await fileSystem.rename(backupDir, outputDir);
+        hasBackup = false;
+      } catch (rollbackError) {
+        throw new AggregateError(
+          [installError, rollbackError],
+          'Asset installation failed and the previous output could not be restored.',
+        );
+      }
+    }
+    throw installError;
+  }
+
+  if (hasBackup) await removeBackup(fileSystem, backupDir);
+}
+
 export async function prepareCallAgentAssets(options = {}) {
   const sourceRootValue =
     options.sourceRoot ?? process.env.CALL_AGENT_SOURCE_ROOT;
@@ -108,14 +158,17 @@ export async function prepareCallAgentAssets(options = {}) {
     if (error?.code !== 'ENOENT') throw error;
   }
 
+  const transactionRoot = path.resolve(
+    options.transactionRoot ?? path.join(root, '.asset-transactions'),
+  );
+  await fs.mkdir(transactionRoot, { recursive: true });
   const temporaryDir = await fs.mkdtemp(
-    path.join(outputParent, `${outputName}.tmp-`),
+    path.join(transactionRoot, `${outputName}.tmp-`),
   );
   const backupDir = path.join(
-    outputParent,
+    transactionRoot,
     `${outputName}.backup-${process.pid}-${Date.now()}`,
   );
-  let hasBackup = false;
 
   try {
     for (const { asset, sourcePath } of preparedAssets) {
@@ -132,28 +185,9 @@ export async function prepareCallAgentAssets(options = {}) {
       await pipeline.toFile(path.join(temporaryDir, asset.output));
     }
 
-    try {
-      await fs.rename(outputDir, backupDir);
-      hasBackup = true;
-    } catch (error) {
-      if (error?.code !== 'ENOENT') throw error;
-    }
-    try {
-      await fs.rename(temporaryDir, outputDir);
-    } catch (error) {
-      if (hasBackup) await fs.rename(backupDir, outputDir);
-      throw error;
-    }
-    if (hasBackup) await fs.rm(backupDir, { recursive: true, force: true });
+    await commitPreparedDirectory({ outputDir, temporaryDir, backupDir });
   } catch (error) {
     await fs.rm(temporaryDir, { recursive: true, force: true });
-    if (hasBackup) {
-      try {
-        await fs.access(outputDir);
-      } catch {
-        await fs.rename(backupDir, outputDir);
-      }
-    }
     throw error;
   }
 

@@ -28,6 +28,14 @@ function uniqueValues(values) {
   return [...new Set(values)];
 }
 
+function isInside(parent, candidate) {
+  const relative = path.relative(parent, candidate);
+  return (
+    relative === '' ||
+    (!relative.startsWith('..') && !path.isAbsolute(relative))
+  );
+}
+
 export async function validateSite(options = {}) {
   const rootDir = options.rootDir ?? root;
   const contentPaths = options.contentPaths ?? [
@@ -129,37 +137,61 @@ export async function validateSite(options = {}) {
     }
   }
 
-  const actualPublicPaths = [];
-  for (const [relativeDirectory, prefix] of [
-    ['public/images/call-agent', 'public/images/call-agent'],
-    ['public/files', 'public/files'],
-  ]) {
-    const directory = path.join(rootDir, relativeDirectory);
-    let names = [];
-    try {
-      names = await fsPromises.readdir(directory);
-    } catch {
-      errors.push(`missing public directory ${relativeDirectory}`);
-    }
-    actualPublicPaths.push(...names.map((name) => `${prefix}/${name}`));
+  const imageDirectory = 'public/images/call-agent';
+  let actualImagePaths = [];
+  try {
+    const names = await fsPromises.readdir(path.join(rootDir, imageDirectory));
+    actualImagePaths = names.map((name) => `${imageDirectory}/${name}`);
+  } catch {
+    errors.push(`missing public directory ${imageDirectory}`);
   }
-  for (const publicPath of expectedPublicPaths) {
-    if (!actualPublicPaths.includes(publicPath)) {
-      errors.push(`missing public file ${publicPath}`);
-    }
-  }
-  for (const publicPath of actualPublicPaths) {
-    if (!expectedPublicPaths.includes(publicPath)) {
+  for (const publicPath of actualImagePaths) {
+    if (!expectedImagePaths.includes(publicPath)) {
       errors.push(`unexpected public file ${publicPath}`);
     }
   }
 
+  const realRootDir = await fsPromises.realpath(rootDir);
   for (const [publicPath, approved] of approvedByPath) {
-    const absolutePath = path.join(rootDir, publicPath);
+    const absolutePath = path.resolve(rootDir, publicPath);
+    if (!isInside(rootDir, absolutePath)) {
+      errors.push(`approved path resolves outside site root: ${publicPath}`);
+      continue;
+    }
+
+    let stat;
+    try {
+      stat = await fsPromises.lstat(absolutePath);
+    } catch (error) {
+      if (error?.code === 'ENOENT') {
+        errors.push(`missing public file ${publicPath}`);
+      } else {
+        errors.push(`unable to inspect public file ${publicPath}`);
+      }
+      continue;
+    }
+
+    let realPath;
+    try {
+      realPath = await fsPromises.realpath(absolutePath);
+    } catch {
+      errors.push(`unable to resolve public file ${publicPath}`);
+      continue;
+    }
+    if (!isInside(realRootDir, realPath)) {
+      errors.push(`public file resolves outside site root: ${publicPath}`);
+      continue;
+    }
+    if (stat.isSymbolicLink() || !stat.isFile()) {
+      errors.push(`not a regular file: ${publicPath}`);
+      continue;
+    }
+
     let bytes;
     try {
       bytes = await fsPromises.readFile(absolutePath);
     } catch {
+      errors.push(`unable to read public file ${publicPath}`);
       continue;
     }
     if (sha256(bytes) !== approved.sha256) {
@@ -174,6 +206,11 @@ export async function validateSite(options = {}) {
       } catch {
         errors.push(`image decode failed for ${publicPath}`);
       }
+    } else if (
+      approved.kind === 'pdf' &&
+      !bytes.subarray(0, 5).equals(Buffer.from('%PDF-'))
+    ) {
+      errors.push(`invalid PDF signature for ${publicPath}`);
     }
   }
 

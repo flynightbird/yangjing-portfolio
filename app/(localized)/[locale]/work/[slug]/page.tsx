@@ -43,6 +43,15 @@ function resolveNeighbor(
   };
 }
 
+function findUniqueNeighbor(slug: string | undefined, locale: string) {
+  if (!slug) return undefined;
+
+  const candidates = contentEntries.filter(
+    ({ meta }) => meta.locale === locale && meta.slug === slug,
+  );
+  return candidates.length === 1 ? candidates[0] : undefined;
+}
+
 export default async function WorkCasePage({ params }: WorkCasePageProps) {
   const { locale, slug } = await params;
 
@@ -56,14 +65,8 @@ export default async function WorkCasePage({ params }: WorkCasePageProps) {
   }
 
   const { Actions, Component, meta } = entry;
-  const previousEntry = contentEntries.find(
-    ({ meta: candidate }) =>
-      candidate.locale === locale && candidate.slug === meta.previousSlug,
-  );
-  const nextEntry = contentEntries.find(
-    ({ meta: candidate }) =>
-      candidate.locale === locale && candidate.slug === meta.nextSlug,
-  );
+  const previousEntry = findUniqueNeighbor(meta.previousSlug, locale);
+  const nextEntry = findUniqueNeighbor(meta.nextSlug, locale);
 
   return (
     <CaseLayout
