@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Call Agent V1.0：将依赖工程协作的 AI 呼叫能力，转化为企业可自主配置、验证与运营的产品。">
+  <title>Call Agent · AI 产品设计案例</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳至正文</a>
+  <header class="site-header web-only">
+    <a class="wordmark" href="#overview" aria-label="返回案例开头">YJ<span>/26</span></a>
+    <nav id="chapter-nav" class="chapter-nav" aria-label="案例章节">
+      <a data-chapter-link href="#context-role">背景</a>
+      <a data-chapter-link href="#decision-path">决策</a>
+      <a data-chapter-link href="#system-delivery">交付</a>
+      <a data-chapter-link href="#outcome-learnings">结果</a>
+    </nav>
+    <button class="print-button" type="button" data-print>导出 PDF</button>
+  </header>
+
+  <main id="main-content">
+    <section id="overview" class="band band--hero" data-chapter="01">
+      <div class="hero-inner">
+        <div class="hero-topline">
+          <p class="eyebrow">CALL AGENT · 0→1 AI PRODUCT DESIGN</p>
+          <p class="live-state"><span aria-hidden="true"></span>V1.0 LIMITED BETA</p>
+        </div>
+        <div class="hero-copy">
+          <p class="hero-kicker">声网智能呼叫中心</p>
+          <h1>把需要工程协作的<br><em>AI 呼叫能力</em>，变成企业可自主配置与验证的产品</h1>
+          <p class="hero-summary">让 AI 在发布前可被看见、测试与控制，并把智能体从一次 Demo 延伸为可发布、可诊断、可运营的企业工作流。</p>
+        </div>
+        <dl class="project-facts" aria-label="项目概况">
+          <div><dt>ROLE</dt><dd>唯一产品设计师</dd></div>
+          <div><dt>DURATION</dt><dd>9 个月</dd></div>
+          <div><dt>ITERATIONS</dt><dd>约 8 次迭代</dd></div>
+          <div><dt>STATUS</dt><dd>少量企业客户有限灰度</dd></div>
+        </dl>
+        <figure class="hero-product image-frame image-frame--dark">
+          <button type="button" data-lightbox aria-label="放大查看 AI 配置与实时预览">
+            <img src="./images/ai-preview-live.png" alt="智能体配置页面与实时通话预览并列显示，右侧呈现连接状态和对话内容">
+          </button>
+          <figcaption><span>LIVE PREVIEW / 00:33</span><span>Configuration and runtime feedback in one view</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="context-role" class="band" data-chapter="02">
+      <div class="section-shell">
+        <header class="section-heading">
+          <p class="section-index">02 / CONTEXT &amp; ROLE</p>
+          <h2>从技术能力集合，<br>到呼叫场景产品</h2>
+        </header>
+        <div class="section-content context-grid">
+          <div class="reading">
+            <p class="lead">企业要完成一次 AI 呼叫，必须跨越文档、API、模型与声音供应商、号码配置和任务系统。能力存在，但客户难以独立完成接入，更难在发布前判断 AI 是否真的可用。</p>
+            <p>呼叫场景成为团队核心主推方向后，原有对话式 AI 引擎演进为 AI Studio；与呼叫相关的能力被抽离为独立的智能呼叫中心，通过左侧产品切换器进入。这不是功能合并，而是依据任务闭环重新划分产品边界。</p>
+          </div>
+          <aside class="role-ledger" aria-label="我的职责与协作范围">
+            <p class="ledger-title">MY OWNERSHIP</p>
+            <ul>
+              <li><span>01</span>产品架构与核心任务路径</li>
+              <li><span>02</span>AI 配置、Preview 与异常状态</li>
+              <li><span>03</span>呼叫运营、历史与数据分析</li>
+              <li><span>04</span>Design System 与工程交付</li>
+            </ul>
+            <p class="collaboration">协作：产品经理、前后端工程师、AI/算法与音视频工程师、QA</p>
+          </aside>
+        </div>
+        <div class="boundary-map" aria-label="产品边界">
+          <div><p class="map-label">AI STUDIO</p><h3>创建与配置通用智能体</h3><p>模型、语音、Prompt 与通用能力</p></div>
+          <div class="boundary-connector"><span>PRODUCT<br>SWITCHER</span></div>
+          <div><p class="map-label">CALL CENTER</p><h3>完成真实呼叫运营</h3><p>号码、外呼任务、结果诊断与分析</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="design-thesis" class="band band--signal" data-chapter="03">
+      <div class="section-shell">
+        <header class="section-heading section-heading--wide">
+          <p class="section-index">03 / DESIGN THESIS</p>
+          <h2>设计的不是一个表单，<br>而是一条可验证的 AI 工作流</h2>
+        </header>
+        <div class="journey" aria-label="核心工作流：配置、预览、发布、运营">
+          <div class="journey-step"><span>01</span><b>Configure</b><small>组织模型、语音与 Prompt</small></div>
+          <div class="journey-step journey-step--core"><span>02</span><b>Preview</b><small>观察行为、状态与错误</small></div>
+          <div class="journey-step"><span>03</span><b>Publish</b><small>确认资源与发布条件</small></div>
+          <div class="journey-step"><span>04</span><b>Operate</b><small>执行呼叫并诊断结果</small></div>
+        </div>
+        <div class="principles">
+          <article><span>01</span><h3>降低门槛，不移除控制</h3><p>用渐进式配置承接不同技术熟练度，同时保留模型、语音和高级参数。</p></article>
+          <article><span>02</span><h3>先验证，再发布</h3><p>让配置变化立即映射到实时通话、转写、连接状态与异常反馈。</p></article>
+          <article><span>03</span><h3>从创建延伸到运营</h3><p>把号码、任务、历史、失败原因和数据看板连接到同一条业务链路。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="decision-path" class="band" data-chapter="04">
+      <div class="section-shell">
+        <header class="section-heading">
+          <p class="section-index">04 / DESIGN DECISION 01</p>
+          <h2>重构产品边界与任务路径</h2>
+          <p class="heading-note">从“先理解资源结构”转向“先完成一个呼叫任务”</p>
+        </header>
+        <div class="decision-intro">
+          <p class="lead">早期版本把模型、ASR、TTS、MCP 等资源直接暴露为主要入口。对熟悉底层能力的内部团队有效，却要求企业客户先理解系统结构，才能开始创建智能体。</p>
+          <p>我将呼叫能力单独成产品，以智能体、号码、外呼任务、历史记录为主导航；公共资源下沉为支撑能力，并通过产品切换器保留与 AI Studio 的关系。</p>
+        </div>
+        <div class="comparison comparison--asymmetric">
+          <figure class="evidence" data-evidence="before">
+            <p class="evidence-label">BEFORE / 资源即入口</p>
+            <button type="button" data-lightbox aria-label="放大查看旧版资源管理">
+              <img src="./images/before-resource-management.jpg" alt="旧版资源管理页面以多层资源类型与列表为主要结构">
+            </button>
+            <figcaption>多层资源类型与长列表占据主路径，用户需要先理解系统构成。</figcaption>
+          </figure>
+          <div class="decision-card" data-evidence="decision">
+            <p class="evidence-label">DECISION / 以任务组织能力</p>
+            <ol>
+              <li><b>先选产品</b><span>通用智能体与呼叫运营分开</span></li>
+              <li><b>再建智能体</b><span>模板、基础配置与高级配置逐层展开</span></li>
+              <li><b>资源按需出现</b><span>在任务中引用，而不是要求用户先配置全部资源</span></li>
+            </ol>
+          </div>
+          <figure class="evidence evidence--switcher" data-evidence="after">
+            <p class="evidence-label">AFTER / 清晰的产品入口</p>
+            <button type="button" data-lightbox aria-label="放大查看产品切换器">
+              <img src="./images/product-switcher.png" alt="左侧产品切换器中并列显示呼叫智能体与 AI Studio">
+            </button>
+            <figcaption>在同一平台中保持能力关联，同时让呼叫任务获得独立、简洁的路径。</figcaption>
+          </figure>
+        </div>
+        <figure class="wide-evidence image-frame">
+          <button type="button" data-lightbox aria-label="放大查看新版资源页面">
+            <img src="./images/after-resource-management.png" alt="新版资源页面统一呈现模型、语音与工具资源">
+          </button>
+          <figcaption><span>AFTER / SHARED RESOURCE LAYER</span><span>模型、语音和工具被统一为可复用支撑层</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="decision-preview" class="band band--dark" data-chapter="05">
+      <div class="section-shell">
+        <header class="section-heading section-heading--wide">
+          <p class="section-index">05 / DESIGN DECISION 02 · CORE</p>
+          <h2>让 AI 在发布前<br><em>可见、可测、可控</em></h2>
+        </header>
+        <div class="preview-thesis">
+          <p class="lead">AI 配置的难点不是字段多，而是输入与行为之间缺少确定反馈。用户不知道 Prompt、声音或模型调整后会发生什么，也无法区分配置错误、连接问题与模型表现。</p>
+          <div class="signal-legend" aria-label="实时状态示例">
+            <span class="state state--live">已连接</span>
+            <span class="state state--info">实时转写</span>
+            <span class="state state--warn">待调整</span>
+          </div>
+        </div>
+        <figure class="preview-stage image-frame image-frame--dark">
+          <button type="button" data-lightbox aria-label="放大查看实时 Preview">
+            <img src="./images/ai-preview-live.png" alt="智能体配置页面与实时通话预览并列显示，右侧呈现连接状态和对话内容">
+          </button>
+          <figcaption><span>CONFIGURATION ↔ RUNTIME</span><span>同一视图中修改、发起测试、观察状态并继续调整</span></figcaption>
+        </figure>
+        <div class="feedback-loop">
+          <article><span>INPUT</span><h3>调整配置</h3><p>Prompt、开场白、模型、语音与通话参数。</p></article>
+          <article><span>RUN</span><h3>发起 Preview</h3><p>在真实通话形态下验证，而不是只看静态表单。</p></article>
+          <article><span>OBSERVE</span><h3>观察运行状态</h3><p>连接、时长、转写、AI 回复与异常信息同步出现。</p></article>
+          <article><span>ITERATE</span><h3>定位并调整</h3><p>把模糊的“效果不好”转成可判断的修改依据。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="decision-operate" class="band" data-chapter="06">
+      <div class="section-shell">
+        <header class="section-heading">
+          <p class="section-index">06 / DESIGN DECISION 03</p>
+          <h2>从 AI Demo 到呼叫运营闭环</h2>
+          <p class="heading-note">发布不是终点，结果可诊断才是产品化</p>
+        </header>
+        <div class="decision-intro">
+          <p class="lead">智能体可以说话，并不等于企业可以运营它。真实呼叫还需要号码、批量任务、发布检查、失败原因、历史筛选、信息提取与数据分析。</p>
+          <p>我把发布后的工作纳入同一任务链，让运营人员能够从任务创建进入执行，再从结果回到诊断，而不是在多个系统之间寻找答案。</p>
+        </div>
+        <figure class="wide-evidence image-frame">
+          <button type="button" data-lightbox aria-label="放大查看外呼任务创建">
+            <img src="./images/outbound-task-creation.png" alt="外呼任务创建页面并列呈现任务配置和客户号码文件上传">
+          </button>
+          <figcaption><span>PUBLISH → OPERATE</span><span>号码、智能体、启动时间与客户文件在一个任务中完成</span></figcaption>
+        </figure>
+        <div class="comparison comparison--history">
+          <figure class="evidence" data-evidence="before">
+            <p class="evidence-label">BEFORE / 条件平铺</p>
+            <button type="button" data-lightbox aria-label="放大查看旧版呼叫历史筛选">
+              <img src="./images/before-call-history.png" alt="旧版呼叫历史页面包含密集筛选条件和结果表格">
+            </button>
+            <figcaption>大量筛选条件同时出现，查找与复盘缺少主次。</figcaption>
+          </figure>
+          <div class="decision-card decision-card--compact" data-evidence="decision">
+            <p class="evidence-label">DECISION / 按诊断频率分层</p>
+            <p>保留时间、呼叫类型和搜索作为高频入口；把长尾条件收进“更多设置”，并让已选条件以可撤销标签持续可见。</p>
+          </div>
+          <figure class="evidence" data-evidence="after">
+            <p class="evidence-label">AFTER / 结果导向筛选</p>
+            <button type="button" data-lightbox aria-label="放大查看新版呼叫历史筛选">
+              <img src="./images/after-call-history-filters.png" alt="新版呼叫历史顶部按时间、类型和更多设置组织筛选条件">
+            </button>
+            <figcaption>高频条件优先，长尾条件收纳，当前筛选状态持续可见。</figcaption>
+          </figure>
+        </div>
+        <div class="operate-strip" aria-label="运营闭环能力">
+          <span>发布检查</span><span>号码管理</span><span>外呼任务</span><span>失败原因</span><span>信息提取</span><span>数据分析</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="system-delivery" class="band band--system" data-chapter="07">
+      <div class="section-shell">
+        <header class="section-heading section-heading--wide">
+          <p class="section-index">07 / SYSTEM &amp; DELIVERY</p>
+          <h2>从 Design System<br>到可执行的工程交付</h2>
+        </header>
+        <div class="system-grid">
+          <div class="token-board" aria-label="设计系统结构示意">
+            <div class="token-row"><span>FOUNDATION</span><b>Color · Type · Spacing · Radius</b></div>
+            <div class="token-row"><span>SEMANTIC</span><b>Surface · Content · Border · Status</b></div>
+            <div class="token-row"><span>COMPONENT</span><b>Input · Select · Table · Navigation</b></div>
+            <div class="component-states" aria-label="组件状态">
+              <button type="button">Default</button><button type="button" class="is-active">Active</button><button type="button" disabled>Disabled</button>
+              <span class="mini-status">Connected</span><span class="mini-status mini-status--error">Failed</span>
+            </div>
+          </div>
+          <div class="reading system-copy">
+            <p class="lead">我从 0 到 1 搭建设计系统，将组件、状态与各类 Token 沉淀到产品仓库。随后拉取真实前端代码，复用仓库内的 Design System，通过 AI 辅助编码完成独立高保真前端原型。</p>
+            <p>它不是生产代码，而是一份可运行的交付资料：前端工程师可以直接核对组件、状态和响应式规则，减少从设计稿反推实现细节的成本。</p>
+          </div>
+        </div>
+        <div class="delivery-flow" aria-label="设计到生产页面的交付链路">
+          <div><span>01</span><b>设计规格</b><small>布局、状态与响应式规则</small></div>
+          <div><span>02</span><b>AI 辅助原型</b><small>基于真实仓库验证实现</small></div>
+          <div><span>03</span><b>工程生产页面</b><small>由前端工程师完成正式代码</small></div>
+        </div>
+        <div class="ownership-note">
+          <p><b>责任边界</b> 该高保真前端原型用于验证设计方案并辅助工程交付，未合入生产环境；正式生产代码由前端工程师完成。</p>
+          <p class="evidence-pending">发布前证据缺口：待补充 AI 配置 + Preview 的设计稿、AI 原型对比与匿名工程师反馈。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="outcome-learnings" class="band" data-chapter="08">
+      <div class="section-shell">
+        <header class="section-heading">
+          <p class="section-index">08 / OUTCOME &amp; LEARNINGS</p>
+          <h2>阶段结果、证据与反思</h2>
+        </header>
+        <p class="outcome-statement">V1.0 已完成交付并进入有限客户灰度阶段，已向少量企业客户开放，但尚未规模化推广。因此本案例不将灰度状态解释为业务增长结果，而聚焦已建立的产品闭环、设计决策与下一阶段验证基础。</p>
+        <div class="evidence-levels">
+          <article><p class="evidence-label">DELIVERED / 已交付</p><h3>完整产品闭环</h3><p>独立产品边界、配置与 Preview、发布与呼叫运营、Design System 和工程交付资料。</p></article>
+          <article><p class="evidence-label">OBSERVED / 已观察</p><h3>有限范围验证</h3><p>产品、研发、算法、音视频与 QA 内部评审，以及少量客户灰度开放。</p></article>
+          <article><p class="evidence-label">NOT YET VALIDATED</p><h3>尚未规模验证</h3><p>客户任务完成率、Preview 到发布转化、留存与业务增长均没有足够样本。</p></article>
+        </div>
+        <div class="reflection-grid">
+          <div>
+            <p class="section-index">WHAT I LEARNED</p>
+            <h3>AI 产品的确定性，来自可观察的反馈</h3>
+            <p>配置项越专业，越需要把系统状态、运行结果与错误原因前置。Preview 不是附加功能，而是用户建立控制感的核心基础设施。</p>
+          </div>
+          <div>
+            <p class="section-index">NEXT MEASURES</p>
+            <ul>
+              <li>首次成功完成智能体配置的时间</li>
+              <li>配置错误与自主恢复率</li>
+              <li>Preview 到发布的转化</li>
+              <li>发布成功率与失败诊断耗时</li>
+            </ul>
+          </div>
+        </div>
+        <footer class="case-footer">
+          <p>CALL AGENT · 2026</p>
+          <p>AI PRODUCT DESIGN / UX / SYSTEM DELIVERY</p>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="image-dialog" class="image-dialog" aria-label="查看产品界面">
+    <button type="button" data-close-dialog aria-label="关闭图片">×</button>
+    <img alt="">
+  </dialog>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
