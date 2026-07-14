@@ -70,7 +70,7 @@ export function DemoFrame({ locale }: DemoFrameProps) {
       <figcaption className={styles.demoCaption}>
         <div className={styles.demoActions}>
           <ActionLink
-            href="/demos/stt-demo/"
+            href="/demos/stt-demo/index.html"
             icon={ExternalLink}
             variant="primary"
             target="_blank"

@@ -4,6 +4,11 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { fileURLToPath } from 'node:url';
 
+import {
+  loadApprovedChecksums,
+  validatePublishedSttDirectory,
+} from './sync-stt-demo.mjs';
+
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 export function findSensitiveText(value) {
@@ -74,6 +79,14 @@ export async function validateSttDemoPublication(rootDir = root) {
   }
 
   const demoRoot = path.join(rootDir, 'public/demos/stt-demo');
+  try {
+    const contract = await loadApprovedChecksums(
+      path.join(rootDir, 'evidence/stt-demo/checksums.json'),
+    );
+    errors.push(...await validatePublishedSttDirectory(demoRoot, contract));
+  } catch (error) {
+    errors.push(error instanceof Error ? error.message : String(error));
+  }
   let realRootDir;
   try {
     realRootDir = await fsPromises.realpath(rootDir);

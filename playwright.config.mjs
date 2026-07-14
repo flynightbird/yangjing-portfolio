@@ -9,18 +9,11 @@ export default defineConfig({
     baseURL: 'http://localhost:4174',
     trace: 'retain-on-failure'
   },
-  webServer: [
-    {
-      command: 'npm run dev -- --port 4174',
-      url: 'http://localhost:4174',
-      reuseExistingServer: true,
-    },
-    {
-      command: 'node scripts/serve-static-export.mjs',
-      url: 'http://localhost:4175',
-      reuseExistingServer: true,
-    },
-  ],
+  webServer: {
+    command: 'npm run dev -- --port 4174',
+    url: 'http://localhost:4174',
+    reuseExistingServer: true,
+  },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
     { name: 'tablet', use: { ...devices['Desktop Chrome'], viewport: { width: 768, height: 1024 }, hasTouch: true } },

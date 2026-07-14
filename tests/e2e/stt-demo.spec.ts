@@ -39,7 +39,12 @@ for (const locale of ['en', 'zh'] as const) {
         page.getByRole('link', {
           name: locale === 'zh' ? '打开原型' : 'Open prototype',
         }),
-      ).toHaveAttribute('href', '/demos/stt-demo/');
+      ).toHaveAttribute('href', '/demos/stt-demo/index.html');
+      const directResponse = await page.request.get(
+        '/demos/stt-demo/index.html',
+      );
+      expect(directResponse.status()).toBe(200);
+      expect((await directResponse.text()).trim()).not.toBe('');
       await expect(
         page.getByRole('link', {
           name: locale === 'zh' ? /查看源代码/ : /View source/,
@@ -107,12 +112,4 @@ test('the direct pinned prototype loads a nonblank same-origin artifact', async 
   expect(surface.byteLength).toBeGreaterThan(1_000);
   expect(runtime.failedLocalRequests).toEqual([]);
   expect(runtime.consoleErrors).toEqual([]);
-});
-
-test('unknown Build Lab slugs return a real 404', async ({ request }) => {
-  const response = await request.get(
-    'http://localhost:4175/en/build/another-demo/',
-  );
-
-  expect(response.status()).toBe(404);
 });

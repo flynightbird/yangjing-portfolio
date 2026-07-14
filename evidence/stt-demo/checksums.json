@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "files": [
+    {
+      "path": "app.js",
+      "sha256": "e6b6fc3cf4fbcab5770dd647c6920b3ba9df9a5cf7979a174550f7444167e97b"
+    },
+    {
+      "path": "assets/agora-logo.svg",
+      "sha256": "eeca0fb12a899ecb9891ef9ed7194f8b6d0f4432ca16b27cfa523fd567b15221"
+    },
+    {
+      "path": "assets/participants/video-1.jpg",
+      "sha256": "0e70be0b2a18a5305ef2f5751e6d69ffa9b5e4256ae682cbaa800caf21d1c6cd"
+    },
+    {
+      "path": "assets/participants/video-2.jpg",
+      "sha256": "a3521fbef4e3f8698716447a60665a6af75b3fbfc7926aec1387638dc7aeda10"
+    },
+    {
+      "path": "assets/participants/video-3.jpg",
+      "sha256": "09a9a9171025d2ccfcd58218a4e9f72a5cb536d7af9176638eedffd1dffeb66e"
+    },
+    {
+      "path": "index.html",
+      "sha256": "ccc3389a29cea4a51b9d562da581f998c84c3e2d81d7d365dc4708a65cc4dbd9"
+    },
+    {
+      "path": "poster.png",
+      "sha256": "fbcb2e151e010b1eebef65e217caf2604fe641990b8694eecbac5c46f26feb88"
+    },
+    {
+      "path": "source-revision.json",
+      "sha256": "15d87b4ccf67bac8a03445be57ffd131cf1fd557705ead9f8c73f89b203ef6b2"
+    },
+    {
+      "path": "stt-ui-component-library/packages/stt-ui/src/styles/components.css",
+      "sha256": "1a259ad911aaf920dd1a7817ff5e9428eb14957a59c18bdba2edc7de8635172c"
+    },
+    {
+      "path": "stt-ui-component-library/packages/stt-ui/src/tokens/tokens.css",
+      "sha256": "f30ae4515487debd6d4462cc4955601b516c62d6d1e20d090dd907c7d8f67133"
+    },
+    {
+      "path": "styles.css",
+      "sha256": "02aeb228db49e1bc1d5c9daa9d84dea220be5307c2ed11d87626d449f74e9d3f"
+    }
+  ]
+}

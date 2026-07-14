@@ -24,7 +24,7 @@ describe('Build Lab evidence surface', () => {
       expect(poster).toHaveAttribute('loading', 'eager');
       expect(screen.getByRole('link', { name: openLabel })).toHaveAttribute(
         'href',
-        '/demos/stt-demo/',
+        '/demos/stt-demo/index.html',
       );
       expect(screen.getByRole('link', { name: new RegExp(sourceLabel) })).toHaveAttribute(
         'href',

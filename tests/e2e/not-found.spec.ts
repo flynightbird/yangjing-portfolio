@@ -54,3 +54,13 @@ test('unregistered work routes return the real static 404 response', async ({
     }
   }
 });
+
+test('unregistered Build Lab routes return the real static 404 response', async ({
+  request,
+}) => {
+  for (const locale of ['en', 'zh']) {
+    const response = await request.get(`/${locale}/build/another-demo/`);
+    expect(response.status(), `${locale}/build/another-demo`).toBe(404);
+    expect(await response.text()).toContain('Page not found');
+  }
+});

@@ -1,32 +1,54 @@
-import {
+import fsPromises, {
   cp,
+  copyFile,
   mkdtemp,
   mkdir,
   readFile,
-  readdir,
   rm,
   symlink,
   writeFile,
 } from 'node:fs/promises';
+import type { PathLike, RmOptions } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { contentEntries, getEntry } from '@/content/registry';
 import {
   dynamicParams as buildDynamicParams,
+  default as BuildLabPage,
   generateStaticParams as generateBuildStaticParams,
 } from '@/app/(localized)/[locale]/build/[slug]/page';
 
 const projectRoot = process.cwd();
-const pinnedSource = '/tmp/yangjing-stt-demo-inspect';
 const fullCommit = 'e5e840af62622123380bb0ef9d016b8da71cfb1c';
 const execFileAsync = promisify(execFile);
 const temporaryDirectories: string[] = [];
+const sourceMappings = [
+  ['index.html', 'index.html'],
+  ['styles.css', 'styles.css'],
+  ['app.js', 'app.js'],
+  ['assets/agora-logo.svg', 'assets/agora-logo.svg'],
+  ['assets/participants/video-1.jpg', 'assets/participants/video-1.jpg'],
+  ['assets/participants/video-2.jpg', 'assets/participants/video-2.jpg'],
+  ['assets/participants/video-3.jpg', 'assets/participants/video-3.jpg'],
+  [
+    'stt-ui-component-library/packages/stt-ui/src/tokens/tokens.css',
+    'stt-ui-component-library/packages/stt-ui/src/tokens/tokens.css',
+  ],
+  [
+    'stt-ui-component-library/packages/stt-ui/src/styles/components.css',
+    'stt-ui-component-library/packages/stt-ui/src/styles/components.css',
+  ],
+  [
+    'stt-ui-component-library/visual-baselines/demo-demo-session-desktop.png',
+    'poster.png',
+  ],
+] as const;
 
 async function makeTemporaryDirectory(prefix: string) {
   const directory = await mkdtemp(resolve(tmpdir(), prefix));
@@ -48,10 +70,42 @@ async function loadContentValidator() {
   return import(/* @vite-ignore */ scriptUrl);
 }
 
-async function clonePinnedSource() {
+async function createSourceFixture() {
   const parent = await makeTemporaryDirectory('stt-source-');
   const sourceRoot = resolve(parent, 'source');
-  await execFileAsync('git', ['clone', '--quiet', pinnedSource, sourceRoot]);
+  await mkdir(sourceRoot);
+  for (const [source, published] of sourceMappings) {
+    const sourcePath = resolve(sourceRoot, source);
+    await mkdir(resolve(sourcePath, '..'), { recursive: true });
+    await copyFile(
+      resolve(projectRoot, 'public/demos/stt-demo', published),
+      sourcePath,
+    );
+  }
+  await execFileAsync('git', ['init', '--quiet', sourceRoot]);
+  await execFileAsync('git', ['-C', sourceRoot, 'add', '.']);
+  await execFileAsync(
+    'git',
+    [
+      '-C',
+      sourceRoot,
+      '-c',
+      'user.name=STT Fixture',
+      '-c',
+      'user.email=stt-fixture@example.invalid',
+      'commit',
+      '--quiet',
+      '-m',
+      'fixture',
+    ],
+    {
+      env: {
+        ...process.env,
+        GIT_AUTHOR_DATE: '2026-07-09T00:00:00Z',
+        GIT_COMMITTER_DATE: '2026-07-09T00:00:00Z',
+      },
+    },
+  );
   return sourceRoot;
 }
 
@@ -62,6 +116,10 @@ async function createSttPublicationFixture() {
   await cp(
     resolve(projectRoot, 'evidence/stt-demo/source.json'),
     resolve(rootDir, 'evidence/stt-demo/source.json'),
+  );
+  await cp(
+    resolve(projectRoot, 'evidence/stt-demo/checksums.json'),
+    resolve(rootDir, 'evidence/stt-demo/checksums.json'),
   );
   await cp(
     resolve(projectRoot, 'public/demos/stt-demo'),
@@ -98,8 +156,34 @@ describe('STT demo source provenance', () => {
 
   it('provides a testable pinned-source synchronizer', async () => {
     await expect(loadSynchronizer()).resolves.toMatchObject({
+      commitSyncedDirectory: expect.any(Function),
       syncSttDemo: expect.any(Function),
+      validateApprovedSourceFiles: expect.any(Function),
     });
+  });
+
+  it('commits an exact checksum contract for every published file', async () => {
+    const contract = JSON.parse(
+      await readFile(
+        resolve(projectRoot, 'evidence/stt-demo/checksums.json'),
+        'utf8',
+      ),
+    );
+    const paths = contract.files.map((file: { path: string }) => file.path);
+
+    expect(contract.version).toBe(1);
+    expect(paths).toHaveLength(11);
+    expect(new Set(paths).size).toBe(paths.length);
+    expect(paths).toEqual(
+      expect.arrayContaining([
+        'index.html',
+        'poster.png',
+        'source-revision.json',
+      ]),
+    );
+    for (const file of contract.files) {
+      expect(file.sha256).toMatch(/^[a-f0-9]{64}$/);
+    }
   });
 
   it('provides a composable STT publication validator', async () => {
@@ -147,6 +231,55 @@ describe('STT demo source provenance', () => {
     );
   });
 
+  it('rejects published byte tampering', async () => {
+    const rootDir = await createSttPublicationFixture();
+    const { validateSttDemoPublication } = await loadContentValidator();
+    await writeFile(
+      resolve(rootDir, 'public/demos/stt-demo/app.js'),
+      'tampered bytes',
+    );
+
+    await expect(validateSttDemoPublication(rootDir)).resolves.toEqual(
+      expect.arrayContaining([expect.stringMatching(/checksum.*app\.js/i)]),
+    );
+  });
+
+  it('rejects unexpected published files', async () => {
+    const rootDir = await createSttPublicationFixture();
+    const { validateSttDemoPublication } = await loadContentValidator();
+    await writeFile(
+      resolve(rootDir, 'public/demos/stt-demo/unapproved.txt'),
+      'not approved',
+    );
+
+    await expect(validateSttDemoPublication(rootDir)).resolves.toEqual(
+      expect.arrayContaining([expect.stringMatching(/unexpected.*unapproved\.txt/i)]),
+    );
+  });
+
+  it.each([
+    ['missing', (files: unknown[]) => files.slice(1)],
+    ['duplicate', (files: unknown[]) => [...files, files[0]]],
+    [
+      'unexpected',
+      (files: unknown[]) => [
+        ...files,
+        { path: 'unapproved.txt', sha256: '0'.repeat(64) },
+      ],
+    ],
+  ])('rejects %s checksum coverage', async (_, mutate) => {
+    const rootDir = await createSttPublicationFixture();
+    const contractPath = resolve(rootDir, 'evidence/stt-demo/checksums.json');
+    const contract = JSON.parse(await readFile(contractPath, 'utf8'));
+    const { validateSttDemoPublication } = await loadContentValidator();
+    contract.files = mutate(contract.files);
+    await writeFile(contractPath, JSON.stringify(contract));
+
+    await expect(validateSttDemoPublication(rootDir)).resolves.toEqual(
+      expect.arrayContaining([expect.stringMatching(/checksum contract/i)]),
+    );
+  });
+
   it('composes STT checks into the default content validation command', async () => {
     const validatorSource = await readFile(
       resolve(projectRoot, 'scripts/validate-content.mjs'),
@@ -160,74 +293,32 @@ describe('STT demo source provenance', () => {
     );
   });
 
-  it('copies the complete local prototype and records the full revision', async () => {
-    const destinationRoot = await makeTemporaryDirectory('stt-output-');
-    const outputDir = resolve(destinationRoot, 'stt-demo');
-    const transactionRoot = resolve(destinationRoot, 'transactions');
-    const { syncSttDemo } = await loadSynchronizer();
-
-    await syncSttDemo({ sourceRoot: pinnedSource, outputDir, transactionRoot });
-
-    const requiredFiles = [
-      'index.html',
-      'styles.css',
-      'app.js',
-      'assets/agora-logo.svg',
-      'assets/participants/video-1.jpg',
-      'assets/participants/video-2.jpg',
-      'assets/participants/video-3.jpg',
-      'stt-ui-component-library/packages/stt-ui/src/tokens/tokens.css',
-      'stt-ui-component-library/packages/stt-ui/src/styles/components.css',
-      'poster.png',
-      'source-revision.json',
-    ];
+  it('uses only repository-controlled bytes for portable source fixtures', async () => {
+    const sourceRoot = await createSourceFixture();
+    const { loadApprovedChecksums, validateApprovedSourceFiles } =
+      await loadSynchronizer();
+    const contract = await loadApprovedChecksums();
 
     await expect(
-      Promise.all(requiredFiles.map((file) => readFile(resolve(outputDir, file)))),
-    ).resolves.toHaveLength(requiredFiles.length);
-    await expect(
-      readFile(resolve(outputDir, 'index.html'), 'utf8'),
-    ).resolves.toBe(await readFile(resolve(pinnedSource, 'index.html'), 'utf8'));
-    await expect(
-      readFile(resolve(outputDir, 'source-revision.json'), 'utf8').then(JSON.parse),
-    ).resolves.toEqual({
-      repository: 'https://github.com/flynightbird/stt-demo',
-      commit: fullCommit,
-      pinnedCommit: 'e5e840a',
-      kind: 'interactive-static-prototype',
-    });
-  });
-
-  it('copies every local file referenced by the root document', async () => {
-    const destinationRoot = await makeTemporaryDirectory('stt-output-');
-    const outputDir = resolve(destinationRoot, 'stt-demo');
-    const { syncSttDemo } = await loadSynchronizer();
-
-    await syncSttDemo({
-      sourceRoot: pinnedSource,
-      outputDir,
-      transactionRoot: resolve(destinationRoot, 'transactions'),
-    });
-
-    const document = await readFile(resolve(outputDir, 'index.html'), 'utf8');
+      validateApprovedSourceFiles(sourceRoot, contract),
+    ).resolves.toHaveLength(10);
+    const document = await readFile(resolve(sourceRoot, 'index.html'), 'utf8');
     const localReferences = [...document.matchAll(/(?:href|src)="([^"#]+)"/g)]
       .map(([, reference]) => reference.split('?')[0])
       .filter((reference) => !/^(?:https?:)?\/\//.test(reference));
-
     await expect(
       Promise.all(
         localReferences.map((reference) =>
-          readFile(resolve(outputDir, reference)),
+          readFile(resolve(sourceRoot, reference)),
         ),
       ),
     ).resolves.toHaveLength(localReferences.length);
   });
 
   it('refuses a source checked out at another commit', async () => {
-    const sourceRoot = await clonePinnedSource();
+    const sourceRoot = await createSourceFixture();
     const destinationRoot = await makeTemporaryDirectory('stt-output-');
     const { syncSttDemo } = await loadSynchronizer();
-    await execFileAsync('git', ['-C', sourceRoot, 'checkout', '--quiet', 'HEAD^']);
 
     await expect(
       syncSttDemo({
@@ -235,43 +326,143 @@ describe('STT demo source provenance', () => {
         outputDir: resolve(destinationRoot, 'stt-demo'),
         transactionRoot: resolve(destinationRoot, 'transactions'),
       }),
-    ).rejects.toThrow(/must begin e5e840a/i);
+    ).rejects.toThrow(new RegExp(fullCommit, 'i'));
   });
 
   it('refuses a required source file that escapes through a symbolic link', async () => {
-    const sourceRoot = await clonePinnedSource();
-    const destinationRoot = await makeTemporaryDirectory('stt-output-');
+    const sourceRoot = await createSourceFixture();
     const logoPath = resolve(sourceRoot, 'assets/agora-logo.svg');
-    const { syncSttDemo } = await loadSynchronizer();
+    const { loadApprovedChecksums, validateApprovedSourceFiles } =
+      await loadSynchronizer();
     await rm(logoPath);
     await symlink('/etc/hosts', logoPath);
 
     await expect(
-      syncSttDemo({
-        sourceRoot,
-        outputDir: resolve(destinationRoot, 'stt-demo'),
-        transactionRoot: resolve(destinationRoot, 'transactions'),
-      }),
+      validateApprovedSourceFiles(sourceRoot, await loadApprovedChecksums()),
     ).rejects.toThrow(/escapes source root/i);
   });
 
-  it('keeps the previous published demo intact when validation fails', async () => {
-    const sourceRoot = await clonePinnedSource();
-    const destinationRoot = await makeTemporaryDirectory('stt-output-');
-    const outputDir = resolve(destinationRoot, 'stt-demo');
-    const transactionRoot = resolve(destinationRoot, 'transactions');
-    const { syncSttDemo } = await loadSynchronizer();
-    await mkdir(outputDir, { recursive: true });
-    await writeFile(resolve(outputDir, 'keep.txt'), 'previous publication');
-    await rm(resolve(sourceRoot, 'assets/participants/video-3.jpg'));
+  it('rejects dirty required source bytes even when they are committed bytes originally', async () => {
+    const sourceRoot = await createSourceFixture();
+    const appPath = resolve(sourceRoot, 'app.js');
+    const { loadApprovedChecksums, validateApprovedSourceFiles } =
+      await loadSynchronizer();
+    await writeFile(appPath, `${await readFile(appPath, 'utf8')}\n// dirty`);
+    const status = await execFileAsync('git', [
+      '-C',
+      sourceRoot,
+      'status',
+      '--porcelain',
+    ]);
+    expect(status.stdout).not.toBe('');
 
     await expect(
-      syncSttDemo({ sourceRoot, outputDir, transactionRoot }),
-    ).rejects.toThrow(/required source is missing/i);
-    await expect(readFile(resolve(outputDir, 'keep.txt'), 'utf8')).resolves.toBe(
-      'previous publication',
+      validateApprovedSourceFiles(sourceRoot, await loadApprovedChecksums()),
+    ).rejects.toThrow(/checksum.*app\.js/i);
+  });
+
+  it('rolls back the previous publication when installation fails', async () => {
+    const rootDir = await makeTemporaryDirectory('stt-install-rollback-');
+    const outputDir = resolve(rootDir, 'output');
+    const temporaryDir = resolve(rootDir, 'staged');
+    const backupDir = resolve(rootDir, 'backup');
+    await mkdir(outputDir);
+    await mkdir(temporaryDir);
+    await writeFile(resolve(outputDir, 'index.html'), 'old publication');
+    await writeFile(resolve(temporaryDir, 'index.html'), 'new publication');
+    const { commitSyncedDirectory } = await loadSynchronizer();
+    const fileSystem = {
+      ...fsPromises,
+      rename: async (source: PathLike, destination: PathLike) => {
+        if (source === temporaryDir && destination === outputDir) {
+          throw new Error('injected install failure');
+        }
+        return fsPromises.rename(source, destination);
+      },
+    };
+
+    await expect(
+      commitSyncedDirectory({
+        fileSystem,
+        outputDir,
+        temporaryDir,
+        backupDir,
+      }),
+    ).rejects.toThrow(/injected install failure/i);
+    await expect(readFile(resolve(outputDir, 'index.html'), 'utf8')).resolves.toBe(
+      'old publication',
     );
-    await expect(readdir(outputDir)).resolves.toEqual(['keep.txt']);
+    await expect(readFile(backupDir)).rejects.toThrow();
+  });
+
+  it('retries backup cleanup after a committed installation', async () => {
+    const rootDir = await makeTemporaryDirectory('stt-cleanup-retry-');
+    const outputDir = resolve(rootDir, 'output');
+    const temporaryDir = resolve(rootDir, 'staged');
+    const backupDir = resolve(rootDir, 'backup');
+    await mkdir(outputDir);
+    await mkdir(temporaryDir);
+    await writeFile(resolve(outputDir, 'index.html'), 'old publication');
+    await writeFile(resolve(temporaryDir, 'index.html'), 'new publication');
+    const { commitSyncedDirectory } = await loadSynchronizer();
+    let attempts = 0;
+    const fileSystem = {
+      ...fsPromises,
+      rm: async (target: PathLike, options?: RmOptions) => {
+        if (target === backupDir && ++attempts === 1) {
+          throw new Error('injected cleanup failure');
+        }
+        return fsPromises.rm(target, options);
+      },
+    };
+
+    await commitSyncedDirectory({
+      fileSystem,
+      outputDir,
+      temporaryDir,
+      backupDir,
+    });
+
+    expect(attempts).toBe(2);
+    await expect(readFile(resolve(outputDir, 'index.html'), 'utf8')).resolves.toBe(
+      'new publication',
+    );
+    await expect(readFile(backupDir)).rejects.toThrow();
+  });
+
+  it('keeps a recoverable backup when post-commit cleanup repeatedly fails', async () => {
+    const rootDir = await makeTemporaryDirectory('stt-cleanup-backup-');
+    const outputDir = resolve(rootDir, 'output');
+    const temporaryDir = resolve(rootDir, 'staged');
+    const backupDir = resolve(rootDir, 'backup');
+    await mkdir(outputDir);
+    await mkdir(temporaryDir);
+    await writeFile(resolve(outputDir, 'index.html'), 'old publication');
+    await writeFile(resolve(temporaryDir, 'index.html'), 'new publication');
+    const { commitSyncedDirectory } = await loadSynchronizer();
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const fileSystem = {
+      ...fsPromises,
+      rm: async (target: PathLike, options?: RmOptions) => {
+        if (target === backupDir) throw new Error('persistent cleanup failure');
+        return fsPromises.rm(target, options);
+      },
+    };
+
+    await commitSyncedDirectory({
+      fileSystem,
+      outputDir,
+      temporaryDir,
+      backupDir,
+    });
+
+    expect(warning).toHaveBeenCalledOnce();
+    await expect(readFile(resolve(outputDir, 'index.html'), 'utf8')).resolves.toBe(
+      'new publication',
+    );
+    await expect(readFile(resolve(backupDir, 'index.html'), 'utf8')).resolves.toBe(
+      'old publication',
+    );
   });
 
   it('registers exactly one bilingual Build Lab project', () => {
@@ -294,8 +485,11 @@ describe('STT demo source provenance', () => {
         translationKey: 'build.stt-demo',
         heroMedia: '/demos/stt-demo/poster.png',
         evidenceLevel: 'prototype',
+        featuredOrder: 4,
+        previousSlug: 'meeting',
         status: locale === 'en' ? 'Pinned static prototype' : '固定版本静态原型',
       });
+      expect(getEntry('build', 'stt-demo', locale).meta.nextSlug).toBeUndefined();
     }
   });
 
@@ -326,6 +520,15 @@ describe('STT demo source provenance', () => {
       { locale: 'en', slug: 'stt-demo' },
       { locale: 'zh', slug: 'stt-demo' },
     ]);
+  });
+
+  it('supplies safe project-neighbor props before Meeting is registered', async () => {
+    const page = await BuildLabPage({
+      params: Promise.resolve({ locale: 'en', slug: 'stt-demo' }),
+    });
+
+    expect(page.props).toHaveProperty('previous', undefined);
+    expect(page.props).toHaveProperty('next', undefined);
   });
 
   it.each(['en', 'zh'] as const)(
