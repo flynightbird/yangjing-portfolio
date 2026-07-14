@@ -3,10 +3,11 @@
   :root { --paper: #fff; --surface: #fff; --ink-950: #111; --ink-900: #222; }
   html { font-size: 10pt; }
   body { background: #fff; color: #111; }
-  .web-only, #chapter-nav, [data-print], dialog, .evidence-pending { display: none !important; }
+  .web-only, .skip-link, #chapter-nav, [data-print], dialog { display: none !important; }
   .band { padding: 12mm 0; background: #fff !important; color: #111 !important; }
   .band--hero { padding-top: 0; page-break-after: always; }
-  #decision-path, #decision-preview, #decision-operate, #system-delivery { break-before: page; }
+  #decision-preview { padding-bottom: 0; }
+  #decision-path, #decision-operate, #system-delivery { break-before: page; }
   h1 { font-size: 31pt; }
   h2 { font-size: 24pt; }
   h1, h2, h3, figure, .journey, .comparison, .ownership-note { break-inside: avoid; }
@@ -16,6 +17,10 @@
   .image-frame--dark figcaption, .decision-card span, .feedback-loop p, .component-states { color: #444; }
   .image-frame--dark { padding: 0; }
   .component-states { display: none; }
+  .feedback-loop { grid-template-columns: repeat(4, 1fr); margin-top: 24px; break-inside: avoid; }
+  .feedback-loop article { min-height: 120px; padding: 12px 10px; border-right: 1px solid #bbb; border-bottom: 0; }
+  .feedback-loop article:last-child { border-right: 0; }
+  .feedback-loop h3 { margin-top: 18px; }
   .evidence-levels { grid-template-columns: 1fr 1fr 1fr; }
   img { max-height: 115mm; object-fit: contain; }
   a { color: inherit; text-decoration: none; }

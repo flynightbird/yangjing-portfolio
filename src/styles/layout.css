@@ -29,7 +29,7 @@
   .section-heading .section-index { padding-top: 0; }
   .section-content, .decision-intro, .comparison--asymmetric, .comparison--history, .preview-thesis, .system-grid, .reflection-grid { grid-template-columns: 1fr; }
   .decision-intro { margin-left: 0; gap: 24px; }
-  .site-header { grid-template-columns: 1fr auto; }
+  .site-header { grid-template-columns: 1fr auto auto; gap: 8px; }
   .chapter-nav { display: none !important; }
 }
 @media (max-width: 600px) {

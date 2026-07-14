@@ -10,6 +10,7 @@
     "assets": "node scripts/prepare-assets.mjs",
     "validate": "node scripts/validate-content.mjs",
     "test": "node --test tests/content.test.mjs",
+    "test:dist": "node --test tests/dist.test.mjs",
     "test:e2e": "playwright test"
   },
   "devDependencies": {
