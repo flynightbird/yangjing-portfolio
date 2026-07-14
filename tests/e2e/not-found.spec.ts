@@ -19,7 +19,9 @@ test('malformed URL escapes use the custom 404 response', async ({ request }) =>
 test('exported image assets use their correct content type', async ({
   request,
 }) => {
-  const response = await request.get('/images/after-resource-management.png');
+  const response = await request.get(
+    '/images/call-agent/after-resource-management.png',
+  );
 
   expect(response.status()).toBe(200);
   expect(response.headers()['content-type']).toBe('image/png');

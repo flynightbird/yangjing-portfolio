@@ -30,7 +30,7 @@
 
   article[data-case-study] > header,
   article[data-case-study] > section {
-    padding-block: 8mm !important;
+    padding-block: 12mm !important;
     background: #fff !important;
     color: #111 !important;
   }
@@ -40,19 +40,109 @@
     break-after: page;
   }
 
+  #decision-preview {
+    padding-block-end: 0 !important;
+  }
+
+  #decision-path,
+  #decision-operate,
+  #system-delivery {
+    break-before: page;
+  }
+
+  article[data-case-study] h1 {
+    font-size: 31pt;
+  }
+
+  article[data-case-study] h2 {
+    font-size: 24pt !important;
+  }
+
+  article[data-case-study] h1,
   article[data-case-study] > section h2,
   article[data-case-study] > section h3,
   article[data-case-study] figure,
   article[data-case-study] figcaption,
   article[data-case-study] [class*='journey'],
+  article[data-case-study] [class*='comparison'],
   article[data-case-study] [class*='feedback-loop'],
   article[data-case-study] [class*='ownership-note'] {
     break-inside: avoid;
   }
 
+  article[data-case-study] h1,
   article[data-case-study] h2,
   article[data-case-study] h3 {
     break-after: avoid;
+  }
+
+  article[data-case-study] .band--dark,
+  article[data-case-study] .role-ledger,
+  article[data-case-study] .token-board,
+  article[data-case-study] .decision-card {
+    border-color: #bbb !important;
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  article[data-case-study] .role-ledger li,
+  article[data-case-study] .token-row,
+  article[data-case-study] .feedback-loop,
+  article[data-case-study] .feedback-loop article,
+  article[data-case-study] .evidence-levels,
+  article[data-case-study] .evidence-levels article {
+    border-color: #bbb !important;
+  }
+
+  article[data-case-study] .band--dark p,
+  article[data-case-study] .decision-card span,
+  article[data-case-study] .decision-card p:last-child,
+  article[data-case-study] .feedback-loop p {
+    color: #444 !important;
+  }
+
+  article[data-case-study] .band--dark .section-index,
+  article[data-case-study] .band--dark .feedback-loop article > span,
+  article[data-case-study] .token-row span {
+    color: #08795b !important;
+  }
+
+  article[data-case-study] .component-states {
+    display: none !important;
+  }
+
+  article[data-case-study] .feedback-loop {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-block-start: 24px;
+    break-inside: avoid;
+  }
+
+  article[data-case-study] .feedback-loop article {
+    min-height: 120px;
+    padding: 12px 10px;
+    border-block-end: 0;
+    border-inline-end: 1px solid #bbb;
+  }
+
+  article[data-case-study] .feedback-loop article:last-child {
+    border-inline-end: 0;
+  }
+
+  article[data-case-study] .feedback-loop h3 {
+    margin-block-start: 18px;
+  }
+
+  article[data-case-study] .evidence-levels {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  article[data-case-study] .evidence-levels article {
+    border-block-end: 0;
+    border-inline-end: 1px solid #bbb;
+  }
+
+  article[data-case-study] .evidence-levels article:last-child {
+    border-inline-end: 0;
   }
 
   article[data-case-study] img {

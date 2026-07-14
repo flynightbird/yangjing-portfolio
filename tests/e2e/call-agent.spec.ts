@@ -130,6 +130,50 @@ for (const locale of ['en', 'zh'] as const) {
       await expect(page.locator('[data-case-web-control]:visible')).toHaveCount(0);
       await expect(page.locator('body > header')).toBeHidden();
       await expect(page.locator('body > footer')).toBeHidden();
+
+      const printContract = await page.evaluate(() => {
+        const styleFor = (selector: string) => {
+          const element = document.querySelector(selector);
+          if (!element) throw new Error(`Missing print contract element: ${selector}`);
+          return getComputedStyle(element);
+        };
+        const columnCount = (selector: string) =>
+          styleFor(selector).gridTemplateColumns.split(/\s+/).filter(Boolean).length;
+
+        return {
+          heroBreakAfter: styleFor('article[data-case-study] > header').breakAfter,
+          chapterBreaks: [
+            '#decision-path',
+            '#decision-operate',
+            '#system-delivery',
+          ].map((selector) => styleFor(selector).breakBefore),
+          feedbackColumns: columnCount('.feedback-loop'),
+          evidenceColumns: columnCount('.evidence-levels'),
+          h1FontSize: Number.parseFloat(styleFor('article[data-case-study] h1').fontSize),
+          h2FontSize: Number.parseFloat(styleFor('article[data-case-study] h2').fontSize),
+          componentStatesDisplay: styleFor('.component-states').display,
+          darkBandBackground: styleFor('.band--dark').backgroundColor,
+          tokenBoardBackground: styleFor('.token-board').backgroundColor,
+          decisionCardBackground: styleFor('.decision-card').backgroundColor,
+          evidenceMaxHeight: Number.parseFloat(
+            styleFor('figure[data-evidence] img').maxHeight,
+          ),
+          comparisonBreakInside: styleFor('.comparison').breakInside,
+        };
+      });
+
+      expect(printContract.heroBreakAfter).toBe('page');
+      expect(printContract.chapterBreaks).toEqual(['page', 'page', 'page']);
+      expect(printContract.feedbackColumns).toBe(4);
+      expect(printContract.evidenceColumns).toBe(3);
+      expect(printContract.h1FontSize).toBeCloseTo((31 * 96) / 72, 1);
+      expect(printContract.h2FontSize).toBeCloseTo((24 * 96) / 72, 1);
+      expect(printContract.componentStatesDisplay).toBe('none');
+      expect(printContract.darkBandBackground).toBe('rgb(255, 255, 255)');
+      expect(printContract.tokenBoardBackground).toBe('rgb(255, 255, 255)');
+      expect(printContract.decisionCardBackground).toBe('rgb(255, 255, 255)');
+      expect(printContract.evidenceMaxHeight).toBeCloseTo((115 * 96) / 25.4, 1);
+      expect(printContract.comparisonBreakInside).toBe('avoid');
     });
   });
 }
