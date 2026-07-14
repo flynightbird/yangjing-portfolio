@@ -5,6 +5,11 @@ import { describe, expect, it } from 'vitest';
 
 const globalsPath = path.resolve(process.cwd(), 'app/globals.css');
 const globalsCss = readFileSync(globalsPath, 'utf8');
+const actionLinkPath = path.resolve(
+  process.cwd(),
+  'components/ui/action-link.module.css',
+);
+const actionLinkCss = readFileSync(actionLinkPath, 'utf8');
 
 describe('Interface X-Ray design tokens', () => {
   it.each([
@@ -39,5 +44,12 @@ describe('Interface X-Ray design tokens', () => {
 
   it('does not size type from viewport width', () => {
     expect(globalsCss).not.toMatch(/font-size\s*:[^;}]*\d(?:\.\d+)?vw\b/i);
+  });
+
+  it('lets localized action links inherit the document font', () => {
+    expect(actionLinkCss).toMatch(
+      /\.root\s*{[^}]*font-family:\s*inherit;/i,
+    );
+    expect(actionLinkCss).not.toMatch(/font-family:\s*var\(--font-body\)/i);
   });
 });
