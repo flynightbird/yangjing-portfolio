@@ -6,7 +6,7 @@
 
 **Architecture:** Replace the current single-page Vite shell in place with a Next.js App Router static export while retaining the completed Call Agent evidence, privacy processing, PDF, and test intent. Typed bilingual MDX is registered at build time, Zod validation blocks incomplete or unsafe public builds, and focused client islands provide the Hero, Meeting sequence, locale persistence, and other high-value motion without turning case reading into a client-rendered app.
 
-**Tech Stack:** Next.js 16.2.10, React 19.2.7, TypeScript 7.0.2, MDX 3.1.1, Zod 4.4.3, Motion 12.42.2, Lucide React 1.24.0, Sharp 0.35.3, Vitest 4.1.10, Testing Library 16.3.2, Playwright 1.61.1, CSS Modules/custom properties, Cloudflare Pages static hosting
+**Tech Stack:** Next.js 16.2.10, React 19.2.7, TypeScript 6.0.3, MDX 3.1.1, Zod 4.4.3, Motion 12.42.2, Lucide React 1.24.0, Sharp 0.35.3, Vitest 4.1.10, Testing Library 16.3.2, Playwright 1.61.1, ESLint 9.39.5, CSS Modules/custom properties, Cloudflare Pages static hosting
 
 ---
 
@@ -240,19 +240,19 @@ Run:
 
 ```bash
 npm install next@16.2.10 react@19.2.7 react-dom@19.2.7 motion@12.42.2 lucide-react@1.24.0 zod@4.4.3 @next/mdx@16.2.10 @mdx-js/loader@3.1.1 @mdx-js/react@3.1.1 remark-frontmatter@5.0.0 remark-mdx-frontmatter@5.2.0 @fontsource/archivo-black@5.2.8 @fontsource/libre-franklin@5.2.8 @fontsource/dm-mono@5.2.7 @fontsource/noto-sans-sc@5.2.9
-npm install -D typescript@7.0.2 vitest@4.1.10 jsdom@29.1.1 @testing-library/react@16.3.2 @testing-library/jest-dom@6.9.1 @testing-library/user-event@14.6.1 @playwright/test@1.61.1 sharp@0.35.3 eslint@10.7.0 eslint-config-next@16.2.10 @types/node @types/react @types/react-dom
+npm install -D typescript@6.0.3 vitest@4.1.10 jsdom@29.1.1 @testing-library/react@16.3.2 @testing-library/jest-dom@6.9.1 @testing-library/user-event@14.6.1 @playwright/test@1.61.1 sharp@0.35.3 eslint@9.39.5 eslint-config-next@16.2.10 @types/node @types/react @types/react-dom
 ```
+
+TypeScript 6.0.3 and ESLint 9.39.5 are the latest versions compatible with Next.js 16.2.10's transitive lint peer ranges.
 
 - [ ] **Step 4: Create the minimal static configuration**
 
 ```js
 // next.config.mjs
 import createMDX from '@next/mdx';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 
 const withMDX = createMDX({
-  options: { remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter] }
+  options: { remarkPlugins: ['remark-frontmatter', 'remark-mdx-frontmatter'] }
 });
 
 export default withMDX({

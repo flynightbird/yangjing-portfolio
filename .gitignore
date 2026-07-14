@@ -4,4 +4,6 @@ dist/
 test-results/
 playwright-report/
 artifacts/
+.next/
+out/
 .DS_Store
