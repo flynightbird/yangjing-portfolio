@@ -408,7 +408,7 @@ function astHasNonEmptyText(node) {
   return hasText;
 }
 
-async function validateMdxMedia(program, sourceName, rootDir) {
+function validateMdxMedia(program, sourceName) {
   const errors = [];
   const describedText = new Set();
   const videos = [];
@@ -459,29 +459,14 @@ async function validateMdxMedia(program, sourceName, rootDir) {
         typeof describedBy.value === 'string' &&
         describedBy.value.split(/\s+/).some((id) => describedText.has(id))
       );
-      const transcriptHref = objectProperty(props, 'data-transcript-href');
       videos.push({
         hasCaptions,
         hasDescribedTranscript,
-        transcriptHref: transcriptHref?.type === 'Literal' &&
-          typeof transcriptHref.value === 'string'
-          ? transcriptHref.value.trim()
-          : '',
       });
     }
   });
   for (const video of videos) {
-    let hasLinkedTranscript = false;
-    if (/^https:\/\//i.test(video.transcriptHref)) {
-      hasLinkedTranscript = true;
-    } else if (video.transcriptHref.startsWith('/') && !video.transcriptHref.includes('\\')) {
-      const target = path.join(rootDir, 'public', video.transcriptHref.slice(1));
-      hasLinkedTranscript = (
-        !(await hasSymlinkInPath(path.join(rootDir, 'public'), target)) &&
-        await isRegularFile(target)
-      );
-    }
-    if (!video.hasCaptions && !video.hasDescribedTranscript && !hasLinkedTranscript) {
+    if (!video.hasCaptions && !video.hasDescribedTranscript) {
       errors.push(`MDX video requires captions/subtitles track or transcript access: ${sourceName}`);
     }
   }
@@ -504,7 +489,7 @@ async function validateContentMetadata(rootDir, mode) {
       errors.push(`Metadata parse failed: ${sourceName}: ${error instanceof Error ? error.message : String(error)}`);
       continue;
     }
-    errors.push(...await validateMdxMedia(program, sourceName, rootDir));
+    errors.push(...validateMdxMedia(program, sourceName));
     for (const field of requiredMetadata) {
       if (!Object.hasOwn(metadata, field)) errors.push(`Missing metadata field ${field}: ${sourceName}`);
     }
@@ -953,7 +938,7 @@ async function targetExists(target) {
   return isRegularFile(path.join(target, 'index.html'));
 }
 
-async function validateHtmlMedia(document, sourceName, outputRoot, htmlPath) {
+function validateHtmlMedia(document, sourceName) {
   const errors = [];
   for (const image of document.querySelectorAll('img')) {
     const alt = image.getAttribute('alt');
@@ -976,19 +961,7 @@ async function validateHtmlMedia(document, sourceName, outputRoot, htmlPath) {
     const hasDescribedTranscript = Boolean(describedBy?.split(/\s+/).some((id) => (
       document.getElementById(id)?.textContent?.trim()
     )));
-    const transcriptHref = video.getAttribute('data-transcript-href')?.trim();
-    let hasLinkedTranscript = false;
-    if (transcriptHref) {
-      const target = outputTargetForReference(outputRoot, htmlPath, transcriptHref);
-      hasLinkedTranscript = Boolean(
-        target &&
-        target !== unsafeOutputReference &&
-        !(await hasSymlinkInPath(outputRoot, target)) &&
-        await targetExists(target)
-      );
-    }
-    const hasTranscript = hasDescribedTranscript || hasLinkedTranscript;
-    if (!hasCaptions && !hasTranscript) {
+    if (!hasCaptions && !hasDescribedTranscript) {
       errors.push(
         `Generated video requires captions/subtitles track or transcript access: ${sourceName}`,
       );
@@ -1032,12 +1005,7 @@ async function validateOutput(rootDir) {
       errors.push(`Malformed generated HTML: ${relative(rootDir, htmlPath)}`);
     }
     const document = parseHtml(html);
-    errors.push(...await validateHtmlMedia(
-      document,
-      relative(rootDir, htmlPath),
-      outputRoot,
-      htmlPath,
-    ));
+    errors.push(...validateHtmlMedia(document, relative(rootDir, htmlPath)));
     const references = [];
     for (const element of document.querySelectorAll(
       '[href], [src], [poster], [srcset], [data-transcript-href]',

@@ -319,6 +319,53 @@ export const metadata = {
     ]));
   });
 
+  it('does not accept an isolated MDX transcript href even when its target exists', async () => {
+    const root = createRoot();
+    write(root, 'public/images/sample.avif', await sharp({
+      create: { width: 1, height: 1, channels: 3, background: '#000000' },
+    }).avif().toBuffer());
+    write(root, 'public/transcript.txt', 'Spoken content transcript.');
+    for (const locale of ['en', 'zh'] as const) {
+      write(root, `content/work/sample.${locale}.mdx`, completeMdx(
+        locale,
+        '<video poster="/images/sample.avif" data-transcript-href="/transcript.txt" />',
+      ));
+    }
+
+    const result = await runPublicationValidation({ mode: 'development', rootDir: root });
+    expect(result.errors).toEqual(expect.arrayContaining([
+      'MDX video requires captions/subtitles track or transcript access: content/work/sample.en.mdx',
+      'MDX video requires captions/subtitles track or transcript access: content/work/sample.zh.mdx',
+    ]));
+  });
+
+  it('accepts MDX video tracks, described text, and described transcript controls', async () => {
+    const root = createRoot();
+    write(root, 'public/images/sample.avif', await sharp({
+      create: { width: 1, height: 1, channels: 3, background: '#000000' },
+    }).avif().toBuffer());
+    write(root, 'public/captions.vtt', 'WEBVTT\n');
+    write(root, 'public/transcript.txt', 'Spoken content transcript.');
+    const body = `
+<video poster="/images/sample.avif"><track kind="captions" src="/captions.vtt" /></video>
+<video poster="/images/sample.avif" aria-describedby="transcript-text" />
+<p id="transcript-text">Spoken content transcript.</p>
+<video poster="/images/sample.avif" aria-describedby="transcript-link" data-transcript-href="/transcript.txt" />
+<a id="transcript-link" href="/transcript.txt">Read transcript</a>
+`;
+    for (const locale of ['en', 'zh'] as const) {
+      write(root, `content/work/sample.${locale}.mdx`, completeMdx(locale, body));
+    }
+
+    const result = await runPublicationValidation({ mode: 'development', rootDir: root });
+    expect(result.errors).not.toContain(
+      'MDX video requires captions/subtitles track or transcript access: content/work/sample.en.mdx',
+    );
+    expect(result.errors).not.toContain(
+      'MDX video requires captions/subtitles track or transcript access: content/work/sample.zh.mdx',
+    );
+  });
+
   it('requires a caption and poster beside a present publication video', async () => {
     const root = createRoot();
     write(root, 'public/videos/meeting/interaction-sequence.mp4', 'video');
@@ -744,6 +791,42 @@ role: 'body-only'
       root,
       'out/index.html',
       '<!doctype html><html><body><video poster="/poster.jpg" aria-describedby="transcript"></video><p id="transcript">Spoken content transcript.</p></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).not.toContain(
+      'Generated video requires captions/subtitles track or transcript access: out/index.html',
+    );
+  });
+
+  it('does not accept an isolated generated transcript href when its target exists', async () => {
+    const root = createRoot();
+    write(root, 'out/poster.jpg', 'poster');
+    write(root, 'out/transcript.txt', 'Spoken content transcript.');
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><video poster="/poster.jpg" data-transcript-href="/transcript.txt"></video></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).toContain(
+      'Generated video requires captions/subtitles track or transcript access: out/index.html',
+    );
+    expect(result.errors).not.toContain(
+      'Broken internal reference "/transcript.txt" in out/index.html',
+    );
+  });
+
+  it('accepts generated video tracks, described text, and described transcript controls', async () => {
+    const root = createRoot();
+    write(root, 'out/poster.jpg', 'poster');
+    write(root, 'out/captions.vtt', 'WEBVTT\n');
+    write(root, 'out/transcript.txt', 'Spoken content transcript.');
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><video poster="/poster.jpg"><track kind="captions" src="/captions.vtt"></video><video poster="/poster.jpg" aria-describedby="transcript-text"></video><p id="transcript-text">Spoken content transcript.</p><video poster="/poster.jpg" aria-describedby="transcript-link" data-transcript-href="/transcript.txt"></video><a id="transcript-link" href="/transcript.txt">Read transcript</a></body></html>',
     );
 
     const result = await runPublicationValidation({ mode: 'output', rootDir: root });
