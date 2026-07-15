@@ -11,3 +11,266 @@
 .wide {
   grid-column: 1 / -1 !important;
 }
+
+.group,
+.standardMap,
+.decisionResult,
+.darkComparison,
+.learningSequence,
+.results {
+  grid-column: 1 / -1 !important;
+}
+
+.group {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 2rem);
+  margin-block-start: 3rem;
+}
+
+.primary-pair > :first-child {
+  grid-column: 1 / span 8;
+}
+
+.primary-pair > :last-child {
+  grid-column: 9 / -1;
+  align-self: end;
+}
+
+.sequence > * {
+  grid-column: span 4;
+}
+
+.experiment > :first-child {
+  grid-column: 1 / span 4;
+  align-self: end;
+}
+
+.experiment > :last-child {
+  grid-column: 5 / -1;
+  padding-inline-start: 1rem;
+  box-shadow: inset 2px 0 0 #6f8f78;
+}
+
+.standardMap {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 0;
+  margin: 3rem 0 0;
+  border-block: 1px solid #cbd3cd;
+  list-style: none;
+}
+
+.standardMap li {
+  min-width: 0;
+  padding: 1.5rem;
+  border-inline-start: 1px solid #d8ded9;
+}
+
+.standardMap li:first-child {
+  border-inline-start: 0;
+}
+
+.standardMap span,
+.decisionResult span,
+.learningThesis span {
+  color: #6f8f78;
+  font-family: var(--xuelang-font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.standardMap strong {
+  display: block;
+  margin-block-start: 1.4rem;
+  font-size: 1.1rem;
+}
+
+.standardMap p {
+  margin: 0.7rem 0 0;
+  color: #5f6862;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.decisionResult {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 1.5rem;
+  align-items: end;
+  margin-block-start: 2.5rem;
+  padding-block: 1.5rem;
+  border-block: 1px solid #cbd3cd;
+}
+
+.decisionResult span {
+  grid-column: 1 / -1;
+}
+
+.decisionResult strong {
+  font-size: clamp(4rem, 9vw, 8.5rem);
+  line-height: 0.85;
+}
+
+.decisionResult p {
+  max-width: 34rem;
+  margin: 0;
+  color: #5f6862;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.darkComparison {
+  margin-block-start: 3rem;
+  padding: clamp(1.25rem, 3vw, 3rem);
+  border-radius: 4px;
+  background: #121614;
+  color: #f5f7f5;
+}
+
+.darkComparison > p {
+  margin: 0 0 2rem;
+  font-size: clamp(1.5rem, 3vw, 3rem);
+  font-weight: 600;
+}
+
+.darkComparison > div {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 1.5rem;
+}
+
+.darkComparison figure {
+  border-block-start-color: #3e4641;
+}
+
+.learningSequence {
+  display: grid;
+  grid-template-columns: minmax(12rem, 3fr) minmax(0, 7fr);
+  gap: clamp(2rem, 5vw, 6rem);
+  margin-block-start: 4rem;
+}
+
+.learningThesis {
+  align-self: start;
+  padding-block-start: 1rem;
+  border-block-start: 2px solid #6f8f78;
+}
+
+.learningThesis p {
+  color: #5f6862;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.learningStates article {
+  min-height: 34rem;
+  padding-block: 2rem 5rem;
+  border-block-start: 1px solid #cbd3cd;
+}
+
+.learningStates article > span {
+  color: #6f8f78;
+  font-family: var(--xuelang-font-mono);
+  font-size: 0.75rem;
+}
+
+.learningStates h3 {
+  margin: 0.8rem 0 0;
+  font-size: clamp(1.8rem, 3vw, 3.25rem);
+}
+
+.learningStates article > p {
+  max-width: 38rem;
+  color: #5f6862;
+  line-height: 1.7;
+}
+
+.learningStates figure {
+  margin-block-start: 2rem;
+}
+
+.metricList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-block-start: 3rem;
+  border-block: 1px solid #cbd3cd;
+}
+
+.metricList > div {
+  padding: 2rem 1.5rem 2.25rem 0;
+  border-inline-start: 1px solid #d8ded9;
+}
+
+.metricList > div:first-child {
+  border-inline-start: 0;
+}
+
+.metricList strong {
+  font-size: clamp(2.8rem, 5vw, 5.5rem);
+  line-height: 1;
+}
+
+.metricList p,
+.resultNote {
+  color: #5f6862;
+  line-height: 1.6;
+}
+
+.resultNote {
+  margin-block-start: 1rem;
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 900px) {
+  .group,
+  .standardMap,
+  .darkComparison > div,
+  .learningSequence,
+  .metricList {
+    display: block;
+  }
+
+  .group > *,
+  .standardMap li,
+  .metricList > div {
+    margin-block-start: 1.5rem;
+  }
+
+  .standardMap li,
+  .metricList > div {
+    border-inline-start: 0;
+    border-block-start: 1px solid #d8ded9;
+  }
+
+  .decisionResult {
+    display: block;
+  }
+
+  .decisionResult > * + * {
+    margin-block-start: 1rem;
+  }
+
+  .learningStates article {
+    min-height: 0;
+  }
+}
+
+@media print {
+  .group,
+  .standardMap,
+  .decisionResult,
+  .darkComparison,
+  .learningStates article,
+  .metricList {
+    break-inside: avoid;
+  }
+
+  .learningSequence {
+    display: block;
+  }
+
+  .learningStates article {
+    min-height: 0;
+  }
+}

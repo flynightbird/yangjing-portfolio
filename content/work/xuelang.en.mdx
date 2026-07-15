@@ -1,3 +1,14 @@
+import {
+  XuelangDarkComparison,
+  XuelangDecisionResult,
+  XuelangEvidenceGroup,
+  XuelangFigure,
+  XuelangLearningSequence,
+  XuelangResults,
+  XuelangStandardMap,
+} from '@/components/xuelang/xuelang-evidence'
+import { XuelangContact } from '@/components/xuelang/xuelang-contact'
+
 export const metadata = {
   type: 'work',
   slug: 'xuelang',
@@ -27,37 +38,105 @@ export const metadata = {
 }
 
 <section id="overview">
-  <header className="section-heading">
-    <p className="section-index">00 / OVERVIEW</p>
-    <h2>Build trust in course quality across discovery, purchase, and learning</h2>
-  </header>
-  <p className="lead">I led the experience upgrade with product, data, engineering, and operations partners, translating a commercial-growth goal into a coherent end-to-end learning journey.</p>
+  <header className="section-heading"><p className="section-index">00 / OVERVIEW</p><h2>Make course quality perceptible across the full journey</h2></header>
+  <div className="xuelang-reading">
+    <p className="lead">As the lead designer, I owned the overall experience strategy, core journeys, and key design solutions, partnering with other designers, product, data, engineering, and operations through delivery and experiment validation.</p>
+    <p>This was not a single-page redesign. It translated course quality from internal rules into signals learners could understand and verify before and after purchase.</p>
+  </div>
+  <ol className="xuelang-journey" aria-label="Core experience journey"><li>Discover</li><li>Build trust</li><li>Decide</li><li>Keep learning</li><li>Create the foundation for repurchase</li></ol>
 </section>
 
 <section id="business">
-  <h2>From transaction efficiency to perceived course quality</h2>
+  <header className="section-heading"><p className="section-index">01 / BUSINESS CHALLENGE</p><h2>Move from fulfilling transactions to supporting learning relationships</h2></header>
+  <div className="xuelang-reading">
+    <p className="lead">First purchases often happened on Douyin, while Xuelang mainly fulfilled courses. Sustainable growth required the platform to help people discover quality courses, judge value, and continue learning.</p>
+    <p>The experience challenge shifted from selling efficiently to making quality recognizable, decisions easier, and learning more continuous. Return and repurchase remained future foundations, not claimed outcomes.</p>
+  </div>
+  <dl className="xuelang-context-facts" aria-label="Business context"><div><dt>Platform scale</dt><dd>500K DAU</dd></div><div><dt>Business ambition</dt><dd>RMB 30B annual GMV</dd></div><div><dt>Experience shift</dt><dd>Transaction → Learning relationship</dd></div></dl>
 </section>
 
 <section id="problem">
-  <h2>Quality signals were fragmented across the journey</h2>
+  <header className="section-heading"><p className="section-index">02 / PROBLEM DEFINITION</p><h2>The issue was not missing information, but low interpretability</h2></header>
+  <div className="xuelang-problem-list">
+    <article><span>01</span><h3>Hard to recognize</h3><p>Course information was abundant, yet learners lacked a stable standard for identifying quality.</p></article>
+    <article><span>02</span><h3>Hard to trust</h3><p>Instructor, structure, and outcome evidence were fragmented across the decision path.</p></article>
+    <article><span>03</span><h3>Hard to persist</h3><p>Entry, viewing, interaction, and learning assets did not form a continuous experience.</p></article>
+  </div>
+  <details className="xuelang-details"><summary>Additional audience and category context</summary><p>Skills, interests, and professional courses require different decision evidence. Research was condensed into three actionable problems rather than expanded into a separate report.</p></details>
 </section>
 
 <section id="strategy">
-  <h2>Connect discovery, decision, and learning as one experience</h2>
+  <header className="section-heading"><p className="section-index">03 / DESIGN STRATEGY</p><h2>Define quality on one side and complete the journey on the other</h2></header>
+  <blockquote className="xuelang-thesis">Build a course-quality standard while completing discovery, decision, learning, and accumulation across the experience journey.</blockquote>
+  <p className="xuelang-formula">Sell quality courses <span>×</span> Learning experience</p>
+  <p className="xuelang-strategy-note">One side created a consistent evidence language; the other placed that evidence where learners actually needed to decide and act.</p>
 </section>
 
 <section id="decision-standard">
-  <h2>Turn quality standards into recognizable product signals</h2>
+  <header className="section-heading"><p className="section-index">04 / KEY DECISION 01</p><h2>Establish a recognizable quality standard</h2></header>
+  <div className="xuelang-reading">
+    <p className="lead">Learners did not need more course information. They needed interpretable evidence: teacher credibility, course structure, learner outcomes, reviews, and platform guarantees.</p>
+    <p>The decision was to make the standard visible and consistent, not add another promotional label. Quality standard → information modules → consistent expression across touchpoints → learner trust.</p>
+  </div>
+  <XuelangStandardMap label="Quality standard to learner trust" steps={[
+    { title: 'Quality standard', description: 'Define credibility, structure, outcomes, reviews, and guarantees.' },
+    { title: 'Information modules', description: 'Turn abstract criteria into scannable interface evidence.' },
+    { title: 'Consistent touchpoints', description: 'Reuse the same quality language in discovery, selection, and detail.' },
+    { title: 'Learner trust', description: 'Lower interpretation cost through evidence that can be verified.' },
+  ]} />
+  <XuelangFigure src="/images/xuelang/quality-standard.webp" width={1920} height={1080} alt="Course-quality standards mapped to visible credibility, structure, and guarantee modules" label="SYSTEM / QUALITY STANDARD" caption="Internal quality criteria become recognizable interface evidence rather than another marketing claim." locale="en" emphasis="wide" />
+  <XuelangEvidenceGroup>
+    <XuelangFigure src="/images/xuelang/quality-credibility.webp" width={1920} height={1080} alt="Instructor background, expertise, and credibility evidence" label="EVIDENCE / CREDIBILITY" caption="Teacher credibility becomes a structured basis for judgment." locale="en" />
+    <XuelangFigure src="/images/xuelang/quality-structure.webp" width={1920} height={1080} alt="Course structure, chapter content, and learning path evidence" label="EVIDENCE / STRUCTURE" caption="Course structure explains what, how, and whether a learner can complete it." locale="en" />
+  </XuelangEvidenceGroup>
+  <XuelangFigure src="/images/xuelang/quality-guarantee.webp" width={1920} height={1080} alt="Reviews, learner outcomes, and platform guarantee evidence" label="EVIDENCE / GUARANTEE" caption="Reviews, outcomes, and platform guarantees reduce purchase risk together." locale="en" emphasis="wide" />
+  <h3 className="xuelang-subhead">One quality language across discovery / selection / detail</h3>
+  <XuelangEvidenceGroup variant="sequence">
+    <XuelangFigure src="/images/xuelang/discovery-touchpoint.webp" width={1920} height={1080} alt="Quality signals at the course discovery touchpoint" label="01 / DISCOVERY" caption="High-recognition signals create initial interest." locale="en" />
+    <XuelangFigure src="/images/xuelang/selection-touchpoint.webp" width={1920} height={1080} alt="Comparable quality evidence at the course selection touchpoint" label="02 / SELECTION" caption="Consistent dimensions support comparison." locale="en" />
+    <XuelangFigure src="/images/xuelang/course-detail.webp" width={1920} height={1080} alt="Complete purchase evidence on the course-detail page" label="03 / DETAIL" caption="The detail page completes the evidence loop." locale="en" />
+  </XuelangEvidenceGroup>
 </section>
 
 <section id="decision-purchase">
-  <h2>Bring trial content into the purchase decision</h2>
+  <header className="section-heading"><p className="section-index">05 / KEY DECISION 02</p><h2>Reconstruct the purchase decision path</h2></header>
+  <div className="xuelang-reading">
+    <p className="lead">The detail page had to answer “Is it relevant to me?”, “Can I trust the instructor?”, and “Is it worth buying now?” in an intentional sequence.</p>
+    <p>Trial content moved into the hero so learners could verify the course before reading reviews, structure, and benefits. A/B/C variants tested the information order, while different course categories still required category-specific templates.</p>
+  </div>
+  <XuelangEvidenceGroup variant="experiment">
+    <XuelangFigure src="/images/xuelang/experiment-a.webp" width={1920} height={1080} alt="Context and control variants for the course-detail hero experiment" label="A · B · C / CONTEXT" caption="Variants compared content position and information priority." locale="en" />
+    <XuelangFigure src="/images/xuelang/experiment-b.webp" width={1920} height={1080} alt="Selected course-detail hero variant with trial content" label="SELECTED / HERO TRIAL" caption="Trial content participates directly in the purchase decision." locale="en" />
+  </XuelangEvidenceGroup>
+  <XuelangDecisionResult label="Purchase experiment result" value="+6.5%" description="The hero trial-content variant produced a positive 6.5% lift in purchase conversion." />
 </section>
 
 <section id="decision-learning">
-  <h2>Build a focused experience that supports continued learning</h2>
+  <header className="section-heading"><p className="section-index">06 / KEY DECISION 03</p><h2>Connect a continuous learning experience</h2></header>
+  <div className="xuelang-reading"><p className="lead">Course delivery was not the end state. The redesign connected course entry, immersive viewing, fragmented learning, interaction, and note or learning-asset accumulation, balancing immersion with operating efficiency.</p></div>
+  <XuelangDarkComparison locale="en" title="Content delivery → Continuous learning experience" before={{ src: '/images/xuelang/detail-before.webp', width: 1920, height: 1080, alt: 'Previous course experience centered on content delivery', label: 'BEFORE / DELIVERY', caption: 'Entry and content existed, but learning actions remained disconnected.' }} after={{ src: '/images/xuelang/detail-after.webp', width: 1920, height: 1080, alt: 'Redesigned course experience connecting learning actions and states', label: 'AFTER / CONTINUITY', caption: 'Viewing, interaction, and learning accumulation become one continuous experience.' }} />
+  <XuelangLearningSequence locale="en" thesis="From entering a course to building personal learning assets, every state makes the current position and next action clear." states={[
+    { index: '01', title: 'Course entry', description: 'Show course state, progress, and a clear return path.', image: { src: '/images/xuelang/learning-entry.webp', width: 1920, height: 1080, alt: 'Course entry with progress and continue-learning state', label: 'ENTRY', caption: 'Reduce the cost of returning to learning.' } },
+    { index: '02', title: 'Immersive focus', description: 'Reduce distraction while keeping necessary controls legible.', image: { src: '/images/xuelang/learning-focus.webp', width: 1920, height: 1080, alt: 'Focused learning state with course content and controls', label: 'FOCUS', caption: 'Immersion and operational efficiency work together.' } },
+    { index: '03', title: 'Fragmented learning', description: 'Preserve progress and context for short return sessions.' },
+    { index: '04', title: 'Interaction', description: 'Keep questions and feedback in the context of the course.', image: { src: '/images/xuelang/learning-interaction.webp', width: 1920, height: 1080, alt: 'Course interaction and feedback interface', label: 'INTERACTION', caption: 'Interaction stays grounded in the learning context.' } },
+    { index: '05', title: 'Notes and learning assets', description: 'Accumulate notes and outcomes into personal value worth revisiting.', image: { src: '/images/xuelang/learning-assets.webp', width: 1920, height: 1080, alt: 'Notes and accumulated personal learning assets', label: 'ASSETS', caption: 'A viewing session becomes a reusable personal asset.' } },
+  ]} />
 </section>
 
 <section id="results">
-  <h2>Validated behavioral and commercial signals</h2>
+  <header className="section-heading"><p className="section-index">07 / VALIDATED RESULTS</p><h2>Commercial outcomes and behavioral signals validated the direction</h2></header>
+  <XuelangFigure src="/images/xuelang/result-evidence.webp" width={1920} height={1080} alt="Xuelang experiment outcomes paired with the corresponding design evidence" label="VALIDATED / EXPERIMENT" caption="Results reflect confirmed relative movement during the experiment period, not long-range conclusions." locale="en" emphasis="wide" />
+  <XuelangResults label="Validated results" metrics={[
+    { value: '+11.75%', label: 'GMV per user in the experiment group increased by a relative 11.75%' },
+    { value: '+1.36%', label: 'Course-detail exposure penetration improved by 1.36%' },
+    { value: '+6.5%', label: 'The hero trial-content variant lifted purchase conversion by 6.5%' },
+    { value: '+43% / +55% / +39%', label: 'Detail-page dwell time improved by 43% / 55% / 39% across experiment variants' },
+  ]} note="Data represents cumulative relative values over the 14-day experiment period." />
+  <div className="xuelang-reflection">
+    <p className="section-index">REFLECTION</p><h3>Turn “what makes a quality course” into a system learners can keep perceiving</h3>
+    <p>This project clarified that platform experience is not just clearer content arrangement. It turns course quality into a system people can understand, verify, and perceive over time. Standards support recognition, purchase evidence lowers decision cost, and the learning experience gives a transaction the possibility of becoming a longer relationship.</p>
+    <p>The next questions are how each course category should combine evidence more precisely and how learning assets might support return and repurchase. These remain future hypotheses, not validated outcomes from this phase.</p>
+  </div>
+  <XuelangContact locale="en" />
 </section>

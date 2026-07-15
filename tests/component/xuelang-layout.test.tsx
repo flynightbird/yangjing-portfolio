@@ -74,4 +74,23 @@ describe('XuelangLayout', () => {
     );
     expect(screen.queryByRole('navigation', { name: projectNav })).not.toBeInTheDocument();
   });
+
+  it('renders the complete evidence sequence without a project promotion close', () => {
+    const { Component, Layout, meta } = getEntry('work', 'xuelang', 'zh');
+    if (!Layout) throw new Error('Xuelang layout is required');
+
+    const { container } = render(
+      <Layout meta={meta} locale="zh">
+        <Component />
+      </Layout>,
+    );
+
+    expect(container.querySelectorAll('[data-evidence] img').length).toBeGreaterThanOrEqual(12);
+    expect(screen.getAllByTestId('learning-state')).toHaveLength(5);
+    expect(screen.getAllByTestId('xuelang-dark-stage')).toHaveLength(1);
+    expect(
+      screen.getByTestId('xuelang-dark-stage').querySelectorAll('img'),
+    ).toHaveLength(2);
+    expect(screen.queryByRole('navigation', { name: '项目导航' })).not.toBeInTheDocument();
+  });
 });

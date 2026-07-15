@@ -1,3 +1,14 @@
+import {
+  XuelangDarkComparison,
+  XuelangDecisionResult,
+  XuelangEvidenceGroup,
+  XuelangFigure,
+  XuelangLearningSequence,
+  XuelangResults,
+  XuelangStandardMap,
+} from '@/components/xuelang/xuelang-evidence'
+import { XuelangContact } from '@/components/xuelang/xuelang-contact'
+
 export const metadata = {
   type: 'work',
   slug: 'xuelang',
@@ -29,35 +40,155 @@ export const metadata = {
 <section id="overview">
   <header className="section-heading">
     <p className="section-index">00 / 项目概览</p>
-    <h2>让课程品质在发现、购买与学习的完整链路中被感知</h2>
+    <h2>让课程品质在完整体验链路中被感知</h2>
   </header>
-  <p className="lead">我作为项目主负责设计师，与产品、数据、前后端工程师及运营协作，将商业增长目标转译为一致的端到端学习体验。</p>
+  <div className="xuelang-reading">
+    <p className="lead">担任项目主负责设计师，负责整体体验策略、核心链路与关键方案设计，并协同其他设计师、产品、数据、研发和运营推进落地与实验验证。</p>
+    <p>项目并非单点改版，而是把课程品质从后台规则转译为用户能理解、能验证的体验信号，并让信号贯穿一次购买前后的完整关系。</p>
+  </div>
+  <ol className="xuelang-journey" aria-label="核心体验链路">
+    <li>发现课程</li><li>建立信任</li><li>购买决策</li><li>持续学习</li><li>形成复购基础</li>
+  </ol>
 </section>
 
 <section id="business">
-  <h2>从交易效率，走向可感知的课程品质</h2>
+  <header className="section-heading">
+    <p className="section-index">01 / 业务命题</p>
+    <h2>从承接交易，走向经营长期学习关系</h2>
+  </header>
+  <div className="xuelang-reading">
+    <p className="lead">用户的首次购买常发生在抖音，学浪更多承担课程交付。平台要继续增长，不能只让交易完成，还要让用户在学浪发现好课、判断价值并持续学习。</p>
+    <p>设计命题因此从“提高卖课效率”转向“让高品质课程可识别、可决策、可持续体验”，为复访与复购建立体验基础，但不把后续假设写成本阶段结果。</p>
+  </div>
+  <dl className="xuelang-context-facts" aria-label="业务背景数据">
+    <div><dt>平台规模</dt><dd>DAU 50w（约 50万）</dd></div>
+    <div><dt>业务目标</dt><dd>年度 GMV 300 亿</dd></div>
+    <div><dt>体验转向</dt><dd>交易完成 → 长期学习关系</dd></div>
+  </dl>
 </section>
 
 <section id="problem">
-  <h2>品质信号散落在完整体验链路中</h2>
+  <header className="section-heading">
+    <p className="section-index">02 / 问题定义</p>
+    <h2>问题不是信息少，而是品质难以被判断</h2>
+  </header>
+  <div className="xuelang-problem-list">
+    <article><span>01</span><h3>识别低</h3><p>课程信息很多，但缺少稳定标准，用户难以快速区分普通内容与真正的好课。</p></article>
+    <article><span>02</span><h3>信任低</h3><p>讲师、课程结构与学习结果彼此割裂，购买前需要反复寻找可信证据。</p></article>
+    <article><span>03</span><h3>难坚持</h3><p>完成支付后，课程入口、观看、互动与学习资产不连续，投入感容易中断。</p></article>
+  </div>
+  <details className="xuelang-details">
+    <summary>补充：用户与课程差异</summary>
+    <p>技能、兴趣与职业课程的决策依据并不相同；同一信息模板无法同时回答“是否适合我”和“能否学会”。因此研究结论被压缩为三类可行动问题，而不是扩展成独立研究报告。</p>
+  </details>
 </section>
 
 <section id="strategy">
-  <h2>把发现、决策与学习连接为统一体验</h2>
+  <header className="section-heading">
+    <p className="section-index">03 / 设计策略</p>
+    <h2>一端定义品质，一端补全体验</h2>
+  </header>
+  <blockquote className="xuelang-thesis">一端建立课程质量标准，一端补全发现、决策、学习与沉淀的体验链路。</blockquote>
+  <p className="xuelang-formula">卖“好”课 × 学习体验</p>
+  <p className="xuelang-strategy-note">前者让好课有一致的证据语言，后者把证据放在用户真正需要判断与行动的触点中。</p>
 </section>
 
 <section id="decision-standard">
-  <h2>把好课标准转译为用户可识别的产品信号</h2>
+  <header className="section-heading">
+    <p className="section-index">04 / 关键决策一</p>
+    <h2>建立好课识别标准</h2>
+  </header>
+  <div className="xuelang-reading">
+    <p className="lead">用户并不缺课程信息，缺的是一套可靠的解释标准。设计没有再增加一个促销标签，而是把讲师可信度、课程结构、学习成果或作品、评价与平台保障组织为可理解的证据系统。</p>
+    <p>质量标准 → 信息模块 → 多触点一致表达 → 用户信任，成为从规则到界面的转换路径。</p>
+  </div>
+  <XuelangStandardMap
+    label="好课标准到用户信任的映射"
+    steps={[
+      { title: '质量标准', description: '明确讲师、结构、成果、评价与保障的判断维度。' },
+      { title: '信息模块', description: '把抽象标准变成用户能扫描和比较的界面证据。' },
+      { title: '多触点一致表达', description: '在发现、甄选与商详中复用同一套品质语言。' },
+      { title: '用户信任', description: '降低解释成本，让购买判断建立在可验证证据上。' },
+    ]}
+  />
+  <XuelangFigure src="/images/xuelang/quality-standard.webp" width={1920} height={1080} alt="课程质量标准映射为可见的讲师、结构与平台保障模块" label="SYSTEM / QUALITY STANDARD" caption="把内部质量标准转译为用户可识别的界面证据，而不是额外的营销口号。" locale="zh" emphasis="wide" />
+  <XuelangEvidenceGroup>
+    <XuelangFigure src="/images/xuelang/quality-credibility.webp" width={1920} height={1080} alt="讲师背景、专业能力与可信度信息模块" label="EVIDENCE / CREDIBILITY" caption="讲师可信度从零散介绍变成结构化判断依据。" locale="zh" />
+    <XuelangFigure src="/images/xuelang/quality-structure.webp" width={1920} height={1080} alt="课程结构、章节内容与学习路径信息" label="EVIDENCE / STRUCTURE" caption="课程结构回答学什么、怎么学与能否完成。" locale="zh" />
+  </XuelangEvidenceGroup>
+  <XuelangFigure src="/images/xuelang/quality-guarantee.webp" width={1920} height={1080} alt="评价、学习成果与平台保障构成的质量证据" label="EVIDENCE / GUARANTEE" caption="评价、成果与平台保障共同降低购买风险。" locale="zh" emphasis="wide" />
+  <h3 className="xuelang-subhead">同一套品质语言，贯穿发现 / 甄选 / 商详</h3>
+  <XuelangEvidenceGroup variant="sequence">
+    <XuelangFigure src="/images/xuelang/discovery-touchpoint.webp" width={1920} height={1080} alt="课程发现页面中的品质信号" label="01 / 发现" caption="先用高识别度信号建立兴趣。" locale="zh" />
+    <XuelangFigure src="/images/xuelang/selection-touchpoint.webp" width={1920} height={1080} alt="课程甄选页面中的比较信息" label="02 / 甄选" caption="再用一致维度支持比较。" locale="zh" />
+    <XuelangFigure src="/images/xuelang/course-detail.webp" width={1920} height={1080} alt="课程商详页面中的完整购买证据" label="03 / 商详" caption="最终在商详中完成证据闭环。" locale="zh" />
+  </XuelangEvidenceGroup>
 </section>
 
 <section id="decision-purchase">
-  <h2>让试看内容真正参与购买决策</h2>
+  <header className="section-heading">
+    <p className="section-index">05 / 关键决策二</p>
+    <h2>重构购买决策路径</h2>
+  </header>
+  <div className="xuelang-reading">
+    <p className="lead">商详页需要依次回答“是否适合我”“老师是否可信”“现在是否值得购买”。试听内容因此被前置到头图区域，让用户先验证内容，再阅读评价、课程结构与权益。</p>
+    <p>我们通过 A/B/C 方案比较验证信息顺序，并选择头图试听方案。技能、兴趣与职业等不同课程品类仍需要差异化信息模板，不能用单一结构覆盖所有决策。</p>
+  </div>
+  <XuelangEvidenceGroup variant="experiment">
+    <XuelangFigure src="/images/xuelang/experiment-a.webp" width={1920} height={1080} alt="课程商详头图实验的背景方案与对照版本" label="A · B · C / CONTEXT" caption="对照不同内容位置与信息优先级。" locale="zh" />
+    <XuelangFigure src="/images/xuelang/experiment-b.webp" width={1920} height={1080} alt="被选中的课程商详头图试听方案" label="SELECTED / 头图试听" caption="让试听直接参与购买判断，而不是隐藏在后续页面。" locale="zh" />
+  </XuelangEvidenceGroup>
+  <XuelangDecisionResult label="购买实验结果" value="+6.5%" description="头图试听方案购买转化正向 6.5%。" />
 </section>
 
 <section id="decision-learning">
-  <h2>构建支持持续投入的专注学习体验</h2>
+  <header className="section-heading">
+    <p className="section-index">06 / 关键决策三</p>
+    <h2>连接持续学习体验</h2>
+  </header>
+  <div className="xuelang-reading">
+    <p className="lead">课程交付不是体验终点。改版把课程入口、沉浸观看、碎片学习、互动与笔记与学习资产连接起来，同时设计沉浸感与操作效率，而不是只做一次视觉翻新。</p>
+  </div>
+  <XuelangDarkComparison
+    locale="zh"
+    title="内容交付 → 连续学习体验"
+    before={{ src: '/images/xuelang/detail-before.webp', width: 1920, height: 1080, alt: '改版前以内容交付为主的课程页面', label: 'BEFORE / DELIVERY', caption: '入口与内容存在，但学习动作彼此分离。' }}
+    after={{ src: '/images/xuelang/detail-after.webp', width: 1920, height: 1080, alt: '改版后连接学习动作与状态的课程体验', label: 'AFTER / CONTINUITY', caption: '把观看、互动与学习沉淀组织为连续体验。' }}
+  />
+  <XuelangLearningSequence
+    locale="zh"
+    thesis="让用户从进入课程到形成个人学习资产，每一步都知道当前状态与下一步行动。"
+    states={[
+      { index: '01', title: '课程入口', description: '明确课程状态、进度与继续学习入口。', image: { src: '/images/xuelang/learning-entry.webp', width: 1920, height: 1080, alt: '课程入口呈现进度与继续学习状态', label: 'ENTRY', caption: '降低重新进入学习的成本。' } },
+      { index: '02', title: '沉浸观看', description: '收拢干扰信息，让内容与必要控制保持清晰。', image: { src: '/images/xuelang/learning-focus.webp', width: 1920, height: 1080, alt: '沉浸观看状态聚焦课程内容与控制', label: 'FOCUS', caption: '沉浸感与操作效率同时成立。' } },
+      { index: '03', title: '碎片学习', description: '在短时间返回时，保留进度与上下文，让学习可以继续。' },
+      { index: '04', title: '互动', description: '把问题、反馈与课程内容放在同一学习语境中。', image: { src: '/images/xuelang/learning-interaction.webp', width: 1920, height: 1080, alt: '课程学习中的互动与反馈界面', label: 'INTERACTION', caption: '互动围绕内容发生，而不是跳出学习场景。' } },
+      { index: '05', title: '笔记与学习资产', description: '让笔记与成果持续积累，形成再次访问的个人价值。', image: { src: '/images/xuelang/learning-assets.webp', width: 1920, height: 1080, alt: '笔记与个人学习资产沉淀界面', label: 'ASSETS', caption: '一次观看沉淀为可回看的个人资产。' } },
+    ]}
+  />
 </section>
 
 <section id="results">
-  <h2>经过验证的行为与商业信号</h2>
+  <header className="section-heading">
+    <p className="section-index">07 / 验证结果</p>
+    <h2>业务结果与行为信号共同验证方向</h2>
+  </header>
+  <XuelangFigure src="/images/xuelang/result-evidence.webp" width={1920} height={1080} alt="学浪商业化体验实验结果与对应设计证据" label="VALIDATED / EXPERIMENT" caption="结果来自实验周期内已确认的相对变化，不延伸为长期结论。" locale="zh" emphasis="wide" />
+  <XuelangResults
+    label="已验证结果"
+    metrics={[
+      { value: '+11.75%', label: '实验组人均 GMV 相对提升 11.75%' },
+      { value: '+1.36%', label: '课程商详页展现渗透正向提升 1.36%' },
+      { value: '+6.5%', label: '头图试听方案购买转化正向 6.5%' },
+      { value: '+43% / +55% / +39%', label: '不同实验方案的课程商详页停留时长分别正向提升 43% / 55% / 39%' },
+    ]}
+    note="数据为实验周期内 14 天累计相对值。"
+  />
+  <div className="xuelang-reflection">
+    <p className="section-index">REFLECTION</p>
+    <h3>把“什么是好课”变成可持续感知的系统</h3>
+    <p>这次项目让我更明确：平台体验的价值不只是把内容排得更清楚，而是把“什么是好课”变成用户可理解、可验证、可持续感知的系统。质量标准解决识别，购买证据降低决策成本，学习体验让一次交易有机会延续为长期关系。</p>
+    <p>下一阶段更值得验证的，是不同课程品类如何使用更精准的证据组合，以及学习资产如何进一步支持复访与复购；这些是后续假设，不作为本次已验证结果。</p>
+  </div>
+  <XuelangContact locale="zh" />
 </section>

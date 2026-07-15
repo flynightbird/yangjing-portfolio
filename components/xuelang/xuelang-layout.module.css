@@ -173,6 +173,181 @@
   line-height: 1.7;
 }
 
+.content :global(.xuelang-reading) {
+  max-width: 48rem;
+}
+
+.content :global(.xuelang-reading > p:not(.lead)),
+.content :global(.xuelang-strategy-note),
+.content :global(.xuelang-reflection p) {
+  color: var(--xuelang-muted);
+  line-height: 1.75;
+}
+
+.content :global(.xuelang-reading > p + p) {
+  margin-block-start: 1.25rem;
+}
+
+.content :global(.xuelang-journey),
+.content :global(.xuelang-context-facts),
+.content :global(.xuelang-problem-list) {
+  grid-column: 1 / -1;
+  display: grid;
+  padding: 0;
+  margin: 3rem 0 0;
+  list-style: none;
+}
+
+.content :global(.xuelang-journey) {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border-block: 1px solid var(--xuelang-line);
+  counter-reset: journey;
+}
+
+.content :global(.xuelang-journey li) {
+  min-width: 0;
+  padding: 1.25rem;
+  border-inline-start: 1px solid var(--xuelang-line);
+  counter-increment: journey;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.content :global(.xuelang-journey li:first-child) {
+  border-inline-start: 0;
+}
+
+.content :global(.xuelang-journey li::before) {
+  display: block;
+  margin-block-end: 1.5rem;
+  color: var(--xuelang-green);
+  content: counter(journey, decimal-leading-zero);
+  font-family: var(--xuelang-font-mono);
+  font-size: 0.6875rem;
+}
+
+.content :global(.xuelang-context-facts) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-block: 1px solid var(--xuelang-line);
+}
+
+.content :global(.xuelang-context-facts div) {
+  padding: 1.5rem;
+  border-inline-start: 1px solid var(--xuelang-line);
+}
+
+.content :global(.xuelang-context-facts div:first-child) {
+  border-inline-start: 0;
+}
+
+.content :global(.xuelang-context-facts dt) {
+  color: var(--xuelang-green);
+  font-family: var(--xuelang-font-mono);
+  font-size: 0.6875rem;
+}
+
+.content :global(.xuelang-context-facts dd) {
+  margin: 1rem 0 0;
+  font-size: clamp(1.35rem, 2.4vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.content :global(.xuelang-problem-list) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 2rem);
+}
+
+.content :global(.xuelang-problem-list article) {
+  padding-block: 1.5rem;
+  border-block-start: 2px solid var(--xuelang-ink);
+}
+
+.content :global(.xuelang-problem-list span) {
+  color: var(--xuelang-green);
+  font-family: var(--xuelang-font-mono);
+  font-size: 0.6875rem;
+}
+
+.content :global(.xuelang-problem-list h3) {
+  margin: 2rem 0 0;
+  font-size: 1.5rem;
+}
+
+.content :global(.xuelang-problem-list p) {
+  color: var(--xuelang-muted);
+  line-height: 1.65;
+}
+
+.content :global(.xuelang-details) {
+  grid-column: 1 / span 7;
+  margin-block-start: 2rem;
+  padding-block: 1rem;
+  border-block: 1px solid var(--xuelang-line);
+}
+
+.content :global(.xuelang-details summary) {
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.content :global(.xuelang-details p) {
+  color: var(--xuelang-muted);
+  line-height: 1.7;
+}
+
+.content :global(.xuelang-thesis) {
+  grid-column: 1 / span 9;
+  margin: 2rem 0 0;
+  padding: 0;
+  border: 0;
+  font-size: clamp(2.2rem, 4.5vw, 5.2rem);
+  font-weight: 600;
+  line-height: 1.13;
+}
+
+.content :global(.xuelang-formula) {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 4rem 0 0;
+  padding-block: 1.5rem;
+  border-block: 1px solid var(--xuelang-line);
+  font-size: clamp(1.6rem, 3vw, 3.5rem);
+  font-weight: 600;
+}
+
+.content :global(.xuelang-formula span) {
+  color: var(--xuelang-green);
+  font-family: var(--xuelang-font-mono);
+}
+
+.content :global(.xuelang-strategy-note) {
+  grid-column: 6 / -1;
+}
+
+.content :global(.xuelang-subhead) {
+  grid-column: 1 / span 8;
+  margin: 5rem 0 0;
+  font-size: clamp(1.6rem, 3vw, 3rem);
+}
+
+.content :global(.xuelang-reflection) {
+  grid-column: 4 / span 7;
+  margin-block-start: 7rem;
+  padding-block-start: 2rem;
+  border-block-start: 2px solid var(--xuelang-green);
+}
+
+.content :global(.xuelang-reflection h3) {
+  max-width: 20ch;
+  margin: 1rem 0 2rem;
+  font-size: clamp(1.8rem, 3vw, 3.5rem);
+  line-height: 1.15;
+}
+
 @media (max-width: 900px) {
   .frame {
     display: block;
@@ -215,6 +390,27 @@
 
   .content > :global(section > * + *) {
     margin-block-start: 1.5rem;
+  }
+
+  .content :global(.xuelang-journey),
+  .content :global(.xuelang-context-facts),
+  .content :global(.xuelang-problem-list) {
+    display: block;
+  }
+
+  .content :global(.xuelang-journey li),
+  .content :global(.xuelang-context-facts div) {
+    border-inline-start: 0;
+    border-block-start: 1px solid var(--xuelang-line);
+  }
+
+  .content :global(.xuelang-thesis) {
+    font-size: clamp(2rem, 9vw, 3.5rem);
+  }
+
+  .content :global(.xuelang-formula) {
+    gap: 1rem;
+    font-size: 1.4rem;
   }
 }
 
