@@ -9,6 +9,7 @@ import {
   dimensionsAtWidth,
   ensureSafeOutputPath,
   resolveContainedPath,
+  resolveRealContainedPath,
   responsiveVariantPath,
   selectResponsiveWidths,
 } from '../lib/media/assets.ts';
@@ -47,10 +48,11 @@ async function readExcludedSources(rootDir) {
 
 async function inspectAssets({ rootDir, manifest }) {
   if (manifest.assets.length === 0) return [];
-  const sourceRoot = resolveContainedPath(rootDir, manifest.sourceRoot);
-  const realSourceRoot = await fs.realpath(sourceRoot).catch(() => {
-    throw new Error(`Media sourceRoot is unreadable: ${manifest.sourceRoot}`);
-  });
+  const realSourceRoot = await resolveRealContainedPath(
+    rootDir,
+    manifest.sourceRoot,
+    'Media sourceRoot',
+  );
   const excludedSources = await readExcludedSources(rootDir);
   const destinations = new Set();
   const inspected = [];
@@ -76,7 +78,7 @@ async function inspectAssets({ rootDir, manifest }) {
     if (!Array.isArray(asset.widths) || asset.widths.length === 0) {
       throw new Error(`Media asset ${asset.id} must declare widths`);
     }
-    const sourcePath = resolveContainedPath(sourceRoot, asset.source);
+    const sourcePath = resolveContainedPath(realSourceRoot, asset.source);
     const realSourcePath = await fs.realpath(sourcePath).catch(() => {
       throw new Error(`Media source is unreadable: ${asset.source}`);
     });

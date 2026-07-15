@@ -29,6 +29,29 @@ export function resolveContainedPath(root: string, relativePath: string): string
   return candidate;
 }
 
+export async function resolveRealContainedPath(
+  root: string,
+  relativePath: string,
+  label = 'path',
+): Promise<string> {
+  const candidate = resolveContainedPath(root, relativePath);
+  let realRoot: string;
+  let realCandidate: string;
+  try {
+    [realRoot, realCandidate] = await Promise.all([
+      fs.realpath(path.resolve(root)),
+      fs.realpath(candidate),
+    ]);
+  } catch {
+    throw new Error(`${label} is unreadable: ${relativePath}`);
+  }
+  const relation = path.relative(realRoot, realCandidate);
+  if (relation === '..' || relation.startsWith(`..${path.sep}`) || path.isAbsolute(relation)) {
+    throw new Error(`${label} resolves outside repository: ${relativePath}`);
+  }
+  return realCandidate;
+}
+
 export function selectResponsiveWidths(
   declaredWidths: readonly number[],
   intrinsicWidth: number,

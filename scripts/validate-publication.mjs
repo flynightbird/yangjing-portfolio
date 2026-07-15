@@ -6,12 +6,16 @@ import { parse } from 'acorn';
 import { JSDOM } from 'jsdom';
 import sharp from 'sharp';
 
-import { findSensitiveText } from '../lib/content/privacy.ts';
+import {
+  SENSITIVE_TEXT_LABELS,
+  findSensitiveText,
+} from '../lib/content/privacy.ts';
 import {
   RESPONSIVE_WIDTHS,
   assertSafeRelativePath,
   dimensionsAtWidth,
   resolveContainedPath,
+  resolveRealContainedPath,
   responsiveVariantPath,
   selectResponsiveWidths,
 } from '../lib/media/assets.ts';
@@ -149,6 +153,20 @@ function extractVisibleHtmlText(html) {
   return values.join('\n');
 }
 
+function findSensitiveHtml(html) {
+  const findings = new Set(findSensitiveText(extractVisibleHtmlText(html)));
+  const rawHtmlFindings = findSensitiveText(html);
+  for (const finding of rawHtmlFindings) {
+    if (
+      finding === SENSITIVE_TEXT_LABELS.authorization ||
+      finding === SENSITIVE_TEXT_LABELS.identifier
+    ) {
+      findings.add(finding);
+    }
+  }
+  return findings;
+}
+
 async function validatePrivacy(rootDir, roots) {
   const errors = [];
   const textExtensions = new Set(['.md', '.mdx', '.json', '.html', '.txt', '.vtt']);
@@ -162,10 +180,10 @@ async function validatePrivacy(rootDir, roots) {
         errors.push(`Unable to read text file: ${relative(rootDir, filePath)}`);
         continue;
       }
-      const scannedText = filePath.endsWith('.html')
-        ? extractVisibleHtmlText(text)
-        : text;
-      for (const finding of findSensitiveText(scannedText)) {
+      const findings = filePath.endsWith('.html')
+        ? findSensitiveHtml(text)
+        : findSensitiveText(text);
+      for (const finding of findings) {
         errors.push(`Sensitive text (${finding}): ${relative(rootDir, filePath)}`);
       }
     }
@@ -466,6 +484,21 @@ async function validateMediaManifest(rootDir, mode) {
     }
     if (!Array.isArray(manifest.assets)) throw new Error('assets must be an array');
     if (!Array.isArray(manifest.generated)) throw new Error('generated must be an array');
+    let sourceRoot;
+    let realSourceRoot;
+    if (mode !== 'output' && manifest.assets.length > 0) {
+      sourceRoot = resolveContainedPath(rootDir, manifest.sourceRoot);
+      try {
+        await fs.lstat(sourceRoot);
+        realSourceRoot = await resolveRealContainedPath(
+          rootDir,
+          manifest.sourceRoot,
+          'sourceRoot',
+        );
+      } catch (error) {
+        if (error?.code !== 'ENOENT') throw error;
+      }
+    }
     const destinations = new Set();
     const assetIds = new Set();
     const expectedRecords = new Map();
@@ -494,8 +527,13 @@ async function validateMediaManifest(rootDir, mode) {
       let intrinsicWidth = asset.intrinsicWidth;
       let intrinsicHeight = asset.intrinsicHeight;
       if (mode === 'source') {
-        const sourceRoot = resolveContainedPath(rootDir, manifest.sourceRoot);
-        const sourcePath = resolveContainedPath(sourceRoot, asset.source);
+        const sourcePath = realSourceRoot
+          ? await resolveRealContainedPath(
+              realSourceRoot,
+              asset.source,
+              `assets[${index}].source`,
+            )
+          : resolveContainedPath(sourceRoot, asset.source);
         if (!(await isRegularFile(sourcePath))) {
           errors.push(`Media manifest source is missing: ${asset.source}`);
         } else {

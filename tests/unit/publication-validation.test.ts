@@ -232,6 +232,24 @@ export const metadata = {
     );
   });
 
+  it('rejects a media sourceRoot symlink that resolves outside the repository', async () => {
+    const root = createRoot();
+    const outside = createRoot();
+    await sharp({
+      create: { width: 640, height: 320, channels: 3, background: '#336699' },
+    }).png().toFile(path.join(outside, 'source.png'));
+    symlinkSync(outside, path.join(root, '.publication-media'));
+    write(root, 'evidence/media/manifest.json', JSON.stringify(generatedContract({
+      sourceRoot: '.publication-media',
+      generated: [],
+    })));
+
+    const result = await runPublicationValidation({ mode: 'development', rootDir: root });
+    expect(result.errors).toEqual(expect.arrayContaining([
+      expect.stringMatching(/sourceRoot.*(?:outside|repository|escapes)/i),
+    ]));
+  });
+
   it('rejects malformed media that is present in output', async () => {
     const root = createRoot();
     write(root, 'out/files/yang-jing-resume-en.pdf', 'not pdf output');
@@ -266,6 +284,32 @@ export const metadata = {
 
     const result = await runPublicationValidation({ mode: 'output', rootDir: root });
     expect(result.errors).toContain('Sensitive text (authorization token): out/index.html');
+  });
+
+  it('detects authorization secrets embedded in generated script JSON', async () => {
+    const root = createRoot();
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><script type="application/json">{"authorization":"Bearer abc.def.ghi"}</script></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).toContain('Sensitive text (authorization token): out/index.html');
+  });
+
+  it('detects account identifiers embedded in generated data attributes', async () => {
+    const root = createRoot();
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><div data-payload="account_id=acc_82HF91KQ"></div></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).toContain(
+      'Sensitive text (account or internal identifier): out/index.html',
+    );
   });
 
   it('composes the approved Call Agent and STT checksum validation', async () => {
@@ -592,6 +636,25 @@ describe('responsive publication media', () => {
     write(root, 'evidence/media/manifest.json', JSON.stringify(baseManifest));
     await expect(generateResponsiveMedia({ rootDir: root })).rejects.toThrow(
       /safe relative path|escapes/i,
+    );
+  });
+
+  it('rejects a generator sourceRoot symlink that resolves outside the repository', async () => {
+    const root = createRoot();
+    const outside = createRoot();
+    await sharp({
+      create: { width: 640, height: 320, channels: 3, background: '#336699' },
+    }).png().toFile(path.join(outside, 'source.png'));
+    symlinkSync(outside, path.join(root, '.publication-media'));
+    write(root, 'evidence/media/manifest.json', JSON.stringify(generatedContract({
+      sourceRoot: '.publication-media',
+      generated: [],
+    })));
+    const modulePath = pathToFileURL(path.join(process.cwd(), 'scripts/generate-responsive-media.mjs')).href;
+    const { generateResponsiveMedia } = await import(modulePath);
+
+    await expect(generateResponsiveMedia({ rootDir: root })).rejects.toThrow(
+      /sourceRoot.*(?:outside|repository|escapes)/i,
     );
   });
 
