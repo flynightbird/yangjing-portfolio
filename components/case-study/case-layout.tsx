@@ -7,7 +7,7 @@ import { ChapterNav } from './chapter-nav';
 import styles from './case-layout.module.css';
 import './print.css';
 
-interface CaseLayoutProps {
+export interface ContentLayoutProps {
   readonly meta: ContentMeta;
   readonly locale: Locale;
   readonly children: ReactNode;
@@ -53,7 +53,7 @@ export function CaseLayout({
   actions,
   previous,
   next,
-}: CaseLayoutProps) {
+}: ContentLayoutProps) {
   const text = copy[locale];
 
   return (

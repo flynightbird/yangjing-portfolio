@@ -42,6 +42,11 @@
   color: var(--color-cobalt);
 }
 
+.navigation a[aria-current='location'] {
+  box-shadow: inset 2px 0 0 #6f8f78;
+  color: #111512;
+}
+
 @media (max-width: 900px) {
   .root {
     position: sticky;

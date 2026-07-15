@@ -1,0 +1,14 @@
+@media print {
+  [data-xuelang-case] {
+    background: #fff !important;
+    color: #111512 !important;
+  }
+
+  [data-xuelang-case] [data-case-web-control] {
+    display: none !important;
+  }
+
+  [data-xuelang-case] [data-hero-panorama] {
+    break-inside: avoid;
+  }
+}

@@ -1,0 +1,13 @@
+.figure {
+  margin: 0;
+  border-block-start-color: #d8ded9;
+}
+
+.figure :global(button) {
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.wide {
+  grid-column: 1 / -1 !important;
+}

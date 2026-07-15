@@ -1,7 +1,7 @@
 'use client';
 
 import { List, X } from 'lucide-react';
-import { useState, useSyncExternalStore } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 
 import type { ChapterMeta } from '@/content/schema';
 import type { Locale } from '@/content/types';
@@ -17,6 +17,10 @@ const subscribeToHydration = () => () => {};
 
 export function ChapterNav({ chapters, locale }: ChapterNavProps) {
   const [open, setOpen] = useState(false);
+  const [activeId, setActiveId] = useState(chapters[0]?.id);
+  const currentActiveId = chapters.some(({ id }) => id === activeId)
+    ? activeId
+    : chapters[0]?.id;
   const hydrated = useSyncExternalStore(
     subscribeToHydration,
     () => true,
@@ -34,6 +38,27 @@ export function ChapterNav({ chapters, locale }: ChapterNavProps) {
           open: 'Open chapter index',
           close: 'Close chapter index',
         };
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') return;
+
+    const targets = chapters
+      .map(({ id }) => document.getElementById(id))
+      .filter((target): target is HTMLElement => target !== null);
+    if (!targets.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const current = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (current?.target.id) setActiveId(current.target.id);
+      },
+      { rootMargin: '-35% 0px -55% 0px', threshold: 0 },
+    );
+    targets.forEach((target) => observer.observe(target));
+    return () => observer.disconnect();
+  }, [chapters]);
 
   return (
     <div className={styles.root} data-case-web-control>
@@ -58,7 +83,14 @@ export function ChapterNav({ chapters, locale }: ChapterNavProps) {
         <ol>
           {chapters.map((chapter, index) => (
             <li key={chapter.id}>
-              <a href={`#${chapter.id}`} onClick={() => setOpen(false)}>
+              <a
+                href={`#${chapter.id}`}
+                aria-current={currentActiveId === chapter.id ? 'location' : undefined}
+                onClick={() => {
+                  setActiveId(chapter.id);
+                  setOpen(false);
+                }}
+              >
                 <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
                 {chapter.label}
               </a>

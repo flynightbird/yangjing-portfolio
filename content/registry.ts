@@ -25,6 +25,8 @@ import {
   meetingDraftZhMetadata,
 } from '@/content/work/meeting-draft';
 import { CallAgentActions } from '@/components/case-study/call-agent-actions';
+import type { ContentLayoutProps } from '@/components/case-study/case-layout';
+import { XuelangLayout } from '@/components/xuelang/xuelang-layout';
 import { contentMetaSchema, type ContentMeta } from '@/content/schema';
 import type {
   ContentKind,
@@ -39,6 +41,7 @@ export interface ContentEntry {
   readonly meta: ContentMeta;
   readonly Component: MdxContentComponent;
   readonly Actions?: ContentActionsComponent;
+  readonly Layout?: ComponentType<ContentLayoutProps>;
 }
 
 export interface ContentRegistry {
@@ -90,10 +93,12 @@ export const contentEntries: readonly ContentEntry[] = [
   {
     meta: contentMetaSchema.parse(xuelangEnMetadata),
     Component: XuelangEn,
+    Layout: XuelangLayout,
   },
   {
     meta: contentMetaSchema.parse(xuelangZhMetadata),
     Component: XuelangZh,
+    Layout: XuelangLayout,
   },
   {
     meta: contentMetaSchema.parse(callAgentEnMetadata),

@@ -25,6 +25,10 @@ describe('ChapterNav', () => {
 
     const toggle = screen.getByRole('button', { name: 'Open chapter index' });
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('link', { name: 'Overview' })).toHaveAttribute(
+      'aria-current',
+      'location',
+    );
 
     await user.click(toggle);
     expect(toggle).toHaveAttribute('aria-expanded', 'true');

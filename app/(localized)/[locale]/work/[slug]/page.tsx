@@ -64,12 +64,12 @@ export default async function WorkCasePage({ params }: WorkCasePageProps) {
     notFound();
   }
 
-  const { Actions, Component, meta } = entry;
+  const { Actions, Component, Layout = CaseLayout, meta } = entry;
   const previousEntry = findUniqueNeighbor(meta.previousSlug, locale);
   const nextEntry = findUniqueNeighbor(meta.nextSlug, locale);
 
   return (
-    <CaseLayout
+    <Layout
       meta={meta}
       locale={locale}
       actions={Actions ? <Actions locale={locale} /> : undefined}
@@ -77,6 +77,6 @@ export default async function WorkCasePage({ params }: WorkCasePageProps) {
       next={resolveNeighbor(nextEntry, locale)}
     >
       <Component />
-    </CaseLayout>
+    </Layout>
   );
 }

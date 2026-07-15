@@ -1,0 +1,235 @@
+.root {
+  --xuelang-paper: #f5f7f5;
+  --xuelang-ink: #111512;
+  --xuelang-muted: #5f6862;
+  --xuelang-green: #6f8f78;
+  --xuelang-line: #d8ded9;
+  --xuelang-dark: #121614;
+  border-block-end: 1px solid var(--xuelang-line);
+  background: var(--xuelang-paper);
+  color: var(--xuelang-ink);
+  font-family: var(--xuelang-font-body);
+}
+
+.frame {
+  display: grid;
+  width: min(100%, 100rem);
+  grid-template-columns: minmax(9rem, 2fr) minmax(0, 10fr);
+  gap: clamp(1.5rem, 3vw, 4rem);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 3vw, 3.5rem);
+}
+
+.rail {
+  min-width: 0;
+  padding-block-start: 4rem;
+}
+
+.case,
+.content {
+  min-width: 0;
+}
+
+.hero {
+  display: grid;
+  min-height: calc(100vh - var(--header-height));
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  align-content: space-between;
+  column-gap: clamp(1rem, 2vw, 2rem);
+  padding-block: clamp(3.5rem, 7vh, 6rem) clamp(2rem, 4vh, 3.5rem);
+}
+
+.heroCopy {
+  grid-column: 1 / span 7;
+}
+
+.eyebrow,
+.facts dt {
+  color: var(--xuelang-green);
+  font-family: var(--xuelang-font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  margin: 0 0 clamp(2rem, 4vh, 3.5rem);
+}
+
+.hero h1 {
+  max-width: 12ch;
+  margin: 0;
+  font-family: var(--xuelang-font-body);
+  font-size: clamp(3.5rem, 6.2vw, 6.8rem);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: 0;
+}
+
+.proposition {
+  max-width: 34rem;
+  margin: 1.75rem 0 0;
+  color: var(--xuelang-muted);
+  font-size: clamp(1.125rem, 1.5vw, 1.5rem);
+  line-height: 1.45;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  max-width: 52rem;
+  margin: clamp(2rem, 4vh, 3rem) 0 0;
+  border-block: 1px solid var(--xuelang-line);
+}
+
+.facts div {
+  min-width: 10rem;
+  flex: 1 1 0;
+  padding: 0.9rem 1rem 1rem 0;
+}
+
+.facts dd {
+  margin: 0.35rem 0 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.pdfAction {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.65rem;
+  margin-block-start: 1.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--xuelang-ink);
+  border-radius: 4px;
+  color: var(--xuelang-ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.pdfAction:hover,
+.pdfAction:focus-visible {
+  background: var(--xuelang-ink);
+  color: var(--xuelang-paper);
+}
+
+.panorama {
+  overflow: hidden;
+  grid-column: 1 / -1;
+  align-self: end;
+  margin: clamp(2rem, 5vh, 4rem) 0 0;
+  border: 1px solid var(--xuelang-line);
+  border-radius: 4px;
+  aspect-ratio: 2 / 1;
+  background: #e9eeea;
+}
+
+.panorama img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content > :global(section) {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 1.5rem;
+  padding-block: clamp(5rem, 10vw, 10rem);
+  scroll-margin-block-start: calc(var(--header-height) + 4rem);
+  border-block-start: 1px solid var(--xuelang-line);
+}
+
+.content > :global(section > *) {
+  grid-column: 1 / span 7;
+}
+
+.content :global(.section-heading h2),
+.content > :global(section > h2) {
+  max-width: 18ch;
+  margin: 0;
+  font-size: clamp(2rem, 3.5vw, 4rem);
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+
+.content :global(.section-index) {
+  color: var(--xuelang-green);
+  font-family: var(--xuelang-font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.content :global(.lead) {
+  max-width: 48rem;
+  color: var(--xuelang-muted);
+  font-size: 1.2rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+  .frame {
+    display: block;
+    padding-inline: clamp(1rem, 5vw, 2rem);
+  }
+
+  .rail {
+    position: relative;
+    z-index: 20;
+    padding-block-start: 0;
+  }
+
+  .hero {
+    min-height: auto;
+    display: block;
+    padding-block-start: 3rem;
+  }
+
+  .heroCopy {
+    width: 100%;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.7rem, 12vw, 4.25rem);
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .facts div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .content > :global(section) {
+    display: block;
+    padding-block: 5rem;
+  }
+
+  .content > :global(section > * + *) {
+    margin-block-start: 1.5rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .facts {
+    display: block;
+  }
+
+  .panorama {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdfAction {
+    transition: none;
+  }
+}
