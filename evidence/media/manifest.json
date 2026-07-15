@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "sourceRoot": ".publication-media",
+  "allowedWidths": [
+    640,
+    960,
+    1440,
+    1920
+  ],
+  "assets": [],
+  "generated": []
+}

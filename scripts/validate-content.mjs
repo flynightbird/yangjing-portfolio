@@ -4,6 +4,8 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { fileURLToPath } from 'node:url';
 
+import { findSensitiveText } from '../lib/content/privacy.ts';
+
 import {
   STT_DEMO_FULL_COMMIT,
   loadApprovedChecksums,
@@ -12,13 +14,7 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-export function findSensitiveText(value) {
-  const findings = [];
-  if (/authorization\s*[:=]|bearer\s+[a-z0-9._-]{8,}/i.test(value)) findings.push('authorization token');
-  if (/(?:\+?86[-\s]?)?1[3-9]\d[-\s]?\d{4}[-\s]?\d{4}/.test(value)) findings.push('phone number');
-  if (/\b(?:\d{1,3}\.){3}\d{1,3}\b/.test(value)) findings.push('IP address');
-  return findings;
-}
+export { findSensitiveText };
 
 export function validateManifestEntry(entry) {
   return ['source', 'output', 'chapter', 'purpose', 'alt']

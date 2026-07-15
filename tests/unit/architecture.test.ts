@@ -14,7 +14,9 @@ describe('static portfolio architecture', () => {
 
     expect(nextConfig).toContain("output: 'export'");
     expect(nextConfig).toContain("pageExtensions: ['ts', 'tsx', 'md', 'mdx']");
-    expect(packageJson.scripts.build).toBe('next build');
+    expect(packageJson.scripts.build).toBe(
+      'node scripts/validate-publication.mjs --mode=source && next build && node scripts/validate-publication.mjs --mode=output',
+    );
   });
 
   it('wires deterministic export verification after a fresh framework build', () => {
@@ -34,7 +36,7 @@ describe('static portfolio architecture', () => {
       'npm run build:framework && npm run test:export && npm run test:e2e:export',
     );
     expect(scripts['verify:publish']).toBe(
-      'npm run validate:content && npm run lint && npm test && npm run verify:export && npm run test:e2e',
+      'npm run lint && npm test && npm run build && npm run test:e2e',
     );
     expect(scripts['validate:content']).toBe(
       'node scripts/validate-content.mjs',

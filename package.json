@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/validate-publication.mjs --mode=source && next build && node scripts/validate-publication.mjs --mode=output",
     "build:framework": "next build",
     "lint": "eslint .",
     "test": "vitest run",
@@ -17,7 +17,7 @@
     "prepare:assets": "node scripts/prepare-call-agent-assets.mjs",
     "sync:stt": "node scripts/sync-stt-demo.mjs",
     "verify:export": "npm run build:framework && npm run test:export && npm run test:e2e:export",
-    "verify:publish": "npm run validate:content && npm run lint && npm test && npm run verify:export && npm run test:e2e"
+    "verify:publish": "npm run lint && npm test && npm run build && npm run test:e2e"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",

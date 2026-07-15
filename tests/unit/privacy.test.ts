@@ -141,6 +141,21 @@ describe('Call Agent privacy controls', () => {
     expect(findSensitiveText('+86 138 1234 5678')).toEqual(['phone number']);
   });
 
+  it('flags account and internal identifiers while allowing public email', () => {
+    expect(findSensitiveText('account_id=acc_82HF91KQ')).toEqual([
+      'account or internal identifier',
+    ]);
+    expect(findSensitiveText('hello@example.com')).toEqual([]);
+  });
+
+  it('flags international phone formats and literal internal identifiers', () => {
+    expect(findSensitiveText('+1 (415) 555-2671')).toContain('phone number');
+    expect(findSensitiveText('010-1234-5678')).toContain('phone number');
+    expect(findSensitiveText('internal_id: int_82HF91KQ')).toContain(
+      'account or internal identifier',
+    );
+  });
+
   it('requires evidence provenance and accessible descriptions', () => {
     expect(validateManifestEntry({ output: 'preview.png' })).toEqual([
       'missing source',
