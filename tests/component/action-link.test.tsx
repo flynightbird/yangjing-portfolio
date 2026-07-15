@@ -61,6 +61,19 @@ describe('ActionLink', () => {
     );
   });
 
+  it('secures explicit blank targets for internal links', () => {
+    render(
+      <ActionLink href="/en/work/xuelang/" target="_blank">
+        View Xuelang
+      </ActionLink>,
+    );
+
+    const link = screen.getByRole('link', { name: 'View Xuelang' });
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', expect.stringContaining('noopener'));
+    expect(link).toHaveAttribute('rel', expect.stringContaining('noreferrer'));
+  });
+
   it('removes disabled links from navigation and does not call onClick', async () => {
     const onClick = vi.fn();
     const user = userEvent.setup();

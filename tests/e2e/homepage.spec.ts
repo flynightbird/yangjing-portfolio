@@ -43,6 +43,15 @@ test.describe('portfolio homepage framework', () => {
         `/${locale}/work/meeting/`,
       );
 
+      for (const projectId of projectIds) {
+        const projectLink = page.locator(`[data-project-id="${projectId}"] a`);
+        await expect(projectLink).toHaveAttribute('target', '_blank');
+        await expect(projectLink).toHaveAttribute(
+          'rel',
+          /noopener.*noreferrer|noreferrer.*noopener/,
+        );
+      }
+
       const aidx = page.locator('[data-project-id="aidx"] a');
       await expect(aidx).toHaveAttribute('href', 'https://aidxtech.com/');
       await expect(aidx).toHaveAttribute('target', '_blank');
@@ -94,7 +103,7 @@ test.describe('portfolio homepage framework', () => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
     const images = page.locator('main img');
-    await expect(images).toHaveCount(3);
+    await expect(images).toHaveCount(4);
     for (let index = 0; index < await images.count(); index += 1) {
       const image = images.nth(index);
       await image.scrollIntoViewIfNeeded();
@@ -151,10 +160,14 @@ test.describe('portfolio homepage framework', () => {
     });
     await meetingLink.focus();
     await expect(meetingLink).toBeFocused();
-    await meetingLink.press('Enter');
+    const [meetingPage] = await Promise.all([
+      page.context().waitForEvent('page'),
+      meetingLink.press('Enter'),
+    ]);
+    await meetingPage.waitForLoadState('networkidle');
 
-    await expect(page).toHaveURL(/\/en\/work\/meeting\/$/);
-    await expect(page.locator('[data-publication-state="draft"]')).toBeVisible();
-    await expect(page.getByText('Draft', { exact: true }).first()).toBeVisible();
+    await expect(meetingPage).toHaveURL(/\/en\/work\/meeting\/$/);
+    await expect(meetingPage.locator('[data-publication-state="draft"]')).toBeVisible();
+    await expect(meetingPage.getByText('Draft', { exact: true }).first()).toBeVisible();
   });
 });

@@ -51,6 +51,7 @@ export function MeetingPreview({ copy, href }: MeetingPreviewProps) {
           <p>{copy.role}</p>
           <ActionLink
             href={href}
+            target="_blank"
             variant="secondary"
             aria-label={`${copy.action} ${copy.title}`}
           >

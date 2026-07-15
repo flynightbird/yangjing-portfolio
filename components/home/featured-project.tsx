@@ -70,6 +70,7 @@ export function FeaturedProject({
           </dl>
           <ActionLink
             href={href}
+            target="_blank"
             variant={variant === 'flagship' ? 'primary' : 'secondary'}
             aria-label={`${copy.action} ${copy.title}`}
           >

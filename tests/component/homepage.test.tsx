@@ -59,6 +59,18 @@ describe('FeaturedWork', () => {
     );
   });
 
+  it('opens every homepage project destination in a secure new tab', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+
+    for (const project of container.querySelectorAll<HTMLElement>('[data-project-id]')) {
+      const link = project.querySelector('a');
+      expect(link, project.dataset.projectId).not.toBeNull();
+      expect(link).toHaveAttribute('target', '_blank');
+      expect(link?.getAttribute('rel')).toContain('noopener');
+      expect(link?.getAttribute('rel')).toContain('noreferrer');
+    }
+  });
+
   it('keeps AIDX external-only with a safe explicit destination', () => {
     render(<FeaturedWork locale="en" />);
 

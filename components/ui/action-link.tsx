@@ -71,6 +71,7 @@ export const ActionLink = forwardRef<HTMLAnchorElement, ActionLinkProps>(
     ref,
   ) {
     const DisplayIcon = Icon ?? (external ? ExternalLink : undefined);
+    const opensNewTab = !disabled && (external || target === '_blank');
     const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
       if (disabled) {
         event.preventDefault();
@@ -89,8 +90,8 @@ export const ActionLink = forwardRef<HTMLAnchorElement, ActionLinkProps>(
           .filter(Boolean)
           .join(' ')}
         href={disabled ? undefined : href}
-        target={disabled ? undefined : external ? '_blank' : target}
-        rel={disabled ? undefined : external ? secureExternalRel(rel) : rel}
+        target={disabled ? undefined : opensNewTab ? '_blank' : target}
+        rel={disabled ? undefined : opensNewTab ? secureExternalRel(rel) : rel}
         aria-disabled={disabled ? 'true' : undefined}
         tabIndex={disabled ? -1 : anchorProps.tabIndex}
         onClick={handleClick}
