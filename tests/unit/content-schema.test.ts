@@ -7,6 +7,7 @@ import {
 } from '@/content/registry';
 import { contentMetaSchema, type ContentMeta } from '@/content/schema';
 import type { ContentEntry } from '@/content/registry';
+import type { WorkSlug } from '@/content/types';
 import {
   assertCompleteRegistry,
   validateRegistry,
@@ -194,8 +195,12 @@ describe('content registry', () => {
         ({ meta }) => `${meta.type}/${meta.slug}:${meta.locale}`,
       ),
     ).toEqual([
+      'work/bytedance:en',
+      'work/bytedance:zh',
       'work/call-agent:en',
       'work/call-agent:zh',
+      'work/meeting:en',
+      'work/meeting:zh',
       'build/stt-demo:en',
       'build/stt-demo:zh',
     ]);
@@ -204,8 +209,8 @@ describe('content registry', () => {
   });
 
   it('throws a clear error when a requested production entry is absent', () => {
-    expect(() => getEntry('work', 'meeting', 'en')).toThrow(
-      /content entry.*work\/meeting.*en/i,
+    expect(() => getEntry('work', 'missing' as WorkSlug, 'en')).toThrow(
+      /content entry.*work\/missing.*en/i,
     );
   });
 

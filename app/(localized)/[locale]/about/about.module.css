@@ -1,0 +1,77 @@
+.root {
+  width: min(100%, var(--content-max));
+  margin-inline: auto;
+  padding-inline: var(--content-gutter);
+}
+
+.hero,
+.career,
+.opportunity,
+.pending {
+  padding-block: clamp(4rem, 10vh, 8rem);
+  border-bottom: 1px solid var(--color-border-strong);
+}
+
+.hero {
+  min-height: min(42rem, calc(100dvh - var(--header-height)));
+}
+
+.hero h1,
+.career h2,
+.opportunity h2,
+.pending h2 {
+  max-width: 18ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--font-size-title);
+  line-height: var(--line-height-title);
+}
+
+.hero p,
+.career p,
+.opportunity p,
+.pending p {
+  max-width: 52ch;
+  margin: var(--space-6) 0 0;
+  color: var(--color-ink-muted);
+  font-size: var(--font-size-heading);
+  line-height: 1.35;
+}
+
+.pending {
+  margin-inline: calc(-1 * var(--content-gutter));
+  padding-inline: var(--content-gutter);
+  background: var(--color-signal);
+}
+
+.pending ul {
+  display: grid;
+  max-width: 52rem;
+  padding: 0;
+  margin: var(--space-7) 0 0;
+  list-style: none;
+}
+
+.pending li {
+  padding-block: var(--space-4);
+  border-top: 1px solid var(--color-carbon);
+}
+
+.pending p {
+  color: var(--color-carbon);
+  font-size: 1rem;
+}
+
+@media (min-width: 768px) {
+  .career,
+  .opportunity {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--space-7);
+  }
+
+  .career p,
+  .opportunity p {
+    margin: 0;
+  }
+}

@@ -12,6 +12,7 @@ export type ContentKind = (typeof contentKinds)[number];
 export type ContentSlug = WorkSlug | BuildSlug;
 
 export const evidenceLevels = [
+  'draft',
   'delivered',
   'observed',
   'retrospective',

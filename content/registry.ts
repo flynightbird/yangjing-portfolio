@@ -12,6 +12,18 @@ import SttDemoEn, {
 import SttDemoZh, {
   metadata as sttDemoZhMetadata,
 } from '@/content/build/stt-demo.zh.mdx';
+import {
+  BytedanceDraftEn,
+  BytedanceDraftZh,
+  bytedanceDraftEnMetadata,
+  bytedanceDraftZhMetadata,
+} from '@/content/work/bytedance-draft';
+import {
+  MeetingDraftEn,
+  MeetingDraftZh,
+  meetingDraftEnMetadata,
+  meetingDraftZhMetadata,
+} from '@/content/work/meeting-draft';
 import { CallAgentActions } from '@/components/case-study/call-agent-actions';
 import { contentMetaSchema, type ContentMeta } from '@/content/schema';
 import type {
@@ -76,6 +88,14 @@ export function createRegistry(
 
 export const contentEntries: readonly ContentEntry[] = [
   {
+    meta: bytedanceDraftEnMetadata,
+    Component: BytedanceDraftEn,
+  },
+  {
+    meta: bytedanceDraftZhMetadata,
+    Component: BytedanceDraftZh,
+  },
+  {
     meta: contentMetaSchema.parse(callAgentEnMetadata),
     Component: CallAgentEn,
     Actions: CallAgentActions,
@@ -84,6 +104,14 @@ export const contentEntries: readonly ContentEntry[] = [
     meta: contentMetaSchema.parse(callAgentZhMetadata),
     Component: CallAgentZh,
     Actions: CallAgentActions,
+  },
+  {
+    meta: meetingDraftEnMetadata,
+    Component: MeetingDraftEn,
+  },
+  {
+    meta: meetingDraftZhMetadata,
+    Component: MeetingDraftZh,
   },
   {
     meta: contentMetaSchema.parse(sttDemoEnMetadata),

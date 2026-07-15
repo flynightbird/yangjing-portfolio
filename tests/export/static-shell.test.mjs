@@ -34,15 +34,22 @@ test('root resolver and custom bilingual 404 remain static artifacts', () => {
   assert.match(notFound, /<a href="\/zh\/" lang="zh-CN">中文<\/a>/);
 });
 
-test('unregistered work routes are not emitted as soft-404 artifacts', () => {
+test('approved draft work routes are emitted for local framework review', () => {
   for (const locale of ['en', 'zh']) {
     for (const slug of ['bytedance', 'meeting']) {
-      assert.equal(
-        fs.existsSync(path.join(outputPath, locale, 'work', slug, 'index.html')),
-        false,
-        `${locale}/work/${slug} must not be exported`,
-      );
+      const routePath = path.join(outputPath, locale, 'work', slug, 'index.html');
+      assert.equal(fs.existsSync(routePath), true, `${locale}/work/${slug} must be exported`);
+      assert.match(readOutput(`${locale}/work/${slug}/index.html`), /data-publication-state="draft"/);
     }
+  }
+});
+
+test('bilingual About framework routes are emitted without fake contacts', () => {
+  for (const locale of ['en', 'zh']) {
+    const about = readOutput(`${locale}/about/index.html`);
+    const main = about.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1] ?? '';
+    assert.match(about, /data-publication-state="draft"/);
+    assert.doesNotMatch(main, /mailto:|linkedin\.com|wechat-qr|\.pdf/);
   }
 });
 
