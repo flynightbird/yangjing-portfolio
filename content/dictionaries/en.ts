@@ -31,6 +31,75 @@ export interface Dictionary {
   home: {
     title: string;
     description: string;
+    hero: {
+      name: string;
+      designerRole: string;
+      builderRole: string;
+      designerSummary: string;
+      builderSummary: string;
+      portraitDraft: string;
+      portraitLabel: string;
+    };
+    projects: {
+      bytedance: ProjectCopy;
+      callAgent: ProjectCopy;
+      meeting: ProjectCopy & {
+        stages: readonly ProjectStageCopy[];
+      };
+      aidx: ProjectCopy & {
+        scope: readonly string[];
+        captureCaption: string;
+      };
+      sttDemo: ProjectCopy;
+    };
+    archive: {
+      title: string;
+      description: string;
+      draftSlot: string;
+      openImage: string;
+      imageDialog: string;
+      closeImage: string;
+      visitProject: string;
+    };
+    about: {
+      title: string;
+      career: string;
+      opportunity: string;
+      action: string;
+    };
+  };
+  draftCase: {
+    draft: string;
+    mediaUnavailable: string;
+    evidenceBoundary: string;
+    approvedEvidence: string;
+    plannedEvidence: string;
+    bytedance: {
+      title: string;
+      proposition: string;
+      summary: string;
+      pdfUnavailable: string;
+    };
+    meeting: {
+      title: string;
+      proposition: string;
+      summary: string;
+      shipped: string;
+      retrospective: string;
+      limitations: string;
+    };
+  };
+  aboutPage: {
+    title: string;
+    intro: string;
+    career: string;
+    opportunityTitle: string;
+    opportunity: string;
+    awaitingTitle: string;
+    portrait: string;
+    resumes: string;
+    contact: string;
+    contactDescription: string;
   };
   footer: {
     privacy: string;
@@ -57,6 +126,21 @@ export interface Dictionary {
     email: string;
     linkedin: string;
   };
+}
+
+interface ProjectStageCopy {
+  title: string;
+  description: string;
+}
+
+interface ProjectCopy {
+  kind: string;
+  title: string;
+  proposition: string;
+  role: string;
+  status: string;
+  mediaLabel: string;
+  action: string;
 }
 
 export const enDictionary = {
@@ -92,6 +176,148 @@ export const enDictionary = {
   home: {
     title: 'Yang Jing',
     description: 'Product Designer and AI-native Builder.',
+    hero: {
+      name: 'Yang Jing',
+      designerRole: 'Product Designer',
+      builderRole: 'AI-native Builder',
+      designerSummary:
+        'Designing at consumer scale and across complex AI and B2B systems.',
+      builderSummary:
+        'Using Vibe Coding to prototype, test, and ship working experiences.',
+      portraitDraft: 'Portrait awaiting approved photography',
+      portraitLabel: 'Yang Jing portrait frame',
+    },
+    projects: {
+      bytedance: {
+        kind: 'Deep case study',
+        title: 'ByteDance',
+        proposition: 'Designing for products used at consumer scale.',
+        role: 'Product Designer',
+        status: 'Draft case framework',
+        mediaLabel: 'Approved cover pending',
+        action: 'Open draft case',
+      },
+      callAgent: {
+        kind: 'Deep case study',
+        title: 'Call Agent',
+        proposition:
+          'Make AI visible, testable, and controllable before release.',
+        role: 'Lead Product Designer',
+        status: 'Limited beta',
+        mediaLabel: 'Real product evidence',
+        action: 'View case study',
+      },
+      meeting: {
+        kind: 'Interaction deep dive',
+        title: 'Meeting',
+        proposition:
+          'Make highly dynamic real-time collaboration visible and controllable.',
+        role: 'Product Designer',
+        status: 'Shipped interface and 2026 retrospective',
+        mediaLabel: 'Approved interaction media pending',
+        action: 'Open draft case',
+        stages: [
+          {
+            title: 'Before the meeting',
+            description:
+              'Clarify identity, devices, permissions, and readiness before entry.',
+          },
+          {
+            title: 'During the meeting',
+            description:
+              'Keep speaking, collaboration, and control states visible as they change.',
+          },
+          {
+            title: 'After the meeting',
+            description:
+              'Preserve an understandable record of what happened and what follows.',
+          },
+        ],
+      },
+      aidx: {
+        kind: 'Live website',
+        title: 'AIDX',
+        proposition:
+          'A live AI safety platform website shaped through interface, structure, and motion.',
+        role: 'UI/UX design, information architecture, and motion',
+        status: 'Live website',
+        mediaLabel: 'Public website capture',
+        action: 'Visit live site',
+        scope: ['UI/UX Design', 'Information Architecture', 'Motion'],
+        captureCaption: 'Public website captured in July 2026.',
+      },
+      sttDemo: {
+        kind: 'Build Lab',
+        title: 'STT Demo',
+        proposition:
+          'Make bilingual conversation legible while it is happening.',
+        role: 'Product design and AI-assisted prototyping',
+        status: 'Pinned static prototype',
+        mediaLabel: 'Interactive static prototype',
+        action: 'Explore Build Lab',
+      },
+    },
+    archive: {
+      title: 'Visual Archive',
+      description:
+        'A lighter image-led view of additional work. Approved project media will replace these development slots.',
+      draftSlot: 'Draft media slot',
+      openImage: 'Open project image',
+      imageDialog: 'Project image detail',
+      closeImage: 'Close image',
+      visitProject: 'Visit public project',
+    },
+    about: {
+      title: 'Across scale, systems, and working prototypes',
+      career:
+        'From large-scale consumer product design, into complex B2B and AI systems, then into AI-assisted product building.',
+      opportunity:
+        'Product design + AI prototyping, from complex idea to working experience.',
+      action: 'About and contact',
+    },
+  },
+  draftCase: {
+    draft: 'Draft',
+    mediaUnavailable: 'Approved media is not available yet.',
+    evidenceBoundary:
+      'This local framework contains only public-safe structure. It is blocked from publication until approved evidence replaces every Draft state.',
+    approvedEvidence: 'Approved framing',
+    plannedEvidence: 'Required evidence before publication',
+    bytedance: {
+      title: 'ByteDance',
+      proposition: 'Designing for products used at consumer scale.',
+      summary:
+        'This route reserves the public case structure without reconstructing private work or inferring project details.',
+      pdfUnavailable:
+        'The sanitized case-study PDF has not been supplied to this repository.',
+    },
+    meeting: {
+      title: 'Meeting',
+      proposition:
+        'Make highly dynamic real-time collaboration visible and controllable.',
+      summary:
+        'This route separates shipped interaction evidence from a clearly labeled 2026 retrospective layer.',
+      shipped: 'Shipped evidence',
+      retrospective: '2026 retrospective',
+      limitations:
+        'No customer audience, outcome metric, or retrospective launch claim is included.',
+    },
+  },
+  aboutPage: {
+    title: 'About Yang Jing',
+    intro:
+      'Product Designer and AI-native Builder working across consumer scale, complex systems, and working prototypes.',
+    career:
+      'From large-scale consumer product design, into complex B2B and AI systems, then into AI-assisted product building.',
+    opportunityTitle: 'Selected opportunities',
+    opportunity:
+      'Product design + AI prototyping, from complex idea to working experience.',
+    awaitingTitle: 'Publication inputs pending',
+    portrait: 'Approved portrait photography',
+    resumes: 'English and Chinese resumes',
+    contact: 'Email, LinkedIn, and WeChat',
+    contactDescription:
+      'Verified direct contact details will appear here when the private contact file is supplied.',
   },
   footer: {
     privacy:
