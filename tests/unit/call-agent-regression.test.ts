@@ -46,11 +46,15 @@ describe('Call Agent native content registry', () => {
     },
   );
 
-  it('generates only registered production work routes', () => {
+  it('generates every registered bilingual work route', () => {
     expect(dynamicParams).toBe(false);
     expect(generateStaticParams()).toEqual([
+      { locale: 'en', slug: 'bytedance' },
+      { locale: 'zh', slug: 'bytedance' },
       { locale: 'en', slug: 'call-agent' },
       { locale: 'zh', slug: 'call-agent' },
+      { locale: 'en', slug: 'meeting' },
+      { locale: 'zh', slug: 'meeting' },
     ]);
   });
 });

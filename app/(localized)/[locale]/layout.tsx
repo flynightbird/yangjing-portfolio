@@ -40,7 +40,7 @@ export default async function LocaleLayout({
   const dictionary = locale === 'zh' ? zhDictionary : enDictionary;
 
   return (
-    <html lang={documentLanguage}>
+    <html lang={documentLanguage} data-scroll-behavior="smooth">
       <body>
         <a className="skip-link" href="#main-content">
           {dictionary.site.skipToContent}

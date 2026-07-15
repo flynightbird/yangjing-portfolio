@@ -11,8 +11,22 @@ describe('Playwright server ownership', () => {
     expect(nativeConfig.webServer).toMatchObject({
       command: 'npm run dev -- --port 4174',
       url: 'http://localhost:4174',
+      reuseExistingServer: false,
     });
     expect(Array.isArray(nativeConfig.webServer)).toBe(false);
+  });
+
+  it('uses the approved 1440 by 900 desktop review viewport', () => {
+    expect(nativeConfig.projects?.[0]?.use).toMatchObject({
+      viewport: { width: 1440, height: 900 },
+    });
+    expect(exportConfig.projects?.[0]?.use).toMatchObject({
+      viewport: { width: 1440, height: 900 },
+    });
+  });
+
+  it('serializes the native suite to avoid Next dev manifest write races', () => {
+    expect(nativeConfig.workers).toBe(1);
   });
 
   it('runs STT direct-open and 404 coverage against the static export', () => {

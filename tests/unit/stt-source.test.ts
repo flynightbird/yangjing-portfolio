@@ -552,14 +552,20 @@ describe('STT demo source provenance', () => {
     ]);
   });
 
-  it('supplies safe project-neighbor props before Meeting is registered', async () => {
-    const page = await BuildLabPage({
-      params: Promise.resolve({ locale: 'en', slug: 'stt-demo' }),
-    });
+  it.each(['en', 'zh'] as const)(
+    'links the %s Build Lab route back to the registered Meeting case',
+    async (locale) => {
+      const page = await BuildLabPage({
+        params: Promise.resolve({ locale, slug: 'stt-demo' }),
+      });
 
-    expect(page.props).toHaveProperty('previous', undefined);
-    expect(page.props).toHaveProperty('next', undefined);
-  });
+      expect(page.props).toHaveProperty('previous', {
+        href: `/${locale}/work/meeting/`,
+        title: 'Meeting',
+      });
+      expect(page.props).toHaveProperty('next', undefined);
+    },
+  );
 
   it.each(['en', 'zh'] as const)(
     'states the full %s prototype boundary without outcome claims',

@@ -61,6 +61,16 @@ describe('static portfolio architecture', () => {
     expect(exportPlaywrightConfig).toContain('reuseExistingServer: false');
   });
 
+  it('declares the document smooth-scroll contract for Next route changes', () => {
+    for (const layout of [
+      'app/(root)/layout.tsx',
+      'app/(localized)/[locale]/layout.tsx',
+    ]) {
+      const source = fs.readFileSync(path.join(root, layout), 'utf8');
+      expect(source, layout).toContain('data-scroll-behavior="smooth"');
+    }
+  });
+
   it('documents only working portfolio commands and the current dev server', () => {
     const packageJson = JSON.parse(
       fs.readFileSync(path.join(root, 'package.json'), 'utf8'),

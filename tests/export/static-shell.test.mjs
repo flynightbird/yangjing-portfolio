@@ -14,11 +14,11 @@ function readOutput(relativePath) {
 test('localized exports have server-correct document languages', () => {
   assert.match(
     readOutput('en/index.html'),
-    /^<!DOCTYPE html><html lang="en">/,
+    /^<!DOCTYPE html><html lang="en" data-scroll-behavior="smooth">/,
   );
   assert.match(
     readOutput('zh/index.html'),
-    /^<!DOCTYPE html><html lang="zh-CN">/,
+    /^<!DOCTYPE html><html lang="zh-CN" data-scroll-behavior="smooth">/,
   );
 });
 

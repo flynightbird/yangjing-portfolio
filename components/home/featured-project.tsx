@@ -50,11 +50,13 @@ export function FeaturedProject({
     >
       <div className={styles.projectInner}>
         <div className={styles.projectCopy}>
-          <p className={styles.projectKind}>{copy.kind}</p>
-          <span className={styles.projectOrder} aria-hidden="true">
-            {order}
-          </span>
           <h2>{copy.title}</h2>
+          <div className={styles.projectMeta}>
+            <p className={styles.projectKind}>{copy.kind}</p>
+            <span className={styles.projectOrder} aria-hidden="true">
+              {order}
+            </span>
+          </div>
           <p className={styles.projectProposition}>{copy.proposition}</p>
           <dl className={styles.projectFacts}>
             <div>

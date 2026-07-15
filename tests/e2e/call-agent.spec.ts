@@ -12,6 +12,7 @@ const chapterIds = [
   'system-delivery',
   'outcome-learnings',
 ] as const;
+const hydrationTimeout = 15_000;
 
 for (const locale of ['en', 'zh'] as const) {
   test.describe(`${locale} Call Agent case`, () => {
@@ -71,18 +72,27 @@ for (const locale of ['en', 'zh'] as const) {
         expect(size.naturalHeight).toBeGreaterThan(0);
       }
 
-      await expect(page.locator('[data-project-previous]')).toHaveCount(0);
-      await expect(page.locator('[data-project-next]')).toHaveCount(0);
-      await expect(
-        page.getByRole('navigation', {
-          name: locale === 'zh' ? '项目导航' : 'Project navigation',
-        }),
-      ).toHaveCount(0);
+      const projectNavigation = page.getByRole('navigation', {
+        name: locale === 'zh' ? '项目导航' : 'Project navigation',
+      });
+      const previous = page.locator('[data-project-previous]');
+      const next = page.locator('[data-project-next]');
+
+      await expect(projectNavigation).toBeVisible();
+      await expect(previous).toHaveAttribute(
+        'href',
+        `/${locale}/work/bytedance/`,
+      );
+      await expect(previous).toContainText(locale === 'zh' ? '字节跳动' : 'ByteDance');
+      await expect(next).toHaveAttribute('href', `/${locale}/work/meeting/`);
+      await expect(next).toContainText('Meeting');
     });
 
     test('opens and dismisses evidence with the keyboard without losing scroll state', async ({ page }) => {
       const trigger = page.getByRole('button', { name: locale === 'zh' ? /放大查看/ : /Enlarge/ }).first();
-      await expect(trigger).toHaveAttribute('data-hydrated', 'true');
+      await expect(trigger).toHaveAttribute('data-hydrated', 'true', {
+        timeout: hydrationTimeout,
+      });
       await trigger.focus();
       await page.keyboard.press('Enter');
       await expect(page.getByRole('dialog')).toBeVisible();
@@ -123,7 +133,9 @@ for (const locale of ['en', 'zh'] as const) {
           name: locale === 'zh' ? '打开章节目录' : 'Open chapter index',
         });
         await expect(toggle).toBeVisible();
-        await expect(toggle).toHaveAttribute('data-hydrated', 'true');
+        await expect(toggle).toHaveAttribute('data-hydrated', 'true', {
+          timeout: hydrationTimeout,
+        });
         await toggle.click();
         await expect(navigation).toBeVisible();
         await navigation.getByRole('link').nth(1).click();

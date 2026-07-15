@@ -1,7 +1,8 @@
 'use client';
 
-import { motion, useReducedMotion } from 'motion/react';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
+
+import styles from '@/components/home/home.module.css';
 
 interface HeroMotionProps {
   readonly children: ReactNode;
@@ -14,20 +15,12 @@ export function HeroMotion({
   className,
   delay = 0,
 }: HeroMotionProps) {
-  const reduceMotion = useReducedMotion();
-
   return (
-    <motion.div
-      className={className}
-      initial={reduceMotion ? false : { y: 18 }}
-      animate={{ y: 0 }}
-      transition={{
-        duration: reduceMotion ? 0 : 0.7,
-        delay: reduceMotion ? 0 : delay,
-        ease: [0.16, 1, 0.3, 1],
-      }}
+    <div
+      className={[styles.heroReveal, className].filter(Boolean).join(' ')}
+      style={{ '--hero-reveal-delay': `${delay}s` } as CSSProperties}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
