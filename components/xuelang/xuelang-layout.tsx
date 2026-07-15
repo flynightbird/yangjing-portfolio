@@ -42,7 +42,7 @@ export function XuelangLayout({
       <div className={styles.root} data-xuelang-case>
       <div className={styles.frame}>
         <aside className={styles.rail}>
-          <ChapterNav chapters={meta.chapters ?? []} locale={locale} />
+          <ChapterNav chapters={meta.chapters ?? []} locale={locale} compactAt="wide" />
         </aside>
 
         <article className={styles.case} data-case-study>

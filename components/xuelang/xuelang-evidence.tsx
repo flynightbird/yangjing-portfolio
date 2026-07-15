@@ -136,7 +136,7 @@ export function XuelangLearningSequence({
 }) {
   return (
     <div className={styles.learningSequence} data-learning-sequence>
-      <div className={styles.learningThesis}>
+      <div className={styles.learningThesis} data-learning-thesis>
         <span>CONTINUOUS LEARNING</span>
         <p>{thesis}</p>
       </div>

@@ -74,6 +74,10 @@ describe('XuelangLayout', () => {
       screen.getByText(proposition),
     );
     expect(screen.getByRole('navigation', { name: chapterNav })).toBeVisible();
+    expect(screen.getByRole('navigation', { name: chapterNav }).parentElement).toHaveAttribute(
+      'data-compact-at',
+      'wide',
+    );
     expect(screen.getByRole('link', { name: /00 (项目概览|Overview)/ })).toHaveAttribute(
       'aria-current',
       'location',

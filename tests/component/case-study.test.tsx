@@ -38,6 +38,14 @@ describe('ChapterNav', () => {
     await user.click(screen.getByRole('link', { name: 'Preview decision' }));
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
   });
+
+  it('keeps the shared navigation on the default compact breakpoint', () => {
+    render(<ChapterNav chapters={chapters} locale="en" />);
+
+    expect(
+      screen.getByRole('navigation', { name: 'Case study chapters' }).parentElement,
+    ).toHaveAttribute('data-compact-at', 'default');
+  });
 });
 
 describe('CaseLayout', () => {

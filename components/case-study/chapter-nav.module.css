@@ -80,6 +80,27 @@
   }
 }
 
+@media (min-width: 901px) and (max-width: 1100px) {
+  .root[data-compact-at='default'] {
+    inset-block-start: calc(var(--header-height) + var(--space-5));
+    padding-block: 0;
+    border-block: 0;
+    background: transparent;
+  }
+
+  .root[data-compact-at='default'] .toggle {
+    display: none;
+  }
+
+  .root[data-compact-at='default'] .navigation,
+  .root[data-compact-at='default'] .navigation[data-open='true'] {
+    display: block;
+    max-height: none;
+    overflow-y: visible;
+    border-block-end: 0;
+  }
+}
+
 @media print {
   .root {
     display: none !important;

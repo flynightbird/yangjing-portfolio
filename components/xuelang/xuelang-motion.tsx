@@ -55,7 +55,12 @@ export function XuelangMotion({ children }: { readonly children: ReactNode }) {
             '[data-case-study] section',
             rootRef.current,
           ).forEach((section) => {
-            gsap.from(section.children, {
+            const translatedChildren = Array.from(section.children).filter(
+              (child): child is HTMLElement => (
+                child instanceof HTMLElement && !child.matches('[data-learning-sequence]')
+              ),
+            );
+            gsap.from(translatedChildren, {
               autoAlpha: 0,
               y: 28,
               clearProps: 'transform',
@@ -64,6 +69,15 @@ export function XuelangMotion({ children }: { readonly children: ReactNode }) {
               stagger: 0.05,
               scrollTrigger: { trigger: section, start: 'top 84%', once: true },
             });
+            const learningSequence = section.querySelector<HTMLElement>('[data-learning-sequence]');
+            if (learningSequence) {
+              gsap.from(learningSequence, {
+                autoAlpha: 0,
+                duration: 0.65,
+                ease: 'power2.out',
+                scrollTrigger: { trigger: section, start: 'top 84%', once: true },
+              });
+            }
           });
         },
       );
@@ -94,7 +108,12 @@ export function XuelangMotion({ children }: { readonly children: ReactNode }) {
             '[data-case-study] section',
             rootRef.current,
           ).forEach((section) => {
-            gsap.from(section.children, {
+            const translatedChildren = Array.from(section.children).filter(
+              (child): child is HTMLElement => (
+                child instanceof HTMLElement && !child.matches('[data-learning-sequence]')
+              ),
+            );
+            gsap.from(translatedChildren, {
               autoAlpha: 0,
               y: 34,
               clearProps: 'transform',
@@ -103,6 +122,15 @@ export function XuelangMotion({ children }: { readonly children: ReactNode }) {
               stagger: 0.045,
               scrollTrigger: { trigger: section, start: 'top 82%', once: true },
             });
+            const learningSequence = section.querySelector<HTMLElement>('[data-learning-sequence]');
+            if (learningSequence) {
+              gsap.from(learningSequence, {
+                autoAlpha: 0,
+                duration: 0.72,
+                ease: 'power2.out',
+                scrollTrigger: { trigger: section, start: 'top 82%', once: true },
+              });
+            }
           });
 
           const sequence = rootRef.current?.querySelector<HTMLElement>('[data-learning-sequence]');

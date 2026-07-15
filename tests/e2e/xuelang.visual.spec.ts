@@ -1,9 +1,11 @@
 import { expect, test } from '@playwright/test';
 
 const viewports = [
+  { name: 'desktop-1728', width: 1728, height: 1080 },
   { name: 'desktop-1600', width: 1600, height: 1000 },
   { name: 'desktop-1440', width: 1440, height: 900 },
   { name: 'desktop-1280', width: 1280, height: 800 },
+  { name: 'desktop-1024', width: 1024, height: 768 },
   { name: 'mobile-390', width: 390, height: 844 },
   { name: 'mobile-375', width: 375, height: 812 },
 ] as const;
@@ -115,6 +117,44 @@ test.describe('Xuelang visual matrix', () => {
           });
         expect(layoutDefects).toEqual([]);
 
+        const chapterIntros = await page
+          .locator('[data-case-study] section:has(> .section-heading + .xuelang-reading)')
+          .evaluateAll((sections) => sections.map((section) => {
+            const heading = section.querySelector<HTMLElement>(':scope > .section-heading');
+            const reading = section.querySelector<HTMLElement>(':scope > .xuelang-reading');
+            if (!heading || !reading) throw new Error('Missing chapter intro pair');
+            const headingBox = heading.getBoundingClientRect();
+            const readingBox = reading.getBoundingClientRect();
+            return {
+              id: section.id,
+              heading: {
+                left: headingBox.left,
+                right: headingBox.right,
+                top: headingBox.top,
+                bottom: headingBox.bottom,
+              },
+              reading: {
+                left: readingBox.left,
+                right: readingBox.right,
+                top: readingBox.top,
+                bottom: readingBox.bottom,
+              },
+            };
+          }));
+        for (const intro of chapterIntros) {
+          if (viewport.width >= 1101) {
+            expect(
+              intro.reading.left - intro.heading.right,
+              `${intro.id} should preserve a clear horizontal gutter between its title and reading copy`,
+            ).toBeGreaterThanOrEqual(16);
+          } else {
+            expect(
+              intro.reading.top - intro.heading.bottom,
+              `${intro.id} should stack reading copy below its title without overlap`,
+            ).toBeGreaterThanOrEqual(16);
+          }
+        }
+
         if (viewport.width >= 1280) {
           const caseWidth = await page.locator('[data-case-study]').evaluate(
             (element) => element.getBoundingClientRect().width,
@@ -145,5 +185,70 @@ test.describe('Xuelang visual matrix', () => {
         });
       });
     }
+  }
+
+  test('Xuelang owns the wider compact chapter breakpoint without changing shared cases', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'This test sets exact breakpoint widths.');
+
+    const toggle = page.getByRole('button', { name: 'Open chapter index' });
+    const navigation = page.getByRole('navigation', { name: 'Case study chapters' });
+
+    for (const width of [1024, 1100]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('/en/work/xuelang/', { waitUntil: 'networkidle' });
+      await expect(toggle, `Xuelang should use its compact index at ${width}px`).toBeVisible();
+      await expect(navigation).toBeHidden();
+    }
+
+    for (const width of [1101, 1199, 1200]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('/en/work/xuelang/', { waitUntil: 'networkidle' });
+      await expect(toggle, `Xuelang should restore its rail at ${width}px`).toBeHidden();
+      await expect(navigation).toBeVisible();
+    }
+
+    await page.setViewportSize({ width: 1024, height: 800 });
+    await page.goto('/en/work/call-agent/', { waitUntil: 'networkidle' });
+    await expect(toggle, 'Shared cases should retain the original 900px breakpoint').toBeHidden();
+    await expect(navigation).toBeVisible();
+  });
+
+  for (const width of [1280, 1440]) {
+    test(`learning thesis pins cleanly while its normal-motion reveal starts at ${width}px`, async ({
+      page,
+    }, testInfo) => {
+      test.skip(testInfo.project.name !== 'desktop', 'This test sets an exact desktop width.');
+      await page.setViewportSize({ width, height: 900 });
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await page.goto('/en/work/xuelang/', { waitUntil: 'networkidle' });
+
+      const position = await page.locator('[data-learning-sequence]').evaluate(async (sequence) => {
+        const thesis = sequence.querySelector<HTMLElement>('[data-learning-thesis]');
+        if (!thesis) throw new Error('Missing learning thesis');
+        document.documentElement.style.scrollBehavior = 'auto';
+        const targetScroll = sequence.getBoundingClientRect().top
+          + window.scrollY
+          - window.innerHeight * 0.15
+          + 8;
+        window.scrollTo(0, targetScroll);
+        await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+
+        return {
+          sequenceTransform: getComputedStyle(sequence).transform,
+          thesisPosition: getComputedStyle(thesis).position,
+          thesisTop: thesis.getBoundingClientRect().top,
+          expectedTop: window.innerHeight * 0.15,
+        };
+      });
+
+      expect(
+        position.sequenceTransform,
+        'The pin container must never become a transformed containing block during reveal',
+      ).toBe('none');
+      expect(position.thesisPosition).toBe('fixed');
+      expect(Math.abs(position.thesisTop - position.expectedTop)).toBeLessThanOrEqual(12);
+    });
   }
 });

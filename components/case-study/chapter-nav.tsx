@@ -11,11 +11,12 @@ import styles from './chapter-nav.module.css';
 interface ChapterNavProps {
   readonly chapters: readonly ChapterMeta[];
   readonly locale: Locale;
+  readonly compactAt?: 'default' | 'wide';
 }
 
 const subscribeToHydration = () => () => {};
 
-export function ChapterNav({ chapters, locale }: ChapterNavProps) {
+export function ChapterNav({ chapters, locale, compactAt = 'default' }: ChapterNavProps) {
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState(chapters[0]?.id);
   const currentActiveId = chapters.some(({ id }) => id === activeId)
@@ -61,7 +62,11 @@ export function ChapterNav({ chapters, locale }: ChapterNavProps) {
   }, [chapters]);
 
   return (
-    <div className={styles.root} data-case-web-control>
+    <div
+      className={styles.root}
+      data-case-web-control
+      data-compact-at={compactAt}
+    >
       <button
         className={styles.toggle}
         type="button"
