@@ -312,6 +312,44 @@ export const metadata = {
     );
   });
 
+  it('detects phone numbers embedded in generated script JSON', async () => {
+    const root = createRoot();
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><script type="application/json">{"phone":"+1 4155552671"}</script></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).toContain('Sensitive text (phone number): out/index.html');
+  });
+
+  it('detects IP addresses embedded in generated data attributes', async () => {
+    const root = createRoot();
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><div data-endpoint="192.168.1.1"></div></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).toContain('Sensitive text (IP address): out/index.html');
+  });
+
+  it('ignores phone and IP shaped noise in executable JS, CSS, and SVG geometry', async () => {
+    const root = createRoot();
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><head><style>.grid{--ticks:192.168.1.1;--size:+1 4155552671}</style></head><body><script>const geometry="192.168.1.1 +1 4155552671"</script><svg><path d="M13 3.29.87.78"/></svg></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).not.toEqual(expect.arrayContaining([
+      expect.stringMatching(/sensitive text.*(?:phone number|IP address)/i),
+    ]));
+  });
+
   it('composes the approved Call Agent and STT checksum validation', async () => {
     const root = createRoot();
     for (const relativePath of [

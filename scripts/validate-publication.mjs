@@ -153,8 +153,29 @@ function extractVisibleHtmlText(html) {
   return values.join('\n');
 }
 
+function extractEmbeddedHtmlData(html) {
+  const document = parseHtml(html);
+  const values = [];
+  for (const script of document.querySelectorAll('script[type]')) {
+    if (script.getAttribute('type')?.toLowerCase().includes('json') && script.textContent) {
+      values.push(script.textContent);
+    }
+  }
+  for (const element of document.querySelectorAll('*')) {
+    for (const attribute of element.attributes) {
+      if (attribute.name.startsWith('data-') && attribute.value) {
+        values.push(attribute.value);
+      }
+    }
+  }
+  return values.join('\n');
+}
+
 function findSensitiveHtml(html) {
   const findings = new Set(findSensitiveText(extractVisibleHtmlText(html)));
+  for (const finding of findSensitiveText(extractEmbeddedHtmlData(html))) {
+    findings.add(finding);
+  }
   const rawHtmlFindings = findSensitiveText(html);
   for (const finding of rawHtmlFindings) {
     if (
