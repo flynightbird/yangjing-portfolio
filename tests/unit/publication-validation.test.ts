@@ -241,6 +241,46 @@ export const metadata = {
     ]));
   });
 
+  it('allows MDX decorative images with empty alt under aria-hidden ancestors', async () => {
+    const root = createRoot();
+    write(root, 'public/images/sample.avif', await sharp({
+      create: { width: 1, height: 1, channels: 3, background: '#000000' },
+    }).avif().toBuffer());
+    for (const locale of ['en', 'zh'] as const) {
+      write(root, `content/work/sample.${locale}.mdx`, completeMdx(
+        locale,
+        '<div aria-hidden={true}><img src="/images/sample.avif" alt="" /></div>',
+      ));
+    }
+
+    const result = await runPublicationValidation({ mode: 'development', rootDir: root });
+    expect(result.errors).not.toContain(
+      'MDX img requires non-empty alt: content/work/sample.en.mdx',
+    );
+    expect(result.errors).not.toContain(
+      'MDX img requires non-empty alt: content/work/sample.zh.mdx',
+    );
+  });
+
+  it('rejects empty MDX alt text without decorative semantics', async () => {
+    const root = createRoot();
+    write(root, 'public/images/sample.avif', await sharp({
+      create: { width: 1, height: 1, channels: 3, background: '#000000' },
+    }).avif().toBuffer());
+    for (const locale of ['en', 'zh'] as const) {
+      write(root, `content/work/sample.${locale}.mdx`, completeMdx(
+        locale,
+        '<img src="/images/sample.avif" alt="" />',
+      ));
+    }
+
+    const result = await runPublicationValidation({ mode: 'development', rootDir: root });
+    expect(result.errors).toEqual(expect.arrayContaining([
+      expect.stringMatching(/img.*non-empty alt.*sample\.en\.mdx/i),
+      expect.stringMatching(/img.*non-empty alt.*sample\.zh\.mdx/i),
+    ]));
+  });
+
   it('requires captions or transcript access on every video in bilingual MDX', async () => {
     const root = createRoot();
     write(root, 'public/images/sample.avif', await sharp({
@@ -257,6 +297,25 @@ export const metadata = {
     expect(result.errors).toEqual(expect.arrayContaining([
       expect.stringMatching(/video.*captions|transcript.*sample\.en\.mdx/i),
       expect.stringMatching(/video.*captions|transcript.*sample\.zh\.mdx/i),
+    ]));
+  });
+
+  it('does not accept a bare MDX data-transcript value as transcript access', async () => {
+    const root = createRoot();
+    write(root, 'public/images/sample.avif', await sharp({
+      create: { width: 1, height: 1, channels: 3, background: '#000000' },
+    }).avif().toBuffer());
+    for (const locale of ['en', 'zh'] as const) {
+      write(root, `content/work/sample.${locale}.mdx`, completeMdx(
+        locale,
+        '<video poster="/images/sample.avif" data-transcript="present" />',
+      ));
+    }
+
+    const result = await runPublicationValidation({ mode: 'development', rootDir: root });
+    expect(result.errors).toEqual(expect.arrayContaining([
+      'MDX video requires captions/subtitles track or transcript access: content/work/sample.en.mdx',
+      'MDX video requires captions/subtitles track or transcript access: content/work/sample.zh.mdx',
     ]));
   });
 
@@ -317,6 +376,26 @@ export const metadata = {
 
     const result = await runPublicationValidation({ mode: 'development', rootDir: root });
     expect(result.errors).toContain('Symlink not allowed in publication tree: public/leak.js');
+  });
+
+  it('rejects a source publication scan root that is itself a symlink', async () => {
+    const root = createRoot();
+    const outside = createRoot();
+    write(outside, 'leak.mdx', 'Authorization: Bearer abc.def.ghi');
+    symlinkSync(outside, path.join(root, 'content'));
+
+    const result = await runPublicationValidation({ mode: 'development', rootDir: root });
+    expect(result.errors).toContain('Publication scan root must not be a symlink: content');
+  });
+
+  it('rejects an output publication scan root that is itself a symlink', async () => {
+    const root = createRoot();
+    const outside = createRoot();
+    write(outside, 'index.html', '<!doctype html><html><body></body></html>');
+    symlinkSync(outside, path.join(root, 'out'));
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).toContain('Publication scan root must not be a symlink: out');
   });
 
   it('rejects malformed media manifests during development validation', async () => {
@@ -639,6 +718,58 @@ role: 'body-only'
     ]));
   });
 
+  it('requires generated transcript references to have real consumers', async () => {
+    const root = createRoot();
+    write(
+      root,
+      'out/bare.html',
+      '<!doctype html><html><body><video poster="/poster.jpg" data-transcript="present"></video></body></html>',
+    );
+    write(
+      root,
+      'out/empty.html',
+      '<!doctype html><html><body><video poster="/poster.jpg" aria-describedby="empty"></video><p id="empty"></p></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).toEqual(expect.arrayContaining([
+      'Generated video requires captions/subtitles track or transcript access: out/bare.html',
+      'Generated video requires captions/subtitles track or transcript access: out/empty.html',
+    ]));
+  });
+
+  it('accepts a generated video described by real non-empty transcript text', async () => {
+    const root = createRoot();
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><video poster="/poster.jpg" aria-describedby="transcript"></video><p id="transcript">Spoken content transcript.</p></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).not.toContain(
+      'Generated video requires captions/subtitles track or transcript access: out/index.html',
+    );
+  });
+
+  it('validates generated transcript hrefs as internal references', async () => {
+    const root = createRoot();
+    write(root, 'out/transcript.txt', 'Spoken content transcript.');
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><video poster="/poster.jpg" data-transcript-href="/transcript.txt"></video><video poster="/poster.jpg" data-transcript-href="/missing.txt"></video></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors.filter((error) => error === (
+      'Generated video requires captions/subtitles track or transcript access: out/index.html'
+    ))).toHaveLength(1);
+    expect(result.errors).toContain(
+      'Broken internal reference "/missing.txt" in out/index.html',
+    );
+  });
+
   it('allows pinned STT decorative images with empty alt under aria-hidden ancestors', async () => {
     const root = createRoot();
     mkdirSync(path.join(root, 'out/demos/stt-demo'), { recursive: true });
@@ -714,6 +845,21 @@ role: 'body-only'
     const result = await runPublicationValidation({ mode: 'output', rootDir: root });
     expect(result.errors).not.toContain(
       'Broken internal reference "/assets/%252e%252e/present.txt" in out/index.html',
+    );
+  });
+
+  it('keeps encoded fragment delimiters as pathname data', async () => {
+    const root = createRoot();
+    write(root, 'out/present.txt', 'bait');
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><a href="/present.txt%23missing">File</a></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).toContain(
+      'Broken internal reference "/present.txt%23missing" in out/index.html',
     );
   });
 

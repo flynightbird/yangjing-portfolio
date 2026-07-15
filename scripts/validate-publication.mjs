@@ -129,6 +129,36 @@ async function hasSymlinkInPath(root, filePath) {
   return false;
 }
 
+async function validatePublicationRoots(rootDir, rootNames) {
+  const errors = [];
+  const realRepositoryRoot = await fs.realpath(rootDir);
+  for (const rootName of rootNames) {
+    const scanRoot = path.join(rootDir, rootName);
+    let stat;
+    try {
+      stat = await fs.lstat(scanRoot);
+    } catch (error) {
+      if (error?.code === 'ENOENT') continue;
+      errors.push(`Unable to inspect publication scan root: ${rootName}`);
+      continue;
+    }
+    if (stat.isSymbolicLink()) {
+      errors.push(`Publication scan root must not be a symlink: ${rootName}`);
+      continue;
+    }
+    if (!stat.isDirectory()) {
+      errors.push(`Publication scan root must be a directory: ${rootName}`);
+      continue;
+    }
+    const realScanRoot = await fs.realpath(scanRoot);
+    const relation = path.relative(realRepositoryRoot, realScanRoot);
+    if (relation === '..' || relation.startsWith(`..${path.sep}`) || path.isAbsolute(relation)) {
+      errors.push(`Publication scan root resolves outside repository: ${rootName}`);
+    }
+  }
+  return errors;
+}
+
 async function walkFiles(directory, symlinks = []) {
   const files = [];
   let entries;
@@ -342,6 +372,22 @@ function walkAst(node, visit) {
   }
 }
 
+function walkMdxJsx(node, decorativeAncestor, visit) {
+  if (!node || typeof node !== 'object') return;
+  const name = jsxCallName(node);
+  const props = name ? node.arguments[1] : undefined;
+  const decorative = decorativeAncestor || Boolean(name && mdxPropsAreDecorative(props));
+  if (name) visit(node, name, decorative);
+  for (const [key, value] of Object.entries(node)) {
+    if (key === 'start' || key === 'end' || key === 'loc') continue;
+    if (Array.isArray(value)) {
+      for (const child of value) walkMdxJsx(child, decorative, visit);
+    } else if (value && typeof value === 'object') {
+      walkMdxJsx(value, decorative, visit);
+    }
+  }
+}
+
 function jsxCallName(node) {
   if (
     node?.type !== 'CallExpression' ||
@@ -352,15 +398,38 @@ function jsxCallName(node) {
   return node.arguments[0].value;
 }
 
-function validateMdxMedia(program, sourceName) {
+function astHasNonEmptyText(node) {
+  let hasText = false;
+  walkAst(node, (child) => {
+    if (child.type === 'Literal' && typeof child.value === 'string' && child.value.trim()) {
+      hasText = true;
+    }
+  });
+  return hasText;
+}
+
+async function validateMdxMedia(program, sourceName, rootDir) {
   const errors = [];
+  const describedText = new Set();
+  const videos = [];
   walkAst(program, (node) => {
-    const name = jsxCallName(node);
+    if (!jsxCallName(node)) return;
+    const props = node.arguments[1];
+    const id = objectProperty(props, 'id');
+    if (
+      id?.type === 'Literal' &&
+      typeof id.value === 'string' &&
+      astHasNonEmptyText(objectProperty(props, 'children'))
+    ) {
+      describedText.add(id.value);
+    }
+  });
+  walkMdxJsx(program, false, (node, name, decorative) => {
     if (name === 'img') {
       const props = node.arguments[1];
       const alt = objectProperty(props, 'alt');
       const hasDecorativeAlt = (
-        alt?.type === 'Literal' && alt.value === '' && mdxPropsAreDecorative(props)
+        alt?.type === 'Literal' && alt.value === '' && decorative
       );
       if (!staticNonEmptyString(alt) && !hasDecorativeAlt) {
         errors.push(`MDX img requires non-empty alt: ${sourceName}`);
@@ -384,13 +453,38 @@ function validateMdxMedia(program, sourceName) {
           hasCaptions = true;
         }
       });
-      const hasTranscript = ['data-transcript', 'data-transcript-href', 'aria-describedby']
-        .some((attribute) => staticNonEmptyString(objectProperty(props, attribute)));
-      if (!hasCaptions && !hasTranscript) {
-        errors.push(`MDX video requires captions/subtitles track or transcript access: ${sourceName}`);
-      }
+      const describedBy = objectProperty(props, 'aria-describedby');
+      const hasDescribedTranscript = (
+        describedBy?.type === 'Literal' &&
+        typeof describedBy.value === 'string' &&
+        describedBy.value.split(/\s+/).some((id) => describedText.has(id))
+      );
+      const transcriptHref = objectProperty(props, 'data-transcript-href');
+      videos.push({
+        hasCaptions,
+        hasDescribedTranscript,
+        transcriptHref: transcriptHref?.type === 'Literal' &&
+          typeof transcriptHref.value === 'string'
+          ? transcriptHref.value.trim()
+          : '',
+      });
     }
   });
+  for (const video of videos) {
+    let hasLinkedTranscript = false;
+    if (/^https:\/\//i.test(video.transcriptHref)) {
+      hasLinkedTranscript = true;
+    } else if (video.transcriptHref.startsWith('/') && !video.transcriptHref.includes('\\')) {
+      const target = path.join(rootDir, 'public', video.transcriptHref.slice(1));
+      hasLinkedTranscript = (
+        !(await hasSymlinkInPath(path.join(rootDir, 'public'), target)) &&
+        await isRegularFile(target)
+      );
+    }
+    if (!video.hasCaptions && !video.hasDescribedTranscript && !hasLinkedTranscript) {
+      errors.push(`MDX video requires captions/subtitles track or transcript access: ${sourceName}`);
+    }
+  }
   return errors;
 }
 
@@ -410,7 +504,7 @@ async function validateContentMetadata(rootDir, mode) {
       errors.push(`Metadata parse failed: ${sourceName}: ${error instanceof Error ? error.message : String(error)}`);
       continue;
     }
-    errors.push(...validateMdxMedia(program, sourceName));
+    errors.push(...await validateMdxMedia(program, sourceName, rootDir));
     for (const field of requiredMetadata) {
       if (!Object.hasOwn(metadata, field)) errors.push(`Missing metadata field ${field}: ${sourceName}`);
     }
@@ -818,24 +912,32 @@ const unsafeOutputReference = Symbol('unsafe output reference');
 function outputTargetForReference(outputRoot, htmlPath, reference) {
   if (!reference || /^(?:[a-z]+:|\/\/|#)/i.test(reference)) return undefined;
   if (reference.includes('\\')) return unsafeOutputReference;
-  let decoded = reference;
+  let decodedPath;
   try {
-    for (let index = 0; index < 10; index += 1) {
-      const next = decodeURIComponent(decoded);
-      if (next === decoded) break;
-      decoded = next;
-      if (decoded.includes('\\')) return unsafeOutputReference;
-      if (index === 9) return unsafeOutputReference;
-    }
     const htmlRelative = `/${relative(outputRoot, htmlPath)}`;
     const base = new URL(htmlRelative, 'https://publication.local/');
-    const url = new URL(decoded, base);
-    if (url.origin !== base.origin) return undefined;
-    decoded = decodeURIComponent(url.pathname);
+    const parsed = new URL(reference, base);
+    if (parsed.origin !== base.origin) return undefined;
+    decodedPath = parsed.pathname;
+    for (let index = 0; index < 10; index += 1) {
+      const next = decodeURIComponent(decodedPath);
+      if (next === decodedPath) break;
+      decodedPath = next;
+      if (decodedPath.includes('\\')) return unsafeOutputReference;
+      if (index === 9) return unsafeOutputReference;
+    }
+    const escapedPath = decodedPath
+      .replaceAll('%', '%25')
+      .replaceAll('#', '%23')
+      .replaceAll('?', '%3F');
+    decodedPath = decodeURIComponent(new URL(
+      escapedPath,
+      'https://publication.local/',
+    ).pathname);
   } catch {
     return unsafeOutputReference;
   }
-  const target = path.resolve(outputRoot, `.${decoded}`);
+  const target = path.resolve(outputRoot, `.${decodedPath}`);
   const relativeTarget = path.relative(outputRoot, target);
   if (
     relativeTarget === '..' ||
@@ -851,7 +953,7 @@ async function targetExists(target) {
   return isRegularFile(path.join(target, 'index.html'));
 }
 
-function validateHtmlMedia(document, sourceName) {
+async function validateHtmlMedia(document, sourceName, outputRoot, htmlPath) {
   const errors = [];
   for (const image of document.querySelectorAll('img')) {
     const alt = image.getAttribute('alt');
@@ -871,11 +973,21 @@ function validateHtmlMedia(document, sourceName) {
       track.getAttribute('src')?.trim()
     ));
     const describedBy = video.getAttribute('aria-describedby')?.trim();
-    const hasTranscript = Boolean(
-      video.getAttribute('data-transcript')?.trim() ||
-      video.getAttribute('data-transcript-href')?.trim() ||
-      (describedBy && document.getElementById(describedBy)),
-    );
+    const hasDescribedTranscript = Boolean(describedBy?.split(/\s+/).some((id) => (
+      document.getElementById(id)?.textContent?.trim()
+    )));
+    const transcriptHref = video.getAttribute('data-transcript-href')?.trim();
+    let hasLinkedTranscript = false;
+    if (transcriptHref) {
+      const target = outputTargetForReference(outputRoot, htmlPath, transcriptHref);
+      hasLinkedTranscript = Boolean(
+        target &&
+        target !== unsafeOutputReference &&
+        !(await hasSymlinkInPath(outputRoot, target)) &&
+        await targetExists(target)
+      );
+    }
+    const hasTranscript = hasDescribedTranscript || hasLinkedTranscript;
     if (!hasCaptions && !hasTranscript) {
       errors.push(
         `Generated video requires captions/subtitles track or transcript access: ${sourceName}`,
@@ -920,9 +1032,16 @@ async function validateOutput(rootDir) {
       errors.push(`Malformed generated HTML: ${relative(rootDir, htmlPath)}`);
     }
     const document = parseHtml(html);
-    errors.push(...validateHtmlMedia(document, relative(rootDir, htmlPath)));
+    errors.push(...await validateHtmlMedia(
+      document,
+      relative(rootDir, htmlPath),
+      outputRoot,
+      htmlPath,
+    ));
     const references = [];
-    for (const element of document.querySelectorAll('[href], [src], [poster], [srcset]')) {
+    for (const element of document.querySelectorAll(
+      '[href], [src], [poster], [srcset], [data-transcript-href]',
+    )) {
       for (const attribute of ['href', 'src', 'poster']) {
         const value = element.getAttribute(attribute);
         if (value) references.push(value);
@@ -935,6 +1054,8 @@ async function validateOutput(rootDir) {
             .filter(Boolean),
         );
       }
+      const transcriptHref = element.getAttribute('data-transcript-href');
+      if (transcriptHref) references.push(transcriptHref);
     }
     for (const reference of references) {
       const target = outputTargetForReference(outputRoot, htmlPath, reference);
@@ -964,6 +1085,11 @@ export async function runPublicationValidation({
   rootDir = repositoryRoot,
 }) {
   assertMode(mode);
+  const publicationRoots = mode === 'output'
+    ? ['out']
+    : ['content', 'evidence', 'public'];
+  const rootErrors = await validatePublicationRoots(rootDir, publicationRoots);
+  if (rootErrors.length) return { errors: rootErrors, messages: [] };
   const missing = mode === 'output' ? [] : await findMissingPublicationInputs(rootDir);
   const structuralErrors = mode === 'output'
     ? [
