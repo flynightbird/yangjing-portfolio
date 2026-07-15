@@ -4,6 +4,7 @@ import { ChapterNav } from '@/components/case-study/chapter-nav';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
 
 import styles from './xuelang-layout.module.css';
+import { XuelangMotion } from './xuelang-motion';
 import './xuelang-print.css';
 
 const copy = {
@@ -37,7 +38,8 @@ export function XuelangLayout({
   const pdfHref = `/files/xuelang-case-study-${locale}.pdf`;
 
   return (
-    <div className={styles.root} data-xuelang-case>
+    <XuelangMotion>
+      <div className={styles.root} data-xuelang-case>
       <div className={styles.frame}>
         <aside className={styles.rail}>
           <ChapterNav chapters={meta.chapters ?? []} locale={locale} />
@@ -89,6 +91,7 @@ export function XuelangLayout({
           <div className={styles.content}>{children}</div>
         </article>
       </div>
-    </div>
+      </div>
+    </XuelangMotion>
   );
 }
