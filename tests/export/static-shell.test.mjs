@@ -43,6 +43,7 @@ test('approved draft work routes are emitted for local framework review', () => 
     const xuelang = readOutput(`${locale}/work/xuelang/index.html`);
     assert.doesNotMatch(xuelang, /data-publication-state="draft"/);
     assert.match(xuelang, /Xuelang|学浪/);
+    assert.match(xuelang, new RegExp(`/files/xuelang-case-study-${locale}\\.pdf`));
   }
 });
 
