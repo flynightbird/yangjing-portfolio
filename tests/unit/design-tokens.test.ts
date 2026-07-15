@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
@@ -51,5 +51,24 @@ describe('Interface X-Ray design tokens', () => {
       /\.root\s*{[^}]*font-family:\s*inherit;/i,
     );
     expect(actionLinkCss).not.toMatch(/font-family:\s*var\(--font-body\)/i);
+  });
+
+  it('ships the approved Xuelang typography locally', () => {
+    for (const [file, weight] of [
+      ['misans-regular.woff2', '400'],
+      ['misans-semibold.woff2', '600'],
+      ['misans-bold.woff2', '700'],
+    ] as const) {
+      expect(globalsCss).toContain(`/fonts/${file}`);
+      expect(globalsCss).toMatch(
+        new RegExp(`font-weight:\\s*${weight}`),
+      );
+      expect(
+        statSync(path.resolve(process.cwd(), 'public/fonts', file)).size,
+      ).toBeGreaterThan(1024);
+    }
+
+    expect(globalsCss).toContain("--xuelang-font-body: 'MiSans'");
+    expect(globalsCss).toContain("--xuelang-font-mono: 'Geist Mono'");
   });
 });

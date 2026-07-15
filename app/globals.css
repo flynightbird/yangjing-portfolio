@@ -7,6 +7,33 @@
 @import '@fontsource/noto-sans-sc/400.css';
 @import '@fontsource/noto-sans-sc/500.css';
 @import '@fontsource/noto-sans-sc/600.css';
+@import '@fontsource/geist-mono/400.css';
+@import '@fontsource/geist-mono/500.css';
+@import '@fontsource/geist-mono/600.css';
+
+@font-face {
+  font-family: 'MiSans';
+  src: url('/fonts/misans-regular.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MiSans';
+  src: url('/fonts/misans-semibold.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MiSans';
+  src: url('/fonts/misans-bold.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
 
 :root {
   --color-paper: #F3F5F2;
@@ -24,6 +51,8 @@
   --font-body: 'Libre Franklin', sans-serif;
   --font-mono: 'DM Mono', monospace;
   --font-chinese: 'Noto Sans SC', sans-serif;
+  --xuelang-font-body: 'MiSans', 'Noto Sans SC', sans-serif;
+  --xuelang-font-mono: 'Geist Mono', 'DM Mono', monospace;
 
   --font-size-display: 2.75rem;
   --font-size-title: 2rem;
