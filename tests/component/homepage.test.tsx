@@ -9,7 +9,7 @@ import { VisualArchive } from '@/components/home/visual-archive';
 afterEach(cleanup);
 
 describe('DualIdentityHero', () => {
-  it('gives both identities equal semantic weight and keeps missing portrait honest', () => {
+  it('gives both identities equal semantic weight in the interactive portrait scene', () => {
     const { container } = render(<DualIdentityHero locale="en" />);
 
     expect(screen.getByRole('heading', { level: 1, name: 'Yang Jing' })).toBeVisible();
@@ -20,12 +20,21 @@ describe('DualIdentityHero', () => {
       screen.getByRole('heading', { level: 2, name: 'AI-native Builder' }),
     ).toBeVisible();
 
-    const draftPortrait = container.querySelector(
-      '[data-publication-state="draft"][data-media="portrait"]',
+    const portraitScene = container.querySelector('[data-media="portrait"]');
+    expect(portraitScene).toBeInTheDocument();
+    expect(portraitScene).not.toHaveAttribute('data-publication-state', 'draft');
+    expect(
+      within(portraitScene as HTMLElement).getByRole('img', {
+        name: 'Yang Jing portrait frame',
+      }),
+    ).toHaveAttribute('src', expect.stringContaining('yang-jing-hero-placeholder.png'));
+
+    expect(screen.getByRole('separator', { name: 'Adjust identity reveal' })).toHaveAttribute(
+      'aria-valuenow',
+      '48',
     );
-    expect(draftPortrait).toBeInTheDocument();
-    expect(draftPortrait).toHaveTextContent('Portrait awaiting approved photography');
-    expect(within(draftPortrait as HTMLElement).queryByRole('img')).not.toBeInTheDocument();
+    expect(container.querySelector('[data-hero-code-canvas]')).toBeInTheDocument();
+    expect(container.querySelector('[data-designer-art="material-blueprint"]')).toBeInTheDocument();
   });
 });
 

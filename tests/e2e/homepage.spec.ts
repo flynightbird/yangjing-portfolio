@@ -103,7 +103,7 @@ test.describe('portfolio homepage framework', () => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
     const images = page.locator('main img');
-    await expect(images).toHaveCount(4);
+    await expect(images).toHaveCount(6);
     for (let index = 0; index < await images.count(); index += 1) {
       const image = images.nth(index);
       await image.scrollIntoViewIfNeeded();
@@ -139,12 +139,43 @@ test.describe('portfolio homepage framework', () => {
     await expect(page.getByRole('heading', { name: 'Product Designer' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'AI-native Builder' })).toBeVisible();
     await expect(page.locator('[data-media="portrait"]')).toBeVisible();
-    expect(
-      await page.getByRole('heading', { name: 'Product Designer' }).evaluate(
-        (heading) => getComputedStyle(heading.parentElement as HTMLElement).transform,
-      ),
-    ).toBe('none');
+    await expect(page.locator('[data-hero-code-canvas]')).toHaveAttribute('data-scan-runs', '0');
+    await expect(page.locator('[data-designer-art="material-blueprint"]')).toBeVisible();
     expect(hydrationErrors).toEqual([]);
+  });
+
+  test('supports keyboard and pointer control with a scan after drag release', async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== 'desktop',
+      'Hero pointer behavior needs one viewport; responsive coverage runs separately.',
+    );
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const divider = page.getByRole('separator', { name: 'Adjust identity reveal' });
+    const canvas = page.locator('[data-hero-code-canvas]');
+    await expect(divider).toHaveAttribute('aria-valuenow', '48');
+
+    await divider.focus();
+    await divider.press('ArrowRight');
+    await expect(divider).toHaveAttribute('aria-valuenow', '52');
+
+    const dividerBox = await divider.boundingBox();
+    if (!dividerBox) throw new Error('Missing Hero divider bounds');
+    const scanRunsBeforeDrag = Number(await canvas.getAttribute('data-scan-runs'));
+    await page.mouse.move(
+      dividerBox.x + dividerBox.width / 2,
+      dividerBox.y + Math.min(180, dividerBox.height / 2),
+    );
+    await page.mouse.down();
+    await page.mouse.move(dividerBox.x + 180, dividerBox.y + 180, { steps: 5 });
+    await page.mouse.up();
+
+    expect(Number(await divider.getAttribute('aria-valuenow'))).toBeGreaterThan(52);
+    expect(Number(await canvas.getAttribute('data-scan-runs'))).toBeGreaterThan(
+      scanRunsBeforeDrag,
+    );
   });
 
   test('keeps the remaining draft work route keyboard reachable and explicitly marked', async ({
