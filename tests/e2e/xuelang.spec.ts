@@ -30,7 +30,17 @@ test.describe('Xuelang case study', () => {
       await expect(page.getByText(role, { exact: true })).toBeInViewport();
       await expect(page.getByText(duration, { exact: true })).toBeInViewport();
       await expect(page.locator('[data-hero-panorama] img')).toBeInViewport();
-      await expect(page.getByRole('link', { name: /PDF/ })).toBeInViewport();
+      const pdfLink = page.getByRole('link', { name: /PDF/ });
+      await expect(pdfLink).toBeInViewport();
+      await expect(pdfLink).toHaveAttribute(
+        'href',
+        `/files/xuelang-case-study-${locale}.pdf`,
+      );
+      await expect(pdfLink).toHaveAttribute('download', '');
+
+      for (const metric of ['+11.75%', '+1.36%', '+6.5%']) {
+        await expect(page.getByText(metric, { exact: true }).last()).not.toBeInViewport();
+      }
 
       await expect(page.locator('[data-testid="xuelang-dark-stage"]')).toHaveCount(1);
       await expect(page.locator('[data-testid="learning-state"]')).toHaveCount(5);
@@ -47,10 +57,54 @@ test.describe('Xuelang case study', () => {
       expect(await page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
       )).toBeLessThanOrEqual(1);
+
+      await expect(page.getByText(
+        locale === 'zh'
+          ? '数据为实验周期内 14 天累计相对值。'
+          : 'Data represents cumulative relative values over the 14-day experiment period.',
+        { exact: true },
+      )).toBeVisible();
+      await expect(page.locator('main')).not.toContainText(/灰度|gray release|long-term validated/i);
+
+      const email = locale === 'zh' ? 'yangux@qq.com' : 'amanda.yangj@gmail.com';
+      await expect(page.getByRole('link', { name: email })).toHaveAttribute(
+        'href',
+        `mailto:${email}`,
+      );
     });
   }
 
-  test('desktop creates one learning pin and reduced motion creates none', async ({ page }) => {
+  test('desktop chapter rail, lightbox, and Chinese contact remain operable', async ({
+    context,
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'Interactions need one canonical viewport.');
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.goto('/zh/work/xuelang/', { waitUntil: 'networkidle' });
+
+    for (const id of chapterIds) {
+      await page.locator(`#${id}`).scrollIntoViewIfNeeded();
+      await expect
+        .poll(async () => page.locator(`a[href="#${id}"]`).getAttribute('aria-current'))
+        .toBe('location');
+    }
+
+    const firstEvidence = page.locator('[data-evidence]').first();
+    await firstEvidence.getByRole('button').click();
+    await expect(page.getByRole('dialog', { name: '查看产品界面' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog', { name: '查看产品界面' })).toHaveCount(0);
+
+    await page.getByRole('button', { name: '复制微信号' }).click();
+    await expect(page.getByText('已复制微信号', { exact: true })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText()))
+      .toBe('flydesigner_yangj');
+  });
+
+  test('desktop creates one learning pin and reduced motion creates none', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'Pinning starts at 1200px.');
     await page.goto('/zh/work/xuelang/', { waitUntil: 'networkidle' });
     await expect(page.locator('.pin-spacer')).toHaveCount(1);
 

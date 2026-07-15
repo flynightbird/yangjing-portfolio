@@ -15,7 +15,7 @@ export default defineConfig({
   },
   webServer: {
     command: 'npm run dev -- --port 4174',
-    url: 'http://localhost:4174',
+    url: 'http://localhost:4174/en/work/call-agent/',
     reuseExistingServer: false,
   },
   projects: [

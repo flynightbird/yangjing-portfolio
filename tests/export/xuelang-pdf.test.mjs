@@ -55,5 +55,21 @@ test('localized Xuelang routes link verified A4 case-study PDFs', () => {
     for (const expected of expectations[locale]) {
       assert.ok(text.includes(expected), `${locale} PDF must contain ${expected}`);
     }
+
+    const reflectionHeading = locale === 'zh'
+      ? '把“什么是好课”变成'
+      : 'Turn “what makes a';
+    const reflectionPage = Array.from({ length: pages }, (_, index) => index + 1)
+      .map((pageNumber) => execFileSync(
+        pdftotext,
+        ['-f', String(pageNumber), '-l', String(pageNumber), '-layout', pdfPath, '-'],
+        { encoding: 'utf8', maxBuffer: 2 * 1024 * 1024 },
+      ))
+      .find((pageText) => pageText.includes('REFLECTION'));
+    assert.ok(reflectionPage, `${locale} PDF must contain the reflection label`);
+    assert.ok(
+      reflectionPage.includes(reflectionHeading),
+      `${locale} PDF must keep the reflection label with its heading`,
+    );
   }
 });

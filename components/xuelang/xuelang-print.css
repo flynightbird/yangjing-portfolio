@@ -1,29 +1,30 @@
-@page {
+@page xuelang {
   size: A4 portrait;
   margin: 14mm 13mm 16mm;
 }
 
 @media print {
   [data-xuelang-case] {
+    page: xuelang;
     zoom: 0.86;
   }
 
-  html,
-  body {
+  html:has([data-xuelang-case]),
+  body:has([data-xuelang-case]) {
     background: #fff !important;
   }
 
-  body > header,
-  body > footer,
-  body > .skip-link,
-  [data-case-web-control],
+  body:has([data-xuelang-case]) > header,
+  body:has([data-xuelang-case]) > footer,
+  body:has([data-xuelang-case]) > .skip-link,
+  [data-xuelang-case] [data-case-web-control],
   [data-xuelang-case] aside,
   [data-xuelang-case] dialog,
   [data-xuelang-case] .pin-spacer > :not([data-learning-sequence]) {
     display: none !important;
   }
 
-  main,
+  main:has([data-xuelang-case]),
   [data-xuelang-motion],
   [data-xuelang-case],
   [data-xuelang-case] article,
@@ -73,54 +74,54 @@
     object-fit: contain !important;
   }
 
-  [data-case-study] section {
+  [data-xuelang-case] [data-case-study] section {
     display: block !important;
     padding: 12mm 0 8mm !important;
     border-block-start: 0 !important;
   }
 
-  [data-case-study] section#decision-standard,
-  [data-case-study] section#decision-purchase,
-  [data-case-study] section#decision-learning,
-  [data-case-study] section#results {
+  [data-xuelang-case] [data-case-study] section#decision-standard,
+  [data-xuelang-case] [data-case-study] section#decision-purchase,
+  [data-xuelang-case] [data-case-study] section#decision-learning,
+  [data-xuelang-case] [data-case-study] section#results {
     break-before: page;
   }
 
-  [data-case-study] section h2 {
+  [data-xuelang-case] [data-case-study] section h2 {
     max-width: 18ch !important;
     font-size: 22pt !important;
     line-height: 1.12 !important;
   }
 
-  [data-case-study] section h3,
-  [data-case-study] section header,
-  [data-case-study] blockquote,
-  [data-case-study] details,
-  [data-case-study] details > *,
-  [data-case-study] figure,
-  [data-case-study] figure figcaption,
-  [data-case-study] ol,
-  [data-case-study] dl,
-  [data-case-study] article,
-  [data-result-metric],
-  [data-learning-state],
-  [data-testid='xuelang-dark-stage'] {
+  [data-xuelang-case] [data-case-study] section h3,
+  [data-xuelang-case] [data-case-study] section header,
+  [data-xuelang-case] [data-case-study] blockquote,
+  [data-xuelang-case] [data-case-study] details,
+  [data-xuelang-case] [data-case-study] details > *,
+  [data-xuelang-case] [data-case-study] figure,
+  [data-xuelang-case] [data-case-study] figure figcaption,
+  [data-xuelang-case] [data-case-study] ol,
+  [data-xuelang-case] [data-case-study] dl,
+  [data-xuelang-case] [data-case-study] article,
+  [data-xuelang-case] [data-result-metric],
+  [data-xuelang-case] [data-learning-state],
+  [data-xuelang-case] [data-testid='xuelang-dark-stage'] {
     break-inside: avoid;
   }
 
-  [data-case-study] details > * {
+  [data-xuelang-case] [data-case-study] details > * {
     display: block !important;
   }
 
-  [data-case-study] [data-evidence] {
+  [data-xuelang-case] [data-case-study] [data-evidence] {
     margin-block: 6mm 4mm !important;
   }
 
-  [data-case-study] [data-evidence] button {
+  [data-xuelang-case] [data-case-study] [data-evidence] button {
     border: 0 !important;
   }
 
-  [data-case-study] [data-evidence] img {
+  [data-xuelang-case] [data-case-study] [data-evidence] img {
     display: block !important;
     width: auto !important;
     max-width: 100% !important;
@@ -130,10 +131,10 @@
     object-fit: contain !important;
   }
 
-  [data-learning-sequence],
-  [data-learning-sequence] > div,
-  [data-learning-state],
-  .pin-spacer {
+  [data-xuelang-case] [data-learning-sequence],
+  [data-xuelang-case] [data-learning-sequence] > div,
+  [data-xuelang-case] [data-learning-state],
+  [data-xuelang-case] .pin-spacer {
     position: static !important;
     width: auto !important;
     height: auto !important;
@@ -141,11 +142,11 @@
     transform: none !important;
   }
 
-  [data-learning-state] {
+  [data-xuelang-case] [data-learning-state] {
     padding-block: 7mm !important;
   }
 
-  [data-testid='xuelang-dark-stage'] {
+  [data-xuelang-case] [data-testid='xuelang-dark-stage'] {
     margin-block: 8mm !important;
     padding: 7mm !important;
     background: #121614 !important;
@@ -153,56 +154,57 @@
     print-color-adjust: exact;
   }
 
-  [data-testid='xuelang-dark-stage'] > div {
+  [data-xuelang-case] [data-testid='xuelang-dark-stage'] > div {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 5mm !important;
   }
 
-  [data-testid='xuelang-dark-stage'] img {
+  [data-xuelang-case] [data-testid='xuelang-dark-stage'] img {
     max-height: 75mm !important;
   }
 
-  [data-result-metric] strong {
+  [data-xuelang-case] [data-result-metric] strong {
     font-size: 28pt !important;
   }
 
-  [data-result-metric] {
+  [data-xuelang-case] [data-result-metric] {
     padding: 3mm 3mm 3.5mm 0 !important;
   }
 
-  [data-case-study] .xuelang-reflection {
+  [data-xuelang-case] [data-case-study] .xuelang-reflection {
     margin-block-start: 5mm !important;
     padding-block-start: 4mm !important;
+    break-inside: avoid;
   }
 
-  [data-case-study] .xuelang-reflection h3 {
+  [data-xuelang-case] [data-case-study] .xuelang-reflection h3 {
     margin: 2mm 0 3mm !important;
     font-size: 18pt !important;
   }
 
-  [data-case-study] .xuelang-reflection p {
+  [data-xuelang-case] [data-case-study] .xuelang-reflection p {
     line-height: 1.5 !important;
   }
 
-  [data-case-study] footer {
+  [data-xuelang-case] [data-case-study] footer {
     gap: 4mm !important;
     margin-block-start: 3mm !important;
     padding-block: 2.5mm !important;
     break-inside: avoid;
   }
 
-  [data-case-study] footer > div {
+  [data-xuelang-case] [data-case-study] footer > div {
     gap: 1.5mm !important;
   }
 
-  [data-case-study] footer strong {
+  [data-xuelang-case] [data-case-study] footer strong {
     font-size: 12pt !important;
   }
 
-  [data-case-study] footer span,
-  [data-case-study] footer a,
-  [data-case-study] footer p {
+  [data-xuelang-case] [data-case-study] footer span,
+  [data-xuelang-case] [data-case-study] footer a,
+  [data-xuelang-case] [data-case-study] footer p {
     font-size: 7.5pt !important;
   }
 }

@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import {
   cpSync,
+  existsSync,
   mkdtempSync,
   mkdirSync,
   readFileSync,
@@ -127,9 +128,13 @@ describe('publication validation CLI', () => {
     expect(result.stdout).toContain(
       'Missing publication input: content/profile/contact.private.json',
     );
-    const reported = result.stdout.trim().split('\n');
+    const reported = result.stdout.trim()
+      ? result.stdout.trim().split('\n')
+      : [];
     expect(reported).toEqual(
-      publicationInputs.map((value) => `Missing publication input: ${value}`),
+      publicationInputs
+        .filter((value) => !existsSync(path.join(process.cwd(), value)))
+        .map((value) => `Missing publication input: ${value}`),
     );
   });
 
@@ -153,7 +158,10 @@ describe('publication validation CLI', () => {
 
     expect(result.status).toBe(1);
     expect(`${result.stdout}\n${result.stderr}`).toMatch(
-      /missing launch route.*work\/xuelang.*locale.*en/i,
+      /missing launch route.*work\/meeting.*locale.*en/i,
+    );
+    expect(`${result.stdout}\n${result.stderr}`).not.toMatch(
+      /missing launch route.*work\/xuelang/i,
     );
   });
 
@@ -628,9 +636,11 @@ export const metadata = {
       'content',
       'evidence/call-agent',
       'evidence/stt-demo',
+      'evidence/xuelang',
       'evidence/media',
       'public/demos/stt-demo',
       'public/images/call-agent',
+      'public/images/xuelang',
     ]) {
       cpSync(path.join(process.cwd(), relativePath), path.join(root, relativePath), {
         recursive: true,
