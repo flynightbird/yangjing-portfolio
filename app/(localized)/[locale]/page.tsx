@@ -1,8 +1,12 @@
 import { notFound } from 'next/navigation';
 
-import { enDictionary } from '@/content/dictionaries/en';
-import { zhDictionary } from '@/content/dictionaries/zh';
+import { AboutPreview } from '@/components/home/about-preview';
+import { DualIdentityHero } from '@/components/home/dual-identity-hero';
+import { FeaturedWork } from '@/components/home/featured-work';
+import { VisualArchive } from '@/components/home/visual-archive';
 import { isLocale } from '@/lib/i18n/locales';
+
+import styles from '@/components/home/home.module.css';
 
 interface LocaleHomePageProps {
   readonly params: Promise<{ locale: string }>;
@@ -15,12 +19,12 @@ export default async function LocaleHomePage({ params }: LocaleHomePageProps) {
     notFound();
   }
 
-  const dictionary = locale === 'zh' ? zhDictionary : enDictionary;
-
   return (
-    <section>
-      <h1>{dictionary.home.title}</h1>
-      <p>{dictionary.home.description}</p>
-    </section>
+    <div className={styles.home}>
+      <DualIdentityHero locale={locale} />
+      <FeaturedWork locale={locale} />
+      <VisualArchive locale={locale} />
+      <AboutPreview locale={locale} />
+    </div>
   );
 }
