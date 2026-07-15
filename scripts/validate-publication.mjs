@@ -109,7 +109,27 @@ async function isRegularFile(filePath) {
   }
 }
 
-async function walkFiles(directory) {
+async function hasSymlinkInPath(root, filePath) {
+  const resolvedRoot = path.resolve(root);
+  const resolvedPath = path.resolve(filePath);
+  const relation = path.relative(resolvedRoot, resolvedPath);
+  if (relation === '..' || relation.startsWith(`..${path.sep}`) || path.isAbsolute(relation)) {
+    return true;
+  }
+  let current = resolvedRoot;
+  for (const segment of relation.split(path.sep).filter(Boolean)) {
+    current = path.join(current, segment);
+    try {
+      if ((await fs.lstat(current)).isSymbolicLink()) return true;
+    } catch (error) {
+      if (error?.code === 'ENOENT') return false;
+      throw error;
+    }
+  }
+  return false;
+}
+
+async function walkFiles(directory, symlinks = []) {
   const files = [];
   let entries;
   try {
@@ -120,7 +140,8 @@ async function walkFiles(directory) {
   entries.sort((a, b) => a.name.localeCompare(b.name));
   for (const entry of entries) {
     const child = path.join(directory, entry.name);
-    if (entry.isDirectory()) files.push(...await walkFiles(child));
+    if (entry.isSymbolicLink()) symlinks.push(child);
+    else if (entry.isDirectory()) files.push(...await walkFiles(child, symlinks));
     else if (entry.isFile()) files.push(child);
   }
   return files;
@@ -190,10 +211,20 @@ function findSensitiveHtml(html) {
 
 async function validatePrivacy(rootDir, roots) {
   const errors = [];
-  const textExtensions = new Set(['.md', '.mdx', '.json', '.html', '.txt', '.vtt']);
+  const textExtensions = new Set([
+    '.md', '.mdx', '.json', '.html', '.txt', '.vtt',
+    '.js', '.mjs', '.cjs', '.css', '.svg',
+  ]);
+  const lowNoiseExtensions = new Set(['.js', '.mjs', '.cjs', '.css']);
   for (const rootName of roots) {
-    for (const filePath of await walkFiles(path.join(rootDir, rootName))) {
-      if (!textExtensions.has(path.extname(filePath).toLowerCase())) continue;
+    const symlinks = [];
+    const files = await walkFiles(path.join(rootDir, rootName), symlinks);
+    for (const symlink of symlinks) {
+      errors.push(`Symlink not allowed in publication tree: ${relative(rootDir, symlink)}`);
+    }
+    for (const filePath of files) {
+      const extension = path.extname(filePath).toLowerCase();
+      if (!textExtensions.has(extension)) continue;
       let text;
       try {
         text = await fs.readFile(filePath, 'utf8');
@@ -201,9 +232,17 @@ async function validatePrivacy(rootDir, roots) {
         errors.push(`Unable to read text file: ${relative(rootDir, filePath)}`);
         continue;
       }
-      const findings = filePath.endsWith('.html')
-        ? findSensitiveHtml(text)
-        : findSensitiveText(text);
+      let findings;
+      if (extension === '.html' || extension === '.svg') {
+        findings = findSensitiveHtml(text);
+      } else if (lowNoiseExtensions.has(extension)) {
+        findings = findSensitiveText(text).filter((finding) => (
+          finding === SENSITIVE_TEXT_LABELS.authorization ||
+          finding === SENSITIVE_TEXT_LABELS.identifier
+        ));
+      } else {
+        findings = findSensitiveText(text);
+      }
       for (const finding of findings) {
         errors.push(`Sensitive text (${finding}): ${relative(rootDir, filePath)}`);
       }
@@ -248,7 +287,7 @@ function readStaticValue(node) {
   throw new Error(`metadata value must be static, received ${node.type}`);
 }
 
-async function parseMdxMetadata(source) {
+async function parseMdxDocument(source) {
   const compiled = String(await compile(source, { outputFormat: 'program' }));
   const program = parse(compiled, { ecmaVersion: 'latest', sourceType: 'module' });
   for (const statement of program.body) {
@@ -261,11 +300,98 @@ async function parseMdxMetadata(source) {
         if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) {
           throw new Error('metadata export must be an object');
         }
-        return metadata;
+        return { metadata, program };
       }
     }
   }
   throw new Error('missing metadata export');
+}
+
+function objectProperty(object, name) {
+  if (!object || object.type !== 'ObjectExpression') return undefined;
+  return object.properties.find((property) => (
+    property.type === 'Property' &&
+    !property.computed &&
+    (property.key.name === name || property.key.value === name)
+  ))?.value;
+}
+
+function staticNonEmptyString(node) {
+  return node?.type === 'Literal' && typeof node.value === 'string' && node.value.trim();
+}
+
+function mdxPropsAreDecorative(props) {
+  const ariaHidden = objectProperty(props, 'aria-hidden');
+  const role = objectProperty(props, 'role');
+  return (
+    ariaHidden?.type === 'Literal' && [true, 'true'].includes(ariaHidden.value) ||
+    role?.type === 'Literal' && ['presentation', 'none'].includes(role.value)
+  );
+}
+
+function walkAst(node, visit) {
+  if (!node || typeof node !== 'object') return;
+  visit(node);
+  for (const [key, value] of Object.entries(node)) {
+    if (key === 'start' || key === 'end' || key === 'loc') continue;
+    if (Array.isArray(value)) {
+      for (const child of value) walkAst(child, visit);
+    } else if (value && typeof value === 'object') {
+      walkAst(value, visit);
+    }
+  }
+}
+
+function jsxCallName(node) {
+  if (
+    node?.type !== 'CallExpression' ||
+    node.callee?.type !== 'Identifier' ||
+    !['_jsx', '_jsxs'].includes(node.callee.name) ||
+    node.arguments[0]?.type !== 'Literal'
+  ) return undefined;
+  return node.arguments[0].value;
+}
+
+function validateMdxMedia(program, sourceName) {
+  const errors = [];
+  walkAst(program, (node) => {
+    const name = jsxCallName(node);
+    if (name === 'img') {
+      const props = node.arguments[1];
+      const alt = objectProperty(props, 'alt');
+      const hasDecorativeAlt = (
+        alt?.type === 'Literal' && alt.value === '' && mdxPropsAreDecorative(props)
+      );
+      if (!staticNonEmptyString(alt) && !hasDecorativeAlt) {
+        errors.push(`MDX img requires non-empty alt: ${sourceName}`);
+      }
+    }
+    if (name === 'video') {
+      const props = node.arguments[1];
+      if (!staticNonEmptyString(objectProperty(props, 'poster'))) {
+        errors.push(`MDX video requires poster: ${sourceName}`);
+      }
+      let hasCaptions = false;
+      walkAst(objectProperty(props, 'children'), (child) => {
+        if (jsxCallName(child) !== 'track') return;
+        const trackProps = child.arguments[1];
+        const kind = objectProperty(trackProps, 'kind');
+        if (
+          kind?.type === 'Literal' &&
+          ['captions', 'subtitles'].includes(String(kind.value).toLowerCase()) &&
+          staticNonEmptyString(objectProperty(trackProps, 'src'))
+        ) {
+          hasCaptions = true;
+        }
+      });
+      const hasTranscript = ['data-transcript', 'data-transcript-href', 'aria-describedby']
+        .some((attribute) => staticNonEmptyString(objectProperty(props, attribute)));
+      if (!hasCaptions && !hasTranscript) {
+        errors.push(`MDX video requires captions/subtitles track or transcript access: ${sourceName}`);
+      }
+    }
+  });
+  return errors;
 }
 
 async function validateContentMetadata(rootDir, mode) {
@@ -277,12 +403,14 @@ async function validateContentMetadata(rootDir, mode) {
     const source = await fs.readFile(filePath, 'utf8');
     const sourceName = relative(rootDir, filePath);
     let metadata;
+    let program;
     try {
-      metadata = await parseMdxMetadata(source);
+      ({ metadata, program } = await parseMdxDocument(source));
     } catch (error) {
       errors.push(`Metadata parse failed: ${sourceName}: ${error instanceof Error ? error.message : String(error)}`);
       continue;
     }
+    errors.push(...validateMdxMedia(program, sourceName));
     for (const field of requiredMetadata) {
       if (!Object.hasOwn(metadata, field)) errors.push(`Missing metadata field ${field}: ${sourceName}`);
     }
@@ -362,6 +490,35 @@ async function validateContentMetadata(rootDir, mode) {
   return errors;
 }
 
+function isApprovedLinkedInUrl(value) {
+  if (typeof value !== 'string') return false;
+  try {
+    const url = new URL(value);
+    return (
+      url.protocol === 'https:' &&
+      ['linkedin.com', 'www.linkedin.com'].includes(url.hostname) &&
+      /^\/(?:in|pub)\/[^/]+\/?$/.test(url.pathname)
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isCalendarDate(value) {
+  const match = typeof value === 'string' && /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return false;
+  const [, yearText, monthText, dayText] = match;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return (
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day
+  );
+}
+
 async function validateContact(rootDir) {
   const contactPath = path.join(rootDir, 'content/profile/contact.private.json');
   if (!(await isRegularFile(contactPath))) return [];
@@ -385,14 +542,14 @@ async function validateContact(rootDir) {
   if (typeof contactRecord.email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactRecord.email)) {
     errors.push('Contact email must be a valid public email address');
   }
-  if (typeof contactRecord.linkedin !== 'string' || !/^https:\/\//.test(contactRecord.linkedin)) {
-    errors.push('Contact linkedin must be an HTTPS URL');
+  if (!isApprovedLinkedInUrl(contactRecord.linkedin)) {
+    errors.push('Contact linkedin must be an HTTPS linkedin.com profile URL');
   }
   if (typeof contactRecord.wechatId !== 'string' || !contactRecord.wechatId.trim()) {
     errors.push('Contact wechatId must be a non-empty string');
   }
-  if (typeof contactRecord.resumeRevision !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(contactRecord.resumeRevision)) {
-    errors.push('Contact resumeRevision must use YYYY-MM-DD');
+  if (!isCalendarDate(contactRecord.resumeRevision)) {
+    errors.push('Contact resumeRevision must be a real YYYY-MM-DD calendar date');
   }
   for (const finding of findSensitiveText(text)) {
     errors.push(`Sensitive contact text (${finding}): content/profile/contact.private.json`);
@@ -441,8 +598,13 @@ async function validateExistingMedia(rootDir) {
 async function validatePublicationInputKinds(rootDir) {
   const errors = [];
   for (const relativePath of publicationInputs) {
+    const inputPath = path.join(rootDir, relativePath);
+    if (await hasSymlinkInPath(rootDir, path.dirname(inputPath))) {
+      errors.push(`Publication input has symlink ancestor: ${relativePath}`);
+      continue;
+    }
     try {
-      const stat = await fs.lstat(path.join(rootDir, relativePath));
+      const stat = await fs.lstat(inputPath);
       if (stat.isSymbolicLink() || !stat.isFile()) {
         errors.push(`Publication input must be a regular non-symlink file: ${relativePath}`);
       }
@@ -651,20 +813,35 @@ async function validateMediaManifest(rootDir, mode) {
   return errors;
 }
 
+const unsafeOutputReference = Symbol('unsafe output reference');
+
 function outputTargetForReference(outputRoot, htmlPath, reference) {
-  const clean = reference.split(/[?#]/, 1)[0];
-  if (!clean || /^(?:[a-z]+:|\/\/|#)/i.test(clean)) return undefined;
-  let decoded;
+  if (!reference || /^(?:[a-z]+:|\/\/|#)/i.test(reference)) return undefined;
+  if (reference.includes('\\')) return unsafeOutputReference;
+  let decoded = reference;
   try {
-    decoded = decodeURIComponent(clean);
+    for (let index = 0; index < 10; index += 1) {
+      const next = decodeURIComponent(decoded);
+      if (next === decoded) break;
+      decoded = next;
+      if (decoded.includes('\\')) return unsafeOutputReference;
+      if (index === 9) return unsafeOutputReference;
+    }
+    const htmlRelative = `/${relative(outputRoot, htmlPath)}`;
+    const base = new URL(htmlRelative, 'https://publication.local/');
+    const url = new URL(decoded, base);
+    if (url.origin !== base.origin) return undefined;
+    decoded = decodeURIComponent(url.pathname);
   } catch {
-    return null;
+    return unsafeOutputReference;
   }
-  const target = decoded.startsWith('/')
-    ? path.resolve(outputRoot, `.${decoded}`)
-    : path.resolve(path.dirname(htmlPath), decoded);
+  const target = path.resolve(outputRoot, `.${decoded}`);
   const relativeTarget = path.relative(outputRoot, target);
-  if (relativeTarget.startsWith('..') || path.isAbsolute(relativeTarget)) return null;
+  if (
+    relativeTarget === '..' ||
+    relativeTarget.startsWith(`..${path.sep}`) ||
+    path.isAbsolute(relativeTarget)
+  ) return unsafeOutputReference;
   return target;
 }
 
@@ -672,6 +849,40 @@ async function targetExists(target) {
   if (!target) return false;
   if (await isRegularFile(target)) return true;
   return isRegularFile(path.join(target, 'index.html'));
+}
+
+function validateHtmlMedia(document, sourceName) {
+  const errors = [];
+  for (const image of document.querySelectorAll('img')) {
+    const alt = image.getAttribute('alt');
+    const isDecorative = Boolean(image.closest(
+      '[aria-hidden="true" i], [role="presentation" i], [role="none" i]',
+    ));
+    if (alt === null || (!alt.trim() && !isDecorative)) {
+      errors.push(`Generated img requires non-empty alt: ${sourceName}`);
+    }
+  }
+  for (const video of document.querySelectorAll('video')) {
+    if (!video.getAttribute('poster')?.trim()) {
+      errors.push(`Generated video requires poster: ${sourceName}`);
+    }
+    const hasCaptions = [...video.querySelectorAll('track')].some((track) => (
+      ['captions', 'subtitles'].includes(track.getAttribute('kind')?.toLowerCase()) &&
+      track.getAttribute('src')?.trim()
+    ));
+    const describedBy = video.getAttribute('aria-describedby')?.trim();
+    const hasTranscript = Boolean(
+      video.getAttribute('data-transcript')?.trim() ||
+      video.getAttribute('data-transcript-href')?.trim() ||
+      (describedBy && document.getElementById(describedBy)),
+    );
+    if (!hasCaptions && !hasTranscript) {
+      errors.push(
+        `Generated video requires captions/subtitles track or transcript access: ${sourceName}`,
+      );
+    }
+  }
+  return errors;
 }
 
 async function validateOutput(rootDir) {
@@ -709,6 +920,7 @@ async function validateOutput(rootDir) {
       errors.push(`Malformed generated HTML: ${relative(rootDir, htmlPath)}`);
     }
     const document = parseHtml(html);
+    errors.push(...validateHtmlMedia(document, relative(rootDir, htmlPath)));
     const references = [];
     for (const element of document.querySelectorAll('[href], [src], [poster], [srcset]')) {
       for (const attribute of ['href', 'src', 'poster']) {
@@ -727,7 +939,11 @@ async function validateOutput(rootDir) {
     for (const reference of references) {
       const target = outputTargetForReference(outputRoot, htmlPath, reference);
       if (target === undefined) continue;
-      if (target === null || !(await targetExists(target))) {
+      if (target === unsafeOutputReference) {
+        errors.push(`Unsafe internal reference "${reference}" in ${relative(rootDir, htmlPath)}`);
+      } else if (await hasSymlinkInPath(outputRoot, target)) {
+        errors.push(`Unsafe internal reference "${reference}" in ${relative(rootDir, htmlPath)}`);
+      } else if (!(await targetExists(target))) {
         errors.push(`Broken internal reference "${reference}" in ${relative(rootDir, htmlPath)}`);
       }
     }

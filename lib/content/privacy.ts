@@ -20,7 +20,7 @@ export function findSensitiveText(value: string): string[] {
   if (/\b(?:\d{1,3}\.){3}\d{1,3}\b/.test(value)) {
     findings.push(SENSITIVE_TEXT_LABELS.ip);
   }
-  if (/\b(?:account|internal|user|tenant|organization|org|workspace|project)[_-]?id\s*[:=]\s*[a-z0-9][a-z0-9_-]{5,}\b/i.test(value)) {
+  if (/\b(?:account|internal|user|tenant|organization|org|workspace|project)[_-]?id\s*[:=]\s*["']?[a-z0-9][a-z0-9_-]{5,}\b/i.test(value)) {
     findings.push(SENSITIVE_TEXT_LABELS.identifier);
   }
   return findings;

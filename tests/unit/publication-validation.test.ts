@@ -57,6 +57,19 @@ function generatedContract(overrides: Record<string, unknown> = {}) {
   };
 }
 
+function completeMdx(locale: 'en' | 'zh', body: string) {
+  return `
+export const metadata = {
+  type: 'work', slug: 'sample', locale: '${locale}',
+  translationKey: 'work.sample', title: 'T', proposition: 'P', role: 'R',
+  duration: 'D', status: 'S', disclosure: 'D', heroMedia: '/images/sample.avif',
+  evidenceLevel: 'delivered', featuredOrder: 1
+}
+
+${body}
+`;
+}
+
 afterEach(() => {
   for (const root of temporaryRoots.splice(0)) {
     rmSync(root, { recursive: true, force: true });
@@ -146,6 +159,36 @@ describe('publication validation CLI', () => {
     );
   });
 
+  it('restricts LinkedIn contact URLs to official profile hosts', async () => {
+    const root = createRoot();
+    write(root, 'content/profile/contact.private.json', JSON.stringify({
+      email: 'person@example.com',
+      linkedin: 'https://example.com/linkedin.com/in/person',
+      wechatId: 'public-wechat',
+      resumeRevision: '2026-07-15',
+    }));
+
+    const result = await runPublicationValidation({ mode: 'development', rootDir: root });
+    expect(result.errors).toContain(
+      'Contact linkedin must be an HTTPS linkedin.com profile URL',
+    );
+  });
+
+  it('requires resumeRevision to be a real calendar date', async () => {
+    const root = createRoot();
+    write(root, 'content/profile/contact.private.json', JSON.stringify({
+      email: 'person@example.com',
+      linkedin: 'https://www.linkedin.com/in/person',
+      wechatId: 'public-wechat',
+      resumeRevision: '2026-99-99',
+    }));
+
+    const result = await runPublicationValidation({ mode: 'development', rootDir: root });
+    expect(result.errors).toContain(
+      'Contact resumeRevision must be a real YYYY-MM-DD calendar date',
+    );
+  });
+
   it('validates PDF signatures for files that are present', async () => {
     const root = createRoot();
     write(root, 'public/files/yang-jing-bytedance-case-study.pdf', 'not a pdf');
@@ -179,6 +222,44 @@ export const metadata = {
     );
   });
 
+  it('requires non-empty alt text on every image in bilingual MDX', async () => {
+    const root = createRoot();
+    write(root, 'public/images/sample.avif', await sharp({
+      create: { width: 1, height: 1, channels: 3, background: '#000000' },
+    }).avif().toBuffer());
+    for (const locale of ['en', 'zh'] as const) {
+      write(root, `content/work/sample.${locale}.mdx`, completeMdx(
+        locale,
+        '<img src="/images/sample.avif" />',
+      ));
+    }
+
+    const result = await runPublicationValidation({ mode: 'development', rootDir: root });
+    expect(result.errors).toEqual(expect.arrayContaining([
+      expect.stringMatching(/img.*non-empty alt.*sample\.en\.mdx/i),
+      expect.stringMatching(/img.*non-empty alt.*sample\.zh\.mdx/i),
+    ]));
+  });
+
+  it('requires captions or transcript access on every video in bilingual MDX', async () => {
+    const root = createRoot();
+    write(root, 'public/images/sample.avif', await sharp({
+      create: { width: 1, height: 1, channels: 3, background: '#000000' },
+    }).avif().toBuffer());
+    for (const locale of ['en', 'zh'] as const) {
+      write(root, `content/work/sample.${locale}.mdx`, completeMdx(
+        locale,
+        '<video src="/videos/sample.mp4" poster="/images/sample.avif" />',
+      ));
+    }
+
+    const result = await runPublicationValidation({ mode: 'development', rootDir: root });
+    expect(result.errors).toEqual(expect.arrayContaining([
+      expect.stringMatching(/video.*captions|transcript.*sample\.en\.mdx/i),
+      expect.stringMatching(/video.*captions|transcript.*sample\.zh\.mdx/i),
+    ]));
+  });
+
   it('requires a caption and poster beside a present publication video', async () => {
     const root = createRoot();
     write(root, 'public/videos/meeting/interaction-sequence.mp4', 'video');
@@ -207,6 +288,35 @@ export const metadata = {
         expect.stringMatching(/account or internal identifier.*out\/en\/index\.html/i),
       ]),
     );
+  });
+
+  it('scans deployed JavaScript for authorization leaks in public', async () => {
+    const root = createRoot();
+    write(root, 'public/leak.js', 'const token = "Authorization: Bearer abc.def.ghi";');
+
+    const result = await runPublicationValidation({ mode: 'development', rootDir: root });
+    expect(result.errors).toContain('Sensitive text (authorization token): public/leak.js');
+  });
+
+  it('scans deployed JavaScript for identifier leaks in output', async () => {
+    const root = createRoot();
+    write(root, 'out/leak.js', 'globalThis.config = { account_id: "acc_82HF91KQ" };');
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).toContain(
+      'Sensitive text (account or internal identifier): out/leak.js',
+    );
+  });
+
+  it('rejects symlinks anywhere inside publication scan roots', async () => {
+    const root = createRoot();
+    const outside = createRoot();
+    write(outside, 'leak.js', 'Authorization: Bearer abc.def.ghi');
+    mkdirSync(path.join(root, 'public'), { recursive: true });
+    symlinkSync(path.join(outside, 'leak.js'), path.join(root, 'public/leak.js'));
+
+    const result = await runPublicationValidation({ mode: 'development', rootDir: root });
+    expect(result.errors).toContain('Symlink not allowed in publication tree: public/leak.js');
   });
 
   it('rejects malformed media manifests during development validation', async () => {
@@ -392,6 +502,19 @@ export const metadata = {
     );
   });
 
+  it('rejects required publication inputs with a symlinked ancestor', async () => {
+    const root = createRoot();
+    const outside = createRoot();
+    write(outside, 'yang-jing-resume-en.pdf', '%PDF-1.7\n');
+    mkdirSync(path.join(root, 'public'), { recursive: true });
+    symlinkSync(outside, path.join(root, 'public/files'));
+
+    const result = await runPublicationValidation({ mode: 'development', rootDir: root });
+    expect(result.errors).toContain(
+      'Publication input has symlink ancestor: public/files/yang-jing-resume-en.pdf',
+    );
+  });
+
   it('requires generated media records to match real output files', async () => {
     const root = createRoot();
     write(
@@ -500,6 +623,37 @@ role: 'body-only'
     expect(result.errors).toContain('Malformed generated HTML: out/index.html');
   });
 
+  it('requires accessible images and videos in generated HTML', async () => {
+    const root = createRoot();
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><img src="/missing.png"><video src="/missing.mp4"></video></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).toEqual(expect.arrayContaining([
+      'Generated img requires non-empty alt: out/index.html',
+      'Generated video requires poster: out/index.html',
+      'Generated video requires captions/subtitles track or transcript access: out/index.html',
+    ]));
+  });
+
+  it('allows pinned STT decorative images with empty alt under aria-hidden ancestors', async () => {
+    const root = createRoot();
+    mkdirSync(path.join(root, 'out/demos/stt-demo'), { recursive: true });
+    cpSync(
+      path.join(process.cwd(), 'public/demos/stt-demo/index.html'),
+      path.join(root, 'out/demos/stt-demo/index.html'),
+      { recursive: true },
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).not.toContain(
+      'Generated img requires non-empty alt: out/demos/stt-demo/index.html',
+    );
+  });
+
   it('validates every internal srcset candidate', async () => {
     const root = createRoot();
     write(root, 'out/images/present.webp', 'present');
@@ -512,6 +666,54 @@ role: 'body-only'
     const result = await runPublicationValidation({ mode: 'output', rootDir: root });
     expect(result.errors).toContain(
       'Broken internal reference "/images/missing.webp" in out/index.html',
+    );
+  });
+
+  it('rejects output references resolved through a symlinked ancestor', async () => {
+    const root = createRoot();
+    const outside = createRoot();
+    write(outside, 'present.txt', 'external');
+    mkdirSync(path.join(root, 'out'), { recursive: true });
+    symlinkSync(outside, path.join(root, 'out/assets'));
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><a href="/assets/present.txt">File</a></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).toContain(
+      'Unsafe internal reference "/assets/present.txt" in out/index.html',
+    );
+  });
+
+  it('rejects backslashes in internal URLs even when a bait file exists', async () => {
+    const root = createRoot();
+    write(root, 'out/foo\\..\\missing.png', 'bait');
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><img alt="Bait" src="/foo\\..\\missing.png"></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).toContain(
+      'Unsafe internal reference "/foo\\..\\missing.png" in out/index.html',
+    );
+  });
+
+  it('normalizes multiply encoded internal URL paths deterministically', async () => {
+    const root = createRoot();
+    write(root, 'out/present.txt', 'present');
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><a href="/assets/%252e%252e/present.txt">File</a></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).not.toContain(
+      'Broken internal reference "/assets/%252e%252e/present.txt" in out/index.html',
     );
   });
 
@@ -640,6 +842,79 @@ describe('responsive publication media', () => {
     expect(records.every(({ height, bytes }: { height: number; bytes: number }) =>
       height > 0 && bytes > 0)).toBe(true);
     expect(records.some(({ path: output }: { path: string }) => output.includes('1440'))).toBe(false);
+  });
+
+  it('removes stale files previously managed by the media manifest', async () => {
+    const root = createRoot();
+    write(root, 'public/images/fixture/stale-640.avif', 'stale');
+    write(root, 'evidence/media/manifest.json', JSON.stringify({
+      version: 1,
+      sourceRoot: 'private-media',
+      allowedWidths: [640, 960, 1440, 1920],
+      assets: [],
+      generated: [{
+        asset: 'stale', path: 'public/images/fixture/stale-640.avif',
+        format: 'avif', width: 640, height: 320, bytes: 5,
+      }],
+    }));
+    const modulePath = pathToFileURL(path.join(process.cwd(), 'scripts/generate-responsive-media.mjs')).href;
+    const { generateResponsiveMedia } = await import(modulePath);
+
+    await expect(generateResponsiveMedia({ rootDir: root })).resolves.toEqual([]);
+    expect(() => readFileSync(path.join(root, 'public/images/fixture/stale-640.avif'))).toThrow();
+    expect(JSON.parse(readFileSync(
+      path.join(root, 'evidence/media/manifest.json'),
+      'utf8',
+    )).generated).toEqual([]);
+  });
+
+  it('leaves no partial AVIF when publishing the second format fails', async () => {
+    const root = createRoot();
+    const source = path.join(root, 'private-media/source.png');
+    mkdirSync(path.dirname(source), { recursive: true });
+    await sharp({
+      create: { width: 640, height: 320, channels: 3, background: '#336699' },
+    }).png().toFile(source);
+    mkdirSync(path.join(root, 'public/images/fixture/photo-640.webp'), { recursive: true });
+    write(root, 'evidence/media/manifest.json', JSON.stringify(generatedContract({
+      generated: [],
+    })));
+    const modulePath = pathToFileURL(path.join(process.cwd(), 'scripts/generate-responsive-media.mjs')).href;
+    const { generateResponsiveMedia } = await import(modulePath);
+
+    await expect(generateResponsiveMedia({ rootDir: root })).rejects.toThrow();
+    expect(() => readFileSync(path.join(root, 'public/images/fixture/photo-640.avif'))).toThrow();
+  });
+
+  it('preserves existing managed output and manifest when publication preflight fails', async () => {
+    const root = createRoot();
+    const source = path.join(root, 'private-media/source.png');
+    mkdirSync(path.dirname(source), { recursive: true });
+    await sharp({
+      create: { width: 640, height: 320, channels: 3, background: '#336699' },
+    }).png().toFile(source);
+    write(root, 'public/images/fixture/photo-640.avif', 'approved-old');
+    mkdirSync(path.join(root, 'public/images/fixture/photo-640.webp'), { recursive: true });
+    const manifest = generatedContract({
+      generated: [{
+        asset: 'fixture', path: 'public/images/fixture/photo-640.avif',
+        format: 'avif', width: 640, height: 320, bytes: 12,
+      }],
+    });
+    const manifestText = JSON.stringify(manifest);
+    write(root, 'evidence/media/manifest.json', manifestText);
+    const modulePath = pathToFileURL(path.join(process.cwd(), 'scripts/generate-responsive-media.mjs')).href;
+    const { generateResponsiveMedia } = await import(modulePath);
+
+    await expect(generateResponsiveMedia({ rootDir: root })).rejects.toThrow();
+    expect(readFileSync(
+      path.join(root, 'public/images/fixture/photo-640.avif'),
+      'utf8',
+    )).toBe('approved-old');
+    expect(readFileSync(
+      path.join(root, 'evidence/media/manifest.json'),
+      'utf8',
+    )).toBe(manifestText);
   });
 
   it('rejects escaping and explicitly excluded sources before writing output', async () => {

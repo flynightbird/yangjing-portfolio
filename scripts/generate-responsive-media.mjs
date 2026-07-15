@@ -119,6 +119,97 @@ function encode(pipeline, format) {
   return pipeline.png({ compressionLevel: 9 });
 }
 
+function managedGeneratedPaths(records) {
+  const paths = [];
+  for (const [index, record] of records.entries()) {
+    assertSafeRelativePath(record?.path, `generated[${index}].path`);
+    if (!record.path.startsWith('public/')) {
+      throw new Error(`generated[${index}].path must be under public/`);
+    }
+    paths.push(record.path);
+  }
+  return paths;
+}
+
+async function existingRegularFile(filePath) {
+  try {
+    const stat = await fs.lstat(filePath);
+    if (stat.isSymbolicLink() || !stat.isFile()) {
+      throw new Error(`Managed media output must be a regular non-symlink file: ${filePath}`);
+    }
+    return true;
+  } catch (error) {
+    if (error?.code === 'ENOENT') return false;
+    throw error;
+  }
+}
+
+async function publishGeneratedMedia({
+  rootDir,
+  manifestPath,
+  manifest,
+  previousPaths,
+  records,
+  stageRoot,
+}) {
+  const publicRoot = path.join(rootDir, 'public');
+  const newPaths = new Set(records.map((record) => record.path));
+  const stalePaths = previousPaths.filter((value) => !newPaths.has(value));
+  const allManagedPaths = [...new Set([...newPaths, ...stalePaths])];
+  const existingPaths = [];
+
+  for (const relativePath of allManagedPaths) {
+    const target = resolveContainedPath(rootDir, relativePath);
+    await ensureSafeOutputPath(publicRoot, target);
+    if (await existingRegularFile(target)) existingPaths.push(relativePath);
+  }
+
+  for (const record of records) {
+    const stagedPath = resolveContainedPath(stageRoot, record.path);
+    const stat = await fs.lstat(stagedPath);
+    if (!stat.isFile() || stat.isSymbolicLink() || stat.size !== record.bytes) {
+      throw new Error(`Staged media validation failed: ${record.path}`);
+    }
+    const metadata = await sharp(stagedPath, { failOn: 'error' }).metadata();
+    if (metadata.width !== record.width || metadata.height !== record.height) {
+      throw new Error(`Staged media dimensions mismatch: ${record.path}`);
+    }
+  }
+
+  manifest.generated = records;
+  const stagedManifest = path.join(stageRoot, 'manifest.json');
+  await fs.writeFile(stagedManifest, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
+  const backupRoot = path.join(stageRoot, 'backup');
+  const published = [];
+  const backedUp = [];
+  try {
+    for (const relativePath of existingPaths) {
+      const target = resolveContainedPath(rootDir, relativePath);
+      const backup = resolveContainedPath(backupRoot, relativePath);
+      await fs.mkdir(path.dirname(backup), { recursive: true });
+      await fs.rename(target, backup);
+      backedUp.push({ target, backup });
+    }
+    for (const record of records) {
+      const stagedPath = resolveContainedPath(stageRoot, record.path);
+      const target = resolveContainedPath(rootDir, record.path);
+      await fs.mkdir(path.dirname(target), { recursive: true });
+      await fs.rename(stagedPath, target);
+      published.push(target);
+    }
+    await fs.rename(stagedManifest, manifestPath);
+  } catch (error) {
+    for (const target of published.reverse()) {
+      await fs.rm(target, { force: true });
+    }
+    for (const { target, backup } of backedUp.reverse()) {
+      await fs.mkdir(path.dirname(target), { recursive: true });
+      await fs.rename(backup, target);
+    }
+    throw error;
+  }
+}
+
 export async function generateResponsiveMedia(options = {}) {
   const rootDir = path.resolve(options.rootDir ?? repositoryRoot);
   const manifestPath = path.resolve(
@@ -135,34 +226,46 @@ export async function generateResponsiveMedia(options = {}) {
     throw new Error('Media manifest is missing or invalid JSON');
   }
   assertManifest(manifest);
+  const previousPaths = managedGeneratedPaths(manifest.generated);
   const inspected = await inspectAssets({ rootDir, manifest });
   const records = [];
-  for (const { asset, sourcePath, metadata, widths } of inspected) {
-    asset.intrinsicWidth = metadata.width;
-    asset.intrinsicHeight = metadata.height;
-    for (const width of widths) {
-      const dimensions = dimensionsAtWidth(metadata.width, metadata.height, width);
-      for (const format of ['avif', 'webp', asset.fallback]) {
-        const relativeOutput = responsiveVariantPath(asset.destination, width, format);
-        const outputPath = resolveContainedPath(rootDir, relativeOutput);
-        await fs.mkdir(path.dirname(outputPath), { recursive: true });
-        await encode(sharp(sourcePath, { failOn: 'error' }).resize({ width, withoutEnlargement: true }), format)
-          .toFile(outputPath);
-        const stat = await fs.stat(outputPath);
-        records.push({
-          asset: asset.id,
-          path: relativeOutput,
-          format,
-          width: dimensions.width,
-          height: dimensions.height,
-          bytes: stat.size,
-        });
+  const stageRoot = await fs.mkdtemp(path.join(rootDir, '.responsive-media-stage-'));
+  try {
+    for (const { asset, sourcePath, metadata, widths } of inspected) {
+      asset.intrinsicWidth = metadata.width;
+      asset.intrinsicHeight = metadata.height;
+      for (const width of widths) {
+        const dimensions = dimensionsAtWidth(metadata.width, metadata.height, width);
+        for (const format of ['avif', 'webp', asset.fallback]) {
+          const relativeOutput = responsiveVariantPath(asset.destination, width, format);
+          const outputPath = resolveContainedPath(stageRoot, relativeOutput);
+          await fs.mkdir(path.dirname(outputPath), { recursive: true });
+          await encode(sharp(sourcePath, { failOn: 'error' }).resize({ width, withoutEnlargement: true }), format)
+            .toFile(outputPath);
+          const stat = await fs.stat(outputPath);
+          records.push({
+            asset: asset.id,
+            path: relativeOutput,
+            format,
+            width: dimensions.width,
+            height: dimensions.height,
+            bytes: stat.size,
+          });
+        }
       }
     }
+    await publishGeneratedMedia({
+      rootDir,
+      manifestPath,
+      manifest,
+      previousPaths,
+      records,
+      stageRoot,
+    });
+    return records;
+  } finally {
+    await fs.rm(stageRoot, { recursive: true, force: true });
   }
-  manifest.generated = records;
-  await fs.writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
-  return records;
 }
 
 if (process.argv[1] === scriptPath) {
