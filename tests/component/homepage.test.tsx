@@ -37,7 +37,7 @@ describe('FeaturedWork', () => {
     ).map((project) => project.dataset.projectId);
 
     expect(projectIds).toEqual([
-      'bytedance',
+      'xuelang',
       'call-agent',
       'meeting',
       'aidx',
@@ -46,12 +46,12 @@ describe('FeaturedWork', () => {
     expect(container.querySelectorAll('[data-project-kind="build-lab"]')).toHaveLength(1);
   });
 
-  it('uses internal draft links for ByteDance and Meeting', () => {
+  it('uses the complete Xuelang route and keeps Meeting draft', () => {
     render(<FeaturedWork locale="en" />);
 
-    expect(screen.getByRole('link', { name: 'Open draft case ByteDance' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'View case study Xuelang Commercial Experience Upgrade' })).toHaveAttribute(
       'href',
-      '/en/work/bytedance/',
+      '/en/work/xuelang/',
     );
     expect(screen.getByRole('link', { name: 'Open draft case Meeting' })).toHaveAttribute(
       'href',
@@ -83,9 +83,13 @@ describe('FeaturedWork', () => {
     expect(within(meeting as HTMLElement).queryByRole('img')).not.toBeInTheDocument();
   });
 
-  it('renders verified real media for Call Agent, AIDX, and STT Demo', () => {
+  it('renders verified real media for Xuelang, Call Agent, AIDX, and STT Demo', () => {
     render(<FeaturedWork locale="en" />);
 
+    expect(screen.getByRole('img', { name: /Xuelang product panorama/i })).toHaveAttribute(
+      'src',
+      '/images/xuelang/hero-panorama.webp',
+    );
     expect(screen.getByRole('img', { name: /Call Agent configuration/i })).toHaveAttribute(
       'src',
       '/images/call-agent/ai-preview-live.png',

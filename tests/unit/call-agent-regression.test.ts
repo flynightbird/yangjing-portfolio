@@ -31,7 +31,7 @@ describe('Call Agent native content registry', () => {
         heroMedia: '/images/call-agent/ai-preview-live.png',
         evidenceLevel: 'observed',
         featuredOrder: 2,
-        previousSlug: 'bytedance',
+        previousSlug: 'xuelang',
         nextSlug: 'meeting',
         caseLabel: 'CALL AGENT / 0→1 AI PRODUCT',
       });
@@ -49,8 +49,8 @@ describe('Call Agent native content registry', () => {
   it('generates every registered bilingual work route', () => {
     expect(dynamicParams).toBe(false);
     expect(generateStaticParams()).toEqual([
-      { locale: 'en', slug: 'bytedance' },
-      { locale: 'zh', slug: 'bytedance' },
+      { locale: 'en', slug: 'xuelang' },
+      { locale: 'zh', slug: 'xuelang' },
       { locale: 'en', slug: 'call-agent' },
       { locale: 'zh', slug: 'call-agent' },
       { locale: 'en', slug: 'meeting' },

@@ -6,18 +6,18 @@ import CallAgentEn, {
 import CallAgentZh, {
   metadata as callAgentZhMetadata,
 } from '@/content/work/call-agent.zh.mdx';
+import XuelangEn, {
+  metadata as xuelangEnMetadata,
+} from '@/content/work/xuelang.en.mdx';
+import XuelangZh, {
+  metadata as xuelangZhMetadata,
+} from '@/content/work/xuelang.zh.mdx';
 import SttDemoEn, {
   metadata as sttDemoEnMetadata,
 } from '@/content/build/stt-demo.en.mdx';
 import SttDemoZh, {
   metadata as sttDemoZhMetadata,
 } from '@/content/build/stt-demo.zh.mdx';
-import {
-  BytedanceDraftEn,
-  BytedanceDraftZh,
-  bytedanceDraftEnMetadata,
-  bytedanceDraftZhMetadata,
-} from '@/content/work/bytedance-draft';
 import {
   MeetingDraftEn,
   MeetingDraftZh,
@@ -88,12 +88,12 @@ export function createRegistry(
 
 export const contentEntries: readonly ContentEntry[] = [
   {
-    meta: bytedanceDraftEnMetadata,
-    Component: BytedanceDraftEn,
+    meta: contentMetaSchema.parse(xuelangEnMetadata),
+    Component: XuelangEn,
   },
   {
-    meta: bytedanceDraftZhMetadata,
-    Component: BytedanceDraftZh,
+    meta: contentMetaSchema.parse(xuelangZhMetadata),
+    Component: XuelangZh,
   },
   {
     meta: contentMetaSchema.parse(callAgentEnMetadata),

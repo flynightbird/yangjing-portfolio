@@ -1,5 +1,5 @@
 export const featuredOrder = [
-  'work/bytedance',
+  'work/xuelang',
   'work/call-agent',
   'work/meeting',
   'build/stt-demo',

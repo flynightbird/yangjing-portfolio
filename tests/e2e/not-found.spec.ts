@@ -47,7 +47,7 @@ test('unregistered work routes return the real static 404 response', async ({
   request,
 }) => {
   for (const locale of ['en', 'zh']) {
-    for (const slug of ['bytedance', 'meeting']) {
+    for (const slug of ['unknown-work', 'missing-case']) {
       const response = await request.get(`/${locale}/work/${slug}/`);
       expect(response.status(), `${locale}/work/${slug}`).toBe(404);
       expect(await response.text()).toContain('Page not found');

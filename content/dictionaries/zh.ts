@@ -43,14 +43,14 @@ export const zhDictionary = {
       portraitLabel: 'Yang Jing 人像区域',
     },
     projects: {
-      bytedance: {
+      xuelang: {
         kind: '深度案例',
-        title: '字节跳动',
-        proposition: '为大规模 C 端产品设计体验。',
-        role: '产品设计师',
-        status: '案例框架草稿',
-        mediaLabel: '等待已确认的封面',
-        action: '打开案例草稿',
+        title: '学浪商业化体验升级',
+        proposition: '从卖课工具，到高品质学习平台',
+        role: '项目主负责设计师',
+        status: '已完成实验验证',
+        mediaLabel: '学浪产品体验全景',
+        action: '查看案例',
       },
       callAgent: {
         kind: '深度案例',
@@ -127,12 +127,6 @@ export const zhDictionary = {
     evidenceBoundary: '本地框架只包含可公开的结构。在已确认的证据替换所有草稿状态前，网站禁止发布。',
     approvedEvidence: '已确认的案例框架',
     plannedEvidence: '发布前所需证据',
-    bytedance: {
-      title: '字节跳动',
-      proposition: '为大规模 C 端产品设计体验。',
-      summary: '此路由只预留公开案例结构，不重构私密工作，也不推断项目细节。',
-      pdfUnavailable: '经过脱敏的案例 PDF 尚未提供到此仓库。',
-    },
     meeting: {
       title: 'Meeting',
       proposition: '让高度动态的实时协作始终可见、可控。',

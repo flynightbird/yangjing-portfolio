@@ -3,6 +3,8 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import sharp from 'sharp';
 import { fileURLToPath } from 'node:url';
+import { compile } from '@mdx-js/mdx';
+import { parse } from 'acorn';
 
 import { findSensitiveText } from '../lib/content/privacy.ts';
 
@@ -20,6 +22,59 @@ export function validateManifestEntry(entry) {
   return ['source', 'output', 'chapter', 'purpose', 'alt']
     .filter((key) => !entry[key])
     .map((key) => `missing ${key}`);
+}
+
+function readStaticValue(node) {
+  if (node.type === 'Literal') return node.value;
+  if (node.type === 'ArrayExpression') {
+    return node.elements.map((element) => {
+      if (!element) throw new Error('metadata arrays must not contain holes');
+      return readStaticValue(element);
+    });
+  }
+  if (node.type === 'ObjectExpression') {
+    return Object.fromEntries(node.properties.map((property) => {
+      if (
+        property.type !== 'Property' ||
+        property.kind !== 'init' ||
+        property.computed ||
+        property.method
+      ) {
+        throw new Error('metadata must contain only static properties');
+      }
+      const key = property.key.type === 'Identifier'
+        ? property.key.name
+        : property.key.value;
+      if (typeof key !== 'string') {
+        throw new Error('metadata property keys must be strings');
+      }
+      return [key, readStaticValue(property.value)];
+    }));
+  }
+  throw new Error(`metadata value must be static, received ${node.type}`);
+}
+
+async function readDeclaredChapterIds(source) {
+  const compiled = String(await compile(source, { outputFormat: 'program' }));
+  const program = parse(compiled, { ecmaVersion: 'latest', sourceType: 'module' });
+  for (const statement of program.body) {
+    if (statement.type !== 'ExportNamedDeclaration') continue;
+    const declaration = statement.declaration;
+    if (!declaration || declaration.type !== 'VariableDeclaration') continue;
+    for (const variable of declaration.declarations) {
+      if (
+        variable.id.type === 'Identifier' &&
+        variable.id.name === 'metadata' &&
+        variable.init
+      ) {
+        const metadata = readStaticValue(variable.init);
+        return Array.isArray(metadata.chapters)
+          ? metadata.chapters.map((chapter) => chapter.id)
+          : [];
+      }
+    }
+  }
+  return [];
 }
 
 function sha256(buffer) {
@@ -152,6 +207,8 @@ export async function validateSite(options = {}) {
   const rootDir = options.rootDir ?? root;
   const usesDefaultContentPaths = options.contentPaths === undefined;
   const contentPaths = options.contentPaths ?? [
+    'content/work/xuelang.en.mdx',
+    'content/work/xuelang.zh.mdx',
     'content/work/call-agent.en.mdx',
     'content/work/call-agent.zh.mdx',
     'content/build/stt-demo.en.mdx',
@@ -333,9 +390,7 @@ export async function validateSite(options = {}) {
   }
 
   for (const [index, content] of contents.entries()) {
-    const ids = resolvedContentPaths[index].includes('/content/build/')
-      ? ['overview', 'setup', 'session', 'build-system', 'evidence-boundary']
-      : ['overview', 'context-role', 'design-thesis', 'decision-path', 'decision-preview', 'decision-operate', 'system-delivery', 'outcome-learnings'];
+    const ids = await readDeclaredChapterIds(content);
     for (const id of ids) {
       if (!content.includes(`id="${id}"`)) {
         errors.push(`missing chapter ${id} in ${path.basename(resolvedContentPaths[index])}`);

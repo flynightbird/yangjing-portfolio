@@ -81,9 +81,9 @@ for (const locale of ['en', 'zh'] as const) {
       await expect(projectNavigation).toBeVisible();
       await expect(previous).toHaveAttribute(
         'href',
-        `/${locale}/work/bytedance/`,
+        `/${locale}/work/xuelang/`,
       );
-      await expect(previous).toContainText(locale === 'zh' ? '字节跳动' : 'ByteDance');
+      await expect(previous).toContainText(locale === 'zh' ? '学浪商业化体验升级' : 'Xuelang');
       await expect(next).toHaveAttribute('href', `/${locale}/work/meeting/`);
       await expect(next).toContainText('Meeting');
     });

@@ -6,7 +6,7 @@ import styles from './draft-case.module.css';
 
 interface DraftCaseProps {
   readonly locale: Locale;
-  readonly project: 'bytedance' | 'meeting';
+  readonly project: 'meeting';
 }
 
 function ReservedMedia({ label }: { readonly label: string }) {
@@ -38,19 +38,7 @@ export function DraftCase({ locale, project }: DraftCaseProps) {
         <ReservedMedia label={text.mediaUnavailable} />
       </section>
 
-      {project === 'bytedance' ? (
-        <section id="evidence-boundary" className={styles.section}>
-          <header>
-            <p>{text.plannedEvidence}</p>
-            <h2>{text.bytedance.pdfUnavailable}</h2>
-          </header>
-          <div className={styles.pdfFrame} role="status">
-            <span>PDF</span>
-            <p>{text.mediaUnavailable}</p>
-          </div>
-        </section>
-      ) : (
-        <>
+      <>
           <section id="shipped-evidence" className={styles.section}>
             <header>
               <p>{text.approvedEvidence}</p>
@@ -94,8 +82,7 @@ export function DraftCase({ locale, project }: DraftCaseProps) {
               <h2>{text.meeting.limitations}</h2>
             </header>
           </section>
-        </>
-      )}
+      </>
     </div>
   );
 }

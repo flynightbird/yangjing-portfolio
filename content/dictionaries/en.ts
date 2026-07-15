@@ -41,7 +41,7 @@ export interface Dictionary {
       portraitLabel: string;
     };
     projects: {
-      bytedance: ProjectCopy;
+      xuelang: ProjectCopy;
       callAgent: ProjectCopy;
       meeting: ProjectCopy & {
         stages: readonly ProjectStageCopy[];
@@ -74,12 +74,6 @@ export interface Dictionary {
     evidenceBoundary: string;
     approvedEvidence: string;
     plannedEvidence: string;
-    bytedance: {
-      title: string;
-      proposition: string;
-      summary: string;
-      pdfUnavailable: string;
-    };
     meeting: {
       title: string;
       proposition: string;
@@ -188,14 +182,15 @@ export const enDictionary = {
       portraitLabel: 'Yang Jing portrait frame',
     },
     projects: {
-      bytedance: {
+      xuelang: {
         kind: 'Deep case study',
-        title: 'ByteDance',
-        proposition: 'Designing for products used at consumer scale.',
-        role: 'Product Designer',
-        status: 'Draft case framework',
-        mediaLabel: 'Approved cover pending',
-        action: 'Open draft case',
+        title: 'Xuelang Commercial Experience Upgrade',
+        proposition:
+          'From a course-selling tool to a high-quality learning platform',
+        role: 'Lead UX Designer',
+        status: 'Experiment validated',
+        mediaLabel: 'Xuelang product panorama',
+        action: 'View case study',
       },
       callAgent: {
         kind: 'Deep case study',
@@ -283,14 +278,6 @@ export const enDictionary = {
       'This local framework contains only public-safe structure. It is blocked from publication until approved evidence replaces every Draft state.',
     approvedEvidence: 'Approved framing',
     plannedEvidence: 'Required evidence before publication',
-    bytedance: {
-      title: 'ByteDance',
-      proposition: 'Designing for products used at consumer scale.',
-      summary:
-        'This route reserves the public case structure without reconstructing private work or inferring project details.',
-      pdfUnavailable:
-        'The sanitized case-study PDF has not been supplied to this repository.',
-    },
     meeting: {
       title: 'Meeting',
       proposition:

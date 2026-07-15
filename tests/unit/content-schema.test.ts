@@ -27,7 +27,7 @@ const validCallAgent = {
   heroMedia: '/images/call-agent/ai-preview-live.png',
   evidenceLevel: 'observed',
   featuredOrder: 2,
-  previousSlug: 'bytedance',
+  previousSlug: 'xuelang',
   nextSlug: 'meeting',
 } as const;
 
@@ -45,8 +45,8 @@ const pairedEntries = [
 const launchDefinitions = [
   {
     type: 'work',
-    slug: 'bytedance',
-    translationKey: 'work-bytedance',
+    slug: 'xuelang',
+    translationKey: 'work-xuelang',
     featuredOrder: 1,
     nextSlug: 'call-agent',
   },
@@ -55,7 +55,7 @@ const launchDefinitions = [
     slug: 'call-agent',
     translationKey: 'work-call-agent',
     featuredOrder: 2,
-    previousSlug: 'bytedance',
+    previousSlug: 'xuelang',
     nextSlug: 'meeting',
   },
   {
@@ -115,13 +115,13 @@ describe('content metadata', () => {
     expect(
       contentMetaSchema.parse({
         ...validCallAgent,
-        slug: 'bytedance',
-        translationKey: 'work-bytedance',
+        slug: 'xuelang',
+        translationKey: 'work-xuelang',
         featuredOrder: 1,
         previousSlug: undefined,
         nextSlug: 'call-agent',
       }),
-    ).toMatchObject({ slug: 'bytedance', nextSlug: 'call-agent' });
+    ).toMatchObject({ slug: 'xuelang', nextSlug: 'call-agent' });
 
     expect(
       contentMetaSchema.parse({
@@ -195,8 +195,8 @@ describe('content registry', () => {
         ({ meta }) => `${meta.type}/${meta.slug}:${meta.locale}`,
       ),
     ).toEqual([
-      'work/bytedance:en',
-      'work/bytedance:zh',
+      'work/xuelang:en',
+      'work/xuelang:zh',
       'work/call-agent:en',
       'work/call-agent:zh',
       'work/meeting:en',
@@ -220,13 +220,13 @@ describe('content registry', () => {
 
   it('rejects an empty registry because launch routes are missing', () => {
     expect(() => assertCompleteRegistry([])).toThrow(
-      /missing launch route.*work\/bytedance.*en/i,
+      /missing launch route.*work\/xuelang.*en/i,
     );
   });
 
   it('checks dangling navigation targets by default', () => {
     expect(() => assertCompleteRegistry(pairedEntries)).toThrow(
-      /entries\[0\]\.meta\.previousSlug.*bytedance.*en/i,
+      /entries\[0\]\.meta\.previousSlug.*xuelang.*en/i,
     );
   });
 
@@ -254,7 +254,7 @@ describe('content registry', () => {
     );
 
     expect(() => assertCompleteRegistry(entries)).toThrow(
-      /entries\[1\]\.meta\.previousSlug.*expected.*bytedance/i,
+      /entries\[1\]\.meta\.previousSlug.*expected.*xuelang/i,
     );
   });
 
@@ -290,7 +290,7 @@ describe('content registry', () => {
     const duplicateTranslationKey = entry(
       contentMetaSchema.parse({
         ...validCallAgent,
-        slug: 'bytedance',
+        slug: 'xuelang',
         previousSlug: 'call-agent',
         locale: 'en',
       }),

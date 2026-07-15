@@ -27,8 +27,10 @@ const repositoryRoot = path.resolve(path.dirname(scriptPath), '..');
 export const publicationInputs = [
   'public/images/profile/yang-jing-hero.avif',
   'public/images/profile/yang-jing-about.avif',
-  'public/images/bytedance/cover.avif',
-  'public/files/yang-jing-bytedance-case-study.pdf',
+  'public/images/xuelang/hero-panorama.webp',
+  'public/files/xuelang-case-study-zh.pdf',
+  'public/files/xuelang-case-study-en.pdf',
+  'evidence/xuelang/manifest.json',
   'public/images/meeting/shipped-room-overview.avif',
   'public/images/meeting/shipped-control-states.avif',
   'public/images/meeting/retrospective-state-model.avif',
@@ -91,7 +93,7 @@ const requiredMetadata = [
   'featuredOrder',
 ];
 const launchRoutes = [
-  'work/bytedance',
+  'work/xuelang',
   'work/call-agent',
   'work/meeting',
   'build/stt-demo',
@@ -728,10 +730,13 @@ async function validatePublicationInputKinds(rootDir) {
 
 async function validateApprovedContent(rootDir) {
   const requiredContractPaths = [
+    'evidence/xuelang/manifest.json',
     'evidence/call-agent/manifest.json',
     'evidence/call-agent/checksums.json',
     'evidence/stt-demo/source.json',
     'evidence/stt-demo/checksums.json',
+    'content/work/xuelang.en.mdx',
+    'content/work/xuelang.zh.mdx',
     'content/work/call-agent.en.mdx',
     'content/work/call-agent.zh.mdx',
     'content/build/stt-demo.en.mdx',

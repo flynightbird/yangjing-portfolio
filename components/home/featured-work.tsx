@@ -14,17 +14,26 @@ interface FeaturedWorkProps {
 export function FeaturedWork({ locale }: FeaturedWorkProps) {
   const copy = locale === 'zh' ? zhDictionary.home.projects : enDictionary.home.projects;
   const localeRoot = `/${locale}/`;
-  const [bytedance, callAgent, meeting, aidx, sttDemo] = homepageProjects;
+  const [xuelang, callAgent, meeting, aidx, sttDemo] = homepageProjects;
 
   return (
     <section id="work" aria-label={locale === 'zh' ? '精选作品' : 'Selected work'}>
       <FeaturedProject
-        id="bytedance"
-        copy={copy.bytedance}
-        href={`${localeRoot}${bytedance.href}`}
-        availability={bytedance.availability}
+        id="xuelang"
+        copy={copy.xuelang}
+        href={`${localeRoot}${xuelang.href}`}
+        availability={xuelang.availability}
         order="01"
         variant="flagship"
+        media={{
+          src: '/images/xuelang/hero-panorama.webp',
+          width: 3000,
+          height: 1500,
+          alt:
+            locale === 'zh'
+              ? '学浪产品体验全景，呈现发现、决策与学习的关键界面'
+              : 'Xuelang product panorama showing key discovery, purchase, and learning interfaces',
+        }}
       />
       <FeaturedProject
         id="call-agent"

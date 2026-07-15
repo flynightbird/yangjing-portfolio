@@ -134,6 +134,31 @@ function readManifest(): CallAgentManifest {
 }
 
 describe('Call Agent privacy controls', () => {
+  it('validates the chapter IDs declared by each MDX document', async () => {
+    const rootDir = createValidationFixture();
+    const contentPath = path.join(rootDir, 'xuelang.mdx');
+    writeFileSync(
+      contentPath,
+      `export const metadata = {
+        chapters: [
+          { id: 'overview', label: 'Overview' },
+          { id: 'business', label: 'Business' },
+        ],
+      }
+
+      <section id="overview" />
+      <section id="business" />`,
+    );
+
+    const validate = validateSite as unknown as (options: {
+      rootDir: string;
+      contentPaths: readonly string[];
+    }) => Promise<string[]>;
+    const errors = await validate({ rootDir, contentPaths: [contentPath] });
+
+    expect(errors.filter((error) => error.startsWith('missing chapter'))).toEqual([]);
+  });
+
   it('flags authorization tokens and unmasked phone numbers', () => {
     expect(findSensitiveText('Authorization: Bearer abc.def.ghi')).toEqual([
       'authorization token',

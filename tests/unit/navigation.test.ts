@@ -10,7 +10,7 @@ import {
 describe('featured navigation', () => {
   it('keeps the approved homepage order with one Build Lab entry', () => {
     expect(featuredOrder).toEqual([
-      'work/bytedance',
+      'work/xuelang',
       'work/call-agent',
       'work/meeting',
       'build/stt-demo',
@@ -19,10 +19,10 @@ describe('featured navigation', () => {
 
   it('resolves typed previous and next neighbors without adding projects', () => {
     expect(getFeaturedNeighbors('work/call-agent')).toEqual({
-      previous: 'work/bytedance',
+      previous: 'work/xuelang',
       next: 'work/meeting',
     });
-    expect(getPreviousFeatured('work/bytedance')).toBeUndefined();
+    expect(getPreviousFeatured('work/xuelang')).toBeUndefined();
     expect(getNextFeatured('build/stt-demo')).toBeUndefined();
   });
 });

@@ -36,11 +36,13 @@ test('root resolver and custom bilingual 404 remain static artifacts', () => {
 
 test('approved draft work routes are emitted for local framework review', () => {
   for (const locale of ['en', 'zh']) {
-    for (const slug of ['bytedance', 'meeting']) {
-      const routePath = path.join(outputPath, locale, 'work', slug, 'index.html');
-      assert.equal(fs.existsSync(routePath), true, `${locale}/work/${slug} must be exported`);
-      assert.match(readOutput(`${locale}/work/${slug}/index.html`), /data-publication-state="draft"/);
-    }
+    const routePath = path.join(outputPath, locale, 'work', 'meeting', 'index.html');
+    assert.equal(fs.existsSync(routePath), true, `${locale}/work/meeting must be exported`);
+    assert.match(readOutput(`${locale}/work/meeting/index.html`), /data-publication-state="draft"/);
+
+    const xuelang = readOutput(`${locale}/work/xuelang/index.html`);
+    assert.doesNotMatch(xuelang, /data-publication-state="draft"/);
+    assert.match(xuelang, /Xuelang|学浪/);
   }
 });
 

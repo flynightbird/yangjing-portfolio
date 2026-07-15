@@ -21,7 +21,7 @@ interface ProjectMedia {
 }
 
 interface FeaturedProjectProps {
-  readonly id: 'bytedance' | 'call-agent';
+  readonly id: 'xuelang' | 'call-agent';
   readonly copy: ProjectCopy;
   readonly href: string;
   readonly availability: ProjectAvailability;

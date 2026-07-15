@@ -12,7 +12,7 @@ import { zhDictionary } from '@/content/dictionaries/zh';
 describe('homepage project contract', () => {
   it('keeps the approved five-project presentation order', () => {
     expect(homepageProjects.map((project) => project.id)).toEqual([
-      'bytedance',
+      'xuelang',
       'call-agent',
       'meeting',
       'aidx',
@@ -38,13 +38,16 @@ describe('homepage project contract', () => {
     });
   });
 
-  it('marks ByteDance and Meeting as explicit internal draft routes', () => {
-    for (const id of ['bytedance', 'meeting'] as const) {
-      expect(homepageProjects.find((project) => project.id === id)).toMatchObject({
-        destination: 'internal-case',
-        availability: 'draft',
-      });
-    }
+  it('publishes Xuelang while keeping Meeting explicitly draft', () => {
+    expect(homepageProjects.find((project) => project.id === 'xuelang')).toMatchObject({
+      destination: 'internal-case',
+      availability: 'complete',
+      href: 'work/xuelang/',
+    });
+    expect(homepageProjects.find((project) => project.id === 'meeting')).toMatchObject({
+      destination: 'internal-case',
+      availability: 'draft',
+    });
   });
 });
 
@@ -119,7 +122,7 @@ describe('homepage localization', () => {
         portraitDraft: expect.any(String),
       });
       expect(Object.keys(dictionary.home.projects)).toEqual([
-        'bytedance',
+        'xuelang',
         'callAgent',
         'meeting',
         'aidx',

@@ -25,7 +25,7 @@ test.describe('portfolio homepage framework', () => {
           projects.map((project) => project.getAttribute('data-project-id')),
         );
       expect(projectIds).toEqual([
-        'bytedance',
+        'xuelang',
         'call-agent',
         'meeting',
         'aidx',
@@ -34,9 +34,9 @@ test.describe('portfolio homepage framework', () => {
 
       await expect(page.locator('[data-project-kind="build-lab"]')).toHaveCount(1);
       await expect(page.locator('[data-archive-slot]')).toHaveCount(8);
-      await expect(page.locator('[data-project-id="bytedance"] a')).toHaveAttribute(
+      await expect(page.locator('[data-project-id="xuelang"] a')).toHaveAttribute(
         'href',
-        `/${locale}/work/bytedance/`,
+        `/${locale}/work/xuelang/`,
       );
       await expect(page.locator('[data-project-id="meeting"] a')).toHaveAttribute(
         'href',
@@ -50,7 +50,7 @@ test.describe('portfolio homepage framework', () => {
     });
   }
 
-  test('keeps both identities and the ByteDance edge in the first viewport', async ({
+  test('keeps both identities and the Xuelang edge in the first viewport', async ({
     page,
   }) => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
@@ -59,9 +59,9 @@ test.describe('portfolio homepage framework', () => {
 
     const designer = await page.getByRole('heading', { name: 'Product Designer' }).boundingBox();
     const builder = await page.getByRole('heading', { name: 'AI-native Builder' }).boundingBox();
-    const bytedance = await page.locator('[data-project-id="bytedance"]').boundingBox();
-    const bytedanceHeading = await page
-      .locator('[data-project-id="bytedance"] h2')
+    const xuelang = await page.locator('[data-project-id="xuelang"]').boundingBox();
+    const xuelangHeading = await page
+      .locator('[data-project-id="xuelang"] h2')
       .boundingBox();
     const identityLineCounts = await page
       .getByRole('heading', { level: 2 })
@@ -75,8 +75,8 @@ test.describe('portfolio homepage framework', () => {
 
     expect(designer).not.toBeNull();
     expect(builder).not.toBeNull();
-    expect(bytedance).not.toBeNull();
-    expect(bytedanceHeading).not.toBeNull();
+    expect(xuelang).not.toBeNull();
+    expect(xuelangHeading).not.toBeNull();
     expect(identityLineCounts).toEqual([2, 2]);
     expect((designer?.y ?? viewport.height) + (designer?.height ?? 0)).toBeLessThan(
       viewport.height,
@@ -84,8 +84,8 @@ test.describe('portfolio homepage framework', () => {
     expect((builder?.y ?? viewport.height) + (builder?.height ?? 0)).toBeLessThan(
       viewport.height,
     );
-    expect(bytedance?.y ?? viewport.height).toBeLessThan(viewport.height);
-    expect(bytedanceHeading?.y ?? viewport.height).toBeLessThan(
+    expect(xuelang?.y ?? viewport.height).toBeLessThan(viewport.height);
+    expect(xuelangHeading?.y ?? viewport.height).toBeLessThan(
       viewport.height - 32,
     );
   });
@@ -138,7 +138,7 @@ test.describe('portfolio homepage framework', () => {
     expect(hydrationErrors).toEqual([]);
   });
 
-  test('keeps draft work routes keyboard reachable and explicitly marked', async ({
+  test('keeps the remaining draft work route keyboard reachable and explicitly marked', async ({
     page,
   }, testInfo) => {
     test.skip(
@@ -146,14 +146,14 @@ test.describe('portfolio homepage framework', () => {
       'Route keyboard behavior needs one viewport; responsive coverage runs separately.',
     );
     await page.goto('/en/', { waitUntil: 'networkidle' });
-    const byteDanceLink = page.getByRole('link', {
-      name: 'Open draft case ByteDance',
+    const meetingLink = page.getByRole('link', {
+      name: 'Open draft case Meeting',
     });
-    await byteDanceLink.focus();
-    await expect(byteDanceLink).toBeFocused();
-    await byteDanceLink.press('Enter');
+    await meetingLink.focus();
+    await expect(meetingLink).toBeFocused();
+    await meetingLink.press('Enter');
 
-    await expect(page).toHaveURL(/\/en\/work\/bytedance\/$/);
+    await expect(page).toHaveURL(/\/en\/work\/meeting\/$/);
     await expect(page.locator('[data-publication-state="draft"]')).toBeVisible();
     await expect(page.getByText('Draft', { exact: true }).first()).toBeVisible();
   });

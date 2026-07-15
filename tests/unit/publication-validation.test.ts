@@ -153,7 +153,7 @@ describe('publication validation CLI', () => {
 
     expect(result.status).toBe(1);
     expect(`${result.stdout}\n${result.stderr}`).toMatch(
-      /missing launch route.*work\/bytedance.*locale.*en/i,
+      /missing launch route.*work\/xuelang.*locale.*en/i,
     );
   });
 
@@ -227,11 +227,11 @@ describe('publication validation CLI', () => {
 
   it('validates PDF signatures for files that are present', async () => {
     const root = createRoot();
-    write(root, 'public/files/yang-jing-bytedance-case-study.pdf', 'not a pdf');
+    write(root, 'public/files/xuelang-case-study-zh.pdf', 'not a pdf');
 
     const result = await runPublicationValidation({ mode: 'development', rootDir: root });
     expect(result.errors).toContain(
-      'Invalid PDF signature: public/files/yang-jing-bytedance-case-study.pdf',
+      'Invalid PDF signature: public/files/xuelang-case-study-zh.pdf',
     );
   });
 
@@ -990,8 +990,8 @@ role: 'body-only'
       }).avif().toBuffer());
       write(root, `content/work/spoof-${locale}.mdx`, `
 export const metadata = {
-  type: 'work', slug: 'bytedance', locale: '${locale}',
-  translationKey: 'work.bytedance', title: 'T', proposition: 'P',
+  type: 'work', slug: 'xuelang', locale: '${locale}',
+  translationKey: 'work.xuelang', title: 'T', proposition: 'P',
   duration: 'D', status: 'S', disclosure: 'D', heroMedia: '/images/${locale}.avif',
   evidenceLevel: 'delivered', featuredOrder: 1
   // role: 'comment-only'
@@ -1001,8 +1001,8 @@ export const metadata = {
 
     const result = await runPublicationValidation({ mode: 'source', rootDir: root });
     expect(result.errors).toEqual(expect.arrayContaining([
-      'Missing launch route "work/bytedance" for locale "en"',
-      'Missing launch route "work/bytedance" for locale "zh"',
+      'Missing launch route "work/xuelang" for locale "en"',
+      'Missing launch route "work/xuelang" for locale "zh"',
       expect.stringMatching(/missing metadata field role/i),
     ]));
   });
@@ -1013,9 +1013,9 @@ export const metadata = {
       write(root, `public/images/${locale}.avif`, await sharp({
         create: { width: 1, height: 1, channels: 3, background: '#000000' },
       }).avif().toBuffer());
-      write(root, `content/work/bytedance.${locale}.mdx`, `
+      write(root, `content/work/xuelang.${locale}.mdx`, `
 export const metadata = {
-  type: 'work', slug: 'bytedance', locale: '${locale}',
+  type: 'work', slug: 'xuelang', locale: '${locale}',
   translationKey: 'work.spoof', title: 'T', proposition: 'P', role: 'R',
   duration: 'D', status: 'S', disclosure: 'D', heroMedia: '/images/${locale}.avif',
   evidenceLevel: 'delivered', featuredOrder: 1
@@ -1025,8 +1025,8 @@ export const metadata = {
 
     const result = await runPublicationValidation({ mode: 'source', rootDir: root });
     expect(result.errors).toEqual(expect.arrayContaining([
-      'Missing launch route "work/bytedance" for locale "en"',
-      'Missing launch route "work/bytedance" for locale "zh"',
+      'Missing launch route "work/xuelang" for locale "en"',
+      'Missing launch route "work/xuelang" for locale "zh"',
       expect.stringMatching(/canonical.*translation key|translation key.*canonical/i),
     ]));
   });

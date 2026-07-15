@@ -14,7 +14,7 @@ export type HomepageProjectKind =
   | 'build-lab';
 
 export type HomepageProjectId =
-  | 'bytedance'
+  | 'xuelang'
   | 'call-agent'
   | 'meeting'
   | 'aidx'
@@ -30,11 +30,11 @@ export interface HomepageProject {
 
 export const homepageProjects = [
   {
-    id: 'bytedance',
+    id: 'xuelang',
     kind: 'deep-case',
     destination: 'internal-case',
-    availability: 'draft',
-    href: 'work/bytedance/',
+    availability: 'complete',
+    href: 'work/xuelang/',
   },
   {
     id: 'call-agent',
