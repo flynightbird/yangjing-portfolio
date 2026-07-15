@@ -177,6 +177,38 @@ async function walkFiles(directory, symlinks = []) {
   return files;
 }
 
+export async function findDraftPublicationMarkers(rootDir, mode) {
+  assertMode(mode);
+  if (mode === 'development') return [];
+
+  const roots = mode === 'output'
+    ? ['out']
+    : ['app', 'components', 'content'];
+  const allowedExtensions = mode === 'output'
+    ? new Set(['.html'])
+    : new Set(['.js', '.jsx', '.md', '.mdx', '.ts', '.tsx']);
+  const marker = /data-publication-state\s*=\s*["']draft["']/;
+  const errors = [];
+
+  for (const rootName of roots) {
+    const files = await walkFiles(path.join(rootDir, rootName));
+    for (const filePath of files) {
+      if (!allowedExtensions.has(path.extname(filePath).toLowerCase())) continue;
+      let source;
+      try {
+        source = await fs.readFile(filePath, 'utf8');
+      } catch {
+        continue;
+      }
+      if (marker.test(source)) {
+        errors.push(`Draft publication marker: ${relative(rootDir, filePath)}`);
+      }
+    }
+  }
+
+  return errors;
+}
+
 function relative(rootDir, filePath) {
   return path.relative(rootDir, filePath).split(path.sep).join('/');
 }
@@ -1062,11 +1094,13 @@ export async function runPublicationValidation({
   const structuralErrors = mode === 'output'
     ? [
         ...await validatePrivacy(rootDir, ['out']),
+        ...await findDraftPublicationMarkers(rootDir, mode),
         ...await validateMediaManifest(rootDir, mode),
         ...await validateOutput(rootDir),
       ]
     : [
         ...await validatePrivacy(rootDir, ['content', 'evidence', 'public']),
+        ...await findDraftPublicationMarkers(rootDir, mode),
         ...await validateContact(rootDir),
         ...await validatePublicationInputKinds(rootDir),
         ...await validateExistingMedia(rootDir),

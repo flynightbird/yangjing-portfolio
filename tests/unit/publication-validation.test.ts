@@ -16,6 +16,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import sharp from 'sharp';
 
 import {
+  findDraftPublicationMarkers,
   publicationInputs,
   runPublicationValidation,
 } from '@/scripts/validate-publication.mjs';
@@ -74,6 +75,41 @@ afterEach(() => {
   for (const root of temporaryRoots.splice(0)) {
     rmSync(root, { recursive: true, force: true });
   }
+});
+
+describe('draft publication boundary', () => {
+  it('allows local development but rejects source and output draft markers', async () => {
+    const root = createRoot();
+    write(
+      root,
+      'app/page.tsx',
+      '<main data-publication-state="draft">Local framework</main>',
+    );
+    write(
+      root,
+      'out/en/index.html',
+      '<!doctype html><main data-publication-state="draft">Draft</main>',
+    );
+
+    await expect(
+      findDraftPublicationMarkers(root, 'development'),
+    ).resolves.toEqual([]);
+    await expect(findDraftPublicationMarkers(root, 'source')).resolves.toEqual([
+      'Draft publication marker: app/page.tsx',
+    ]);
+    await expect(findDraftPublicationMarkers(root, 'output')).resolves.toEqual([
+      'Draft publication marker: out/en/index.html',
+    ]);
+  });
+
+  it('does not reject ordinary Draft prose without the state attribute', async () => {
+    const root = createRoot();
+    write(root, 'components/note.tsx', '<p>Draft inputs are pending.</p>');
+    write(root, 'out/index.html', '<p>Draft inputs are pending.</p>');
+
+    await expect(findDraftPublicationMarkers(root, 'source')).resolves.toEqual([]);
+    await expect(findDraftPublicationMarkers(root, 'output')).resolves.toEqual([]);
+  });
 });
 
 describe('publication validation CLI', () => {
