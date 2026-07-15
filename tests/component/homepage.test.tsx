@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { AboutPreview } from '@/components/home/about-preview';
 import { DualIdentityHero } from '@/components/home/dual-identity-hero';
 import { FeaturedWork } from '@/components/home/featured-work';
+import { IntroStory } from '@/components/home/intro-story';
 import { VisualArchive } from '@/components/home/visual-archive';
 
 afterEach(cleanup);
@@ -35,6 +36,38 @@ describe('DualIdentityHero', () => {
     );
     expect(container.querySelector('[data-hero-code-canvas]')).toBeInTheDocument();
     expect(container.querySelector('[data-designer-art="material-blueprint"]')).toBeInTheDocument();
+  });
+});
+
+describe('IntroStory', () => {
+  it('renders four English story scenes with two deliberate lines each', () => {
+    const { container } = render(<IntroStory locale="en" />);
+    const scenes = container.querySelectorAll('[data-intro-scene]');
+
+    expect(scenes).toHaveLength(4);
+    for (const scene of scenes) {
+      expect(scene.querySelectorAll('[data-intro-line]')).toHaveLength(2);
+    }
+
+    expect(screen.getByText('I design where product scale')).toBeVisible();
+    expect(screen.getByText('into working products with AI.')).toBeVisible();
+  });
+
+  it('renders the approved Chinese career arc', () => {
+    render(<IntroStory locale="zh" />);
+
+    expect(screen.getByText('我在产品规模与')).toBeVisible();
+    expect(screen.getByText('系统复杂度的交界处设计')).toBeVisible();
+    expect(screen.getByText('把想法做成可运行产品')).toBeVisible();
+  });
+
+  it('provides four real progress controls and exposes the first scene as current', () => {
+    render(<IntroStory locale="en" />);
+
+    const controls = screen.getAllByRole('button', { name: /Go to introduction statement/i });
+    expect(controls).toHaveLength(4);
+    expect(controls[0]).toHaveAttribute('aria-current', 'step');
+    expect(controls[1]).not.toHaveAttribute('aria-current');
   });
 });
 

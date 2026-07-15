@@ -444,6 +444,233 @@
   }
 }
 
+.introStory {
+  position: relative;
+  border-bottom: 1px solid var(--color-carbon);
+  background: var(--color-paper);
+  color: var(--color-carbon);
+  isolation: isolate;
+}
+
+.introPin {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 38rem;
+  overflow: hidden;
+}
+
+.introFrame {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  padding: clamp(4.5rem, 10vh, 7rem) clamp(5.75rem, 10vw, 10rem);
+}
+
+.introFrame::before,
+.introFrame::after {
+  position: absolute;
+  inset-inline: var(--content-gutter);
+  height: 1px;
+  background: var(--color-border);
+  content: '';
+}
+
+.introFrame::before {
+  inset-block-start: clamp(4.5rem, 12vh, 7.5rem);
+}
+
+.introFrame::after {
+  inset-block-end: clamp(4.5rem, 12vh, 7.5rem);
+}
+
+.introScenes {
+  position: relative;
+  display: grid;
+  width: min(100%, 70rem);
+  min-height: 9.5rem;
+  place-items: center;
+}
+
+.introStatement {
+  position: absolute;
+  grid-area: 1 / 1;
+  width: 100%;
+  margin: 0;
+  color: var(--color-carbon);
+  font-family: var(--font-body);
+  font-size: clamp(2.5rem, 4.17vw, 3.75rem);
+  font-weight: 600;
+  line-height: 1.08;
+  pointer-events: none;
+  text-align: center;
+  text-wrap: balance;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(1.625rem);
+  will-change: opacity, transform;
+}
+
+.introStatementCurrent {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.introStatement span {
+  display: block;
+  white-space: nowrap;
+}
+
+.introStory:lang(zh-CN) .introStatement {
+  font-family: var(--font-chinese);
+  font-weight: 600;
+}
+
+.introCounter {
+  position: absolute;
+  inset-block-end: clamp(1.5rem, 4vh, 2.5rem);
+  inset-inline-start: var(--content-gutter);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1;
+}
+
+.introRail {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: max(0.75rem, calc(var(--content-gutter) - 0.75rem));
+  display: grid;
+  transform: translateY(-50%);
+}
+
+.introRailButton {
+  display: grid;
+  width: 4.5rem;
+  min-height: 2.75rem;
+  grid-template-columns: 1.75rem 1fr;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+}
+
+.introRailButton:focus-visible {
+  outline-width: 2px;
+  outline-offset: 1px;
+}
+
+.introRailIndex {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  line-height: 1;
+}
+
+.introRailMark {
+  display: block;
+  width: 1rem;
+  height: 1px;
+  background: currentColor;
+  transition: width 360ms var(--ease-out), background-color 360ms var(--ease-out);
+}
+
+.introRailButton[aria-current='step'] {
+  color: var(--color-carbon);
+}
+
+.introRailButton[aria-current='step'] .introRailMark {
+  width: 2.5rem;
+  height: 2px;
+  background: var(--color-cobalt);
+}
+
+@media (max-width: 767px) {
+  .introPin {
+    min-height: 34rem;
+  }
+
+  .introFrame {
+    padding-inline: 0.75rem 3.25rem;
+  }
+
+  .introScenes {
+    min-height: 8rem;
+  }
+
+  .introStatement {
+    font-size: clamp(1.375rem, 5.9vw, 2.125rem);
+    line-height: 1.12;
+  }
+
+  .introStory:lang(zh-CN) .introStatement {
+    font-size: clamp(1.375rem, 5.9vw, 2.125rem);
+  }
+
+  .introRail {
+    inset-inline-end: 0.125rem;
+  }
+
+  .introRailButton {
+    width: 2.25rem;
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .introRailIndex {
+    display: none;
+  }
+
+  .introRailMark {
+    width: 0.75rem;
+  }
+
+  .introRailButton[aria-current='step'] .introRailMark {
+    width: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .introStory {
+    padding-block: clamp(4rem, 10vh, 7rem);
+  }
+
+  .introPin {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .introFrame {
+    height: auto;
+    padding: 0 var(--content-gutter);
+  }
+
+  .introFrame::before,
+  .introFrame::after,
+  .introRail,
+  .introCounter {
+    display: none;
+  }
+
+  .introScenes {
+    width: min(100%, 70rem);
+    min-height: 0;
+    gap: clamp(4rem, 12vh, 8rem);
+  }
+
+  .introStatement {
+    position: static;
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .projectBand,
 .meetingBand,
 .liveBand,
