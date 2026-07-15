@@ -7,6 +7,7 @@ import {
   RESPONSIVE_WIDTHS,
   assertSafeRelativePath,
   dimensionsAtWidth,
+  ensureSafeOutputPath,
   resolveContainedPath,
   responsiveVariantPath,
   selectResponsiveWidths,
@@ -97,7 +98,11 @@ async function inspectAssets({ rootDir, manifest }) {
     const widths = selectResponsiveWidths(asset.widths, metadata.width);
     for (const width of widths) {
       for (const format of ['avif', 'webp', asset.fallback]) {
-        responsiveVariantPath(asset.destination, width, format);
+        const relativeOutput = responsiveVariantPath(asset.destination, width, format);
+        await ensureSafeOutputPath(
+          path.join(rootDir, 'public'),
+          resolveContainedPath(rootDir, relativeOutput),
+        );
       }
     }
     inspected.push({ asset, sourcePath: realSourcePath, metadata, widths });
@@ -131,6 +136,8 @@ export async function generateResponsiveMedia(options = {}) {
   const inspected = await inspectAssets({ rootDir, manifest });
   const records = [];
   for (const { asset, sourcePath, metadata, widths } of inspected) {
+    asset.intrinsicWidth = metadata.width;
+    asset.intrinsicHeight = metadata.height;
     for (const width of widths) {
       const dimensions = dimensionsAtWidth(metadata.width, metadata.height, width);
       for (const format of ['avif', 'webp', asset.fallback]) {

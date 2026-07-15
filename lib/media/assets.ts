@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 export const RESPONSIVE_WIDTHS = [640, 960, 1440, 1920] as const;
@@ -70,4 +71,52 @@ export function responsiveVariantPath(
   }
   const extension = format === 'jpeg' ? 'jpg' : format;
   return `${destination}-${width}.${extension}`;
+}
+
+export async function ensureSafeOutputPath(
+  publicRoot: string,
+  outputPath: string,
+): Promise<void> {
+  const resolvedPublicRoot = path.resolve(publicRoot);
+  const resolvedOutput = path.resolve(outputPath);
+  const parent = path.dirname(resolvedOutput);
+  const relation = path.relative(resolvedPublicRoot, parent);
+  if (relation.startsWith('..') || path.isAbsolute(relation)) {
+    throw new Error(`Output path escapes public: ${outputPath}`);
+  }
+
+  await fs.mkdir(resolvedPublicRoot, { recursive: true });
+  const rootStat = await fs.lstat(resolvedPublicRoot);
+  if (rootStat.isSymbolicLink() || !rootStat.isDirectory()) {
+    throw new Error('Public output root must be a real directory, not a symlink');
+  }
+
+  let current = resolvedPublicRoot;
+  for (const segment of relation.split(path.sep).filter(Boolean)) {
+    current = path.join(current, segment);
+    try {
+      const stat = await fs.lstat(current);
+      if (stat.isSymbolicLink()) {
+        throw new Error(`Output ancestor must not be a symlink: ${current}`);
+      }
+      if (!stat.isDirectory()) {
+        throw new Error(`Output ancestor must be a directory: ${current}`);
+      }
+    } catch (error) {
+      if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+        await fs.mkdir(current);
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  const [realRoot, realParent] = await Promise.all([
+    fs.realpath(resolvedPublicRoot),
+    fs.realpath(parent),
+  ]);
+  const realRelation = path.relative(realRoot, realParent);
+  if (realRelation.startsWith('..') || path.isAbsolute(realRelation)) {
+    throw new Error(`Output path resolves outside public: ${outputPath}`);
+  }
 }

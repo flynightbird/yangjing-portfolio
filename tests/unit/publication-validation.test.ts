@@ -3,6 +3,7 @@ import {
   cpSync,
   mkdtempSync,
   mkdirSync,
+  readFileSync,
   rmSync,
   symlinkSync,
   writeFileSync,
@@ -31,6 +32,29 @@ function write(root: string, relativePath: string, value: string | Buffer) {
   const destination = path.join(root, relativePath);
   mkdirSync(path.dirname(destination), { recursive: true });
   writeFileSync(destination, value);
+}
+
+function generatedContract(overrides: Record<string, unknown> = {}) {
+  return {
+    version: 1,
+    sourceRoot: 'private-media',
+    allowedWidths: [640, 960, 1440, 1920],
+    assets: [{
+      id: 'fixture',
+      source: 'source.png',
+      destination: 'public/images/fixture/photo',
+      widths: [640],
+      fallback: 'jpeg',
+      intrinsicWidth: 640,
+      intrinsicHeight: 320,
+    }],
+    generated: [
+      { asset: 'fixture', path: 'public/images/fixture/photo-640.avif', format: 'avif', width: 640, height: 320, bytes: 100 },
+      { asset: 'fixture', path: 'public/images/fixture/photo-640.webp', format: 'webp', width: 640, height: 320, bytes: 100 },
+      { asset: 'fixture', path: 'public/images/fixture/photo-640.jpg', format: 'jpeg', width: 640, height: 320, bytes: 100 },
+    ],
+    ...overrides,
+  };
 }
 
 afterEach(() => {
@@ -232,6 +256,18 @@ export const metadata = {
     );
   });
 
+  it('still detects authorization text rendered inside SVG', async () => {
+    const root = createRoot();
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><svg><text>Authorization: Bearer abc.def.ghi</text></svg></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).toContain('Sensitive text (authorization token): out/index.html');
+  });
+
   it('composes the approved Call Agent and STT checksum validation', async () => {
     const root = createRoot();
     for (const relativePath of [
@@ -297,6 +333,64 @@ export const metadata = {
     );
   });
 
+  it('rejects orphan and missing responsive generated records', async () => {
+    const root = createRoot();
+    const contract = generatedContract();
+    contract.generated = [
+      contract.generated[0],
+      { ...contract.generated[0], asset: 'orphan', path: 'public/images/fixture/orphan-640.avif' },
+    ];
+    write(root, 'evidence/media/manifest.json', JSON.stringify(contract));
+
+    const result = await runPublicationValidation({ mode: 'development', rootDir: root });
+    expect(result.errors).toEqual(expect.arrayContaining([
+      expect.stringMatching(/orphan generated media record.*orphan-640\.avif/i),
+      expect.stringMatching(/missing generated media record.*photo-640\.webp/i),
+      expect.stringMatching(/missing generated media record.*photo-640\.jpg/i),
+    ]));
+  });
+
+  it('validates generated records against out without consulting public files', async () => {
+    const root = createRoot();
+    const contract = generatedContract();
+    write(root, 'evidence/media/manifest.json', JSON.stringify(contract));
+    for (const record of contract.generated) {
+      write(root, record.path, Buffer.alloc(record.bytes));
+    }
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).toEqual(expect.arrayContaining([
+      expect.stringMatching(/generated media record file is missing.*out.*photo-640\.avif/i),
+    ]));
+  });
+
+  it('keeps output mode independent from malformed source-only inputs', async () => {
+    const root = createRoot();
+    write(root, 'public/files/yang-jing-resume-en.pdf', 'invalid source pdf');
+    write(root, 'content/profile/contact.private.json', 'null');
+    write(root, 'content/work/spoof.en.mdx', 'not valid metadata');
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.messages).toEqual([]);
+    expect(result.errors).not.toEqual(expect.arrayContaining([
+      expect.stringMatching(/invalid PDF signature: public/i),
+      expect.stringMatching(/contact/i),
+      expect.stringMatching(/metadata.*content\/work/i),
+    ]));
+  });
+
+  it('ignores source-only media paths while validating output', async () => {
+    const root = createRoot();
+    const contract = generatedContract({ sourceRoot: '../outside-source' });
+    contract.assets[0].source = '../outside.png';
+    write(root, 'evidence/media/manifest.json', JSON.stringify(contract));
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).not.toEqual(expect.arrayContaining([
+      expect.stringMatching(/sourceRoot.*safe relative|assets\[0\]\.source.*safe relative/i),
+    ]));
+  });
+
   it('does not accept metadata fields found only in the MDX body', async () => {
     const root = createRoot();
     write(root, 'public/images/sample.avif', await sharp({
@@ -308,7 +402,8 @@ export const metadata = {
   title: 'T', proposition: 'P', duration: 'D', status: 'S', disclosure: 'D',
   heroMedia: '/images/sample.avif', evidenceLevel: 'delivered', featuredOrder: 1
 }
-{/* role: 'body-only' */}
+
+role: 'body-only'
 `);
 
     const result = await runPublicationValidation({ mode: 'development', rootDir: root });
@@ -321,6 +416,90 @@ export const metadata = {
 
     const result = await runPublicationValidation({ mode: 'output', rootDir: root });
     expect(result.errors).toContain('Malformed generated HTML: out/index.html');
+  });
+
+  it('validates every internal srcset candidate', async () => {
+    const root = createRoot();
+    write(root, 'out/images/present.webp', 'present');
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><img src="/images/present.webp" srcset="/images/present.webp 1x, /images/missing.webp 2x"></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).toContain(
+      'Broken internal reference "/images/missing.webp" in out/index.html',
+    );
+  });
+
+  it('does not let comments or spoof filenames satisfy canonical launch routes', async () => {
+    const root = createRoot();
+    for (const locale of ['en', 'zh']) {
+      write(root, `public/images/${locale}.avif`, await sharp({
+        create: { width: 1, height: 1, channels: 3, background: '#000000' },
+      }).avif().toBuffer());
+      write(root, `content/work/spoof-${locale}.mdx`, `
+export const metadata = {
+  type: 'work', slug: 'bytedance', locale: '${locale}',
+  translationKey: 'work.bytedance', title: 'T', proposition: 'P',
+  duration: 'D', status: 'S', disclosure: 'D', heroMedia: '/images/${locale}.avif',
+  evidenceLevel: 'delivered', featuredOrder: 1
+  // role: 'comment-only'
+}
+`);
+    }
+
+    const result = await runPublicationValidation({ mode: 'source', rootDir: root });
+    expect(result.errors).toEqual(expect.arrayContaining([
+      'Missing launch route "work/bytedance" for locale "en"',
+      'Missing launch route "work/bytedance" for locale "zh"',
+      expect.stringMatching(/missing metadata field role/i),
+    ]));
+  });
+
+  it('requires the canonical translation key before accepting a launch file', async () => {
+    const root = createRoot();
+    for (const locale of ['en', 'zh']) {
+      write(root, `public/images/${locale}.avif`, await sharp({
+        create: { width: 1, height: 1, channels: 3, background: '#000000' },
+      }).avif().toBuffer());
+      write(root, `content/work/bytedance.${locale}.mdx`, `
+export const metadata = {
+  type: 'work', slug: 'bytedance', locale: '${locale}',
+  translationKey: 'work.spoof', title: 'T', proposition: 'P', role: 'R',
+  duration: 'D', status: 'S', disclosure: 'D', heroMedia: '/images/${locale}.avif',
+  evidenceLevel: 'delivered', featuredOrder: 1
+}
+`);
+    }
+
+    const result = await runPublicationValidation({ mode: 'source', rootDir: root });
+    expect(result.errors).toEqual(expect.arrayContaining([
+      'Missing launch route "work/bytedance" for locale "en"',
+      'Missing launch route "work/bytedance" for locale "zh"',
+      expect.stringMatching(/canonical.*translation key|translation key.*canonical/i),
+    ]));
+  });
+
+  it('aggregates null contact JSON errors instead of throwing', async () => {
+    const root = createRoot();
+    write(root, 'content/profile/contact.private.json', 'null');
+
+    await expect(
+      runPublicationValidation({ mode: 'development', rootDir: root }),
+    ).resolves.toEqual(expect.objectContaining({
+      errors: expect.arrayContaining([
+        expect.stringMatching(/contact fields must be exactly/i),
+      ]),
+    }));
+  });
+
+  it('rejects unknown modes through the programmatic API', async () => {
+    await expect(runPublicationValidation({
+      mode: 'surprise',
+      rootDir: createRoot(),
+    })).rejects.toThrow(/unknown publication validation mode.*surprise/i);
   });
 });
 
@@ -414,5 +593,32 @@ describe('responsive publication media', () => {
     await expect(generateResponsiveMedia({ rootDir: root })).rejects.toThrow(
       /safe relative path|escapes/i,
     );
+  });
+
+  it('rejects a symlinked output ancestor before writing outside public', async () => {
+    const root = createRoot();
+    const outside = createRoot();
+    const source = path.join(root, 'private-media/source.png');
+    mkdirSync(path.dirname(source), { recursive: true });
+    await sharp({
+      create: { width: 640, height: 320, channels: 3, background: '#336699' },
+    }).png().toFile(source);
+    mkdirSync(path.join(root, 'public/images'), { recursive: true });
+    symlinkSync(outside, path.join(root, 'public/images/link'));
+    const contract = generatedContract({
+      assets: [{
+        id: 'escape', source: 'source.png',
+        destination: 'public/images/link/photo', widths: [640], fallback: 'jpeg',
+      }],
+      generated: [],
+    });
+    write(root, 'evidence/media/manifest.json', JSON.stringify(contract));
+    const modulePath = pathToFileURL(path.join(process.cwd(), 'scripts/generate-responsive-media.mjs')).href;
+    const { generateResponsiveMedia } = await import(modulePath);
+
+    await expect(generateResponsiveMedia({ rootDir: root })).rejects.toThrow(
+      /symlink|outside public|escapes.*public/i,
+    );
+    expect(() => readFileSync(path.join(outside, 'photo-640.avif'))).toThrow();
   });
 });

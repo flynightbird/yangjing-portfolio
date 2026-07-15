@@ -150,6 +150,7 @@ describe('Call Agent privacy controls', () => {
 
   it('flags international phone formats and literal internal identifiers', () => {
     expect(findSensitiveText('+1 (415) 555-2671')).toContain('phone number');
+    expect(findSensitiveText('+1 4155552671')).toContain('phone number');
     expect(findSensitiveText('010-1234-5678')).toContain('phone number');
     expect(findSensitiveText('internal_id: int_82HF91KQ')).toContain(
       'account or internal identifier',

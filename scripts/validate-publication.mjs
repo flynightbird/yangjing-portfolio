@@ -1,13 +1,18 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { compile } from '@mdx-js/mdx';
+import { parse } from 'acorn';
+import { JSDOM } from 'jsdom';
 import sharp from 'sharp';
 
 import { findSensitiveText } from '../lib/content/privacy.ts';
 import {
   RESPONSIVE_WIDTHS,
   assertSafeRelativePath,
+  dimensionsAtWidth,
   resolveContainedPath,
+  responsiveVariantPath,
   selectResponsiveWidths,
 } from '../lib/media/assets.ts';
 import { validateSite } from './validate-content.mjs';
@@ -39,6 +44,12 @@ export function parseMode(argv = process.argv.slice(2)) {
     throw new Error(`Unknown publication validation mode: ${mode ?? '(missing)'}`);
   }
   return mode;
+}
+
+function assertMode(mode) {
+  if (!['development', 'source', 'output'].includes(mode)) {
+    throw new Error(`Unknown publication validation mode: ${mode ?? '(missing)'}`);
+  }
 }
 
 export async function findMissingPublicationInputs(rootDir = repositoryRoot) {
@@ -115,6 +126,29 @@ function relative(rootDir, filePath) {
   return path.relative(rootDir, filePath).split(path.sep).join('/');
 }
 
+function parseHtml(html) {
+  return new JSDOM(html).window.document;
+}
+
+function extractVisibleHtmlText(html) {
+  const document = parseHtml(html);
+  for (const element of document.querySelectorAll('script, style, template')) {
+    element.remove();
+  }
+  const values = [];
+  const walker = document.createTreeWalker(document, 4);
+  while (walker.nextNode()) {
+    if (walker.currentNode.nodeValue) values.push(walker.currentNode.nodeValue);
+  }
+  for (const element of document.querySelectorAll('[value], [alt], [title], [aria-label]')) {
+    for (const attribute of ['value', 'alt', 'title', 'aria-label']) {
+      const value = element.getAttribute(attribute);
+      if (value) values.push(value);
+    }
+  }
+  return values.join('\n');
+}
+
 async function validatePrivacy(rootDir, roots) {
   const errors = [];
   const textExtensions = new Set(['.md', '.mdx', '.json', '.html', '.txt', '.vtt']);
@@ -129,7 +163,7 @@ async function validatePrivacy(rootDir, roots) {
         continue;
       }
       const scannedText = filePath.endsWith('.html')
-        ? text.replace(/<svg\b[\s\S]*?<\/svg>/gi, '')
+        ? extractVisibleHtmlText(text)
         : text;
       for (const finding of findSensitiveText(scannedText)) {
         errors.push(`Sensitive text (${finding}): ${relative(rootDir, filePath)}`);
@@ -139,40 +173,60 @@ async function validatePrivacy(rootDir, roots) {
   return errors;
 }
 
-function readStringField(source, field) {
-  const match = source.match(new RegExp(`\\b${field}\\s*:\\s*(['\"])(.*?)\\1`));
-  return match?.[2];
+function readStaticValue(node) {
+  if (node.type === 'Literal') return node.value;
+  if (node.type === 'TemplateLiteral' && node.expressions.length === 0) {
+    return node.quasis[0].value.cooked;
+  }
+  if (node.type === 'UnaryExpression' && node.operator === '-' && node.argument.type === 'Literal') {
+    return -node.argument.value;
+  }
+  if (node.type === 'ArrayExpression') {
+    return node.elements.map((element) => {
+      if (!element) throw new Error('metadata arrays must not contain holes');
+      return readStaticValue(element);
+    });
+  }
+  if (node.type === 'ObjectExpression') {
+    const result = {};
+    for (const property of node.properties) {
+      if (
+        property.type !== 'Property' ||
+        property.kind !== 'init' ||
+        property.computed ||
+        property.method
+      ) {
+        throw new Error('metadata must contain only static properties');
+      }
+      const key = property.key.type === 'Identifier'
+        ? property.key.name
+        : property.key.value;
+      if (typeof key !== 'string') throw new Error('metadata property keys must be strings');
+      result[key] = readStaticValue(property.value);
+    }
+    return result;
+  }
+  throw new Error(`metadata value must be static, received ${node.type}`);
 }
 
-function extractMetadataObject(source) {
-  const match = /export\s+const\s+metadata\s*=\s*\{/.exec(source);
-  if (!match) return undefined;
-  const start = source.indexOf('{', match.index);
-  let depth = 0;
-  let quote;
-  let escaped = false;
-  for (let index = start; index < source.length; index += 1) {
-    const character = source[index];
-    if (quote) {
-      if (escaped) escaped = false;
-      else if (character === '\\') escaped = true;
-      else if (character === quote) quote = undefined;
-      continue;
-    }
-    if (character === "'" || character === '"' || character === '`') {
-      quote = character;
-    } else if (character === '{') {
-      depth += 1;
-    } else if (character === '}') {
-      depth -= 1;
-      if (depth === 0) return source.slice(start, index + 1);
+async function parseMdxMetadata(source) {
+  const compiled = String(await compile(source, { outputFormat: 'program' }));
+  const program = parse(compiled, { ecmaVersion: 'latest', sourceType: 'module' });
+  for (const statement of program.body) {
+    if (statement.type !== 'ExportNamedDeclaration') continue;
+    const declaration = statement.declaration;
+    if (!declaration || declaration.type !== 'VariableDeclaration') continue;
+    for (const variable of declaration.declarations) {
+      if (variable.id.type === 'Identifier' && variable.id.name === 'metadata' && variable.init) {
+        const metadata = readStaticValue(variable.init);
+        if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) {
+          throw new Error('metadata export must be an object');
+        }
+        return metadata;
+      }
     }
   }
-  return undefined;
-}
-
-function hasMetadataField(source, field) {
-  return new RegExp(`\\b${field}\\s*:`).test(source);
+  throw new Error('missing metadata export');
 }
 
 async function validateContentMetadata(rootDir, mode) {
@@ -183,22 +237,24 @@ async function validateContentMetadata(rootDir, mode) {
   for (const filePath of files) {
     const source = await fs.readFile(filePath, 'utf8');
     const sourceName = relative(rootDir, filePath);
-    const metadataSource = extractMetadataObject(source);
-    if (!metadataSource) {
-      errors.push(`Missing metadata export: ${sourceName}`);
+    let metadata;
+    try {
+      metadata = await parseMdxMetadata(source);
+    } catch (error) {
+      errors.push(`Metadata parse failed: ${sourceName}: ${error instanceof Error ? error.message : String(error)}`);
       continue;
     }
     for (const field of requiredMetadata) {
-      if (!hasMetadataField(metadataSource, field)) errors.push(`Missing metadata field ${field}: ${sourceName}`);
+      if (!Object.hasOwn(metadata, field)) errors.push(`Missing metadata field ${field}: ${sourceName}`);
     }
     const record = {
       file: sourceName,
-      type: readStringField(metadataSource, 'type'),
-      slug: readStringField(metadataSource, 'slug'),
-      locale: readStringField(metadataSource, 'locale'),
-      translationKey: readStringField(metadataSource, 'translationKey'),
-      heroMedia: readStringField(metadataSource, 'heroMedia'),
-      evidenceLevel: readStringField(metadataSource, 'evidenceLevel'),
+      type: metadata.type,
+      slug: metadata.slug,
+      locale: metadata.locale,
+      translationKey: metadata.translationKey,
+      heroMedia: metadata.heroMedia,
+      evidenceLevel: metadata.evidenceLevel,
     };
     records.push(record);
     if (!['en', 'zh'].includes(record.locale)) {
@@ -222,7 +278,21 @@ async function validateContentMetadata(rootDir, mode) {
   const presentRoutes = new Set();
   for (const record of records) {
     if (record.type && record.slug && record.locale) {
-      presentRoutes.add(`${record.type}/${record.slug}:${record.locale}`);
+      const canonicalFile = `content/${record.type}/${record.slug}.${record.locale}.mdx`;
+      const route = `${record.type}/${record.slug}`;
+      const canonicalTranslationKey = `${record.type}.${record.slug}`;
+      if (record.file !== canonicalFile) {
+        errors.push(`Metadata route identity does not match canonical file: ${record.file}`);
+      } else if (
+        launchRoutes.includes(route) &&
+        record.translationKey !== canonicalTranslationKey
+      ) {
+        errors.push(
+          `Canonical launch translation key must be "${canonicalTranslationKey}": ${record.file}`,
+        );
+      } else {
+        presentRoutes.add(`${record.type}/${record.slug}:${record.locale}`);
+      }
     }
     if (!record.translationKey || !record.locale) continue;
     const identity = `${record.translationKey}:${record.locale}`;
@@ -266,22 +336,23 @@ async function validateContact(rootDir) {
     return ['Invalid contact JSON: content/profile/contact.private.json'];
   }
   const approvedKeys = ['email', 'linkedin', 'wechatId', 'resumeRevision'];
-  const actualKeys = contact && typeof contact === 'object' && !Array.isArray(contact)
-    ? Object.keys(contact).sort()
-    : [];
+  const contactRecord = contact && typeof contact === 'object' && !Array.isArray(contact)
+    ? contact
+    : {};
+  const actualKeys = Object.keys(contactRecord).sort();
   if (JSON.stringify(actualKeys) !== JSON.stringify([...approvedKeys].sort())) {
     errors.push('Contact fields must be exactly: email, linkedin, wechatId, resumeRevision');
   }
-  if (typeof contact.email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email)) {
+  if (typeof contactRecord.email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactRecord.email)) {
     errors.push('Contact email must be a valid public email address');
   }
-  if (typeof contact.linkedin !== 'string' || !/^https:\/\//.test(contact.linkedin)) {
+  if (typeof contactRecord.linkedin !== 'string' || !/^https:\/\//.test(contactRecord.linkedin)) {
     errors.push('Contact linkedin must be an HTTPS URL');
   }
-  if (typeof contact.wechatId !== 'string' || !contact.wechatId.trim()) {
+  if (typeof contactRecord.wechatId !== 'string' || !contactRecord.wechatId.trim()) {
     errors.push('Contact wechatId must be a non-empty string');
   }
-  if (typeof contact.resumeRevision !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(contact.resumeRevision)) {
+  if (typeof contactRecord.resumeRevision !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(contactRecord.resumeRevision)) {
     errors.push('Contact resumeRevision must use YYYY-MM-DD');
   }
   for (const finding of findSensitiveText(text)) {
@@ -387,18 +458,26 @@ async function validateMediaManifest(rootDir, mode) {
     if (JSON.stringify(manifest.allowedWidths) !== JSON.stringify(RESPONSIVE_WIDTHS)) {
       throw new Error(`allowedWidths must equal ${RESPONSIVE_WIDTHS.join(', ')}`);
     }
-    assertSafeRelativePath(manifest.sourceRoot, 'sourceRoot');
-    if (manifest.sourceRoot === 'public' || manifest.sourceRoot.startsWith('public/')) {
-      throw new Error('sourceRoot must not be inside public/');
+    if (mode !== 'output') {
+      assertSafeRelativePath(manifest.sourceRoot, 'sourceRoot');
+      if (manifest.sourceRoot === 'public' || manifest.sourceRoot.startsWith('public/')) {
+        throw new Error('sourceRoot must not be inside public/');
+      }
     }
     if (!Array.isArray(manifest.assets)) throw new Error('assets must be an array');
     if (!Array.isArray(manifest.generated)) throw new Error('generated must be an array');
     const destinations = new Set();
+    const assetIds = new Set();
+    const expectedRecords = new Map();
     for (const [index, asset] of manifest.assets.entries()) {
       if (!asset || typeof asset.id !== 'string' || !asset.id.trim()) {
         throw new Error(`assets[${index}].id must be non-empty`);
       }
-      assertSafeRelativePath(asset.source, `assets[${index}].source`);
+      if (assetIds.has(asset.id)) throw new Error(`duplicate asset id ${asset.id}`);
+      assetIds.add(asset.id);
+      if (mode !== 'output') {
+        assertSafeRelativePath(asset.source, `assets[${index}].source`);
+      }
       assertSafeRelativePath(asset.destination, `assets[${index}].destination`);
       if (!asset.destination.startsWith('public/') || path.extname(asset.destination)) {
         throw new Error(`assets[${index}].destination must be extensionless under public/`);
@@ -412,11 +491,47 @@ async function validateMediaManifest(rootDir, mode) {
       if (!['jpeg', 'png'].includes(asset.fallback)) {
         throw new Error(`assets[${index}].fallback must be jpeg or png`);
       }
+      let intrinsicWidth = asset.intrinsicWidth;
+      let intrinsicHeight = asset.intrinsicHeight;
       if (mode === 'source') {
         const sourceRoot = resolveContainedPath(rootDir, manifest.sourceRoot);
         const sourcePath = resolveContainedPath(sourceRoot, asset.source);
         if (!(await isRegularFile(sourcePath))) {
           errors.push(`Media manifest source is missing: ${asset.source}`);
+        } else {
+          try {
+            const metadata = await sharp(sourcePath, { failOn: 'error' }).metadata();
+            if (!metadata.width || !metadata.height) throw new Error('missing dimensions');
+            if (
+              (intrinsicWidth !== undefined && intrinsicWidth !== metadata.width) ||
+              (intrinsicHeight !== undefined && intrinsicHeight !== metadata.height)
+            ) {
+              errors.push(`Media manifest intrinsic dimensions mismatch: ${asset.source}`);
+            }
+            intrinsicWidth = metadata.width;
+            intrinsicHeight = metadata.height;
+          } catch {
+            errors.push(`Media manifest source image is invalid: ${asset.source}`);
+          }
+        }
+      }
+      if (
+        !Number.isInteger(intrinsicWidth) || intrinsicWidth <= 0 ||
+        !Number.isInteger(intrinsicHeight) || intrinsicHeight <= 0
+      ) {
+        errors.push(`Media manifest asset ${asset.id} requires intrinsic dimensions`);
+        continue;
+      }
+      for (const width of selectResponsiveWidths(asset.widths, intrinsicWidth)) {
+        const dimensions = dimensionsAtWidth(intrinsicWidth, intrinsicHeight, width);
+        for (const format of ['avif', 'webp', asset.fallback]) {
+          const expectedPath = responsiveVariantPath(asset.destination, width, format);
+          expectedRecords.set(expectedPath, {
+            asset: asset.id,
+            path: expectedPath,
+            format,
+            ...dimensions,
+          });
         }
       }
     }
@@ -435,9 +550,24 @@ async function validateMediaManifest(rootDir, mode) {
       if (!Number.isInteger(record.bytes) || record.bytes <= 0) {
         throw new Error(`generated[${index}] has invalid byte size`);
       }
-      const generatedPath = resolveContainedPath(rootDir, record.path);
+      const expected = expectedRecords.get(record.path);
+      if (
+        !expected ||
+        expected.asset !== record.asset ||
+        expected.format !== record.format ||
+        expected.width !== record.width ||
+        expected.height !== record.height
+      ) {
+        errors.push(`Orphan generated media record: ${record.path}`);
+      } else {
+        expectedRecords.delete(record.path);
+      }
+      const physicalRelativePath = mode === 'output'
+        ? `out/${record.path.slice('public/'.length)}`
+        : record.path;
+      const generatedPath = resolveContainedPath(rootDir, physicalRelativePath);
       if (!(await isRegularFile(generatedPath))) {
-        errors.push(`Generated media record file is missing: ${record.path}`);
+        errors.push(`Generated media record file is missing: ${physicalRelativePath}`);
         continue;
       }
       const stat = await fs.stat(generatedPath);
@@ -452,6 +582,9 @@ async function validateMediaManifest(rootDir, mode) {
       } catch {
         errors.push(`Generated media decode failed: ${record.path}`);
       }
+    }
+    for (const expectedPath of expectedRecords.keys()) {
+      errors.push(`Missing generated media record: ${expectedPath}`);
     }
   } catch (error) {
     errors.unshift(`Media manifest: ${error instanceof Error ? error.message : String(error)}`);
@@ -516,8 +649,22 @@ async function validateOutput(rootDir) {
     if (!/^\s*<!doctype\s+html>/i.test(html) || !/<html\b/i.test(html) || !/<\/html>\s*$/i.test(html)) {
       errors.push(`Malformed generated HTML: ${relative(rootDir, htmlPath)}`);
     }
-    const references = [...html.matchAll(/\b(?:href|src|poster)\s*=\s*['\"]([^'\"]+)['\"]/gi)]
-      .map((match) => match[1]);
+    const document = parseHtml(html);
+    const references = [];
+    for (const element of document.querySelectorAll('[href], [src], [poster], [srcset]')) {
+      for (const attribute of ['href', 'src', 'poster']) {
+        const value = element.getAttribute(attribute);
+        if (value) references.push(value);
+      }
+      const srcset = element.getAttribute('srcset');
+      if (srcset) {
+        references.push(
+          ...srcset.split(',')
+            .map((candidate) => candidate.trim().split(/\s+/, 1)[0])
+            .filter(Boolean),
+        );
+      }
+    }
     for (const reference of references) {
       const target = outputTargetForReference(outputRoot, htmlPath, reference);
       if (target === undefined) continue;
@@ -541,17 +688,23 @@ export async function runPublicationValidation({
   mode,
   rootDir = repositoryRoot,
 }) {
-  const missing = await findMissingPublicationInputs(rootDir);
-  const structuralErrors = [
-    ...await validatePrivacy(rootDir, mode === 'output' ? ['out'] : ['content', 'evidence', 'public']),
-    ...await validateContact(rootDir),
-    ...await validatePublicationInputKinds(rootDir),
-    ...await validateExistingMedia(rootDir),
-    ...(mode === 'output' ? [] : await validateApprovedContent(rootDir)),
-    ...await validateMediaManifest(rootDir, mode),
-    ...await validateContentMetadata(rootDir, mode),
-    ...(mode === 'output' ? await validateOutput(rootDir) : []),
-  ];
+  assertMode(mode);
+  const missing = mode === 'output' ? [] : await findMissingPublicationInputs(rootDir);
+  const structuralErrors = mode === 'output'
+    ? [
+        ...await validatePrivacy(rootDir, ['out']),
+        ...await validateMediaManifest(rootDir, mode),
+        ...await validateOutput(rootDir),
+      ]
+    : [
+        ...await validatePrivacy(rootDir, ['content', 'evidence', 'public']),
+        ...await validateContact(rootDir),
+        ...await validatePublicationInputKinds(rootDir),
+        ...await validateExistingMedia(rootDir),
+        ...await validateApprovedContent(rootDir),
+        ...await validateMediaManifest(rootDir, mode),
+        ...await validateContentMetadata(rootDir, mode),
+      ];
   return {
     errors: [...new Set([
       ...structuralErrors,

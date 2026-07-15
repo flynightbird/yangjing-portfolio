@@ -12,6 +12,7 @@ export function findSensitiveText(value: string): string[] {
   }
   if (
     /(?:\+?86[-\s]?)?1[3-9]\d[-\s]?\d{4}[-\s]?\d{4}/.test(value) ||
+    /\+1[\s.-]*\d{10}\b/.test(value) ||
     /(?:\+\d{1,3}[\s.-]?)?(?:\(\d{2,4}\)[\s.-]?|\d{2,4}[\s.-])\d{3,4}[\s.-]\d{4}/.test(value)
   ) {
     findings.push(SENSITIVE_TEXT_LABELS.phone);
