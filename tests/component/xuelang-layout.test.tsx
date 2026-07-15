@@ -47,7 +47,7 @@ describe('XuelangLayout', () => {
     const { meta, Layout } = getEntry('work', 'xuelang', locale);
     expect(Layout).toBe(XuelangLayout);
 
-    render(
+    const { container } = render(
       <XuelangLayout
         meta={meta}
         locale={locale}
@@ -67,6 +67,12 @@ describe('XuelangLayout', () => {
     );
     expect(screen.getByRole('link', { name: pdfLabel })).toHaveAttribute('href', pdfHref);
     expect(screen.getByRole('link', { name: pdfLabel })).toHaveAttribute('download');
+    expect(container.querySelector('[data-hero-thesis]')).toContainElement(
+      screen.getByRole('heading', { level: 1, name: title }),
+    );
+    expect(container.querySelector('[data-hero-support]')).toContainElement(
+      screen.getByText(proposition),
+    );
     expect(screen.getByRole('navigation', { name: chapterNav })).toBeVisible();
     expect(screen.getByRole('link', { name: /00 (项目概览|Overview)/ })).toHaveAttribute(
       'aria-current',
@@ -87,10 +93,15 @@ describe('XuelangLayout', () => {
 
     expect(container.querySelectorAll('[data-evidence] img').length).toBeGreaterThanOrEqual(12);
     expect(screen.getAllByTestId('learning-state')).toHaveLength(5);
+    expect(container.querySelectorAll('[data-learning-compact]')).toHaveLength(1);
     expect(screen.getAllByTestId('xuelang-dark-stage')).toHaveLength(1);
     expect(
       screen.getByTestId('xuelang-dark-stage').querySelectorAll('img'),
     ).toHaveLength(2);
+    expect(container.querySelectorAll('[data-result-summary]')).toHaveLength(1);
+    expect(container.querySelector('[data-result-summary]')).toHaveTextContent(
+      '+43% / +55% / +39%',
+    );
     expect(screen.queryByRole('navigation', { name: '项目导航' })).not.toBeInTheDocument();
   });
 });

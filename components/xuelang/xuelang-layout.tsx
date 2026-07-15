@@ -49,31 +49,35 @@ export function XuelangLayout({
           <header className={styles.hero} data-xuelang-hero>
             <div className={styles.heroCopy}>
               <p className={styles.eyebrow}>{text.eyebrow}</p>
-              <h1>{meta.title}</h1>
-              <p className={styles.proposition}>{meta.proposition}</p>
-              <dl className={styles.facts} aria-label={text.facts}>
-                <div>
-                  <dt>{text.role}</dt>
-                  <dd>{meta.role}</dd>
-                </div>
-                <div>
-                  <dt>{text.duration}</dt>
-                  <dd>{meta.duration}</dd>
-                </div>
-                <div>
-                  <dt>{text.status}</dt>
-                  <dd>{meta.status}</dd>
-                </div>
-              </dl>
-              <a
-                className={styles.pdfAction}
-                href={pdfHref}
-                download
-                data-case-web-control
-              >
-                <Download aria-hidden="true" size={18} strokeWidth={1.7} />
-                <span>{text.download}</span>
-              </a>
+              <div className={styles.heroThesis} data-hero-thesis>
+                <h1>{meta.title}</h1>
+              </div>
+              <div className={styles.heroSupport} data-hero-support>
+                <p className={styles.proposition}>{meta.proposition}</p>
+                <dl className={styles.facts} aria-label={text.facts}>
+                  <div>
+                    <dt>{text.role}</dt>
+                    <dd>{meta.role}</dd>
+                  </div>
+                  <div>
+                    <dt>{text.duration}</dt>
+                    <dd>{meta.duration}</dd>
+                  </div>
+                  <div>
+                    <dt>{text.status}</dt>
+                    <dd>{meta.status}</dd>
+                  </div>
+                </dl>
+                <a
+                  className={styles.pdfAction}
+                  href={pdfHref}
+                  download
+                  data-case-web-control
+                >
+                  <Download aria-hidden="true" size={18} strokeWidth={1.7} />
+                  <span>{text.download}</span>
+                </a>
+              </div>
             </div>
 
             <figure className={styles.panorama} data-hero-panorama>

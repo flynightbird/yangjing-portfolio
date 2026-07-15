@@ -108,6 +108,9 @@ test.describe('Xuelang case study', () => {
     await page.goto('/zh/work/xuelang/', { waitUntil: 'networkidle' });
     await expect(page.locator('.pin-spacer')).toHaveCount(1);
 
+    await page.locator('[data-testid="learning-state"]').nth(1).scrollIntoViewIfNeeded();
+    await expect(page.getByText('CONTINUOUS LEARNING', { exact: true })).toBeInViewport();
+
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.reload({ waitUntil: 'networkidle' });
     await expect(page.locator('.pin-spacer')).toHaveCount(0);

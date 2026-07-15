@@ -58,6 +58,7 @@ export function XuelangMotion({ children }: { readonly children: ReactNode }) {
             gsap.from(section.children, {
               autoAlpha: 0,
               y: 28,
+              clearProps: 'transform',
               duration: 0.65,
               ease: 'power2.out',
               stagger: 0.05,
@@ -96,6 +97,7 @@ export function XuelangMotion({ children }: { readonly children: ReactNode }) {
             gsap.from(section.children, {
               autoAlpha: 0,
               y: 34,
+              clearProps: 'transform',
               duration: 0.72,
               ease: 'power2.out',
               stagger: 0.045,

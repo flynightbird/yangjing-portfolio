@@ -145,6 +145,7 @@ export function XuelangLearningSequence({
           <article
             key={state.index}
             data-learning-state
+            data-learning-compact={state.image ? undefined : true}
             data-testid="learning-state"
           >
             <span>{state.index}</span>
@@ -177,8 +178,16 @@ export function XuelangResults({
   return (
     <div className={styles.results} aria-label={label}>
       <div className={styles.metricList}>
-        {metrics.map((metric) => (
-          <div key={`${metric.value}:${metric.label}`} data-result-metric>
+        {metrics.map((metric, index) => (
+          <div
+            key={`${metric.value}:${metric.label}`}
+            data-result-metric
+            data-result-summary={
+              metrics.length === 4 && index === metrics.length - 1
+                ? true
+                : undefined
+            }
+          >
             <strong>{metric.value}</strong>
             <p>{metric.label}</p>
           </div>

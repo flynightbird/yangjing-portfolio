@@ -46,6 +46,19 @@ test.describe('Xuelang visual matrix', () => {
         await expect(page.locator('[data-xuelang-hero] [data-case-web-control]')).toBeInViewport();
         await expect(page.locator('[data-hero-panorama]')).toBeInViewport();
 
+        if (viewport.width >= 1280) {
+          const visiblePanoramaHeight = await page.locator('[data-hero-panorama]').evaluate(
+            (element) => {
+              const box = element.getBoundingClientRect();
+              return Math.max(0, Math.min(box.bottom, window.innerHeight) - Math.max(box.top, 0));
+            },
+          );
+          expect(
+            visiblePanoramaHeight,
+            'The product panorama should be meaningfully visible in the first desktop viewport',
+          ).toBeGreaterThanOrEqual(220);
+        }
+
         const overflow = await page.evaluate(
           () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
         );
@@ -115,6 +128,14 @@ test.describe('Xuelang visual matrix', () => {
               `${selector} should occupy at least 80% of the case canvas`,
             ).toBeGreaterThanOrEqual(0.8);
           }
+
+          const summaryWidth = await page.locator('[data-result-summary]').evaluate(
+            (element) => element.getBoundingClientRect().width,
+          );
+          expect(
+            summaryWidth / caseWidth,
+            'The fourth result should read as a full-width summary row',
+          ).toBeGreaterThanOrEqual(0.8);
         }
 
         await page.screenshot({
