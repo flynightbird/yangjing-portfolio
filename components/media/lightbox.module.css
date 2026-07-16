@@ -1,4 +1,5 @@
 .trigger {
+  position: relative;
   display: block;
   width: 100%;
   min-height: 44px;
@@ -8,6 +9,27 @@
   border-radius: 2px;
   background: var(--color-paper);
   cursor: zoom-in;
+}
+
+.expandCue {
+  position: absolute;
+  inset-block-end: var(--space-3);
+  inset-inline-end: var(--space-3);
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 0.4rem;
+  padding-inline: 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 2px;
+  background: rgba(16, 17, 15, 0.84);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1;
+  pointer-events: none;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
 }
 
 .trigger img {
@@ -76,5 +98,9 @@
 
   .trigger {
     border: 0;
+  }
+
+  .expandCue {
+    display: none;
   }
 }

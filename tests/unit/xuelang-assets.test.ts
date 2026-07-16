@@ -31,6 +31,25 @@ function loadManifest(): XuelangManifest {
 }
 
 describe('Xuelang evidence manifest', () => {
+  it('declares matched before and after boards for the learning comparison', () => {
+    const manifest = loadManifest();
+    const comparisonAssets = manifest.assets.filter((asset) =>
+      ['learning-before-board', 'learning-after-board'].includes(asset.id),
+    );
+
+    expect(comparisonAssets.map((asset) => asset.id)).toEqual([
+      'learning-before-board',
+      'learning-after-board',
+    ]);
+    for (const asset of comparisonAssets) {
+      expect(asset.chapter).toBe('06');
+      expect(asset.intrinsic).toEqual({ width: 1662, height: 1080 });
+      expect(asset.output).toMatch(
+        /^public\/images\/xuelang\/learning-(before|after)-board\.webp$/,
+      );
+    }
+  });
+
   it('keeps source evidence traceable and replaceable', () => {
     const manifest = loadManifest();
 

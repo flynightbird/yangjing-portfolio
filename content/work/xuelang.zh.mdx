@@ -1,8 +1,7 @@
 import {
   XuelangDarkComparison,
   XuelangDecisionResult,
-  XuelangEvidenceGroup,
-  XuelangFigure,
+  XuelangEvidenceStory,
   XuelangLearningSequence,
   XuelangResults,
   XuelangStandardMap,
@@ -111,18 +110,18 @@ export const metadata = {
       { title: '用户信任', description: '降低解释成本，让购买判断建立在可验证证据上。' },
     ]}
   />
-  <XuelangFigure src="/images/xuelang/quality-standard.webp" width={1920} height={1080} alt="课程质量标准映射为可见的讲师、结构与平台保障模块" label="SYSTEM / QUALITY STANDARD" caption="把内部质量标准转译为用户可识别的界面证据，而不是额外的营销口号。" locale="zh" emphasis="wide" />
-  <XuelangEvidenceGroup>
-    <XuelangFigure src="/images/xuelang/quality-credibility.webp" width={1920} height={1080} alt="讲师背景、专业能力与可信度信息模块" label="EVIDENCE / CREDIBILITY" caption="讲师可信度从零散介绍变成结构化判断依据。" locale="zh" />
-    <XuelangFigure src="/images/xuelang/quality-structure.webp" width={1920} height={1080} alt="课程结构、章节内容与学习路径信息" label="EVIDENCE / STRUCTURE" caption="课程结构回答学什么、怎么学与能否完成。" locale="zh" />
-  </XuelangEvidenceGroup>
-  <XuelangFigure src="/images/xuelang/quality-guarantee.webp" width={1920} height={1080} alt="评价、学习成果与平台保障构成的质量证据" label="EVIDENCE / GUARANTEE" caption="评价、成果与平台保障共同降低购买风险。" locale="zh" emphasis="wide" />
-  <h3 className="xuelang-subhead">同一套品质语言，贯穿发现 / 甄选 / 商详</h3>
-  <XuelangEvidenceGroup variant="sequence">
-    <XuelangFigure src="/images/xuelang/discovery-touchpoint.webp" width={1920} height={1080} alt="课程发现页面中的品质信号" label="01 / 发现" caption="先用高识别度信号建立兴趣。" locale="zh" />
-    <XuelangFigure src="/images/xuelang/selection-touchpoint.webp" width={1920} height={1080} alt="课程甄选页面中的比较信息" label="02 / 甄选" caption="再用一致维度支持比较。" locale="zh" />
-    <XuelangFigure src="/images/xuelang/course-detail.webp" width={1920} height={1080} alt="课程商详页面中的完整购买证据" label="03 / 商详" caption="最终在商详中完成证据闭环。" locale="zh" />
-  </XuelangEvidenceGroup>
+  <XuelangEvidenceStory
+    locale="zh"
+    label="SYSTEM / QUALITY STANDARD"
+    title="把内部标准变成用户能看见的判断依据"
+    description="课程详情不再堆叠卖点，而是让老师、课程与平台分别回答可信度、适配度和风险问题。"
+    annotations={[
+      { title: '先识别老师', description: '认证、专业背景与影响力被放在同一判断区，减少来回查找。' },
+      { title: '再判断课程', description: '试听、课程表与作品共同解释内容质量和学习难度。' },
+      { title: '最后降低风险', description: '退换、认证与评价使用一致语言，形成平台担保。' },
+    ]}
+    primary={{ src: '/images/xuelang/quality-detail-ui.webp', width: 328, height: 709, alt: '课程详情中的讲师认证、课程结构与平台保障', label: 'PRODUCT UI / 课程详情', caption: '真实产品界面；说明与判断逻辑已从汇报板中分离。' }}
+  />
 </section>
 
 <section id="decision-purchase">
@@ -134,10 +133,23 @@ export const metadata = {
     <p className="lead">商详页需要依次回答“是否适合我”“老师是否可信”“现在是否值得购买”。试听内容因此被前置到头图区域，让用户先验证内容，再阅读评价、课程结构与权益。</p>
     <p>我们通过 A/B/C 方案比较验证信息顺序，并选择头图试听方案。技能、兴趣与职业等不同课程品类仍需要差异化信息模板，不能用单一结构覆盖所有决策。</p>
   </div>
-  <XuelangEvidenceGroup variant="experiment">
-    <XuelangFigure src="/images/xuelang/experiment-a.webp" width={1920} height={1080} alt="课程商详头图实验的背景方案与对照版本" label="A · B · C / CONTEXT" caption="对照不同内容位置与信息优先级。" locale="zh" />
-    <XuelangFigure src="/images/xuelang/experiment-b.webp" width={1920} height={1080} alt="被选中的课程商详头图试听方案" label="SELECTED / 头图试听" caption="让试听直接参与购买判断，而不是隐藏在后续页面。" locale="zh" />
-  </XuelangEvidenceGroup>
+  <XuelangEvidenceStory
+    locale="zh"
+    label="CONTROLLED EXPERIMENT / A · B · C"
+    title="先验证内容，再进入价格判断"
+    description="实验围绕同一课程控制变量，只调整试听位置与证据顺序。被选方案让内容质量在首屏直接可验证。"
+    variant="experiment"
+    annotations={[
+      { title: '对照态', description: '保留原有信息结构，作为购买行为的比较基线。' },
+      { title: '评价证据', description: '学员反馈用于确认课程效果，但不抢占首次判断。' },
+      { title: '头图试听', description: '将最有解释力的内容前置，缩短从兴趣到验证的路径。' },
+    ]}
+    primary={{ src: '/images/xuelang/purchase-selected.webp', width: 328, height: 709, alt: '被选中的课程详情头图试听方案', label: 'SELECTED / 头图试听', caption: '试听直接进入购买决策首屏。' }}
+    supporting={[
+      { src: '/images/xuelang/purchase-control.webp', width: 328, height: 709, alt: '课程详情实验对照态', label: 'CONTROL / 对照态', caption: '控制其他信息，比较试听位置的影响。' },
+      { src: '/images/xuelang/purchase-review.webp', width: 327, height: 709, alt: '课程详情中的学员评价证据', label: 'EVIDENCE / 评价', caption: '评价承担确认作用，而不是首个说服点。' },
+    ]}
+  />
   <XuelangDecisionResult label="购买实验结果" value="+6.5%" description="头图试听方案购买转化正向 6.5%。" />
 </section>
 
@@ -152,18 +164,35 @@ export const metadata = {
   <XuelangDarkComparison
     locale="zh"
     title="内容交付 → 连续学习体验"
-    before={{ src: '/images/xuelang/detail-before.webp', width: 1920, height: 1080, alt: '改版前以内容交付为主的课程页面', label: 'BEFORE / DELIVERY', caption: '入口与内容存在，但学习动作彼此分离。' }}
-    after={{ src: '/images/xuelang/detail-after.webp', width: 1920, height: 1080, alt: '改版后连接学习动作与状态的课程体验', label: 'AFTER / CONTINUITY', caption: '把观看、互动与学习沉淀组织为连续体验。' }}
+    before={{ src: '/images/xuelang/learning-before-board.webp', width: 1662, height: 1080, alt: '改版前以内容交付为主的学浪产品界面集合', label: '旧版 · 内容交付', caption: '入口与内容存在，但学习动作彼此分离。' }}
+    after={{ src: '/images/xuelang/learning-after-board.webp', width: 1662, height: 1080, alt: '改版后连接连续学习体验的学浪产品界面集合', label: '新版 · 连续学习', caption: '把观看、互动与学习沉淀组织为连续体验。' }}
   />
   <XuelangLearningSequence
     locale="zh"
     thesis="让用户从进入课程到形成个人学习资产，每一步都知道当前状态与下一步行动。"
     states={[
-      { index: '01', title: '课程入口', description: '明确课程状态、进度与继续学习入口。', image: { src: '/images/xuelang/learning-entry.webp', width: 1920, height: 1080, alt: '课程入口呈现进度与继续学习状态', label: 'ENTRY', caption: '降低重新进入学习的成本。' } },
-      { index: '02', title: '沉浸观看', description: '收拢干扰信息，让内容与必要控制保持清晰。', image: { src: '/images/xuelang/learning-focus.webp', width: 1920, height: 1080, alt: '沉浸观看状态聚焦课程内容与控制', label: 'FOCUS', caption: '沉浸感与操作效率同时成立。' } },
+      { index: '01', title: '课程入口', description: '明确课程状态、进度与继续学习入口。', image: { src: '/images/xuelang/learning-entry-ui.webp', width: 449, height: 886, alt: '课程入口呈现进度与继续学习状态', label: 'ENTRY / PRODUCT UI', caption: '降低重新进入学习的成本。' } },
+      { index: '02', title: '沉浸观看', description: '收拢干扰信息，让内容与必要控制保持清晰。' },
       { index: '03', title: '碎片学习', description: '在短时间返回时，保留进度与上下文，让学习可以继续。' },
       { index: '04', title: '互动', description: '把问题、反馈与课程内容放在同一学习语境中。', image: { src: '/images/xuelang/learning-interaction.webp', width: 1920, height: 1080, alt: '课程学习中的互动与反馈界面', label: 'INTERACTION', caption: '互动围绕内容发生，而不是跳出学习场景。' } },
-      { index: '05', title: '笔记与学习资产', description: '让笔记与成果持续积累，形成再次访问的个人价值。', image: { src: '/images/xuelang/learning-assets.webp', width: 1920, height: 1080, alt: '笔记与个人学习资产沉淀界面', label: 'ASSETS', caption: '一次观看沉淀为可回看的个人资产。' } },
+      { index: '05', title: '笔记与学习资产', description: '让笔记与成果持续积累，形成再次访问的个人价值。' },
+    ]}
+  />
+  <XuelangEvidenceStory
+    locale="zh"
+    label="LEARNING ASSET / NOTES"
+    title="边看边记，不打断学习状态"
+    description="笔记从单独工具变成播放器内的连续动作：截图、定位时间点、记录，再汇入个人笔记列表。"
+    variant="learning"
+    annotations={[
+      { title: '操作就地发生', description: '笔记入口与倍速、全屏处于同一高频操作区。' },
+      { title: '自动保留上下文', description: '截图和视频时间点共同保存，回看时能快速定位。' },
+      { title: '形成个人资产', description: '笔记按课程持续积累，而不是一次性的观看记录。' },
+    ]}
+    primary={{ src: '/images/xuelang/learning-note-editor.webp', width: 470, height: 875, alt: '播放器内的笔记编辑界面', label: '03 / EDIT IN CONTEXT', caption: '记录动作不离开当前视频。' }}
+    supporting={[
+      { src: '/images/xuelang/learning-note-player.webp', width: 390, height: 660, alt: '播放器中的笔记入口', label: '01 / CAPTURE', caption: '高频操作区直接进入笔记。' },
+      { src: '/images/xuelang/learning-note-list.webp', width: 355, height: 665, alt: '按课程积累的个人笔记列表', label: '02 / ACCUMULATE', caption: '观看记录被组织为可回看的资产。' },
     ]}
   />
 </section>
@@ -173,7 +202,19 @@ export const metadata = {
     <p className="section-index">07 / 验证结果</p>
     <h2>业务结果与行为信号共同验证方向</h2>
   </header>
-  <XuelangFigure src="/images/xuelang/result-evidence.webp" width={1920} height={1080} alt="学浪商业化体验实验结果与对应设计证据" label="VALIDATED / EXPERIMENT" caption="结果来自实验周期内已确认的相对变化，不延伸为长期结论。" locale="zh" emphasis="wide" />
+  <XuelangEvidenceStory
+    locale="zh"
+    label="VALIDATED / 14 DAYS"
+    title="验证设计方向，不延伸为长期承诺"
+    description="验证结果来自实验周期内的相对变化。页面把每个信号放回对应的设计决策中，而不是把数据包装成孤立战绩。"
+    variant="result"
+    annotations={[
+      { title: '商业信号', description: '实验组人均 GMV 相对提升 11.75%。' },
+      { title: '行为信号', description: '课程商详页展现渗透正向提升 1.36%。' },
+      { title: '方案信号', description: '头图试听方案购买转化正向 6.5%。' },
+    ]}
+    primary={{ src: '/images/xuelang/purchase-selected.webp', width: 328, height: 709, alt: '与验证结果对应的头图试听方案', label: 'EVIDENCE / SELECTED STATE', caption: '同一产品状态在结果章节中作为验证对象回看。' }}
+  />
   <XuelangResults
     label="已验证结果"
     metrics={[

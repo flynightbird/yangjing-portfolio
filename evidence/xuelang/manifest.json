@@ -224,6 +224,32 @@
       "replacementPath": "figma://t0kTQ49hZ2uIoYjeQD8oh7/20220739_1"
     },
     {
+      "id": "learning-before-board",
+      "chapter": "06",
+      "sourceFrames": ["portfolio-supplied-old-board"],
+      "sourcePaths": ["evidence/xuelang/source/learning-before-board.jpg"],
+      "output": "public/images/xuelang/learning-before-board.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 3324, "height": 2160 },
+      "intrinsic": { "width": 1662, "height": 1080 },
+      "purpose": "Provide the complete previous product board for the interactive learning-experience comparison.",
+      "alt": { "zh": "改版前以内容交付为主的学浪产品界面集合", "en": "Previous Xuelang interface collection centered on content delivery" },
+      "replacementPath": "figma://portfolio-supplied/learning-before-board"
+    },
+    {
+      "id": "learning-after-board",
+      "chapter": "06",
+      "sourceFrames": ["portfolio-supplied-new-board"],
+      "sourcePaths": ["evidence/xuelang/source/learning-after-board.jpg"],
+      "output": "public/images/xuelang/learning-after-board.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 3324, "height": 2160 },
+      "intrinsic": { "width": 1662, "height": 1080 },
+      "purpose": "Provide the complete redesigned product board for the interactive continuous-learning comparison.",
+      "alt": { "zh": "改版后连接连续学习体验的学浪产品界面集合", "en": "Redesigned Xuelang interface collection connecting a continuous learning experience" },
+      "replacementPath": "figma://portfolio-supplied/learning-after-board"
+    },
+    {
       "id": "result-evidence",
       "chapter": "07",
       "sourceFrames": ["20220748"],
@@ -235,6 +261,110 @@
       "purpose": "Pair verified experiment signals with the relevant product evidence.",
       "alt": { "zh": "课程详情实验方案及相关行为信号的设计证据", "en": "Design evidence for course-detail experiment variants and related behavioral signals" },
       "replacementPath": "figma://t0kTQ49hZ2uIoYjeQD8oh7/20220748"
+    },
+    {
+      "id": "quality-detail-ui",
+      "chapter": "04",
+      "sourceFrames": ["1:2548"],
+      "sourcePaths": ["evidence/xuelang/figma/quality-detail.png"],
+      "output": "public/images/xuelang/quality-detail-ui.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 328, "height": 709 },
+      "intrinsic": { "width": 328, "height": 709 },
+      "purpose": "Show the quality standard through one inspectable course-detail product state.",
+      "alt": { "zh": "课程详情中的讲师认证、课程结构与平台保障", "en": "Course detail with instructor verification, structure, and platform guarantee" },
+      "replacementPath": "figma://STUOWO6MG2rUvwcLlvJdFK/1:2548"
+    },
+    {
+      "id": "purchase-control",
+      "chapter": "05",
+      "sourceFrames": ["1:8351"],
+      "sourcePaths": ["evidence/xuelang/figma/experiment-control.png"],
+      "output": "public/images/xuelang/purchase-control.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 328, "height": 709 },
+      "intrinsic": { "width": 328, "height": 709 },
+      "purpose": "Preserve the course-detail control state for the hero trial-content experiment.",
+      "alt": { "zh": "课程详情头图试听实验的对照状态", "en": "Control state for the course-detail hero trial-content experiment" },
+      "replacementPath": "figma://STUOWO6MG2rUvwcLlvJdFK/1:8351"
+    },
+    {
+      "id": "purchase-review",
+      "chapter": "05",
+      "sourceFrames": ["1:9145"],
+      "sourcePaths": ["evidence/xuelang/figma/experiment-variant.png"],
+      "output": "public/images/xuelang/purchase-review.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 327, "height": 709 },
+      "intrinsic": { "width": 327, "height": 709 },
+      "purpose": "Show learner reviews as supporting purchase evidence in the controlled experiment.",
+      "alt": { "zh": "课程详情中的学员评价与课程效果证据", "en": "Learner reviews and outcome evidence in course details" },
+      "replacementPath": "figma://STUOWO6MG2rUvwcLlvJdFK/1:9145"
+    },
+    {
+      "id": "purchase-selected",
+      "chapter": "05",
+      "sourceFrames": ["1:8753"],
+      "sourcePaths": ["evidence/xuelang/figma/experiment-selected.png"],
+      "output": "public/images/xuelang/purchase-selected.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 328, "height": 709 },
+      "intrinsic": { "width": 328, "height": 709 },
+      "purpose": "Show the selected course-detail state with trial content in the hero.",
+      "alt": { "zh": "被选中的课程详情头图试听方案", "en": "Selected course-detail variant with trial content in the hero" },
+      "replacementPath": "figma://STUOWO6MG2rUvwcLlvJdFK/1:8753"
+    },
+    {
+      "id": "learning-entry-ui",
+      "chapter": "06",
+      "sourceFrames": ["1:3220"],
+      "sourcePaths": ["evidence/xuelang/figma/learning-entry-ui.png"],
+      "output": "public/images/xuelang/learning-entry-ui.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 449, "height": 886 },
+      "intrinsic": { "width": 449, "height": 886 },
+      "purpose": "Show an inspectable continue-learning entry with progress and course context.",
+      "alt": { "zh": "课程入口中的进度和继续学习状态", "en": "Course entry with progress and a continue-learning state" },
+      "replacementPath": "figma://STUOWO6MG2rUvwcLlvJdFK/1:3220"
+    },
+    {
+      "id": "learning-note-player",
+      "chapter": "06",
+      "sourceFrames": ["1:11618"],
+      "sourcePaths": ["evidence/xuelang/figma/learning-notes-board.png"],
+      "output": "public/images/xuelang/learning-note-player.webp",
+      "format": "webp",
+      "crop": { "left": 140, "top": 420, "width": 390, "height": 660 },
+      "intrinsic": { "width": 390, "height": 660 },
+      "purpose": "Focus the in-player note entry and high-frequency learning controls.",
+      "alt": { "zh": "播放器高频操作区中的笔记入口", "en": "Note entry in the player's high-frequency control area" },
+      "replacementPath": "figma://STUOWO6MG2rUvwcLlvJdFK/1:11618"
+    },
+    {
+      "id": "learning-note-list",
+      "chapter": "06",
+      "sourceFrames": ["1:11618"],
+      "sourcePaths": ["evidence/xuelang/figma/learning-notes-board.png"],
+      "output": "public/images/xuelang/learning-note-list.webp",
+      "format": "webp",
+      "crop": { "left": 605, "top": 415, "width": 355, "height": 665 },
+      "intrinsic": { "width": 355, "height": 665 },
+      "purpose": "Show notes accumulated across courses as a reusable personal learning asset.",
+      "alt": { "zh": "按课程积累的个人笔记列表", "en": "Personal notes accumulated across courses" },
+      "replacementPath": "figma://STUOWO6MG2rUvwcLlvJdFK/1:11618"
+    },
+    {
+      "id": "learning-note-editor",
+      "chapter": "06",
+      "sourceFrames": ["1:11618"],
+      "sourcePaths": ["evidence/xuelang/figma/learning-notes-board.png"],
+      "output": "public/images/xuelang/learning-note-editor.webp",
+      "format": "webp",
+      "crop": { "left": 950, "top": 205, "width": 470, "height": 875 },
+      "intrinsic": { "width": 470, "height": 875 },
+      "purpose": "Show note capture, timestamp context, and editing inside the learning flow.",
+      "alt": { "zh": "保留视频时间点和截图的笔记编辑界面", "en": "Note editor preserving the video timestamp and captured frame" },
+      "replacementPath": "figma://STUOWO6MG2rUvwcLlvJdFK/1:11618"
     }
   ]
 }

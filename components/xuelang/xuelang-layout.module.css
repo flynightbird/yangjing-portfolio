@@ -7,7 +7,7 @@
   --xuelang-paper: #f5f7f5;
   --xuelang-ink: #111512;
   --xuelang-muted: #5f6862;
-  --xuelang-green: #6f8f78;
+  --xuelang-green: #466b52;
   --xuelang-line: #d8ded9;
   --xuelang-dark: #121614;
   border-block-end: 1px solid var(--xuelang-line);
@@ -107,6 +107,10 @@
   line-height: 1.4;
 }
 
+.heroProof {
+  color: var(--xuelang-ink);
+}
+
 .pdfAction {
   display: inline-flex;
   min-height: 44px;
@@ -123,6 +127,15 @@
   transition: background-color 180ms ease, color 180ms ease;
 }
 
+.pdfAction small {
+  padding-inline-start: 0.65rem;
+  border-inline-start: 1px solid currentColor;
+  font-family: var(--xuelang-font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
 .pdfAction:hover,
 .pdfAction:focus-visible {
   background: var(--xuelang-ink);
@@ -130,21 +143,118 @@
 }
 
 .panorama {
+  position: relative;
   overflow: hidden;
   grid-column: 1 / -1;
   align-self: end;
   margin: clamp(2rem, 5vh, 4rem) 0 0;
-  border: 1px solid var(--xuelang-line);
+  border: 1px solid #2f3732;
   border-radius: 4px;
   aspect-ratio: 2 / 1;
-  background: #e9eeea;
+  background: #111512;
+  box-shadow: 0 2rem 5rem rgb(17 21 18 / 14%);
+  color: #eef3ef;
+  isolation: isolate;
 }
 
-.panorama img {
+.panoramaMeta {
+  position: absolute;
+  inset: clamp(1rem, 2vw, 1.5rem) clamp(1rem, 2vw, 1.75rem) auto;
+  z-index: 8;
+  display: flex;
+  justify-content: space-between;
+  padding-block-end: 0.75rem;
+  border-block-end: 1px solid rgb(238 243 239 / 22%);
+  color: #b9c4bc;
+  font-family: var(--xuelang-font-mono);
+  font-size: clamp(0.55rem, 0.75vw, 0.6875rem);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.panoramaWord {
+  position: absolute;
+  inset: 11% auto auto 2.5%;
+  z-index: -1;
+  color: #202722;
+  font-size: clamp(5rem, 14vw, 14rem);
+  font-weight: 700;
+  line-height: 0.8;
+  white-space: nowrap;
+}
+
+.productStates {
+  position: absolute;
+  inset: 0;
+}
+
+.productState {
+  position: absolute;
+  bottom: -7%;
+  overflow: hidden;
+  border: 1px solid rgb(238 243 239 / 35%);
+  border-radius: clamp(12px, 1.5vw, 22px) clamp(12px, 1.5vw, 22px) 0 0;
+  background: #eef2ef;
+  box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 34%);
+}
+
+.productState > span {
+  position: absolute;
+  inset: 0.75rem auto auto 0.75rem;
+  z-index: 2;
+  padding: 0.25rem 0.35rem;
+  background: #111512;
+  color: #eef3ef;
+  font-family: var(--xuelang-font-mono);
+  font-size: clamp(0.48rem, 0.58vw, 0.625rem);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.productState img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top center;
+  transition: transform 450ms cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+
+.productState:hover img {
+  transform: scale(1.012);
+}
+
+.productState1 {
+  left: 3.5%;
+  z-index: 1;
+  width: 22.5%;
+  height: 76%;
+  opacity: 0.66;
+  transform: rotate(-4deg);
+}
+
+.productState2 {
+  left: 22.5%;
+  z-index: 3;
+  width: 27%;
+  height: 83%;
+  transform: rotate(1.5deg);
+}
+
+.productState3 {
+  left: 46.5%;
+  z-index: 5;
+  width: 27.5%;
+  height: 88%;
+  border-color: #9fb0a4;
+}
+
+.productState4 {
+  right: 3.5%;
+  z-index: 4;
+  width: 24.5%;
+  height: 79%;
+  transform: rotate(3deg);
 }
 
 .content > :global(section) {
@@ -358,6 +468,12 @@
   line-height: 1.15;
 }
 
+.root:lang(en) .content :global(.xuelang-thesis) {
+  max-width: 22ch;
+  font-size: clamp(1.9rem, 3.3vw, 3.9rem);
+  line-height: 1.12;
+}
+
 @media (min-width: 1200px) {
   .heroCopy {
     grid-column: 1 / -1;
@@ -432,7 +548,8 @@
   }
 
   .rail {
-    position: relative;
+    position: sticky;
+    inset-block-start: var(--header-height);
     z-index: 20;
     padding-block-start: 0;
   }
@@ -588,10 +705,35 @@
     margin-block-start: 1.25rem;
     aspect-ratio: 4 / 3;
   }
+
+  .panoramaMeta span:last-child {
+    display: none;
+  }
+
+  .productState1 {
+    left: -7%;
+    width: 33%;
+  }
+
+  .productState2 {
+    left: 17%;
+    width: 37%;
+  }
+
+  .productState3 {
+    left: 44%;
+    width: 38%;
+  }
+
+  .productState4 {
+    right: -8%;
+    width: 34%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pdfAction {
+  .pdfAction,
+  .productState img {
     transition: none;
   }
 }

@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { XuelangLayout } from '@/components/xuelang/xuelang-layout';
@@ -15,6 +15,8 @@ describe('XuelangLayout', () => {
       role: '项目主负责设计师',
       duration: '2022.03–05 · 2 个月',
       pdfLabel: '下载 PDF 案例',
+      pdfSizeLabel: 'PDF · 6.5 MB',
+      proof: '14 天实验 · 人均 GMV +11.75%',
       pdfHref: '/files/xuelang-case-study-zh.pdf',
       panoramaAlt: '学浪产品体验全景',
       chapterNav: '案例章节',
@@ -27,6 +29,8 @@ describe('XuelangLayout', () => {
       role: 'Lead UX Designer',
       duration: 'Mar–May 2022 · 2 months',
       pdfLabel: 'Download PDF case study',
+      pdfSizeLabel: 'PDF · 5.8 MB',
+      proof: '14-day experiment · GMV per user +11.75%',
       pdfHref: '/files/xuelang-case-study-en.pdf',
       panoramaAlt: 'Xuelang product panorama',
       chapterNav: 'Case study chapters',
@@ -39,6 +43,8 @@ describe('XuelangLayout', () => {
     role,
     duration,
     pdfLabel,
+    pdfSizeLabel,
+    proof,
     pdfHref,
     panoramaAlt,
     chapterNav,
@@ -61,12 +67,22 @@ describe('XuelangLayout', () => {
     expect(screen.getByText(proposition)).toBeVisible();
     expect(screen.getByText(role)).toBeVisible();
     expect(screen.getByText(duration)).toBeVisible();
-    expect(screen.getByRole('img', { name: new RegExp(panoramaAlt, 'i') })).toHaveAttribute(
-      'src',
-      '/images/xuelang/hero-panorama.webp',
-    );
+    const panorama = container.querySelector('[data-hero-panorama]');
+    expect(panorama).toHaveAttribute('aria-label', expect.stringMatching(panoramaAlt));
+    expect(panorama?.querySelectorAll('img')).toHaveLength(4);
+    expect(
+      Array.from(panorama?.querySelectorAll('img') ?? [], (image) => image.getAttribute('src')),
+    ).toEqual([
+      '/images/xuelang/quality-detail-ui.webp',
+      '/images/xuelang/purchase-selected.webp',
+      '/images/xuelang/learning-entry-ui.webp',
+      '/images/xuelang/learning-note-editor.webp',
+    ]);
+    expect(panorama?.querySelectorAll('[data-hero-product-state]')).toHaveLength(4);
     expect(screen.getByRole('link', { name: pdfLabel })).toHaveAttribute('href', pdfHref);
     expect(screen.getByRole('link', { name: pdfLabel })).toHaveAttribute('download');
+    expect(screen.getByRole('link', { name: pdfLabel })).toHaveTextContent(pdfSizeLabel);
+    expect(screen.getByText(proof, { exact: true })).toBeVisible();
     expect(container.querySelector('[data-hero-thesis]')).toContainElement(
       screen.getByRole('heading', { level: 1, name: title }),
     );
@@ -95,17 +111,39 @@ describe('XuelangLayout', () => {
       </Layout>,
     );
 
-    expect(container.querySelectorAll('[data-evidence] img').length).toBeGreaterThanOrEqual(12);
-    expect(screen.getAllByTestId('learning-state')).toHaveLength(5);
-    expect(container.querySelectorAll('[data-learning-compact]')).toHaveLength(1);
-    expect(screen.getAllByTestId('xuelang-dark-stage')).toHaveLength(1);
     expect(
-      screen.getByTestId('xuelang-dark-stage').querySelectorAll('img'),
+      container.querySelectorAll('[data-evidence] img, [data-wipe-interactive] img').length,
+    ).toBeGreaterThanOrEqual(12);
+    expect(screen.getAllByTestId('learning-state')).toHaveLength(5);
+    expect(container.querySelectorAll('[data-learning-compact]')).toHaveLength(3);
+    expect(container.querySelector('img[src="/images/xuelang/learning-focus.webp"]'))
+      .not.toBeInTheDocument();
+    expect(screen.getAllByTestId('xuelang-dark-stage')).toHaveLength(1);
+    const comparisonStage = screen.getByTestId('xuelang-dark-stage');
+    expect(
+      within(comparisonStage).getByRole('slider', { name: '拖动比较旧版与新版' }),
+    ).toHaveAttribute('aria-valuenow', '38');
+    expect(
+      comparisonStage.querySelector('[data-wipe-interactive] img:first-of-type'),
+    ).toHaveAttribute('src', '/images/xuelang/learning-after-board.webp');
+    expect(
+      comparisonStage.querySelector('[data-wipe-interactive] img:nth-of-type(2)'),
+    ).toHaveAttribute('src', '/images/xuelang/learning-before-board.webp');
+    expect(
+      comparisonStage.querySelectorAll('[data-wipe-print-pair] img'),
     ).toHaveLength(2);
     expect(container.querySelectorAll('[data-result-summary]')).toHaveLength(1);
     expect(container.querySelector('[data-result-summary]')).toHaveTextContent(
       '+43% / +55% / +39%',
     );
     expect(screen.queryByRole('navigation', { name: '项目导航' })).not.toBeInTheDocument();
+    expect(container.querySelectorAll('[data-evidence-story]').length).toBeGreaterThanOrEqual(4);
+    expect(container.querySelectorAll('[data-expand-cue]').length).toBe(
+      container.querySelectorAll('[data-evidence]').length,
+    );
+    expect(container.querySelector('img[src="/images/xuelang/quality-detail-ui.webp"]'))
+      .toBeInTheDocument();
+    expect(container.querySelector('img[src="/images/xuelang/purchase-selected.webp"]'))
+      .toBeInTheDocument();
   });
 });

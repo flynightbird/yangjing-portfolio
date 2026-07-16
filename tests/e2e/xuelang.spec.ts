@@ -14,7 +14,14 @@ const chapterIds = [
 test.describe('Xuelang case study', () => {
   for (const locale of ['zh', 'en'] as const) {
     test(`${locale} renders the complete evidence-led case`, async ({ page }) => {
+      test.setTimeout(90_000);
       await page.goto(`/${locale}/work/xuelang/`, { waitUntil: 'networkidle' });
+
+      await expect(page).toHaveTitle(
+        locale === 'zh'
+          ? '学浪商业化体验升级 | Yang Jing'
+          : 'Xuelang Commercial Experience Upgrade | Yang Jing',
+      );
 
       const sections = await page
         .locator('[data-case-study] > div > section')
@@ -29,7 +36,9 @@ test.describe('Xuelang case study', () => {
       await expect(page.getByRole('heading', { level: 1, name: title })).toBeInViewport();
       await expect(page.getByText(role, { exact: true })).toBeInViewport();
       await expect(page.getByText(duration, { exact: true })).toBeInViewport();
-      await expect(page.locator('[data-hero-panorama] img')).toBeInViewport();
+      const heroPanorama = page.locator('[data-hero-panorama]');
+      await expect(heroPanorama).toBeInViewport();
+      await expect(heroPanorama.locator('[data-hero-product-state]')).toHaveCount(4);
       const pdfLink = page.getByRole('link', { name: /PDF/ });
       await expect(pdfLink).toBeInViewport();
       await expect(pdfLink).toHaveAttribute(
@@ -46,7 +55,7 @@ test.describe('Xuelang case study', () => {
       await expect(page.locator('[data-testid="learning-state"]')).toHaveCount(5);
       await expect(page.getByRole('navigation', { name: locale === 'zh' ? '项目导航' : 'Project navigation' })).toHaveCount(0);
 
-      const evidence = page.locator('[data-evidence] img');
+      const evidence = page.locator('[data-evidence] img, [data-wipe-interactive] img');
       expect(await evidence.count()).toBeGreaterThanOrEqual(12);
       for (let index = 0; index < await evidence.count(); index += 1) {
         const image = evidence.nth(index);
@@ -115,5 +124,40 @@ test.describe('Xuelang case study', () => {
     await page.reload({ waitUntil: 'networkidle' });
     await expect(page.locator('.pin-spacer')).toHaveCount(0);
     await expect(page.getByRole('heading', { name: '连接持续学习体验' })).toBeVisible();
+  });
+
+  test('desktop wipe comparison supports keyboard and pointer control', async ({
+    page,
+  }, testInfo) => {
+    test.setTimeout(90_000);
+    test.skip(testInfo.project.name !== 'desktop', 'The canonical drag check uses desktop geometry.');
+    await page.goto('/zh/work/xuelang/', { waitUntil: 'networkidle' });
+
+    const slider = page.locator('[data-wipe-interactive] input[type="range"]');
+    await slider.scrollIntoViewIfNeeded();
+    await expect(slider).toHaveAccessibleName('拖动比较旧版与新版');
+    await expect(slider).toHaveAttribute('aria-valuenow', '38');
+
+    await slider.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(slider).toHaveAttribute('aria-valuenow', '41');
+
+    const bounds = await slider.boundingBox();
+    expect(bounds).not.toBeNull();
+    if (!bounds) return;
+    await page.mouse.move(bounds.x + bounds.width * 0.41, bounds.y + bounds.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(bounds.x + bounds.width * 0.7, bounds.y + bounds.height / 2, {
+      steps: 8,
+    });
+    await page.mouse.up();
+
+    await expect.poll(async () => Number(await slider.getAttribute('aria-valuenow')))
+      .toBeGreaterThanOrEqual(68);
+    await expect.poll(async () => Number(await slider.getAttribute('aria-valuenow')))
+      .toBeLessThanOrEqual(72);
+    expect(await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    )).toBeLessThanOrEqual(1);
   });
 });

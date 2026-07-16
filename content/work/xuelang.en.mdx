@@ -1,8 +1,7 @@
 import {
   XuelangDarkComparison,
   XuelangDecisionResult,
-  XuelangEvidenceGroup,
-  XuelangFigure,
+  XuelangEvidenceStory,
   XuelangLearningSequence,
   XuelangResults,
   XuelangStandardMap,
@@ -67,7 +66,7 @@ export const metadata = {
 
 <section id="strategy">
   <header className="section-heading"><p className="section-index">03 / DESIGN STRATEGY</p><h2>Define quality on one side and complete the journey on the other</h2></header>
-  <blockquote className="xuelang-thesis">Build a course-quality standard while completing discovery, decision, learning, and accumulation across the experience journey.</blockquote>
+  <blockquote className="xuelang-thesis">Define what makes a quality course, then carry that evidence through discovery, purchase, and learning.</blockquote>
   <p className="xuelang-formula">Sell quality courses <span>×</span> Learning experience</p>
   <p className="xuelang-strategy-note">One side created a consistent evidence language; the other placed that evidence where learners actually needed to decide and act.</p>
 </section>
@@ -84,18 +83,18 @@ export const metadata = {
     { title: 'Consistent touchpoints', description: 'Reuse the same quality language in discovery, selection, and detail.' },
     { title: 'Learner trust', description: 'Lower interpretation cost through evidence that can be verified.' },
   ]} />
-  <XuelangFigure src="/images/xuelang/quality-standard.webp" width={1920} height={1080} alt="Course-quality standards mapped to visible credibility, structure, and guarantee modules" label="SYSTEM / QUALITY STANDARD" caption="Internal quality criteria become recognizable interface evidence rather than another marketing claim." locale="en" emphasis="wide" />
-  <XuelangEvidenceGroup>
-    <XuelangFigure src="/images/xuelang/quality-credibility.webp" width={1920} height={1080} alt="Instructor background, expertise, and credibility evidence" label="EVIDENCE / CREDIBILITY" caption="Teacher credibility becomes a structured basis for judgment." locale="en" />
-    <XuelangFigure src="/images/xuelang/quality-structure.webp" width={1920} height={1080} alt="Course structure, chapter content, and learning path evidence" label="EVIDENCE / STRUCTURE" caption="Course structure explains what, how, and whether a learner can complete it." locale="en" />
-  </XuelangEvidenceGroup>
-  <XuelangFigure src="/images/xuelang/quality-guarantee.webp" width={1920} height={1080} alt="Reviews, learner outcomes, and platform guarantee evidence" label="EVIDENCE / GUARANTEE" caption="Reviews, outcomes, and platform guarantees reduce purchase risk together." locale="en" emphasis="wide" />
-  <h3 className="xuelang-subhead">One quality language across discovery / selection / detail</h3>
-  <XuelangEvidenceGroup variant="sequence">
-    <XuelangFigure src="/images/xuelang/discovery-touchpoint.webp" width={1920} height={1080} alt="Quality signals at the course discovery touchpoint" label="01 / DISCOVERY" caption="High-recognition signals create initial interest." locale="en" />
-    <XuelangFigure src="/images/xuelang/selection-touchpoint.webp" width={1920} height={1080} alt="Comparable quality evidence at the course selection touchpoint" label="02 / SELECTION" caption="Consistent dimensions support comparison." locale="en" />
-    <XuelangFigure src="/images/xuelang/course-detail.webp" width={1920} height={1080} alt="Complete purchase evidence on the course-detail page" label="03 / DETAIL" caption="The detail page completes the evidence loop." locale="en" />
-  </XuelangEvidenceGroup>
+  <XuelangEvidenceStory
+    locale="en"
+    label="SYSTEM / QUALITY STANDARD"
+    title="Turn internal criteria into evidence learners can judge"
+    description="The detail page stops stacking claims. Instructor, course, and platform evidence answer credibility, fit, and risk in a deliberate order."
+    annotations={[
+      { title: 'Recognize the instructor', description: 'Certification, background, and influence share one judgment zone.' },
+      { title: 'Evaluate the course', description: 'Trial content, syllabus, and work samples explain quality and difficulty.' },
+      { title: 'Reduce purchase risk', description: 'Refund, verification, and review signals use one platform language.' },
+    ]}
+    primary={{ src: '/images/xuelang/quality-detail-ui.webp', width: 328, height: 709, alt: 'Course detail with instructor verification, structure, and platform guarantee', label: 'PRODUCT UI / COURSE DETAIL', caption: 'Real product UI; reasoning has been separated from the presentation board.' }}
+  />
 </section>
 
 <section id="decision-purchase">
@@ -104,29 +103,71 @@ export const metadata = {
     <p className="lead">The detail page had to answer “Is it relevant to me?”, “Can I trust the instructor?”, and “Is it worth buying now?” in an intentional sequence.</p>
     <p>Trial content moved into the hero so learners could verify the course before reading reviews, structure, and benefits. A/B/C variants tested the information order, while different course categories still required category-specific templates.</p>
   </div>
-  <XuelangEvidenceGroup variant="experiment">
-    <XuelangFigure src="/images/xuelang/experiment-a.webp" width={1920} height={1080} alt="Context and control variants for the course-detail hero experiment" label="A · B · C / CONTEXT" caption="Variants compared content position and information priority." locale="en" />
-    <XuelangFigure src="/images/xuelang/experiment-b.webp" width={1920} height={1080} alt="Selected course-detail hero variant with trial content" label="SELECTED / HERO TRIAL" caption="Trial content participates directly in the purchase decision." locale="en" />
-  </XuelangEvidenceGroup>
+  <XuelangEvidenceStory
+    locale="en"
+    label="CONTROLLED EXPERIMENT / A · B · C"
+    title="Verify the content before evaluating the price"
+    description="The experiment held the course constant and changed only trial placement and evidence order. The selected version made content quality verifiable in the first screen."
+    variant="experiment"
+    annotations={[
+      { title: 'Control', description: 'Preserve the previous hierarchy as the behavioral baseline.' },
+      { title: 'Review evidence', description: 'Learner feedback confirms outcomes without becoming the first claim.' },
+      { title: 'Hero trial', description: 'Move the strongest explanation forward and shorten the path to verification.' },
+    ]}
+    primary={{ src: '/images/xuelang/purchase-selected.webp', width: 328, height: 709, alt: 'Selected course-detail hero trial variant', label: 'SELECTED / HERO TRIAL', caption: 'Trial content enters the first purchase-decision screen.' }}
+    supporting={[
+      { src: '/images/xuelang/purchase-control.webp', width: 328, height: 709, alt: 'Course-detail experiment control', label: 'CONTROL / BASELINE', caption: 'Other information remains controlled.' },
+      { src: '/images/xuelang/purchase-review.webp', width: 327, height: 709, alt: 'Learner review evidence in course details', label: 'EVIDENCE / REVIEWS', caption: 'Reviews confirm rather than initiate the decision.' },
+    ]}
+  />
   <XuelangDecisionResult label="Purchase experiment result" value="+6.5%" description="The hero trial-content variant produced a positive 6.5% lift in purchase conversion." />
 </section>
 
 <section id="decision-learning">
   <header className="section-heading"><p className="section-index">06 / KEY DECISION 03</p><h2>Connect a continuous learning experience</h2></header>
   <div className="xuelang-reading"><p className="lead">Course delivery was not the end state. The redesign connected course entry, immersive viewing, fragmented learning, interaction, and note or learning-asset accumulation, balancing immersion with operating efficiency.</p></div>
-  <XuelangDarkComparison locale="en" title="Content delivery → Continuous learning experience" before={{ src: '/images/xuelang/detail-before.webp', width: 1920, height: 1080, alt: 'Previous course experience centered on content delivery', label: 'BEFORE / DELIVERY', caption: 'Entry and content existed, but learning actions remained disconnected.' }} after={{ src: '/images/xuelang/detail-after.webp', width: 1920, height: 1080, alt: 'Redesigned course experience connecting learning actions and states', label: 'AFTER / CONTINUITY', caption: 'Viewing, interaction, and learning accumulation become one continuous experience.' }} />
+  <XuelangDarkComparison locale="en" title="Content delivery → Continuous learning experience" before={{ src: '/images/xuelang/learning-before-board.webp', width: 1662, height: 1080, alt: 'Previous Xuelang interface collection centered on content delivery', label: 'Before · Content delivery', caption: 'Entry and content existed, but learning actions remained disconnected.' }} after={{ src: '/images/xuelang/learning-after-board.webp', width: 1662, height: 1080, alt: 'Redesigned Xuelang interface collection connecting a continuous learning experience', label: 'After · Continuous learning', caption: 'Viewing, interaction, and learning accumulation become one continuous experience.' }} />
   <XuelangLearningSequence locale="en" thesis="From entering a course to building personal learning assets, every state makes the current position and next action clear." states={[
-    { index: '01', title: 'Course entry', description: 'Show course state, progress, and a clear return path.', image: { src: '/images/xuelang/learning-entry.webp', width: 1920, height: 1080, alt: 'Course entry with progress and continue-learning state', label: 'ENTRY', caption: 'Reduce the cost of returning to learning.' } },
-    { index: '02', title: 'Immersive focus', description: 'Reduce distraction while keeping necessary controls legible.', image: { src: '/images/xuelang/learning-focus.webp', width: 1920, height: 1080, alt: 'Focused learning state with course content and controls', label: 'FOCUS', caption: 'Immersion and operational efficiency work together.' } },
+    { index: '01', title: 'Course entry', description: 'Show course state, progress, and a clear return path.', image: { src: '/images/xuelang/learning-entry-ui.webp', width: 449, height: 886, alt: 'Course entry with progress and continue-learning state', label: 'ENTRY / PRODUCT UI', caption: 'Reduce the cost of returning to learning.' } },
+    { index: '02', title: 'Immersive focus', description: 'Reduce distraction while keeping necessary controls legible.' },
     { index: '03', title: 'Fragmented learning', description: 'Preserve progress and context for short return sessions.' },
     { index: '04', title: 'Interaction', description: 'Keep questions and feedback in the context of the course.', image: { src: '/images/xuelang/learning-interaction.webp', width: 1920, height: 1080, alt: 'Course interaction and feedback interface', label: 'INTERACTION', caption: 'Interaction stays grounded in the learning context.' } },
-    { index: '05', title: 'Notes and learning assets', description: 'Accumulate notes and outcomes into personal value worth revisiting.', image: { src: '/images/xuelang/learning-assets.webp', width: 1920, height: 1080, alt: 'Notes and accumulated personal learning assets', label: 'ASSETS', caption: 'A viewing session becomes a reusable personal asset.' } },
+    { index: '05', title: 'Notes and learning assets', description: 'Accumulate notes and outcomes into personal value worth revisiting.' },
   ]} />
+  <XuelangEvidenceStory
+    locale="en"
+    label="LEARNING ASSET / NOTES"
+    title="Capture thinking without breaking the learning state"
+    description="Notes become a continuous action inside the player: capture, retain the timestamp, write, and accumulate the result in a personal notebook."
+    variant="learning"
+    annotations={[
+      { title: 'Act in place', description: 'Notes sit beside speed and fullscreen in the high-frequency control zone.' },
+      { title: 'Preserve context', description: 'A screenshot and video timestamp are saved with the note.' },
+      { title: 'Build personal value', description: 'Notes accumulate by course instead of ending as one viewing record.' },
+    ]}
+    primary={{ src: '/images/xuelang/learning-note-editor.webp', width: 470, height: 875, alt: 'In-player note editor', label: '03 / EDIT IN CONTEXT', caption: 'Writing stays connected to the current video.' }}
+    supporting={[
+      { src: '/images/xuelang/learning-note-player.webp', width: 390, height: 660, alt: 'Note entry inside the player', label: '01 / CAPTURE', caption: 'The high-frequency control zone opens notes directly.' },
+      { src: '/images/xuelang/learning-note-list.webp', width: 355, height: 665, alt: 'Personal notes accumulated by course', label: '02 / ACCUMULATE', caption: 'Viewing records become revisitable learning assets.' },
+    ]}
+  />
 </section>
 
 <section id="results">
   <header className="section-heading"><p className="section-index">07 / VALIDATED RESULTS</p><h2>Commercial outcomes and behavioral signals validated the direction</h2></header>
-  <XuelangFigure src="/images/xuelang/result-evidence.webp" width={1920} height={1080} alt="Xuelang experiment outcomes paired with the corresponding design evidence" label="VALIDATED / EXPERIMENT" caption="Results reflect confirmed relative movement during the experiment period, not long-range conclusions." locale="en" emphasis="wide" />
+  <XuelangEvidenceStory
+    locale="en"
+    label="VALIDATED / 14 DAYS"
+    title="Validate the direction without extending it into a long-term claim"
+    description="Results are relative changes observed during the experiment. Each signal returns to the decision it measures instead of becoming an isolated performance claim."
+    variant="result"
+    annotations={[
+      { title: 'Commercial signal', description: 'GMV per user increased by a relative 11.75% in the experiment group.' },
+      { title: 'Behavior signal', description: 'Course-detail exposure penetration improved by 1.36%.' },
+      { title: 'Variant signal', description: 'The hero trial-content variant lifted purchase conversion by 6.5%.' },
+    ]}
+    primary={{ src: '/images/xuelang/purchase-selected.webp', width: 328, height: 709, alt: 'Selected hero trial variant associated with validated results', label: 'EVIDENCE / SELECTED STATE', caption: 'The measured product state returns as the object of validation.' }}
+  />
   <XuelangResults label="Validated results" metrics={[
     { value: '+11.75%', label: 'GMV per user in the experiment group increased by a relative 11.75%' },
     { value: '+1.36%', label: 'Course-detail exposure penetration improved by 1.36%' },

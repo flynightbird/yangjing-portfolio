@@ -1,6 +1,6 @@
 'use client';
 
-import { X } from 'lucide-react';
+import { Maximize2, X } from 'lucide-react';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -14,6 +14,7 @@ interface LightboxProps {
   readonly triggerLabel: string;
   readonly dialogLabel: string;
   readonly closeLabel: string;
+  readonly expandLabel?: string;
 }
 
 const subscribeToHydration = () => () => {};
@@ -34,7 +35,10 @@ export function Lightbox({
   triggerLabel,
   dialogLabel,
   closeLabel,
+  expandLabel,
 }: LightboxProps) {
+  const resolvedExpandLabel = expandLabel
+    ?? (/[㐀-鿿]/u.test(triggerLabel) ? '放大' : 'Expand');
   const [open, setOpen] = useState(false);
   const hydrated = useSyncExternalStore(
     subscribeToHydration,
@@ -114,6 +118,10 @@ export function Lightbox({
         {/* Preserve the verified evidence file and its intrinsic dimensions. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={src} width={width} height={height} alt={alt} loading="lazy" />
+        <span className={styles.expandCue} data-expand-cue aria-hidden="true">
+          <Maximize2 size={15} strokeWidth={1.8} />
+          <span>{resolvedExpandLabel}</span>
+        </span>
       </button>
       {open
         ? createPortal(

@@ -13,7 +13,7 @@ const viewports = [
 const visualPeakSelectors = [
   '[data-hero-panorama]',
   '[data-testid="xuelang-dark-stage"]',
-  'figure:has(img[src*="result-evidence.webp"])',
+  '[data-story-variant="result"]',
 ] as const;
 
 test.describe('Xuelang visual matrix', () => {
@@ -213,6 +213,29 @@ test.describe('Xuelang visual matrix', () => {
     await page.goto('/en/work/call-agent/', { waitUntil: 'networkidle' });
     await expect(toggle, 'Shared cases should retain the original 900px breakpoint').toBeHidden();
     await expect(navigation).toBeVisible();
+  });
+
+  test('the 1024px Xuelang chapter index remains sticky and opens as an overlay', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'This test sets an exact breakpoint width.');
+    await page.setViewportSize({ width: 1024, height: 800 });
+    await page.goto('/en/work/xuelang/', { waitUntil: 'networkidle' });
+    await page.locator('#decision-learning').scrollIntoViewIfNeeded();
+
+    const toggle = page.getByRole('button', { name: 'Open chapter index' });
+    await expect(toggle).toBeInViewport();
+    const sectionTopBefore = await page.locator('#decision-learning').evaluate(
+      (element) => element.getBoundingClientRect().top,
+    );
+
+    await toggle.click();
+    const navigation = page.getByRole('navigation', { name: 'Case study chapters' });
+    await expect(navigation).toBeVisible();
+    const sectionTopAfter = await page.locator('#decision-learning').evaluate(
+      (element) => element.getBoundingClientRect().top,
+    );
+    expect(Math.abs(sectionTopAfter - sectionTopBefore)).toBeLessThanOrEqual(1);
   });
 
   for (const width of [1280, 1440]) {

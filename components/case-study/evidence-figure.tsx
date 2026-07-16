@@ -27,6 +27,7 @@ export function EvidenceFigure({
   const triggerLabel = locale === 'zh' ? `放大查看：${alt}` : `Enlarge: ${alt}`;
   const dialogLabel = locale === 'zh' ? '查看产品界面' : 'Product interface detail';
   const closeLabel = locale === 'zh' ? '关闭图片' : 'Close image';
+  const expandLabel = locale === 'zh' ? '放大' : 'Expand';
 
   return (
     <figure
@@ -42,6 +43,7 @@ export function EvidenceFigure({
         triggerLabel={triggerLabel}
         dialogLabel={dialogLabel}
         closeLabel={closeLabel}
+        expandLabel={expandLabel}
       />
       <figcaption>{caption}</figcaption>
     </figure>

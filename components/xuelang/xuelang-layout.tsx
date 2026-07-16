@@ -15,8 +15,34 @@ const copy = {
     duration: 'Duration',
     status: 'Status',
     download: 'Download PDF case study',
+    downloadSize: 'PDF · 5.8 MB',
+    proof: '14-day experiment · GMV per user +11.75%',
     panoramaAlt:
       'Xuelang product panorama showing course discovery, purchase decisions, and learning experiences',
+    panoramaKicker: 'PRODUCT EXPERIENCE / 4 STATES',
+    panoramaFlow: 'Discover · Decide · Learn · Retain',
+    heroStates: [
+      {
+        src: '/images/xuelang/quality-detail-ui.webp',
+        alt: 'Course quality evidence in the detail page',
+        label: '01 / RECOGNIZE',
+      },
+      {
+        src: '/images/xuelang/purchase-selected.webp',
+        alt: 'Selected course-detail hero trial experience',
+        label: '02 / VERIFY',
+      },
+      {
+        src: '/images/xuelang/learning-entry-ui.webp',
+        alt: 'Learning entry with progress and continue-learning state',
+        label: '03 / CONTINUE',
+      },
+      {
+        src: '/images/xuelang/learning-note-editor.webp',
+        alt: 'In-player note editor preserving learning context',
+        label: '04 / ACCUMULATE',
+      },
+    ],
   },
   zh: {
     eyebrow: '00 / 字节跳动 · 学浪',
@@ -25,7 +51,33 @@ const copy = {
     duration: '周期',
     status: '状态',
     download: '下载 PDF 案例',
+    downloadSize: 'PDF · 6.5 MB',
+    proof: '14 天实验 · 人均 GMV +11.75%',
     panoramaAlt: '学浪产品体验全景，呈现课程发现、购买决策与持续学习体验',
+    panoramaKicker: 'PRODUCT EXPERIENCE / 4 STATES',
+    panoramaFlow: '发现 · 决策 · 学习 · 沉淀',
+    heroStates: [
+      {
+        src: '/images/xuelang/quality-detail-ui.webp',
+        alt: '课程详情中可识别的品质证据',
+        label: '01 / RECOGNIZE',
+      },
+      {
+        src: '/images/xuelang/purchase-selected.webp',
+        alt: '被选中的课程详情头图试听方案',
+        label: '02 / VERIFY',
+      },
+      {
+        src: '/images/xuelang/learning-entry-ui.webp',
+        alt: '展示进度与继续学习状态的课程入口',
+        label: '03 / CONTINUE',
+      },
+      {
+        src: '/images/xuelang/learning-note-editor.webp',
+        alt: '保留学习上下文的播放器内笔记界面',
+        label: '04 / ACCUMULATE',
+      },
+    ],
   },
 } as const;
 
@@ -65,7 +117,7 @@ export function XuelangLayout({
                   </div>
                   <div>
                     <dt>{text.status}</dt>
-                    <dd>{meta.status}</dd>
+                    <dd className={styles.heroProof}>{text.proof}</dd>
                   </div>
                 </dl>
                 <a
@@ -76,19 +128,34 @@ export function XuelangLayout({
                 >
                   <Download aria-hidden="true" size={18} strokeWidth={1.7} />
                   <span>{text.download}</span>
+                  <small aria-hidden="true">{text.downloadSize}</small>
                 </a>
               </div>
             </div>
 
-            <figure className={styles.panorama} data-hero-panorama>
-              {/* Generated from traceable Xuelang source frames. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={meta.heroMedia}
-                width={3000}
-                height={1500}
-                alt={text.panoramaAlt}
-              />
+            <figure
+              className={styles.panorama}
+              data-hero-panorama
+              aria-label={text.panoramaAlt}
+            >
+              <div className={styles.panoramaMeta} aria-hidden="true">
+                <span>{text.panoramaKicker}</span>
+                <span>{text.panoramaFlow}</span>
+              </div>
+              <span className={styles.panoramaWord} aria-hidden="true">XUELANG</span>
+              <div className={styles.productStates}>
+                {text.heroStates.map((state, index) => (
+                  <div
+                    key={state.src}
+                    className={`${styles.productState} ${styles[`productState${index + 1}`]}`}
+                    data-hero-product-state
+                  >
+                    <span aria-hidden="true">{state.label}</span>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={state.src} alt={state.alt} />
+                  </div>
+                ))}
+              </div>
             </figure>
           </header>
 

@@ -17,10 +17,10 @@
 - Modify: `tests/e2e/xuelang.visual.spec.ts`
 - Modify: `tests/e2e/xuelang.spec.ts`
 
-- [ ] Add component assertions for the hero proof, annotated evidence stories, persistent expand cue, and PDF size label.
-- [ ] Run `npm test -- tests/component/xuelang-layout.test.tsx` and confirm the new assertions fail for missing output.
-- [ ] Add browser assertions for localized titles, the sticky 1024px chapter overlay, and reconstructed evidence width.
-- [ ] Run the focused Playwright cases and confirm they fail for the missing behavior.
+- [x] Add component assertions for the hero proof, annotated evidence stories, persistent expand cue, and PDF size label.
+- [x] Run `npm test -- tests/component/xuelang-layout.test.tsx` and confirm the new assertions fail for missing output.
+- [x] Add browser assertions for localized titles, the sticky 1024px chapter overlay, and reconstructed evidence width.
+- [x] Run the focused Playwright cases and confirm they fail for the missing behavior.
 
 ### Task 2: Prepare Traceable Figma Evidence
 
@@ -32,10 +32,10 @@
 - Create: `docs/xuelang-image-replacement-guide.md`
 - Modify: `evidence/xuelang/manifest.json`
 
-- [ ] Preserve the six source exports from the approved Figma nodes.
-- [ ] Use Sharp to convert independent nodes and crop the three notes states without rasterized explanatory text.
-- [ ] Record Figma node IDs, crop bounds, output dimensions, intended placement, and replacement instructions.
-- [ ] Run asset tests and inspect all derivatives for clipping, softness, and unintended transparency.
+- [x] Preserve the six source exports from the approved Figma nodes.
+- [x] Use Sharp to convert independent nodes and crop the three notes states without rasterized explanatory text.
+- [x] Record Figma node IDs, crop bounds, output dimensions, intended placement, and replacement instructions.
+- [x] Run asset tests and inspect all derivatives for clipping, softness, and unintended transparency.
 
 ### Task 3: Implement Evidence And Hero Components
 
@@ -44,10 +44,10 @@
 - Modify: `components/xuelang/xuelang-evidence.tsx`
 - Modify: `components/case-study/evidence-figure.tsx`
 
-- [ ] Render the verified proof in the hero facts and disclose the PDF size in the action label.
-- [ ] Add a typed `XuelangEvidenceStory` composition for one dominant product image plus localized annotations and optional supporting states.
-- [ ] Add an always-visible expand icon and localized cue to every evidence trigger.
-- [ ] Run the focused component tests and confirm they pass.
+- [x] Render the verified proof in the hero facts and disclose the PDF size in the action label.
+- [x] Add a typed `XuelangEvidenceStory` composition for one dominant product image plus localized annotations and optional supporting states.
+- [x] Add an always-visible expand icon and localized cue to every evidence trigger.
+- [x] Run the focused component tests and confirm they pass.
 
 ### Task 4: Recompose Bilingual Content
 
@@ -55,10 +55,10 @@
 - Modify: `content/work/xuelang.zh.mdx`
 - Modify: `content/work/xuelang.en.mdx`
 
-- [ ] Replace the quality, purchase, learning, and result presentation boards with focused evidence stories.
-- [ ] Keep all explanatory text in localized MDX and all verified metrics in HTML.
-- [ ] Shorten the English strategy thesis without changing the Chinese thesis.
-- [ ] Run `npm test -- tests/unit/xuelang-content.test.ts tests/component/xuelang-layout.test.tsx`.
+- [x] Replace the quality, purchase, learning, and result presentation boards with focused evidence stories.
+- [x] Keep all explanatory text in localized MDX and all verified metrics in HTML.
+- [x] Shorten the English strategy thesis without changing the Chinese thesis.
+- [x] Run `npm test -- tests/unit/xuelang-content.test.ts tests/component/xuelang-layout.test.tsx`.
 
 ### Task 5: Refine Layout, Contrast, Navigation, And Metadata
 
@@ -69,19 +69,18 @@
 - Modify: `components/case-study/evidence-figure.module.css`
 - Modify: `app/(localized)/[locale]/work/[slug]/page.tsx`
 
-- [ ] Implement the evidence-track layouts and English-only strategy scale.
-- [ ] Make the compact rail sticky and its navigation an anchored overlay.
-- [ ] Replace low-contrast labels with accessible green and dark-stage blue values.
-- [ ] Generate localized work-page metadata from content entries.
-- [ ] Run focused component and Playwright tests until green.
+- [x] Implement the evidence-track layouts and English-only strategy scale.
+- [x] Make the compact rail sticky and its navigation an anchored overlay.
+- [x] Replace low-contrast labels with accessible green and dark-stage blue values.
+- [x] Generate localized work-page metadata from content entries.
+- [x] Run focused component and Playwright tests until green.
 
 ### Task 6: Visual Review And Publication Verification
 
 **Files:**
 - Modify only files implicated by verified defects.
 
-- [ ] Start the production-like local server and capture the approved viewport matrix in both locales.
-- [ ] Inspect hero framing, chapter rhythm, image legibility, overlap, clipping, sticky navigation, lightbox focus, and result ending.
-- [ ] Run `npm run lint`, `npm test`, `npm run build`, and `npm run verify:xuelang-pdf`.
-- [ ] Review the final working-tree diff against the design specification and resolve all important findings.
-
+- [x] Start the production-like local server and capture the approved viewport matrix in both locales.
+- [x] Inspect hero framing, chapter rhythm, image legibility, overlap, clipping, sticky navigation, lightbox focus, and result ending.
+- [ ] Run `npm run lint`, `npm test`, `npm run build`, and `npm run verify:xuelang-pdf`. (`build:framework` passes; the publication gate remains blocked by repository-level missing launch assets.)
+- [x] Review the final working-tree diff against the design specification and resolve all important findings.

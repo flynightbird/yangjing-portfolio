@@ -16,6 +16,7 @@
 .standardMap,
 .decisionResult,
 .darkComparison,
+.evidenceStory,
 .learningSequence,
 .results {
   grid-column: 1 / -1 !important;
@@ -49,7 +50,7 @@
 .experiment > :last-child {
   grid-column: 6 / -1;
   padding-inline-start: 1rem;
-  box-shadow: inset 2px 0 0 #6f8f78;
+  box-shadow: inset 2px 0 0 #466b52;
 }
 
 .standardMap {
@@ -74,7 +75,7 @@
 .standardMap span,
 .decisionResult span,
 .learningThesis span {
-  color: #6f8f78;
+  color: #466b52;
   font-family: var(--xuelang-font-mono);
   font-size: 0.6875rem;
   font-weight: 600;
@@ -134,18 +135,166 @@
   font-weight: 600;
 }
 
-.darkComparison > div {
+.evidenceStory {
   display: grid;
-  grid-template-columns: 1fr 1.15fr;
-  gap: 1.5rem;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3vw, 3rem);
+  margin-block-start: clamp(3.5rem, 7vw, 6rem);
+  padding-block: 1.25rem clamp(3rem, 6vw, 5rem);
+  border-block-start: 2px solid #111512;
 }
 
-.darkComparison figure {
+.storyCopy {
+  grid-column: 1 / span 4;
+  align-self: start;
+}
+
+.storyCopy > span {
+  color: #466b52;
+  font-family: var(--xuelang-font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.storyCopy > h3 {
+  max-width: 14ch;
+  margin: 1.25rem 0 0;
+  font-size: clamp(1.8rem, 3vw, 3.35rem);
+  line-height: 1.08;
+}
+
+.storyCopy:lang(en) > h3 {
+  max-width: 16ch;
+  font-size: clamp(1.75rem, 2.45vw, 2.75rem);
+}
+
+.storyCopy > p {
+  max-width: 34rem;
+  margin: 1.25rem 0 0;
+  color: #5f6862;
+  line-height: 1.7;
+}
+
+.storyCopy ol {
+  padding: 0;
+  margin: 2.25rem 0 0;
+  border-block-end: 1px solid #cbd3cd;
+  list-style: none;
+}
+
+.storyCopy li {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 0.75rem;
+  padding-block: 1rem;
+  border-block-start: 1px solid #cbd3cd;
+}
+
+.storyCopy li > span {
+  color: #466b52;
+  font-family: var(--xuelang-font-mono);
+  font-size: 0.6875rem;
+}
+
+.storyCopy li strong {
+  font-size: 0.9375rem;
+}
+
+.storyCopy li p {
+  margin: 0.4rem 0 0;
+  color: #5f6862;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.storyMedia {
+  grid-column: 5 / -1;
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(15rem, 1.1fr) minmax(0, 1fr);
+  gap: clamp(1rem, 2vw, 2rem);
+  align-items: end;
+  padding: clamp(1.5rem, 3vw, 3rem);
+  overflow: hidden;
+  background: #e4ebe6;
+}
+
+.storyPrimary {
+  min-width: 0;
+}
+
+.storySupporting {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.storyMedia figure {
+  min-width: 0;
+}
+
+.storyMedia figure > p:first-child {
+  color: #466b52;
+}
+
+.storyMedia figcaption {
+  color: #5f6862;
+}
+
+.storyMedia figure > button {
+  background: transparent;
+}
+
+.story-standard .storyMedia,
+.story-result .storyMedia {
+  grid-template-columns: 1fr;
+  place-items: end center;
+}
+
+.story-standard .storyPrimary,
+.story-result .storyPrimary {
+  width: min(100%, 24rem);
+}
+
+.story-experiment .storyMedia {
+  grid-column: 4 / -1;
+  grid-template-columns: minmax(15rem, 0.9fr) minmax(20rem, 1.1fr);
+  background: #ece8e2;
+}
+
+.story-experiment .storyCopy {
+  grid-column: 1 / span 3;
+}
+
+.story-learning .storyMedia {
+  background: #121614;
+}
+
+.story-learning .storyMedia figure,
+.story-result .storyMedia figure {
   border-block-start-color: #3e4641;
 }
 
-.darkComparison figcaption {
-  color: #b9c1bc;
+.story-learning .storyMedia figure > p:first-child,
+.story-result .storyMedia figure > p:first-child {
+  color: #8fb0ff;
+}
+
+.story-learning .storyMedia figcaption,
+.story-result .storyMedia figcaption {
+  color: #c6cec9;
+}
+
+.story-result {
+  border-block-start-color: #466b52;
+}
+
+.story-result .storyMedia {
+  background: #121614;
 }
 
 .learningSequence {
@@ -158,7 +307,7 @@
 .learningThesis {
   align-self: start;
   padding-block-start: 1rem;
-  border-block-start: 2px solid #6f8f78;
+  border-block-start: 2px solid #466b52;
 }
 
 .learningThesis p {
@@ -177,7 +326,7 @@
 }
 
 .learningStates article > span {
-  color: #6f8f78;
+  color: #466b52;
   font-family: var(--xuelang-font-mono);
   font-size: 0.75rem;
 }
@@ -279,6 +428,40 @@
 
   .metricList > div[data-result-summary] {
     display: block;
+  }
+
+  .evidenceStory {
+    display: block;
+  }
+
+  .storyMedia {
+    margin-block-start: 2rem;
+  }
+
+  .story-experiment .storyMedia {
+    grid-template-columns: minmax(15rem, 0.9fr) minmax(20rem, 1.1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .storyMedia {
+    display: block;
+    padding: 1rem;
+  }
+
+  .storyPrimary {
+    width: min(100%, 24rem);
+    margin-inline: auto;
+  }
+
+  .storySupporting {
+    grid-template-columns: 1fr;
+    margin-block-start: 1rem;
+  }
+
+  .storySupporting figure {
+    width: min(100%, 22rem);
+    margin-inline: auto;
   }
 }
 

@@ -60,17 +60,18 @@ describe('Xuelang bilingual case content', () => {
     for (const phrase of ['teacher credibility', 'course structure', 'learner outcomes', 'reviews', 'platform guarantees']) {
       expect(standardEn).toContain(phrase);
     }
-    for (const source of [
+    for (const source of ['quality-detail-ui.webp']) {
+      expect(standardZh).toContain(`/images/xuelang/${source}`);
+      expect(standardEn).toContain(`/images/xuelang/${source}`);
+    }
+    for (const rasterizedBoard of [
       'quality-standard.webp',
       'quality-credibility.webp',
       'quality-structure.webp',
       'quality-guarantee.webp',
-      'discovery-touchpoint.webp',
-      'selection-touchpoint.webp',
-      'course-detail.webp',
     ]) {
-      expect(standardZh).toContain(`/images/xuelang/${source}`);
-      expect(standardEn).toContain(`/images/xuelang/${source}`);
+      expect(standardZh).not.toContain(`/images/xuelang/${rasterizedBoard}`);
+      expect(standardEn).not.toContain(`/images/xuelang/${rasterizedBoard}`);
     }
   });
 
@@ -80,12 +81,28 @@ describe('Xuelang bilingual case content', () => {
     expect(purchaseZh).toContain('头图试听方案购买转化正向 6.5%');
     expect(purchaseZh).toMatch(/课程品类|不同品类/);
     expect(purchaseZh).not.toMatch(/转化率达到|购买转化率为/);
+    for (const source of [
+      'purchase-control.webp',
+      'purchase-review.webp',
+      'purchase-selected.webp',
+    ]) {
+      expect(purchaseZh).toContain(`/images/xuelang/${source}`);
+    }
 
     const learningZh = section(zh, 'decision-learning');
     for (const phrase of ['课程入口', '沉浸观看', '碎片学习', '互动', '笔记与学习资产']) {
       expect(learningZh).toContain(phrase);
     }
-    for (const source of ['detail-before.webp', 'detail-after.webp', 'learning-entry.webp', 'learning-focus.webp', 'learning-interaction.webp', 'learning-assets.webp']) {
+    for (const source of ['learning-before-board.webp', 'learning-after-board.webp', 'learning-entry-ui.webp', 'learning-interaction.webp']) {
+      expect(learningZh).toContain(`/images/xuelang/${source}`);
+    }
+    expect(learningZh).not.toContain('/images/xuelang/learning-focus.webp');
+    for (const source of [
+      'learning-entry-ui.webp',
+      'learning-note-player.webp',
+      'learning-note-list.webp',
+      'learning-note-editor.webp',
+    ]) {
       expect(learningZh).toContain(`/images/xuelang/${source}`);
     }
   });

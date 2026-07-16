@@ -17,6 +17,8 @@ The following remain identical across all three links:
 - dark-first full-viewport Hero composition;
 - `Product Designer` and `AI-native Builder` as equal two-line role titles;
 - Satoshi at weight 900 for both role titles, with zero letter spacing;
+- the approved central upper-body cutout, rendered as two aligned treatments so
+  the draggable divider changes its visual mode without moving the subject;
 - the approved manual draggable divider, keyboard input, touch input, magnetic
   settling, and five-second return after leaving the Hero;
 - the approved Builder-side diagonal volumetric sweep;
@@ -26,10 +28,10 @@ The following remain identical across all three links:
   return or ambient motion;
 - identical navigation, labels, colors, title positions, and viewport framing.
 
-No person, portrait, face, body, or human silhouette appears in any of the
-three comparison variants. The comparison removes the central portrait from
-both fields so the role titles and abstract systems become the primary visual
-anchors.
+No person, portrait, face, body, or human silhouette appears inside the three
+Designer-side artistic background variants. This restriction does not apply
+to the approved central portrait, which remains the shared human anchor across
+the split.
 
 ## Shared Designer-Side Rules
 
@@ -112,7 +114,8 @@ Fine measurement marks may be removed rather than scaled into visual noise.
 ## Acceptance Criteria
 
 - All three links load without console errors or missing local assets.
-- No person imagery appears in either Hero field.
+- Exactly two aligned treatments of the central portrait load successfully,
+  while the Designer art containers contain no image assets.
 - Both role titles render at an effective weight of 900, remain two lines, and
   have zero letter spacing.
 - No artistic element intersects either title's protected reading zone.

@@ -19,6 +19,11 @@ technically separated from publishable evidence.
 
 The framework must:
 
+- treat visual impact and visual-expression ability as the portfolio's primary
+  experience goal, with case-study reading efficiency as the secondary goal;
+- use a wave-shaped visual rhythm: the Hero is the strongest peak, project
+  transitions provide distinct secondary peaks, and evidence-reading surfaces
+  become deliberately quiet and stable;
 - establish the dual-identity Hero and editorial homepage rhythm;
 - provide stable draft routes for ByteDance and Meeting;
 - preserve the completed Call Agent and STT Demo experiences;
@@ -101,8 +106,37 @@ and a compact Draft status. It must not resemble a generated person, silhouette,
 or fabricated photograph. Production validation continues to require
 `public/images/profile/yang-jing-hero.avif`.
 
-Motion remains restrained: one initial identity reveal and scan activation, no
-persistent loop, and a static reduced-motion state.
+The dual reveal uses direct manipulation as its primary interaction. On desktop,
+the visitor drags the central divider to control the visible balance between the
+two aligned portrait treatments. Hover does not move the divider. Hovering the
+Builder field instead activates an abstract code atmosphere made from characters,
+coordinates, data traces, and layered pointer parallax. The effect prioritizes
+visual impact over source-code readability and remains subordinate to the
+portrait and role labels.
+
+At rest, the Builder atmosphere remains faintly active with low density and slow
+drift. Hovering the Builder field or dragging the divider toward it increases
+the field's density, velocity, clarity, and depth. Touch devices use divider
+position as the intensity input so the atmosphere remains complete without
+hover.
+
+The code atmosphere is strictly clipped to the Builder layer. As tokens approach
+the divider, they compress, shear, and redirect along its edge. This makes the
+divider feel like a physical boundary while keeping the Designer field visually
+clean.
+
+Clicking either role animates the divider toward that identity. Keyboard arrow
+keys provide an equivalent divider control. Mobile supports touch dragging and
+retains the `DESIGN / DUAL / BUILD` segmented control. The divider holds its
+position after release, with subtle magnetic settling at the center and near-edge
+reveal states.
+
+The divider does not reset while the visitor remains in the Hero. Five seconds
+after the pointer leaves the Hero, it returns to center with damped motion.
+Pointer re-entry, dragging, clicking, keyboard input, or touch immediately
+cancels the reset. The timer does not animate while the document is hidden.
+Reduced-motion mode removes perpetual drift, parallax, and timed auto-return
+while preserving drag, click, touch, and keyboard control.
 
 ## 5. Core Project Treatments
 

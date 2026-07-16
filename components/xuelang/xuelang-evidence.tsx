@@ -4,6 +4,7 @@ import { EvidenceFigure } from '@/components/case-study/evidence-figure';
 import type { Locale } from '@/content/types';
 
 import styles from './xuelang-evidence.module.css';
+import { XuelangWipeComparison } from './xuelang-wipe-comparison';
 
 interface XuelangFigureProps {
   readonly src: string;
@@ -92,6 +93,68 @@ interface ComparisonImage {
   readonly caption: string;
 }
 
+interface EvidenceAnnotation {
+  readonly title: string;
+  readonly description: string;
+}
+
+export function XuelangEvidenceStory({
+  locale,
+  label,
+  title,
+  description,
+  annotations,
+  primary,
+  supporting = [],
+  variant = 'standard',
+}: {
+  readonly locale: Locale;
+  readonly label: string;
+  readonly title: string;
+  readonly description: string;
+  readonly annotations: readonly EvidenceAnnotation[];
+  readonly primary: ComparisonImage;
+  readonly supporting?: readonly ComparisonImage[];
+  readonly variant?: 'standard' | 'experiment' | 'learning' | 'result';
+}) {
+  return (
+    <div
+      className={`${styles.evidenceStory} ${styles[`story-${variant}`]}`}
+      data-evidence-story
+      data-story-variant={variant}
+    >
+      <div className={styles.storyCopy}>
+        <span>{label}</span>
+        <h3>{title}</h3>
+        <p>{description}</p>
+        <ol>
+          {annotations.map((annotation, index) => (
+            <li key={annotation.title}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <div>
+                <strong>{annotation.title}</strong>
+                <p>{annotation.description}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div className={styles.storyMedia}>
+        <div className={styles.storyPrimary}>
+          <XuelangFigure {...primary} locale={locale} />
+        </div>
+        {supporting.length ? (
+          <div className={styles.storySupporting}>
+            {supporting.map((image) => (
+              <XuelangFigure key={image.src} {...image} locale={locale} />
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 export function XuelangDarkComparison({
   locale,
   title,
@@ -103,6 +166,10 @@ export function XuelangDarkComparison({
   readonly before: ComparisonImage;
   readonly after: ComparisonImage;
 }) {
+  const controlLabel = locale === 'zh'
+    ? '拖动比较旧版与新版'
+    : 'Drag to compare before and after';
+
   return (
     <div
       className={styles.darkComparison}
@@ -110,10 +177,11 @@ export function XuelangDarkComparison({
       data-testid="xuelang-dark-stage"
     >
       <p>{title}</p>
-      <div>
-        <XuelangFigure {...before} locale={locale} />
-        <XuelangFigure {...after} locale={locale} />
-      </div>
+      <XuelangWipeComparison
+        before={before}
+        after={after}
+        controlLabel={controlLabel}
+      />
     </div>
   );
 }
@@ -177,7 +245,7 @@ export function XuelangResults({
 }) {
   return (
     <div className={styles.results} aria-label={label}>
-      <div className={styles.metricList}>
+      <div className={styles.metricList} data-result-list>
         {metrics.map((metric, index) => (
           <div
             key={`${metric.value}:${metric.label}`}

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { CaseLayout } from '@/components/case-study/case-layout';
@@ -29,6 +30,26 @@ function isWorkSlug(value: string): value is WorkSlug {
 
 interface WorkCasePageProps {
   readonly params: Promise<{ locale: string; slug: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: WorkCasePageProps): Promise<Metadata> {
+  const { locale, slug } = await params;
+
+  if (!isLocale(locale) || !isWorkSlug(slug)) {
+    return {};
+  }
+
+  const entry = getContentEntry('work', slug, locale);
+  if (!entry) {
+    return {};
+  }
+
+  return {
+    title: `${entry.meta.title} | Yang Jing`,
+    description: entry.meta.proposition,
+  };
 }
 
 function resolveNeighbor(

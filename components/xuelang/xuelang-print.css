@@ -46,8 +46,9 @@
   }
 
   [data-xuelang-hero] {
-    display: block !important;
-    min-height: 0 !important;
+    display: flex !important;
+    min-height: 250mm !important;
+    flex-direction: column;
     padding: 0 !important;
     break-after: page;
   }
@@ -65,7 +66,7 @@
   [data-hero-panorama] {
     width: 100% !important;
     max-height: 100mm !important;
-    margin-top: 9mm !important;
+    margin-top: auto !important;
     break-inside: avoid;
   }
 
@@ -131,6 +132,46 @@
     object-fit: contain !important;
   }
 
+  [data-xuelang-case] [data-evidence-story] {
+    display: grid !important;
+    grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr) !important;
+    gap: 6mm !important;
+    margin-block: 8mm 0 !important;
+    padding-block: 4mm 6mm !important;
+    break-inside: avoid;
+  }
+
+  [data-xuelang-case] [data-evidence-story] > div:first-child {
+    grid-column: 1 !important;
+  }
+
+  [data-xuelang-case] [data-evidence-story] > div:last-child {
+    grid-column: 2 !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr) !important;
+    gap: 3mm !important;
+    align-items: end !important;
+    margin: 0 !important;
+    padding: 5mm !important;
+  }
+
+  [data-xuelang-case] [data-evidence-story] h3 {
+    margin-block-start: 3mm !important;
+    font-size: 18pt !important;
+  }
+
+  [data-xuelang-case] [data-evidence-story] ol {
+    margin-block-start: 4mm !important;
+  }
+
+  [data-xuelang-case] [data-evidence-story] [data-evidence] {
+    margin: 0 !important;
+  }
+
+  [data-xuelang-case] [data-evidence-story] [data-evidence] img {
+    max-height: 62mm !important;
+  }
+
   [data-xuelang-case] [data-learning-sequence],
   [data-xuelang-case] [data-learning-sequence] > div,
   [data-xuelang-case] [data-learning-state],
@@ -142,8 +183,46 @@
     transform: none !important;
   }
 
+  [data-xuelang-case] [data-learning-sequence] {
+    display: grid !important;
+    min-height: 220mm !important;
+    grid-template-columns: minmax(34mm, 0.62fr) minmax(0, 1.38fr) !important;
+    gap: 7mm !important;
+    align-items: center !important;
+    margin-block-start: 7mm !important;
+    break-inside: avoid;
+  }
+
+  [data-xuelang-case] [data-learning-sequence] > div:last-child {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0 5mm !important;
+  }
+
   [data-xuelang-case] [data-learning-state] {
-    padding-block: 7mm !important;
+    padding-block: 4mm !important;
+  }
+
+  [data-xuelang-case] [data-learning-state] figure {
+    margin-block-start: 3mm !important;
+  }
+
+  [data-xuelang-case] [data-learning-state] [data-evidence] img {
+    max-height: 52mm !important;
+  }
+
+  [data-xuelang-case] [data-story-variant='learning'] {
+    min-height: 210mm !important;
+    align-items: center !important;
+  }
+
+  [data-xuelang-case] [data-story-variant='learning'] [data-evidence] img {
+    max-height: 82mm !important;
+  }
+
+  [data-xuelang-case] [data-story-variant='learning'] > div:last-child {
+    min-height: 180mm !important;
+    align-content: center !important;
   }
 
   [data-xuelang-case] [data-testid='xuelang-dark-stage'] {
@@ -154,14 +233,21 @@
     print-color-adjust: exact;
   }
 
-  [data-xuelang-case] [data-testid='xuelang-dark-stage'] > div {
+  [data-xuelang-case] [data-testid='xuelang-dark-stage'] [data-wipe-print-pair] {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 5mm !important;
   }
 
-  [data-xuelang-case] [data-testid='xuelang-dark-stage'] img {
+  [data-xuelang-case] [data-testid='xuelang-dark-stage'] [data-wipe-print-pair] figure {
+    margin: 0 !important;
+  }
+
+  [data-xuelang-case] [data-testid='xuelang-dark-stage'] [data-wipe-print-pair] img {
+    width: 100% !important;
+    height: auto !important;
     max-height: 75mm !important;
+    object-fit: contain !important;
   }
 
   [data-xuelang-case] [data-result-metric] strong {
@@ -170,6 +256,19 @@
 
   [data-xuelang-case] [data-result-metric] {
     padding: 3mm 3mm 3.5mm 0 !important;
+  }
+
+  [data-xuelang-case] [data-result-list] {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    margin-block-start: 7mm !important;
+  }
+
+  [data-xuelang-case] [data-result-list] > [data-result-summary] {
+    grid-column: 1 / -1 !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) !important;
+    gap: 7mm !important;
   }
 
   [data-xuelang-case] [data-case-study] .xuelang-reflection {
@@ -188,6 +287,8 @@
   }
 
   [data-xuelang-case] [data-case-study] footer {
+    min-height: 230mm !important;
+    align-content: center !important;
     gap: 4mm !important;
     margin-block-start: 3mm !important;
     padding-block: 2.5mm !important;
@@ -199,12 +300,12 @@
   }
 
   [data-xuelang-case] [data-case-study] footer strong {
-    font-size: 12pt !important;
+    font-size: 20pt !important;
   }
 
   [data-xuelang-case] [data-case-study] footer span,
   [data-xuelang-case] [data-case-study] footer a,
   [data-xuelang-case] [data-case-study] footer p {
-    font-size: 7.5pt !important;
+    font-size: 9pt !important;
   }
 }
