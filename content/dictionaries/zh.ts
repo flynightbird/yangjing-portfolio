@@ -35,8 +35,8 @@ export const zhDictionary = {
     description: '产品设计师 × AI 原生构建者。',
     hero: {
       name: 'Yang Jing',
-      designerRole: '产品设计师',
-      builderRole: 'AI 原生构建者',
+      designerRole: 'Product Designer',
+      builderRole: 'AI-native Builder',
       designerSummary: '设计大规模 C 端产品，以及复杂的 AI 与 B2B 系统。',
       builderSummary: '通过 Vibe Coding 进行原型、验证并交付可运行的体验。',
       portraitDraft: '等待已确认的人像摄影',

@@ -7,6 +7,8 @@ import { zhDictionary } from '@/content/dictionaries/zh';
 import { homepageProjects } from '@/content/home';
 import type { Locale } from '@/content/types';
 
+import styles from './home.module.css';
+
 interface FeaturedWorkProps {
   readonly locale: Locale;
 }
@@ -17,7 +19,11 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
   const [xuelang, callAgent, meeting, aidx, sttDemo] = homepageProjects;
 
   return (
-    <section id="work" aria-label={locale === 'zh' ? '精选作品' : 'Selected work'}>
+    <section
+      id="work"
+      className={styles.featuredWork}
+      aria-label={locale === 'zh' ? '精选作品' : 'Selected work'}
+    >
       <FeaturedProject
         id="xuelang"
         copy={copy.xuelang}

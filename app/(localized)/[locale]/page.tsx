@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { AboutPreview } from '@/components/home/about-preview';
 import { DualIdentityHero } from '@/components/home/dual-identity-hero';
 import { FeaturedWork } from '@/components/home/featured-work';
+import { IntroStory } from '@/components/home/intro-story';
 import { VisualArchive } from '@/components/home/visual-archive';
 import { isLocale } from '@/lib/i18n/locales';
 
@@ -22,8 +23,11 @@ export default async function LocaleHomePage({ params }: LocaleHomePageProps) {
   return (
     <div className={styles.home}>
       <DualIdentityHero locale={locale} />
+      <IntroStory locale={locale} />
       <FeaturedWork locale={locale} />
-      <VisualArchive locale={locale} />
+      <div className={styles.archiveBridge} data-archive-bridge>
+        <VisualArchive locale={locale} />
+      </div>
       <AboutPreview locale={locale} />
     </div>
   );

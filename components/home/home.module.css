@@ -6,174 +6,703 @@
   color: var(--theme-ink);
 }
 
-.heroReveal {
-  transform: none;
+.hero {
+  --hero-black: #050505;
+  --hero-paper: #f4f4ef;
+  --hero-muted: #9b9e97;
+  --hero-signal: #c7ff38;
+  --hero-blue: #4b7aff;
+  --hero-coral: #ff6b55;
+  --hero-line: rgba(244, 244, 239, 0.16);
+  position: relative;
+  min-height: max(42rem, calc(100dvh - var(--header-height) - 1.25rem));
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-carbon);
+  background: var(--hero-black);
+  color: var(--hero-paper);
+  isolation: isolate;
+}
+
+.heroTopbar {
+  position: absolute;
+  z-index: 20;
+  inset: 0 0 auto;
+  display: grid;
+  height: 3.75rem;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  padding-inline: var(--content-gutter);
+  border-bottom: 1px solid var(--hero-line);
+  background: rgba(5, 5, 5, 0.9);
+  backdrop-filter: blur(14px);
+}
+
+.heroTopbar h1,
+.heroTopbar span {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.67rem;
+  font-weight: 500;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.heroDirection {
+  color: var(--hero-blue);
+}
+
+.heroIdentity {
+  justify-self: end;
+  color: var(--hero-muted);
+}
+
+.heroLayer {
+  position: absolute;
+  inset: 3.75rem 0 0;
+  overflow: hidden;
+}
+
+.builderField {
+  z-index: 1;
+  background: var(--hero-black);
+}
+
+.builderField::after,
+.designerField::after {
+  position: absolute;
+  z-index: 5;
+  inset-block-start: 1.25rem;
+  color: var(--hero-blue);
+  content: 'SYSTEM FIELD';
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.builderField::after {
+  inset-inline-end: var(--content-gutter);
+}
+
+.designerField {
+  z-index: 4;
+  background: #0b1007;
+  clip-path: inset(0 calc(100% - var(--hero-split)) 0 0);
+  will-change: clip-path;
+}
+
+.designerField::after {
+  inset-inline-start: var(--content-gutter);
+  color: var(--hero-signal);
+  content: 'DESIGN FIELD';
+}
+
+.codeCanvas,
+.materialBlueprint {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.codeCanvas {
+  z-index: 1;
+}
+
+.materialBlueprint {
+  z-index: 2;
+  overflow: hidden;
+}
+
+.blueprintPiece {
+  position: absolute;
+  opacity: 0;
+}
+
+.blueprintPlaneOne,
+.blueprintPlaneTwo {
+  border: 1px solid rgba(244, 244, 239, 0.19);
+  background: rgba(244, 244, 239, 0.045);
+  backdrop-filter: blur(5px);
+}
+
+.blueprintPlaneOne {
+  --blueprint-rotation: 7deg;
+  inset-block-start: 10%;
+  inset-inline-start: 35%;
+  width: 12%;
+  height: 31%;
+  transform: translate(52px, -28px) rotate(7deg);
+}
+
+.blueprintPlaneTwo {
+  --blueprint-rotation: -8deg;
+  inset-inline-end: 55%;
+  inset-block-end: 7%;
+  width: 21%;
+  height: 27%;
+  border-color: rgba(255, 107, 85, 0.36);
+  background: rgba(255, 107, 85, 0.055);
+  transform: translate(-38px, 42px) rotate(-8deg);
+}
+
+.blueprintPath {
+  position: absolute;
+  inset-inline-end: 51%;
+  inset-block-end: 6%;
+  width: 18%;
+  height: 50%;
+  overflow: visible;
+  opacity: 0;
+  transform: translateY(26px);
+}
+
+.blueprintPath path {
+  fill: none;
+  stroke: rgba(199, 255, 56, 0.58);
+  stroke-dasharray: 620;
+  stroke-dashoffset: 620;
+  stroke-width: 1;
+}
+
+.blueprintPath line {
+  stroke: rgba(244, 244, 239, 0.2);
+  stroke-width: 1;
+}
+
+.blueprintPath circle {
+  fill: #0b1007;
+  stroke: var(--hero-signal);
+  stroke-width: 1;
+}
+
+.blueprintNode {
+  --blueprint-rotation: 45deg;
+  inset-block-start: 13%;
+  inset-inline-end: 51%;
+  width: 2.125rem;
+  height: 2.125rem;
+  border: 1px solid rgba(244, 244, 239, 0.6);
+  transform: scale(0.6) rotate(45deg);
+}
+
+.heroPortrait {
+  position: absolute;
+  z-index: 3;
+  inset-block-start: 0.75rem;
+  inset-inline-start: 50%;
+  width: min(55vw, 46.875rem);
+  max-width: none;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  transform: translateX(-50%);
+}
+
+.builderField .heroPortrait {
+  filter: grayscale(1) contrast(1.16) brightness(0.74);
+}
+
+.designerField .heroPortrait {
+  filter: saturate(0.95) contrast(1.07) brightness(0.93);
+}
+
+.heroRole {
+  position: absolute;
+  z-index: 8;
+  inset-block-start: 42%;
+  width: 42%;
+  color: var(--hero-paper);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.designerRole {
+  inset-inline-start: var(--content-gutter);
+}
+
+.builderRole {
+  inset-inline-end: var(--content-gutter);
+  text-align: end;
+}
+
+.heroRole > span {
+  display: block;
+  margin-block-end: 1rem;
+  color: var(--hero-signal);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 500;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.builderRole > span {
+  color: var(--hero-blue);
+}
+
+.heroRole h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3.4rem, 6.7vw, 6.25rem);
+  font-weight: 800;
+  line-height: 0.84;
+  overflow-wrap: normal;
+  text-wrap: nowrap;
+}
+
+.heroRole p {
+  max-width: 31ch;
+  margin: 1.25rem 0 0;
+  color: rgba(244, 244, 239, 0.66);
+  font-size: clamp(0.72rem, 1vw, 0.86rem);
+  line-height: 1.5;
+}
+
+.builderRole p {
+  margin-inline-start: auto;
+}
+
+.heroDivider {
+  position: absolute;
+  z-index: 15;
+  inset-block: 3.75rem 0;
+  inset-inline-start: var(--hero-split);
+  width: 2.75rem;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--hero-signal);
+  cursor: ew-resize;
+  touch-action: none;
+  transform: translateX(-50%);
+}
+
+.heroDivider::after {
+  position: absolute;
+  inset: 0 auto 0 50%;
+  width: 1px;
+  background: var(--hero-signal);
+  content: '';
+  opacity: 0.72;
+}
+
+.heroDivider span {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 4.25rem;
+  inset-inline-start: 50%;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid var(--hero-signal);
+  background: var(--hero-black);
+  color: var(--hero-signal);
+  font-family: var(--font-mono);
+  font-size: 0.94rem;
+  line-height: 1;
+  transform: translateX(-50%);
+}
+
+.heroDivider:focus-visible {
+  outline: 1px solid var(--hero-signal);
+  outline-offset: -0.375rem;
+}
+
+.heroMeta {
+  position: absolute;
+  z-index: 12;
+  inset: auto var(--content-gutter) 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  color: var(--hero-muted);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 500;
+  line-height: 1.4;
+  pointer-events: none;
+  text-transform: uppercase;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .heroReveal {
-    animation: hero-reveal 700ms var(--ease-out) var(--hero-reveal-delay, 0s) both;
+  .blueprintPiece,
+  .blueprintPath {
+    animation: blueprint-arrive 1250ms cubic-bezier(0.16, 1, 0.3, 1) 260ms both;
+  }
+
+  .blueprintPath path {
+    animation: blueprint-draw 1500ms cubic-bezier(0.16, 1, 0.3, 1) 370ms both;
   }
 }
 
-@keyframes hero-reveal {
-  from {
-    transform: translateY(18px);
+@keyframes blueprint-arrive {
+  to {
+    opacity: 0.8;
+    transform: translate(0, 0) rotate(var(--blueprint-rotation, 0deg));
+  }
+}
+
+@keyframes blueprint-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero {
+    min-height: max(40rem, calc(100dvh - var(--header-height) - 1.5rem));
   }
 
-  to {
+  .heroTopbar {
+    height: 3.5rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .heroDirection {
+    display: none;
+  }
+
+  .heroLayer {
+    inset-block-start: 3.5rem;
+  }
+
+  .heroPortrait {
+    inset-block-start: 7.4rem;
+    width: min(145vw, 38rem);
+  }
+
+  .heroRole {
+    inset-block-start: 27%;
+    width: calc(50% - 1.25rem);
+  }
+
+  .heroRole > span {
+    margin-block-end: 0.65rem;
+    font-size: 0.45rem;
+  }
+
+  .heroRole h2 {
+    font-size: clamp(1.9rem, 9vw, 2.3rem);
+    line-height: 0.88;
+  }
+
+  .heroRole p {
+    display: none;
+  }
+
+  .blueprintPlaneOne {
+    inset-block-start: 39%;
+    inset-inline-start: 7%;
+    width: 42%;
+    height: 20%;
+  }
+
+  .blueprintPlaneTwo {
+    inset-inline-end: 54%;
+    inset-block-end: 9%;
+    width: 35%;
+    height: 22%;
+  }
+
+  .blueprintPath {
+    inset-inline-end: 49%;
+    inset-block-end: 7%;
+    width: 42%;
+    height: 45%;
+  }
+
+  .blueprintNode {
+    display: none;
+  }
+
+  .heroDivider {
+    inset-block-start: 3.5rem;
+  }
+
+  .heroDivider span {
+    inset-block-start: 3.25rem;
+  }
+
+  .heroMeta {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blueprintPiece,
+  .blueprintPath {
+    opacity: 0.8;
+    transform: translate(0, 0) rotate(var(--blueprint-rotation, 0deg));
+  }
+
+  .blueprintPath path {
+    stroke-dashoffset: 0;
+  }
+}
+
+.introStory {
+  position: relative;
+  border-bottom: 1px solid rgba(242, 244, 240, 0.14);
+  background: #0d0e10;
+  color: #f2f4f0;
+  isolation: isolate;
+}
+
+.introPin {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 38rem;
+  overflow: hidden;
+}
+
+.introFrame {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  padding: clamp(4.5rem, 10vh, 7rem) clamp(5.75rem, 10vw, 10rem);
+}
+
+.introFrame::before,
+.introFrame::after {
+  position: absolute;
+  inset-inline: var(--content-gutter);
+  height: 1px;
+  background: rgba(242, 244, 240, 0.14);
+  content: '';
+}
+
+.introFrame::before {
+  inset-block-start: clamp(4.5rem, 12vh, 7.5rem);
+}
+
+.introFrame::after {
+  inset-block-end: clamp(4.5rem, 12vh, 7.5rem);
+}
+
+.introScenes {
+  position: relative;
+  display: grid;
+  width: min(100%, 64rem);
+  min-height: 17rem;
+  place-items: center;
+}
+
+.introStatement {
+  position: absolute;
+  grid-area: 1 / 1;
+  width: 100%;
+  margin: 0;
+  color: #f2f4f0;
+  font-family: var(--font-body);
+  font-size: clamp(2.5rem, 4.17vw, 3.75rem);
+  font-weight: 600;
+  line-height: 1.12;
+  pointer-events: none;
+  text-align: center;
+  text-wrap: balance;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(1.625rem);
+  will-change: opacity, transform;
+}
+
+.introStatementCurrent {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.introStatement strong {
+  color: #c7ff38;
+  font-weight: inherit;
+}
+
+.introStory:lang(zh-CN) .introStatement {
+  font-family: var(--font-chinese);
+  font-weight: 600;
+}
+
+.introCounter {
+  position: absolute;
+  inset-block-end: clamp(1.5rem, 4vh, 2.5rem);
+  inset-inline-start: var(--content-gutter);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1;
+}
+
+.introRail {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: max(0.75rem, calc(var(--content-gutter) - 0.75rem));
+  display: grid;
+  transform: translateY(-50%);
+}
+
+.introRailButton {
+  display: grid;
+  width: 4.5rem;
+  min-height: 2.75rem;
+  grid-template-columns: 1.75rem 1fr;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(242, 244, 240, 0.48);
+  cursor: pointer;
+}
+
+.introRailButton:focus-visible {
+  outline-width: 2px;
+  outline-offset: 1px;
+}
+
+.introRailIndex {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  line-height: 1;
+}
+
+.introRailMark {
+  display: block;
+  width: 1rem;
+  height: 1px;
+  background: currentColor;
+  transition: width 360ms var(--ease-out), background-color 360ms var(--ease-out);
+}
+
+.introRailButton[aria-current='step'] {
+  color: #f2f4f0;
+}
+
+.introRailButton[aria-current='step'] .introRailMark {
+  width: 2.5rem;
+  height: 2px;
+  background: #c7ff38;
+}
+
+@media (max-width: 767px) {
+  .introPin {
+    min-height: 34rem;
+  }
+
+  .introFrame {
+    padding-inline: 0.75rem 3.25rem;
+  }
+
+  .introScenes {
+    min-height: 15rem;
+  }
+
+  .introStatement {
+    font-size: clamp(1.5rem, 6.7vw, 2.125rem);
+    line-height: 1.18;
+  }
+
+  .introStory:lang(zh-CN) .introStatement {
+    font-size: clamp(1.5rem, 6.7vw, 2.125rem);
+  }
+
+  .introRail {
+    inset-inline-end: 0.125rem;
+  }
+
+  .introRailButton {
+    width: 2.25rem;
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .introRailIndex {
+    display: none;
+  }
+
+  .introRailMark {
+    width: 0.75rem;
+  }
+
+  .introRailButton[aria-current='step'] .introRailMark {
+    width: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .introStory {
+    padding-block: clamp(4rem, 10vh, 7rem);
+  }
+
+  .introPin {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .introFrame {
+    height: auto;
+    padding: 0 var(--content-gutter);
+  }
+
+  .introFrame::before,
+  .introFrame::after,
+  .introRail,
+  .introCounter {
+    display: none;
+  }
+
+  .introScenes {
+    width: min(100%, 70rem);
+    min-height: 0;
+    gap: clamp(4rem, 12vh, 8rem);
+  }
+
+  .introStatement {
+    position: static;
+    visibility: visible;
+    opacity: 1;
     transform: none;
   }
 }
 
-.hero {
-  min-height: calc(100dvh - var(--header-height) - clamp(4rem, 10vh, 7rem));
-  border-bottom: 1px solid var(--theme-border);
+.featuredWork {
   background: var(--theme-canvas);
 }
 
-.heroGrid {
-  display: grid;
-  width: min(100%, var(--content-max));
-  min-height: inherit;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-template-rows: auto auto minmax(12rem, 1fr);
-  gap: 0;
-  margin-inline: auto;
-}
-
-.heroName {
-  grid-column: 1 / -1;
-  padding: clamp(1rem, 3vh, 2rem) var(--content-gutter) var(--space-3);
-  border-bottom: 1px solid var(--theme-border);
-  background: var(--theme-canvas);
-  color: var(--theme-ink);
-}
-
-.heroName h1 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(2.4rem, 3.4rem, 3.4rem);
-  line-height: 0.94;
-}
-
-.designerIdentity,
-.builderIdentity {
-  display: grid;
-  min-width: 0;
-  align-content: start;
-  gap: var(--space-3);
-  padding: clamp(1rem, 3vh, 2rem) var(--content-gutter);
-}
-
-.designerIdentity {
-  grid-column: 1 / 3;
-  background: var(--theme-canvas);
-  color: var(--theme-ink);
-}
-
-.builderIdentity {
-  grid-column: 3 / 5;
-  background: var(--theme-surface);
-  color: var(--theme-ink);
-}
-
-.designerIdentity h2,
-.builderIdentity h2 {
-  max-width: none;
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.9rem, 8vw, 2.1rem);
-  line-height: 0.98;
-}
-
-.builderIdentity h2 {
-  justify-self: end;
-  text-align: end;
-}
-
-.designerIdentity p,
-.builderIdentity p {
-  max-width: 24ch;
-  margin: 0;
-  font-size: var(--font-size-small);
-  line-height: 1.45;
-}
-
-.builderIdentity p {
-  justify-self: end;
-  color: var(--theme-muted);
-  text-align: end;
-}
-
-.portraitColumn {
-  z-index: 1;
-  grid-column: 1 / -1;
-  grid-row: 3;
-  width: min(64vw, 19rem);
-  align-self: end;
-  justify-self: center;
-  padding-block-start: var(--space-3);
-}
-
-.portraitDraft {
+.archiveBridge {
   position: relative;
-  display: grid;
-  min-height: clamp(12rem, 28vh, 20rem);
-  place-items: center;
-  padding: var(--space-5);
-  border: 1px solid var(--color-signal);
-  background:
-    linear-gradient(var(--color-paper-border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-paper-border) 1px, transparent 1px),
-    var(--color-carbon);
-  background-size: 2rem 2rem;
-  color: var(--color-paper);
-  text-align: center;
+  padding-block-start: clamp(1.5rem, 4vh, 3rem);
+  border-top: 1px solid var(--theme-border);
+  background: var(--theme-canvas);
 }
 
-.portraitDraft::before,
-.portraitDraft::after {
-  position: absolute;
-  width: 34%;
-  height: 1px;
-  background: var(--color-cobalt);
-  content: '';
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .archiveBridge > section {
+      animation: archive-enter linear both;
+      animation-range: entry 0% entry 55%;
+      animation-timeline: view();
+    }
+  }
 }
 
-.portraitDraft::before {
-  inset-block-start: 22%;
-  inset-inline-start: -8%;
-}
+@keyframes archive-enter {
+  from {
+    opacity: 0.72;
+    transform: translateY(1.125rem);
+  }
 
-.portraitDraft::after {
-  inset-block-end: 22%;
-  inset-inline-end: -8%;
-}
-
-.portraitInitials {
-  font-family: var(--font-display);
-  font-size: clamp(4.5rem, 7rem, 7rem);
-  line-height: 0.8;
-}
-
-.portraitDraft p {
-  align-self: end;
-  margin: 0;
-  color: var(--color-paper-muted);
-  font-size: 0.75rem;
-}
-
-.draftLabel {
-  position: absolute;
-  inset-block-start: var(--space-3);
-  inset-inline-start: var(--space-3);
-  padding: 0.25rem 0.4rem;
-  border: 1px solid currentColor;
-  color: var(--color-signal);
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  line-height: 1;
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .projectBand,

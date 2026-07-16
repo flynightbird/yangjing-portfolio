@@ -4,12 +4,13 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { AboutPreview } from '@/components/home/about-preview';
 import { DualIdentityHero } from '@/components/home/dual-identity-hero';
 import { FeaturedWork } from '@/components/home/featured-work';
+import { IntroStory } from '@/components/home/intro-story';
 import { VisualArchive } from '@/components/home/visual-archive';
 
 afterEach(cleanup);
 
 describe('DualIdentityHero', () => {
-  it('gives both identities equal semantic weight and keeps missing portrait honest', () => {
+  it('gives both identities equal semantic weight in the interactive portrait scene', () => {
     const { container } = render(<DualIdentityHero locale="en" />);
 
     expect(screen.getByRole('heading', { level: 1, name: 'Yang Jing' })).toBeVisible();
@@ -20,12 +21,67 @@ describe('DualIdentityHero', () => {
       screen.getByRole('heading', { level: 2, name: 'AI-native Builder' }),
     ).toBeVisible();
 
-    const draftPortrait = container.querySelector(
-      '[data-publication-state="draft"][data-media="portrait"]',
+    const portraitScene = container.querySelector('[data-media="portrait"]');
+    expect(portraitScene).toBeInTheDocument();
+    expect(portraitScene).not.toHaveAttribute('data-publication-state', 'draft');
+    expect(
+      within(portraitScene as HTMLElement).getByRole('img', {
+        name: 'Yang Jing portrait frame',
+      }),
+    ).toHaveAttribute('src', expect.stringContaining('yang-jing-hero-placeholder.png'));
+
+    expect(screen.getByRole('separator', { name: 'Adjust identity reveal' })).toHaveAttribute(
+      'aria-valuenow',
+      '48',
     );
-    expect(draftPortrait).toBeInTheDocument();
-    expect(draftPortrait).toHaveTextContent('Portrait awaiting approved photography');
-    expect(within(draftPortrait as HTMLElement).queryByRole('img')).not.toBeInTheDocument();
+    expect(container.querySelector('[data-hero-code-canvas]')).toBeInTheDocument();
+    expect(container.querySelector('[data-designer-art="material-blueprint"]')).toBeInTheDocument();
+  });
+
+  it('keeps the role titles in English in the Chinese locale', () => {
+    render(<DualIdentityHero locale="zh" />);
+
+    expect(screen.getByRole('heading', { level: 2, name: 'Product Designer' })).toBeVisible();
+    expect(screen.getByRole('heading', { level: 2, name: 'AI-native Builder' })).toBeVisible();
+  });
+});
+
+describe('IntroStory', () => {
+  it('renders three naturally wrapping English statements with one emphasis each', () => {
+    const { container } = render(<IntroStory locale="en" />);
+    const scenes = container.querySelectorAll('[data-intro-scene]');
+
+    expect(scenes).toHaveLength(3);
+    expect(container.querySelectorAll('[data-intro-emphasis]')).toHaveLength(3);
+    expect(container.querySelectorAll('[data-intro-line]')).toHaveLength(0);
+    expect(scenes[0]).toHaveTextContent(
+      "Hi, I'm Yang Jing, a UX/UI designer with more than a decade of experience.",
+    );
+    expect(scenes[2]).toHaveTextContent(
+      /moving from concept and prototype to real experience/,
+    );
+  });
+
+  it('renders the approved three-stage Chinese introduction', () => {
+    const { container } = render(<IntroStory locale="zh" />);
+    const scenes = container.querySelectorAll('[data-intro-scene]');
+
+    expect(scenes[0]).toHaveTextContent(
+      '嗨，我是杨静，一名拥有十多年经验的 UX/UI 设计师。',
+    );
+    expect(scenes[1]).toHaveTextContent(/将复杂状态转化为清晰、可控的产品体验/);
+    expect(scenes[2]).toHaveTextContent(/从概念、原型走向真实体验/);
+  });
+
+  it('provides three progress controls and exposes the first scene as current', () => {
+    render(<IntroStory locale="en" />);
+
+    const controls = screen.getAllByRole('button', {
+      name: /Go to introduction statement/i,
+    });
+    expect(controls).toHaveLength(3);
+    expect(controls[0]).toHaveAttribute('aria-current', 'step');
+    expect(controls[1]).not.toHaveAttribute('aria-current');
   });
 });
 
