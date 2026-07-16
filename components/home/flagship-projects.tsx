@@ -1,0 +1,171 @@
+'use client';
+
+import { ExternalLink } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+
+import styles from './home.module.css';
+
+type FlagshipFocus = 'call-agent' | 'convo-ai';
+
+interface FlagshipCopy {
+  readonly kind: string;
+  readonly title: string;
+  readonly proposition: string;
+  readonly action: string;
+}
+
+interface ConvoAiCopy extends FlagshipCopy {
+  readonly temporaryNotice: string;
+}
+
+interface FlagshipProjectsProps {
+  readonly callAgent: {
+    readonly copy: FlagshipCopy;
+    readonly href: string;
+  };
+  readonly convoAi: {
+    readonly copy: ConvoAiCopy;
+    readonly href: string;
+  };
+}
+
+const secureLinkProps = {
+  target: '_blank',
+  rel: 'noopener noreferrer',
+} as const;
+
+export function FlagshipProjects({ callAgent, convoAi }: FlagshipProjectsProps) {
+  const [focus, setFocus] = useState<FlagshipFocus>('call-agent');
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const cancelReset = () => {
+    if (resetTimer.current) clearTimeout(resetTimer.current);
+    resetTimer.current = null;
+  };
+
+  const selectProject = (project: FlagshipFocus) => {
+    cancelReset();
+    setFocus(project);
+  };
+
+  const scheduleReset = () => {
+    cancelReset();
+    resetTimer.current = setTimeout(() => setFocus('call-agent'), 220);
+  };
+
+  useEffect(() => cancelReset, []);
+
+  return (
+    <div
+      className={styles.flagshipStage}
+      data-flagship-focus={focus}
+      onPointerLeave={scheduleReset}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) scheduleReset();
+      }}
+    >
+      <div className={styles.flagshipGrid}>
+        <article
+          className={styles.flagshipProject}
+          data-project-id="call-agent"
+          data-project-kind="deep-case"
+          onPointerEnter={() => selectProject('call-agent')}
+          onFocus={() => selectProject('call-agent')}
+        >
+          <div className={styles.flagshipCopy}>
+            <p className={styles.flagshipKind}>{callAgent.copy.kind}</p>
+            <a
+              className={styles.flagshipTitleLink}
+              href={callAgent.href}
+              aria-label={`View ${callAgent.copy.title} case study`}
+              {...secureLinkProps}
+            >
+              <h2>{callAgent.copy.title}</h2>
+            </a>
+            <p className={styles.flagshipSummary}>{callAgent.copy.proposition}</p>
+            <a
+              className={styles.flagshipCta}
+              href={callAgent.href}
+              aria-label={`${callAgent.copy.action} ${callAgent.copy.title}`}
+              {...secureLinkProps}
+            >
+              <span>{callAgent.copy.action}</span>
+              <ExternalLink aria-hidden="true" size={17} strokeWidth={1.75} />
+            </a>
+          </div>
+
+          <a
+            className={`${styles.flagshipMedia} ${styles.flagshipCallMedia}`}
+            href={callAgent.href}
+            aria-label="Open Call Agent project media"
+            data-media-radius="20"
+            {...secureLinkProps}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className={styles.flagshipCallImage}
+              src="/images/call-agent/ai-preview-live.png"
+              width={2934}
+              height={1466}
+              alt="Call Agent configuration next to a live call preview with runtime feedback"
+            />
+          </a>
+        </article>
+
+        <article
+          className={styles.flagshipProject}
+          data-project-id="convo-ai"
+          data-project-kind="live-launch"
+          data-publication-state="temporary-media"
+          onPointerEnter={() => selectProject('convo-ai')}
+          onFocus={() => selectProject('convo-ai')}
+        >
+          <div className={styles.flagshipCopy}>
+            <p className={styles.flagshipKind}>{convoAi.copy.kind}</p>
+            <a
+              className={styles.flagshipTitleLink}
+              href={convoAi.href}
+              aria-label={`View ${convoAi.copy.title} project`}
+              {...secureLinkProps}
+            >
+              <h2>{convoAi.copy.title}</h2>
+            </a>
+            <p className={styles.flagshipSummary}>{convoAi.copy.proposition}</p>
+            <a
+              className={styles.flagshipCta}
+              href={convoAi.href}
+              aria-label={`${convoAi.copy.action} ${convoAi.copy.title}`}
+              {...secureLinkProps}
+            >
+              <span>{convoAi.copy.action}</span>
+              <ExternalLink aria-hidden="true" size={17} strokeWidth={1.75} />
+            </a>
+          </div>
+
+          <a
+            className={`${styles.flagshipMedia} ${styles.flagshipConvoMedia}`}
+            href={convoAi.href}
+            aria-label="Open ConvoAI project media"
+            data-media-radius="20"
+            {...secureLinkProps}
+          >
+            {/* Temporary third-party placeholders; provenance is documented in evidence/convo-ai. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className={styles.flagshipConvoWeb}
+              src="/images/convo-ai/temporary-web.webp"
+              alt="Temporary ConvoAI web interface placeholder"
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className={styles.flagshipConvoPhone}
+              src="/images/convo-ai/temporary-app.webp"
+              alt="Temporary ConvoAI app interface placeholder"
+            />
+          </a>
+          <p className={styles.flagshipSource}>{convoAi.copy.temporaryNotice}</p>
+        </article>
+      </div>
+    </div>
+  );
+}

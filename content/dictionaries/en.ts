@@ -41,15 +41,18 @@ export interface Dictionary {
       portraitLabel: string;
     };
     projects: {
-      xuelang: ProjectCopy;
       callAgent: ProjectCopy;
-      meeting: ProjectCopy & {
-        stages: readonly ProjectStageCopy[];
+      convoAi: ProjectCopy & {
+        temporaryNotice: string;
       };
       aidx: ProjectCopy & {
         scope: readonly string[];
         captureCaption: string;
       };
+      meeting: ProjectCopy & {
+        stages: readonly ProjectStageCopy[];
+      };
+      xuelang: ProjectCopy;
       sttDemo: ProjectCopy;
     };
     archive: {
@@ -182,18 +185,8 @@ export const enDictionary = {
       portraitLabel: 'Yang Jing portrait frame',
     },
     projects: {
-      xuelang: {
-        kind: 'Deep case study',
-        title: 'Xuelang Commercial Experience Upgrade',
-        proposition:
-          'From a course-selling tool to a high-quality learning platform',
-        role: 'Lead UX Designer',
-        status: 'Experiment validated',
-        mediaLabel: 'Xuelang product panorama',
-        action: 'View case study',
-      },
       callAgent: {
-        kind: 'Deep case study',
+        kind: 'Enterprise system',
         title: 'Call Agent',
         proposition:
           'Make AI visible, testable, and controllable before release.',
@@ -201,6 +194,30 @@ export const enDictionary = {
         status: 'Limited beta',
         mediaLabel: 'Real product evidence',
         action: 'View case study',
+      },
+      convoAi: {
+        kind: 'Consumer experience',
+        title: 'ConvoAI',
+        proposition:
+          'AI conversation designed for the people directly experiencing it.',
+        role: 'Product Designer',
+        status: 'Public product, media replacement pending',
+        mediaLabel: 'Temporary web and app media',
+        action: 'View live product',
+        temporaryNotice:
+          'Temporary third-party imagery. Replace with owned project assets before publishing.',
+      },
+      aidx: {
+        kind: 'Live website',
+        title: 'AIDX',
+        proposition:
+          'A live AI safety platform website shaped through interface, structure, and motion.',
+        role: 'UI/UX design, information architecture, and motion',
+        status: 'Live website',
+        mediaLabel: 'Public website capture',
+        action: 'Visit live site',
+        scope: ['UI/UX Design', 'Information Architecture', 'Motion'],
+        captureCaption: 'Public website captured in July 2026.',
       },
       meeting: {
         kind: 'Interaction deep dive',
@@ -229,17 +246,15 @@ export const enDictionary = {
           },
         ],
       },
-      aidx: {
-        kind: 'Live website',
-        title: 'AIDX',
+      xuelang: {
+        kind: 'Deep case study',
+        title: 'Xuelang Commercial Experience Upgrade',
         proposition:
-          'A live AI safety platform website shaped through interface, structure, and motion.',
-        role: 'UI/UX design, information architecture, and motion',
-        status: 'Live website',
-        mediaLabel: 'Public website capture',
-        action: 'Visit live site',
-        scope: ['UI/UX Design', 'Information Architecture', 'Motion'],
-        captureCaption: 'Public website captured in July 2026.',
+          'From a course-selling tool to a high-quality learning platform',
+        role: 'Lead UX Designer',
+        status: 'Experiment validated',
+        mediaLabel: 'Xuelang product panorama',
+        action: 'View case study',
       },
       sttDemo: {
         kind: 'Build Lab',
@@ -249,7 +264,7 @@ export const enDictionary = {
         role: 'Product design and AI-assisted prototyping',
         status: 'Pinned static prototype',
         mediaLabel: 'Interactive static prototype',
-        action: 'Explore Build Lab',
+        action: 'Launch demo',
       },
     },
     archive: {

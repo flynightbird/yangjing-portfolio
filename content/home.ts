@@ -3,7 +3,8 @@ import { z } from 'zod';
 export type ProjectDestination =
   | 'internal-case'
   | 'external-live-site'
-  | 'lightbox-only';
+  | 'lightbox-only'
+  | 'interactive-demo';
 export type ProjectAvailability =
   | 'complete'
   | 'draft'
@@ -14,10 +15,11 @@ export type HomepageProjectKind =
   | 'build-lab';
 
 export type HomepageProjectId =
-  | 'xuelang'
   | 'call-agent'
-  | 'meeting'
+  | 'convo-ai'
   | 'aidx'
+  | 'meeting'
+  | 'xuelang'
   | 'stt-demo';
 
 export interface HomepageProject {
@@ -30,13 +32,6 @@ export interface HomepageProject {
 
 export const homepageProjects = [
   {
-    id: 'xuelang',
-    kind: 'deep-case',
-    destination: 'internal-case',
-    availability: 'complete',
-    href: 'work/xuelang/',
-  },
-  {
     id: 'call-agent',
     kind: 'deep-case',
     destination: 'internal-case',
@@ -44,11 +39,11 @@ export const homepageProjects = [
     href: 'work/call-agent/',
   },
   {
-    id: 'meeting',
-    kind: 'deep-case',
-    destination: 'internal-case',
-    availability: 'draft',
-    href: 'work/meeting/',
+    id: 'convo-ai',
+    kind: 'live-launch',
+    destination: 'external-live-site',
+    availability: 'awaiting-assets',
+    href: 'https://conversational-ai.shengwang.cn/',
   },
   {
     id: 'aidx',
@@ -58,11 +53,25 @@ export const homepageProjects = [
     href: 'https://aidxtech.com/',
   },
   {
-    id: 'stt-demo',
-    kind: 'build-lab',
+    id: 'meeting',
+    kind: 'deep-case',
+    destination: 'internal-case',
+    availability: 'draft',
+    href: 'work/meeting/',
+  },
+  {
+    id: 'xuelang',
+    kind: 'deep-case',
     destination: 'internal-case',
     availability: 'complete',
-    href: 'build/stt-demo/',
+    href: 'work/xuelang/',
+  },
+  {
+    id: 'stt-demo',
+    kind: 'build-lab',
+    destination: 'interactive-demo',
+    availability: 'complete',
+    href: '/demos/stt-demo/index.html',
   },
 ] as const satisfies readonly HomepageProject[];
 

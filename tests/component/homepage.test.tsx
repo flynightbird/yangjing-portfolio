@@ -72,20 +72,51 @@ describe('IntroStory', () => {
 });
 
 describe('FeaturedWork', () => {
-  it('renders the five approved project treatments in order', () => {
+  it('renders the six approved project treatments in order', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const projectIds = Array.from(
       container.querySelectorAll<HTMLElement>('[data-project-id]'),
     ).map((project) => project.dataset.projectId);
 
     expect(projectIds).toEqual([
-      'xuelang',
       'call-agent',
-      'meeting',
+      'convo-ai',
       'aidx',
+      'meeting',
+      'xuelang',
       'stt-demo',
     ]);
     expect(container.querySelectorAll('[data-project-kind="build-lab"]')).toHaveLength(1);
+  });
+
+  it('provides three independent secure links for each flagship project', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+
+    for (const id of ['call-agent', 'convo-ai']) {
+      const project = container.querySelector<HTMLElement>(`[data-project-id="${id}"]`);
+      const links = within(project as HTMLElement).getAllByRole('link');
+
+      expect(links).toHaveLength(3);
+      for (const link of links) {
+        expect(link).toHaveAttribute('target', '_blank');
+        expect(link.getAttribute('rel')).toContain('noopener');
+        expect(link.getAttribute('rel')).toContain('noreferrer');
+      }
+    }
+  });
+
+  it('defaults to Call Agent focus and marks ConvoAI media as temporary', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+
+    expect(container.querySelector('[data-flagship-focus]')).toHaveAttribute(
+      'data-flagship-focus',
+      'call-agent',
+    );
+    expect(container.querySelector('[data-project-id="convo-ai"]')).toHaveAttribute(
+      'data-publication-state',
+      'temporary-media',
+    );
+    expect(container.querySelectorAll('[data-media-radius="20"]')).toHaveLength(2);
   });
 
   it('uses the complete Xuelang route and keeps Meeting draft', () => {
@@ -111,6 +142,15 @@ describe('FeaturedWork', () => {
       expect(link?.getAttribute('rel')).toContain('noopener');
       expect(link?.getAttribute('rel')).toContain('noreferrer');
     }
+  });
+
+  it('opens STT Demo as the pinned interactive artifact without an intermediate case page', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+    const stt = container.querySelector<HTMLElement>('[data-project-id="stt-demo"]');
+    const link = within(stt as HTMLElement).getByRole('link');
+
+    expect(link).toHaveAttribute('href', '/demos/stt-demo/index.html');
+    expect(link).toHaveAttribute('target', '_blank');
   });
 
   it('keeps AIDX external-only with a safe explicit destination', () => {
@@ -156,6 +196,21 @@ describe('FeaturedWork', () => {
       'src',
       '/demos/stt-demo/poster.png',
     );
+  });
+
+  it('labels both ConvoAI images as temporary placeholders', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+    const convoAi = container.querySelector<HTMLElement>('[data-project-id="convo-ai"]');
+
+    expect(
+      within(convoAi as HTMLElement).getByRole('img', { name: /temporary ConvoAI web/i }),
+    ).toHaveAttribute('src', '/images/convo-ai/temporary-web.webp');
+    expect(
+      within(convoAi as HTMLElement).getByRole('img', { name: /temporary ConvoAI app/i }),
+    ).toHaveAttribute('src', '/images/convo-ai/temporary-app.webp');
+    expect(
+      within(convoAi as HTMLElement).getByText(/replace with owned project assets/i),
+    ).toBeVisible();
   });
 });
 

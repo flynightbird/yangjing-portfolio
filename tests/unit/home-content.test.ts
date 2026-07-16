@@ -10,22 +10,29 @@ import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
 
 describe('homepage project contract', () => {
-  it('keeps the approved five-project presentation order', () => {
+  it('keeps the approved six-project presentation order', () => {
     expect(homepageProjects.map((project) => project.id)).toEqual([
-      'xuelang',
       'call-agent',
-      'meeting',
+      'convo-ai',
       'aidx',
+      'meeting',
+      'xuelang',
       'stt-demo',
     ]);
   });
 
-  it('keeps AIDX external-only and the STT Demo as the sole Build Lab entry', () => {
+  it('keeps ConvoAI and AIDX external while STT opens the pinned demo directly', () => {
+    const convoAi = homepageProjects.find((project) => project.id === 'convo-ai');
     const aidx = homepageProjects.find((project) => project.id === 'aidx');
     const buildEntries = homepageProjects.filter(
       (project) => project.kind === 'build-lab',
     );
 
+    expect(convoAi).toMatchObject({
+      destination: 'external-live-site',
+      availability: 'awaiting-assets',
+      href: 'https://conversational-ai.shengwang.cn/',
+    });
     expect(aidx).toMatchObject({
       destination: 'external-live-site',
       availability: 'complete',
@@ -34,7 +41,8 @@ describe('homepage project contract', () => {
     expect(buildEntries).toHaveLength(1);
     expect(buildEntries[0]).toMatchObject({
       id: 'stt-demo',
-      destination: 'internal-case',
+      destination: 'interactive-demo',
+      href: '/demos/stt-demo/index.html',
     });
   });
 
@@ -122,10 +130,11 @@ describe('homepage localization', () => {
         portraitDraft: expect.any(String),
       });
       expect(Object.keys(dictionary.home.projects)).toEqual([
-        'xuelang',
         'callAgent',
-        'meeting',
+        'convoAi',
         'aidx',
+        'meeting',
+        'xuelang',
         'sttDemo',
       ]);
       expect(dictionary.home.archive).toMatchObject({

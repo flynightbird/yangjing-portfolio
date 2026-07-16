@@ -1,11 +1,14 @@
 import { BuildLabPreview } from '@/components/home/build-lab-preview';
 import { FeaturedProject } from '@/components/home/featured-project';
+import { FlagshipProjects } from '@/components/home/flagship-projects';
 import { LiveWebsiteProject } from '@/components/home/live-website-project';
 import { MeetingPreview } from '@/components/home/meeting-preview';
 import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
 import { homepageProjects } from '@/content/home';
 import type { Locale } from '@/content/types';
+
+import styles from './home.module.css';
 
 interface FeaturedWorkProps {
   readonly locale: Locale;
@@ -14,16 +17,35 @@ interface FeaturedWorkProps {
 export function FeaturedWork({ locale }: FeaturedWorkProps) {
   const copy = locale === 'zh' ? zhDictionary.home.projects : enDictionary.home.projects;
   const localeRoot = `/${locale}/`;
-  const [xuelang, callAgent, meeting, aidx, sttDemo] = homepageProjects;
+  const [callAgent, convoAi, aidx, meeting, xuelang, sttDemo] = homepageProjects;
 
   return (
-    <section id="work" aria-label={locale === 'zh' ? '精选作品' : 'Selected work'}>
+    <section
+      id="work"
+      className={styles.featuredWork}
+      aria-label={locale === 'zh' ? '精选作品' : 'Selected work'}
+    >
+      <FlagshipProjects
+        callAgent={{
+          copy: copy.callAgent,
+          href: `${localeRoot}${callAgent.href}`,
+        }}
+        convoAi={{
+          copy: copy.convoAi,
+          href: convoAi.href,
+        }}
+      />
+      <LiveWebsiteProject copy={copy.aidx} href={aidx.href} />
+      <MeetingPreview
+        copy={copy.meeting}
+        href={`${localeRoot}${meeting.href}`}
+      />
       <FeaturedProject
         id="xuelang"
         copy={copy.xuelang}
         href={`${localeRoot}${xuelang.href}`}
         availability={xuelang.availability}
-        order="01"
+        order="05"
         variant="flagship"
         media={{
           src: '/images/xuelang/hero-panorama.webp',
@@ -35,28 +57,9 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
               : 'Xuelang product panorama showing key discovery, purchase, and learning interfaces',
         }}
       />
-      <FeaturedProject
-        id="call-agent"
-        copy={copy.callAgent}
-        href={`${localeRoot}${callAgent.href}`}
-        availability={callAgent.availability}
-        order="02"
-        variant="evidence"
-        media={{
-          src: '/images/call-agent/ai-preview-live.png',
-          width: 2934,
-          height: 1466,
-          alt: 'Call Agent configuration next to a live call preview with runtime feedback',
-        }}
-      />
-      <MeetingPreview
-        copy={copy.meeting}
-        href={`${localeRoot}${meeting.href}`}
-      />
-      <LiveWebsiteProject copy={copy.aidx} href={aidx.href} />
       <BuildLabPreview
         copy={copy.sttDemo}
-        href={`${localeRoot}${sttDemo.href}`}
+        href={sttDemo.href}
       />
     </section>
   );
