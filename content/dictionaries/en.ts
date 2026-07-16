@@ -56,10 +56,17 @@ export interface Dictionary {
       title: string;
       description: string;
       draftSlot: string;
+      placeholderLabel: string;
+      carouselLabel: string;
+      previousProject: string;
+      nextProject: string;
+      positionLabel: string;
+      projectCount: string;
       openImage: string;
       imageDialog: string;
       closeImage: string;
       visitProject: string;
+      skillsLabel: string;
     };
     about: {
       title: string;
@@ -255,12 +262,19 @@ export const enDictionary = {
     archive: {
       title: 'Visual Archive',
       description:
-        'A lighter image-led view of additional work. Approved project media will replace these development slots.',
+        'A lighter image-led view of selected product, brand, and character work.',
       draftSlot: 'Draft media slot',
+      placeholderLabel: 'Visual placeholder',
+      carouselLabel: 'Visual Archive projects',
+      previousProject: 'Previous archive project',
+      nextProject: 'Next archive project',
+      positionLabel: 'Archive position',
+      projectCount: 'projects',
       openImage: 'Open project image',
       imageDialog: 'Project image detail',
       closeImage: 'Close image',
       visitProject: 'Visit public project',
+      skillsLabel: 'Skills',
     },
     about: {
       title: 'Across scale, systems, and working prototypes',

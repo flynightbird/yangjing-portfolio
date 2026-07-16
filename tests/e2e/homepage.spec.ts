@@ -1,6 +1,23 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('portfolio homepage framework', () => {
+  test('uses the dark theme by default without exposing a theme switcher', async ({
+    page,
+  }) => {
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const theme = await page.evaluate(() => {
+      const body = getComputedStyle(document.body);
+      return { background: body.backgroundColor, color: body.color };
+    });
+
+    expect(theme).toEqual({
+      background: 'rgb(17, 19, 17)',
+      color: 'rgb(242, 244, 240)',
+    });
+    await expect(page.getByRole('button', { name: /theme|主题/i })).toHaveCount(0);
+  });
+
   for (const locale of ['en', 'zh'] as const) {
     test(`${locale} keeps the approved hierarchy and destinations`, async ({ page }) => {
       await page.goto(`/${locale}/`, { waitUntil: 'networkidle' });
@@ -33,7 +50,9 @@ test.describe('portfolio homepage framework', () => {
       ]);
 
       await expect(page.locator('[data-project-kind="build-lab"]')).toHaveCount(1);
-      await expect(page.locator('[data-archive-slot]')).toHaveCount(8);
+      await expect(page.locator('[data-archive-card]')).toHaveCount(4);
+      await expect(page.locator('[data-archive-slot]')).toHaveCount(0);
+      await expect(page.locator('[data-cover-variant]')).toHaveCount(4);
       await expect(page.locator('[data-project-id="xuelang"] a')).toHaveAttribute(
         'href',
         `/${locale}/work/xuelang/`,
@@ -102,28 +121,117 @@ test.describe('portfolio homepage framework', () => {
   test('loads every real homepage image and has no horizontal overflow', async ({ page }) => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
-    const images = page.locator('main img');
-    await expect(images).toHaveCount(4);
+    const images = page.locator('main img:not([data-placeholder-media])');
+    await expect(images).toHaveCount(8);
     for (let index = 0; index < await images.count(); index += 1) {
       const image = images.nth(index);
       await image.scrollIntoViewIfNeeded();
-      const dimensions = await image.evaluate((node) => {
-        const rendered = node as HTMLImageElement;
-        return {
-          complete: rendered.complete,
-          naturalWidth: rendered.naturalWidth,
-          naturalHeight: rendered.naturalHeight,
-        };
-      });
-      expect(dimensions.complete).toBe(true);
-      expect(dimensions.naturalWidth).toBeGreaterThan(0);
-      expect(dimensions.naturalHeight).toBeGreaterThan(0);
+      await expect
+        .poll(() =>
+          image.evaluate((node) => {
+            const rendered = node as HTMLImageElement;
+            return (
+              rendered.complete &&
+              rendered.naturalWidth > 0 &&
+              rendered.naturalHeight > 0
+            );
+          }),
+        )
+        .toBe(true);
     }
 
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );
     expect(overflow).toBeLessThanOrEqual(1);
+  });
+
+  test('keeps the Visual Archive compact while revealing the next project', async ({
+    page,
+  }) => {
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+    const viewport = page.viewportSize();
+    if (!viewport) throw new Error('Missing viewport');
+
+    const archive = page.locator('[data-archive-carousel]');
+    const cards = archive.locator('[data-archive-card]');
+    const scroller = archive.locator('[data-archive-scroller]');
+    await archive.scrollIntoViewIfNeeded();
+
+    await expect(cards).toHaveCount(4);
+    const [archiveBox, firstBox, secondBox] = await Promise.all([
+      archive.boundingBox(),
+      cards.nth(0).boundingBox(),
+      cards.nth(1).boundingBox(),
+    ]);
+    expect(archiveBox).not.toBeNull();
+    expect(firstBox).not.toBeNull();
+    expect(secondBox).not.toBeNull();
+    expect(archiveBox?.height ?? Number.POSITIVE_INFINITY).toBeLessThan(
+      viewport.height * 1.15,
+    );
+    expect(secondBox?.x ?? viewport.width).toBeLessThan(viewport.width);
+    expect(
+      await scroller.evaluate((element) => getComputedStyle(element).scrollSnapType),
+    ).toContain('x');
+  });
+
+  test('moves the Visual Archive with explicit controls and reports position', async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== 'desktop',
+      'Carousel control behavior needs one viewport; responsive coverage runs separately.',
+    );
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const archive = page.locator('[data-archive-carousel]');
+    const scroller = archive.locator('[data-archive-scroller]');
+    const previous = archive.getByRole('button', {
+      name: 'Previous archive project',
+    });
+    const next = archive.getByRole('button', { name: 'Next archive project' });
+    await archive.scrollIntoViewIfNeeded();
+
+    await expect(previous).toBeDisabled();
+    await expect(next).toBeEnabled();
+    await expect(archive.locator('[data-archive-position]')).toContainText('01 / 04');
+    const before = await scroller.evaluate((element) => element.scrollLeft);
+
+    await next.click();
+    await expect
+      .poll(() => scroller.evaluate((element) => element.scrollLeft))
+      .toBeGreaterThan(before + 20);
+    await expect(archive.locator('[data-archive-position]')).toContainText('02 / 04');
+
+    await previous.click();
+    await expect(previous).toBeDisabled();
+    await expect(archive.locator('[data-archive-position]')).toContainText('01 / 04');
+  });
+
+  test('keeps the final Visual Archive card active at the end of the track', async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== 'desktop',
+      'Carousel end-state behavior needs one viewport.',
+    );
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const archive = page.locator('[data-archive-carousel]');
+    const next = archive.getByRole('button', { name: 'Next archive project' });
+    await archive.scrollIntoViewIfNeeded();
+
+    await next.click();
+    await next.click();
+    await next.click();
+
+    await expect(archive.locator('[data-archive-position]')).toContainText('04 / 04');
+    await expect(archive.locator('[data-archive-card]').last()).toHaveAttribute(
+      'data-active',
+      'true',
+    );
+    await expect(next).toBeDisabled();
   });
 
   test('keeps reduced-motion output static and readable', async ({ page }) => {

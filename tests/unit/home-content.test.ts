@@ -2,8 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   archiveEntrySchema,
-  archiveLayoutSpans,
-  developmentArchiveSlots,
+  archiveProjects,
   homepageProjects,
 } from '@/content/home';
 import { enDictionary } from '@/content/dictionaries/en';
@@ -52,40 +51,62 @@ describe('homepage project contract', () => {
 });
 
 describe('Visual Archive contract', () => {
-  it('reserves eight neutral slots with a gapless twelve-column rhythm', () => {
-    expect(developmentArchiveSlots).toHaveLength(8);
-    expect(archiveLayoutSpans).toEqual([7, 5, 4, 8, 8, 4, 5, 7]);
+  it('publishes the four approved archive projects in order', () => {
+    expect(archiveProjects.map((project) => project.key)).toEqual([
+      'alibaba-meipingmeiwu',
+      'bytedance-open-language',
+      'bytedance-doudou-fox',
+      'tongcheng-mr-chong',
+    ]);
+    expect(archiveProjects.map((project) => project.coverVariant)).toEqual([
+      'alibaba',
+      'open-language',
+      'doudou-fox',
+      'mr-chong',
+    ]);
 
-    for (const [index, slot] of developmentArchiveSlots.entries()) {
-      expect(slot).toEqual({
-        key: `archive-slot-${index + 1}`,
-        kind: 'draft-slot',
-        layoutIndex: index,
-      });
-      expect(slot).not.toHaveProperty('name');
-      expect(slot).not.toHaveProperty('role');
-      expect(slot).not.toHaveProperty('url');
-      expect(slot).not.toHaveProperty('image');
+    for (const project of archiveProjects) {
+      expect(project.kind).toBe('real-entry');
+      expect(project.description.en).toBeTruthy();
+      expect(project.description.zh).toBeTruthy();
+      expect(project.skills.length).toBeGreaterThan(0);
+      expect(project.image.src).toMatch(/^\/images\/archive\//);
     }
   });
 
-  it('requires intrinsic media and meaningful text for real entries', () => {
+  it('requires complete project metadata and a known cover variant for real entries', () => {
     const valid = {
       key: 'real-project',
       kind: 'real-entry',
-      name: { en: 'Project name', zh: '项目名称' },
-      category: { en: 'Product design', zh: '产品设计' },
-      role: { en: 'Product Designer', zh: '产品设计师' },
-      image: {
-        src: '/images/archive/real-project.avif',
-        width: 1600,
-        height: 1200,
-        alt: {
-          en: 'A real product interface showing the approved project state',
-          zh: '展示已确认项目状态的真实产品界面',
+      company: { en: 'Company', zh: '公司' },
+      period: {
+        start: {
+          dateTime: '2021-09',
+          label: { en: '2021.09', zh: '2021.09' },
+        },
+        end: {
+          dateTime: '2021-10',
+          label: { en: '10', zh: '10' },
         },
       },
-      layoutIndex: 0,
+      title: {
+        primary: { en: 'Project', zh: '项目' },
+        secondary: { en: 'Experience', zh: '体验' },
+        eyebrow: { en: 'PRODUCT', zh: 'PRODUCT' },
+        supporting: { en: 'App and website', zh: 'APP 与官网' },
+      },
+      description: { en: 'Project description.', zh: '项目描述。' },
+      skills: ['UX', 'UI'],
+      coverVariant: 'doudou-fox',
+      image: {
+        src: '/images/archive/real-project.jpg',
+        width: 1600,
+        height: 900,
+        alt: {
+          en: 'Project cover',
+          zh: '项目封面',
+        },
+      },
     } as const;
 
     expect(archiveEntrySchema.parse(valid)).toEqual(valid);
@@ -105,6 +126,22 @@ describe('Visual Archive contract', () => {
       archiveEntrySchema.parse({
         ...valid,
         image: { ...valid.image, src: 'https://example.com/fake.png' },
+      }),
+    ).toThrow();
+    expect(() =>
+      archiveEntrySchema.parse({ ...valid, description: { en: '', zh: '' } }),
+    ).toThrow();
+    expect(() => archiveEntrySchema.parse({ ...valid, skills: [] })).toThrow();
+    expect(() =>
+      archiveEntrySchema.parse({ ...valid, coverVariant: 'unknown' }),
+    ).toThrow();
+    expect(() =>
+      archiveEntrySchema.parse({
+        ...valid,
+        period: {
+          ...valid.period,
+          start: { ...valid.period.start, dateTime: 'September 2021' },
+        },
       }),
     ).toThrow();
   });

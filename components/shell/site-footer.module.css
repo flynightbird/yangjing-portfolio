@@ -2,9 +2,9 @@
   display: grid;
   gap: var(--space-5);
   padding: var(--space-7) var(--content-gutter);
-  border-top: 1px solid var(--color-paper-border);
-  background: var(--color-carbon);
-  color: var(--color-paper);
+  border-top: 1px solid var(--theme-border);
+  background: #0B0D0B;
+  color: var(--theme-ink);
 }
 
 .root ul {
@@ -23,9 +23,9 @@
   min-height: 44px;
   align-items: center;
   gap: var(--space-2);
-  color: var(--color-paper);
+  color: var(--theme-ink);
   cursor: pointer;
-  text-decoration-color: var(--color-paper-border);
+  text-decoration-color: var(--theme-border-strong);
 }
 
 .root a:hover,
@@ -45,7 +45,7 @@
 
 .root p {
   margin: 0;
-  color: var(--color-paper-muted);
+  color: var(--theme-muted);
   font-size: var(--font-size-small);
 }
 

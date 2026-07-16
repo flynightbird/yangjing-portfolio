@@ -1,4 +1,7 @@
-import { ExternalLink } from 'lucide-react';
+'use client';
+
+import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
+import { type CSSProperties, useRef, useState } from 'react';
 
 import { Lightbox } from '@/components/media/lightbox';
 import { ActionLink } from '@/components/ui/action-link';
@@ -6,7 +9,7 @@ import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
 import {
   archiveEntrySchema,
-  developmentArchiveSlots,
+  archiveProjects,
   type ArchiveEntry,
 } from '@/content/home';
 import type { Locale } from '@/content/types';
@@ -18,89 +21,290 @@ interface VisualArchiveProps {
   readonly entries?: readonly ArchiveEntry[];
 }
 
-const spanClasses = [
-  styles.archiveSpan7,
-  styles.archiveSpan5,
-  styles.archiveSpan4,
-  styles.archiveSpan8,
-  styles.archiveSpan8,
-  styles.archiveSpan4,
-  styles.archiveSpan5,
-  styles.archiveSpan7,
+const cardClasses = [
+  styles.archiveWide,
+  styles.archivePortrait,
+  styles.archiveStandard,
+  styles.archiveWide,
+  styles.archiveStandard,
+  styles.archivePortrait,
+  styles.archiveWide,
+  styles.archiveStandard,
 ];
+
+const draftPreviewMedia = [
+  { src: '/images/xuelang/hero-panorama.webp', width: 3000, height: 1500 },
+  { src: '/images/call-agent/ai-preview-live.png', width: 2934, height: 1466 },
+  { src: '/images/xuelang/course-detail.webp', width: 1920, height: 1080 },
+  { src: '/images/aidx/home-2026-07.png', width: 1440, height: 900 },
+  { src: '/images/call-agent/outbound-task-creation.png', width: 2938, height: 1474 },
+  { src: '/images/xuelang/learning-interaction.webp', width: 1920, height: 1080 },
+  { src: '/images/call-agent/product-switcher.png', width: 560, height: 420 },
+  { src: '/images/xuelang/detail-after.webp', width: 1920, height: 1080 },
+] as const;
+
+function formatIndex(index: number) {
+  return String(index + 1).padStart(2, '0');
+}
 
 export function VisualArchive({
   locale,
-  entries = developmentArchiveSlots,
+  entries = archiveProjects,
 }: VisualArchiveProps) {
   const copy = locale === 'zh' ? zhDictionary.home.archive : enDictionary.home.archive;
   const parsedEntries = entries.map((entry) => archiveEntrySchema.parse(entry));
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Array<HTMLElement | null>>([]);
+  const programmaticIndexRef = useRef<number | null>(null);
+  const total = parsedEntries.length;
+
+  const getTrackInset = (card: HTMLElement) => {
+    const track = card.parentElement;
+    if (!track) return 0;
+    return Number.parseFloat(getComputedStyle(track).paddingInlineStart) || 0;
+  };
+
+  const scrollToIndex = (nextIndex: number) => {
+    const clampedIndex = Math.max(0, Math.min(nextIndex, total - 1));
+    const scroller = scrollerRef.current;
+    const card = cardRefs.current[clampedIndex];
+    if (!scroller || !card) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    programmaticIndexRef.current = clampedIndex;
+    scroller.scrollTo({
+      left: card.offsetLeft - getTrackInset(card),
+      behavior: reduceMotion ? 'auto' : 'smooth',
+    });
+    setActiveIndex(clampedIndex);
+  };
+
+  const updateActiveIndex = () => {
+    const scroller = scrollerRef.current;
+    const firstCard = cardRefs.current[0];
+    if (!scroller || !firstCard) return;
+
+    const maxScrollLeft = scroller.scrollWidth - scroller.clientWidth;
+    const programmaticIndex = programmaticIndexRef.current;
+    if (programmaticIndex !== null) {
+      const targetCard = cardRefs.current[programmaticIndex];
+      if (!targetCard) return;
+
+      const inset = getTrackInset(firstCard);
+      const targetLeft = Math.min(targetCard.offsetLeft - inset, maxScrollLeft);
+      if (Math.abs(targetLeft - scroller.scrollLeft) <= 2) {
+        programmaticIndexRef.current = null;
+        setActiveIndex(programmaticIndex);
+      }
+      return;
+    }
+
+    if (maxScrollLeft > 0 && maxScrollLeft - scroller.scrollLeft <= 2) {
+      setActiveIndex(total - 1);
+      return;
+    }
+
+    const inset = getTrackInset(firstCard);
+    let closestIndex = 0;
+    let closestDistance = Number.POSITIVE_INFINITY;
+    cardRefs.current.forEach((card, index) => {
+      if (!card) return;
+      const distance = Math.abs(card.offsetLeft - inset - scroller.scrollLeft);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    });
+    setActiveIndex(closestIndex);
+  };
+
+  const progressStyle = {
+    '--archive-progress': (activeIndex + 1) / total,
+  } as CSSProperties;
 
   return (
-    <section className={styles.archive} aria-labelledby="archive-title">
-      <div className={styles.archiveIntro}>
-        <h2 id="archive-title">{copy.title}</h2>
-        <p>{copy.description}</p>
-      </div>
-      <div className={styles.archiveGrid}>
-        {parsedEntries.map((entry) => {
-          const spanClass = spanClasses[entry.layoutIndex];
-          if (entry.kind === 'draft-slot') {
-            return (
-              <div
-                key={entry.key}
-                className={`${styles.archiveItem} ${spanClass}`}
-                data-publication-state="draft"
-                data-archive-slot={entry.layoutIndex + 1}
-              >
-                <div className={styles.archiveDraft} role="status">
-                  <span aria-hidden="true">
-                    {String(entry.layoutIndex + 1).padStart(2, '0')}
-                  </span>
-                  <p>{copy.draftSlot}</p>
-                </div>
-              </div>
-            );
-          }
-
-          const name = entry.name[locale];
-          const category = entry.category[locale];
-          const role = entry.role[locale];
-          const alt = entry.image.alt[locale];
-          return (
-            <article
-              key={entry.key}
-              className={`${styles.archiveItem} ${spanClass}`}
+    <section
+      className={styles.archive}
+      aria-labelledby="archive-title"
+      data-archive-carousel
+      style={progressStyle}
+    >
+      <div className={styles.archiveHeader}>
+        <div className={styles.archiveIntro}>
+          <h2 id="archive-title">{copy.title}</h2>
+          <p>{copy.description}</p>
+        </div>
+        <div className={styles.archiveNavigation}>
+          <span className={styles.archiveCount}>
+            {formatIndex(total - 1)} {copy.projectCount}
+          </span>
+          <div className={styles.archiveControls}>
+            <button
+              type="button"
+              aria-label={copy.previousProject}
+              disabled={activeIndex === 0}
+              onClick={() =>
+                scrollToIndex((programmaticIndexRef.current ?? activeIndex) - 1)
+              }
             >
-              <Lightbox
-                src={entry.image.src}
-                width={entry.image.width}
-                height={entry.image.height}
-                alt={alt}
-                triggerLabel={`${copy.openImage}: ${name}`}
-                dialogLabel={`${copy.imageDialog}: ${name}`}
-                closeLabel={copy.closeImage}
-              />
-              <div className={styles.archiveMeta}>
-                <h3>{name}</h3>
-                <p>{category}</p>
-                <p>{role}</p>
-                {entry.year ? <time>{entry.year}</time> : null}
-                {entry.externalUrl ? (
-                  <ActionLink
-                    href={entry.externalUrl}
-                    external
-                    externalLabel="(opens in a new tab)"
-                    variant="text"
-                    icon={ExternalLink}
-                  >
-                    {copy.visitProject}
-                  </ActionLink>
-                ) : null}
-              </div>
-            </article>
-          );
-        })}
+              <ArrowLeft aria-hidden="true" size={18} />
+            </button>
+            <div className={styles.archiveProgress} aria-hidden="true">
+              <span />
+            </div>
+            <button
+              type="button"
+              aria-label={copy.nextProject}
+              disabled={activeIndex === total - 1}
+              onClick={() =>
+                scrollToIndex((programmaticIndexRef.current ?? activeIndex) + 1)
+              }
+            >
+              <ArrowRight aria-hidden="true" size={18} />
+            </button>
+          </div>
+          <output
+            className={styles.archivePosition}
+            aria-live="polite"
+            aria-label={copy.positionLabel}
+            data-archive-position
+          >
+            {formatIndex(activeIndex)} / {formatIndex(total - 1)}
+          </output>
+        </div>
+      </div>
+      <div
+        ref={scrollerRef}
+        className={styles.archiveViewport}
+        role="region"
+        aria-label={copy.carouselLabel}
+        data-archive-scroller
+        onScroll={updateActiveIndex}
+      >
+        <div className={styles.archiveTrack}>
+          {parsedEntries.map((entry, index) => {
+            if (entry.kind === 'draft-slot') {
+              const cardClass = cardClasses[entry.layoutIndex];
+              const media = draftPreviewMedia[entry.layoutIndex];
+              return (
+                <article
+                  key={entry.key}
+                  ref={(node) => {
+                    cardRefs.current[index] = node;
+                  }}
+                  className={`${styles.archiveItem} ${cardClass}`}
+                  data-publication-state="draft"
+                  data-archive-slot={entry.layoutIndex + 1}
+                  data-archive-card
+                  data-active={activeIndex === index ? 'true' : 'false'}
+                >
+                  <figure className={styles.archiveDraft}>
+                    <div className={styles.archiveStage}>
+                      {/* Development-only composition reference, blocked by publication validation. */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={media.src}
+                        width={media.width}
+                        height={media.height}
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        data-placeholder-media
+                      />
+                      <span className={styles.archivePlaceholderLabel}>
+                        {copy.placeholderLabel}
+                      </span>
+                    </div>
+                    <figcaption>
+                      <strong>{formatIndex(entry.layoutIndex)}</strong>
+                      <p>{copy.draftSlot}</p>
+                    </figcaption>
+                  </figure>
+                </article>
+              );
+            }
+
+            const company = entry.company[locale];
+            const primaryTitle = entry.title.primary[locale];
+            const secondaryTitle = entry.title.secondary?.[locale];
+            const eyebrow = entry.title.eyebrow?.[locale];
+            const supporting = entry.title.supporting?.[locale];
+            const description = entry.description[locale];
+            const start = entry.period.start;
+            const end = entry.period.end;
+            const alt = entry.image.alt[locale];
+            return (
+              <article
+                key={entry.key}
+                ref={(node) => {
+                  cardRefs.current[index] = node;
+                }}
+                className={`${styles.archiveItem} ${styles.archiveReal}`}
+                data-archive-card
+                data-cover-variant={entry.coverVariant}
+                data-active={activeIndex === index ? 'true' : 'false'}
+              >
+                <div className={styles.archiveStage}>
+                  <Lightbox
+                    src={entry.image.src}
+                    width={entry.image.width}
+                    height={entry.image.height}
+                    alt={alt}
+                    triggerLabel={`${copy.openImage}: ${primaryTitle}`}
+                    dialogLabel={`${copy.imageDialog}: ${primaryTitle}`}
+                    closeLabel={copy.closeImage}
+                  />
+                  <div className={styles.archiveCoverIndex}>
+                    <span>{company}</span>
+                    <span aria-hidden="true"> / </span>
+                    <span className={styles.archivePeriod} data-archive-period>
+                      <time dateTime={start.dateTime}>{start.label[locale]}</time>
+                      {end ? (
+                        <>
+                          <span aria-hidden="true">–</span>
+                          <time dateTime={end.dateTime}>{end.label[locale]}</time>
+                        </>
+                      ) : null}
+                    </span>
+                  </div>
+                  <div className={styles.archiveCoverTitle}>
+                    {eyebrow ? <span className={styles.archiveEyebrow}>{eyebrow}</span> : null}
+                    <h3>
+                      <span>{primaryTitle}</span>
+                      {secondaryTitle ? <span>{secondaryTitle}</span> : null}
+                    </h3>
+                    {supporting ? (
+                      <p className={styles.archiveSupporting}>{supporting}</p>
+                    ) : null}
+                  </div>
+                </div>
+                <div className={styles.archiveFacts}>
+                  <p className={styles.archiveDescription}>{description}</p>
+                  <div className={styles.archiveSkills} data-archive-skills>
+                    <span>{copy.skillsLabel}</span>
+                    <ul>
+                      {entry.skills.map((skill) => (
+                        <li key={skill}>{skill}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  {entry.externalUrl ? (
+                    <ActionLink
+                      href={entry.externalUrl}
+                      external
+                      externalLabel="(opens in a new tab)"
+                      variant="text"
+                      icon={ExternalLink}
+                    >
+                      {copy.visitProject}
+                    </ActionLink>
+                  ) : null}
+                </div>
+              </article>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

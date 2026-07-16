@@ -7,8 +7,10 @@
   align-items: center;
   gap: var(--space-2);
   padding-inline: var(--content-gutter);
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-paper);
+  border-bottom: 1px solid var(--theme-border);
+  background: rgba(17, 19, 17, 0.94);
+  color: var(--theme-ink);
+  backdrop-filter: blur(14px);
 }
 
 .home {
@@ -17,7 +19,7 @@
   min-height: 44px;
   align-items: center;
   justify-self: start;
-  color: var(--color-carbon);
+  color: var(--theme-ink);
   font-family: var(--font-display);
   font-size: 1rem;
   line-height: 1;
@@ -52,8 +54,8 @@
 
 .root > details > summary:hover,
 .root > details[open] > summary {
-  background: var(--color-carbon);
-  color: var(--color-paper);
+  background: var(--theme-ink);
+  color: var(--theme-canvas);
 }
 
 .root > details > nav {
@@ -61,8 +63,8 @@
   inset-block-start: calc(100% + 1px);
   inset-inline: var(--content-gutter);
   z-index: var(--z-dropdown);
-  border: 1px solid var(--color-carbon);
-  background: var(--color-paper);
+  border: 1px solid var(--theme-border-strong);
+  background: var(--theme-surface);
 }
 
 .root ul {
@@ -72,7 +74,7 @@
 }
 
 .root > details > nav > ul > li + li {
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--theme-border);
 }
 
 .root nav a,
@@ -89,7 +91,7 @@
 
 .root nav details ul {
   border-top: 1px solid var(--color-border);
-  background: rgba(16, 17, 15, 0.04);
+  background: rgba(242, 244, 240, 0.04);
 }
 
 .root > div {
@@ -104,7 +106,7 @@
 
 .root > div > button:hover,
 .root > div > button[aria-expanded='true'] {
-  border-color: var(--color-border-strong);
+  border-color: var(--theme-border-strong);
   background: transparent;
   color: var(--color-cobalt);
 }
@@ -117,8 +119,8 @@
   z-index: var(--z-dropdown);
   width: max-content;
   max-width: min(22rem, calc(100vw - 2 * var(--content-gutter)));
-  border: 1px solid var(--color-carbon);
-  background: var(--color-paper);
+  border: 1px solid var(--theme-border-strong);
+  background: var(--theme-surface);
 }
 
 .root > div > ul button,

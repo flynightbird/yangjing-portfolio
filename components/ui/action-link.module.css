@@ -34,9 +34,9 @@
 }
 
 .primary {
-  border-color: var(--color-carbon);
-  background: var(--color-carbon);
-  color: var(--color-paper);
+  border-color: var(--theme-ink);
+  background: var(--theme-ink);
+  color: var(--theme-canvas);
 }
 
 .primary:hover:not([aria-disabled='true']) {
@@ -46,9 +46,9 @@
 }
 
 .secondary {
-  border-color: var(--color-border-strong);
+  border-color: var(--theme-border-strong);
   background: transparent;
-  color: var(--color-carbon);
+  color: var(--theme-ink);
 }
 
 .secondary:hover:not([aria-disabled='true']) {
@@ -66,7 +66,7 @@
 }
 
 .text:hover:not([aria-disabled='true']) {
-  color: var(--color-carbon);
+  color: var(--theme-ink);
 }
 
 .icon {

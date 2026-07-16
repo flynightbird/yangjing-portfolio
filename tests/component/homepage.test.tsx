@@ -118,15 +118,62 @@ describe('FeaturedWork', () => {
 });
 
 describe('VisualArchive', () => {
-  it('renders eight honest development slots and no fabricated images', () => {
+  it('renders four real projects with distinct cover treatments', () => {
     const { container } = render(<VisualArchive locale="en" />);
-    const slots = container.querySelectorAll(
-      '[data-publication-state="draft"][data-archive-slot]',
-    );
 
-    expect(slots).toHaveLength(8);
-    expect(screen.getAllByText('Draft media slot')).toHaveLength(8);
-    expect(container.querySelectorAll('img')).toHaveLength(0);
+    expect(container.querySelector('[data-archive-carousel]')).toBeInTheDocument();
+    expect(container.querySelectorAll('[data-archive-card]')).toHaveLength(4);
+    expect(container.querySelectorAll('[data-archive-slot]')).toHaveLength(0);
+    expect(container.querySelectorAll('[data-placeholder-media]')).toHaveLength(0);
+    expect(
+      Array.from(container.querySelectorAll<HTMLElement>('[data-cover-variant]')).map(
+        (card) => card.dataset.coverVariant,
+      ),
+    ).toEqual(['alibaba', 'open-language', 'doudou-fox', 'mr-chong']);
+    expect(
+      screen.getByRole('button', { name: 'Previous archive project' }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole('button', { name: 'Next archive project' }),
+    ).toBeEnabled();
+    expect(container.querySelector('[data-archive-position]')).toHaveTextContent(
+      '01 / 04',
+    );
+  });
+
+  it('renders English company, period, description, and skills for every project', () => {
+    const { container } = render(<VisualArchive locale="en" />);
+
+    expect(screen.getByText('Alibaba')).toBeVisible();
+    expect(screen.getAllByText('ByteDance')).toHaveLength(2);
+    expect(screen.getByText('Tongcheng Travel')).toBeVisible();
+    expect(container.querySelector('[data-cover-variant="alibaba"] [data-archive-period]')).toHaveTextContent('2019–2020.12');
+    expect(container.querySelector('[data-cover-variant="doudou-fox"] [data-archive-period]')).toHaveTextContent('2021.09–10');
+    expect(screen.getByText('Mei Ping Mei Wu')).toBeVisible();
+    expect(screen.getByText('Design Principles')).toBeVisible();
+    expect(screen.getByText('Doudou Fox')).toBeVisible();
+    expect(screen.getByText('MR CHONG')).toBeVisible();
+    expect(
+      screen.getByText(/A home-design tool and platform from Alibaba/),
+    ).toBeVisible();
+    expect(container.querySelectorAll('[data-archive-skills]')).toHaveLength(4);
+    expect(screen.getAllByText('Skills')).toHaveLength(4);
+    expect(screen.getByText('IP Design')).toBeVisible();
+    expect(screen.getByText('C4D')).toBeVisible();
+  });
+
+  it('localizes project content and carousel controls in Chinese', () => {
+    render(<VisualArchive locale="zh" />);
+
+    expect(screen.getByRole('button', { name: '上一个视觉项目' })).toBeVisible();
+    expect(screen.getByRole('button', { name: '下一个视觉项目' })).toBeVisible();
+    expect(screen.getByText('每平每屋')).toBeVisible();
+    expect(screen.getByText('开言设计原则')).toBeVisible();
+    expect(screen.getByText('豆豆狐')).toBeVisible();
+    expect(
+      screen.getByText(/阿里巴巴旗下的家居装修设计师工具和平台/),
+    ).toBeVisible();
+    expect(screen.getAllByText('技能')).toHaveLength(4);
   });
 });
 
