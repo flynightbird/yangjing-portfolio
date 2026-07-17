@@ -9,7 +9,7 @@
   const clearNativeTimeout = window.clearTimeout.bind(window);
   const nativeInterval = window.setInterval.bind(window);
   const clearNativeInterval = window.clearInterval.bind(window);
-  const intervals = new Map();
+  const timers = new Map();
   let paused = true;
   let nextId = -1;
 
@@ -35,45 +35,63 @@
       try {
         Reflect.apply(record.callback, window, record.args);
       } finally {
-        record.remaining = record.delay;
-        if (!paused && intervals.has(record.id)) schedule(record);
+        if (timers.has(record.id)) {
+          if (record.repeat) {
+            record.remaining = record.delay;
+            if (!paused) schedule(record);
+          } else {
+            timers.delete(record.id);
+          }
+        }
       }
     }, record.remaining);
   }
 
-  window.setInterval = (callback, delay = 0, ...args) => {
-    if (typeof callback !== 'function') {
-      return nativeInterval(callback, delay, ...args);
-    }
+  function createTimer(callback, delay, args, repeat) {
     const normalized = Math.max(0, Number(delay) || 0);
     const record = {
       id: nextId--,
       callback,
       args,
       delay: normalized,
+      repeat,
       remaining: normalized,
       startedAt: performance.now(),
       timeoutId: null,
     };
-    intervals.set(record.id, record);
+    timers.set(record.id, record);
     if (!paused) schedule(record);
     return record.id;
+  }
+
+  window.setTimeout = (callback, delay = 0, ...args) => {
+    if (typeof callback !== 'function') {
+      return nativeTimeout(callback, delay, ...args);
+    }
+    return createTimer(callback, delay, args, false);
   };
 
-  function clearSyntheticInterval(id) {
-    const record = intervals.get(id);
+  window.setInterval = (callback, delay = 0, ...args) => {
+    if (typeof callback !== 'function') {
+      return nativeInterval(callback, delay, ...args);
+    }
+    return createTimer(callback, delay, args, true);
+  };
+
+  function clearSyntheticTimer(id) {
+    const record = timers.get(id);
     if (!record) return false;
     if (record.timeoutId !== null) clearNativeTimeout(record.timeoutId);
-    intervals.delete(id);
+    timers.delete(id);
     return true;
   }
 
   window.clearTimeout = (id) => {
-    if (!clearSyntheticInterval(id)) clearNativeTimeout(id);
+    if (!clearSyntheticTimer(id)) clearNativeTimeout(id);
   };
 
   window.clearInterval = (id) => {
-    if (!clearSyntheticInterval(id)) clearNativeInterval(id);
+    if (!clearSyntheticTimer(id)) clearNativeInterval(id);
   };
 
   function setPaused(next) {
@@ -81,7 +99,7 @@
     paused = next;
     root.dataset.sttPlayback = paused ? 'paused' : 'playing';
     const now = performance.now();
-    for (const record of intervals.values()) {
+    for (const record of timers.values()) {
       if (paused) {
         if (record.timeoutId === null) continue;
         clearNativeTimeout(record.timeoutId);

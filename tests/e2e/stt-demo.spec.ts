@@ -30,6 +30,16 @@ for (const locale of ['en', 'zh'] as const) {
       page,
     }, testInfo) => {
       const runtime = observeRuntime(page, testInfo.project.use.baseURL);
+      const embeddedDemoResponse =
+        testInfo.project.name === 'desktop'
+          ? page.waitForResponse((candidate) => {
+              const url = new URL(candidate.url());
+              return (
+                url.pathname === '/demos/stt-demo/index.html' &&
+                candidate.request().resourceType() === 'document'
+              );
+            })
+          : null;
       const response = await page.goto(`/${locale}/build/stt-demo/`, {
         waitUntil: 'domcontentloaded',
       });
@@ -66,6 +76,18 @@ for (const locale of ['en', 'zh'] as const) {
           document.documentElement.clientWidth,
       );
       expect(overflow).toBeLessThanOrEqual(1);
+      if (embeddedDemoResponse) {
+        expect((await embeddedDemoResponse).status()).toBe(200);
+        const prototype = page.frameLocator(
+          'iframe[src="/demos/stt-demo/index.html"]',
+        );
+        await expect
+          .poll(() =>
+            prototype.locator('html').evaluate(() => document.readyState),
+          )
+          .toBe('complete');
+        await expect(prototype.locator('#pageLanding')).toBeVisible();
+      }
       expect(runtime.failedLocalRequests).toEqual([]);
       expect(runtime.consoleErrors).toEqual([]);
     });
@@ -236,7 +258,13 @@ test('the stage timer shim uses isolated handles and supports both clear APIs', 
       clearedByTimeout: 0,
       clearedByInterval: 0,
     };
-    const nativeTimeoutId = window.setTimeout(() => undefined, 10_000);
+    const nativeTimeoutId = window.setTimeout('void 0', 10_000);
+    const timeoutClearedTimeoutId = window.setTimeout(() => {
+      state.clearedByTimeout += 1;
+    }, 10);
+    const intervalClearedTimeoutId = window.setTimeout(() => {
+      state.clearedByInterval += 1;
+    }, 10);
     const timeoutClearedIntervalId = window.setInterval(() => {
       state.clearedByTimeout += 1;
     }, 10);
@@ -244,6 +272,8 @@ test('the stage timer shim uses isolated handles and supports both clear APIs', 
       state.clearedByInterval += 1;
     }, 10);
     window.clearTimeout(nativeTimeoutId);
+    window.clearTimeout(timeoutClearedTimeoutId);
+    window.clearInterval(intervalClearedTimeoutId);
     window.clearTimeout(timeoutClearedIntervalId);
     window.clearInterval(intervalClearedIntervalId);
     window.postMessage(
@@ -253,12 +283,16 @@ test('the stage timer shim uses isolated handles and supports both clear APIs', 
     Object.assign(window, { __sttTimerClearState: state });
     return {
       nativeTimeoutId,
+      timeoutClearedTimeoutId,
+      intervalClearedTimeoutId,
       timeoutClearedIntervalId,
       intervalClearedIntervalId,
     };
   });
 
   expect(ids.nativeTimeoutId).toBeGreaterThanOrEqual(0);
+  expect(ids.timeoutClearedTimeoutId).toBeLessThan(0);
+  expect(ids.intervalClearedTimeoutId).toBeLessThan(0);
   expect(ids.timeoutClearedIntervalId).toBeLessThan(0);
   expect(ids.intervalClearedIntervalId).toBeLessThan(0);
   await page.waitForTimeout(80);
@@ -272,6 +306,76 @@ test('the stage timer shim uses isolated handles and supports both clear APIs', 
       }
     ).__sttTimerClearState),
   ).toEqual({ clearedByTimeout: 0, clearedByInterval: 0 });
+});
+
+test('the stage timer shim freezes functional one-shot timeouts while paused', async ({
+  page,
+}) => {
+  await page.goto('/demos/stt-demo/index.html?embed=stage', {
+    waitUntil: 'networkidle',
+  });
+  await page.evaluate(() => {
+    window.postMessage(
+      { type: 'stt-stage-playback', paused: false },
+      location.origin,
+    );
+  });
+  await expect(page.locator('html')).toHaveAttribute('data-stt-playback', 'playing');
+
+  const timeoutId = await page.evaluate(() => {
+    const state = { runs: 0, correctThis: true, args: [] as unknown[] };
+    const id = window.setTimeout(function (...args) {
+      state.runs += 1;
+      state.correctThis &&= this === window;
+      state.args = args;
+    }, 300, 'forwarded', 42);
+    Object.assign(window, { __sttOneShotState: state });
+    return id;
+  });
+  expect(timeoutId).toBeLessThan(0);
+
+  await page.waitForTimeout(100);
+  await page.evaluate(() => {
+    window.postMessage(
+      { type: 'stt-stage-playback', paused: true },
+      location.origin,
+    );
+  });
+  await expect(page.locator('html')).toHaveAttribute('data-stt-playback', 'paused');
+  await page.waitForTimeout(350);
+  expect(await page.evaluate(() => (
+    window as Window & {
+      __sttOneShotState: {
+        runs: number;
+        correctThis: boolean;
+        args: unknown[];
+      };
+    }
+  ).__sttOneShotState)).toEqual({ runs: 0, correctThis: true, args: [] });
+
+  await page.evaluate(() => {
+    window.postMessage(
+      { type: 'stt-stage-playback', paused: false },
+      location.origin,
+    );
+  });
+  await expect.poll(() => page.evaluate(() => (
+    window as Window & {
+      __sttOneShotState: {
+        runs: number;
+        correctThis: boolean;
+        args: unknown[];
+      };
+    }
+  ).__sttOneShotState)).toEqual({
+    runs: 1,
+    correctThis: true,
+    args: ['forwarded', 42],
+  });
+  await page.waitForTimeout(350);
+  expect(await page.evaluate(() => (
+    window as Window & { __sttOneShotState: { runs: number } }
+  ).__sttOneShotState.runs)).toBe(1);
 });
 
 test('the stage timer shim preserves callback semantics after errors', async ({

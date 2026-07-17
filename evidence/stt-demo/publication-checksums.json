@@ -39,7 +39,7 @@
     },
     {
       "path": "stage-embed.js",
-      "sha256": "383ab5daa490dd2137b314c968dfd0db6c75513f4dba36b286a7820f1527196a"
+      "sha256": "15850ca3338292dbccee5e710b0e775331924debc20806bacffa0d4b1e7983df"
     },
     {
       "path": "stt-ui-component-library/packages/stt-ui/src/styles/components.css",

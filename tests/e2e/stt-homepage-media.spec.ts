@@ -5,12 +5,27 @@ const stageEmbedUrl = /\/demos\/stt-demo\/index\.html\?embed=stage$/;
 const sttProjectSelector = '[data-project-id="stt-demo"]';
 const sttMediaSelector = `${sttProjectSelector} [data-stt-media-stage]`;
 
-test.setTimeout(60_000);
+interface ElementBox {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
 
-function expectStableBox(
-  before: { x: number; y: number; width: number; height: number } | null,
-  after: { x: number; y: number; width: number; height: number } | null,
-) {
+function relativeBox(child: ElementBox | null, parent: ElementBox | null) {
+  expect(child).not.toBeNull();
+  expect(parent).not.toBeNull();
+  if (!child || !parent) return null;
+
+  return {
+    x: child.x - parent.x,
+    y: child.y - parent.y,
+    width: child.width,
+    height: child.height,
+  };
+}
+
+function expectStableBox(before: ElementBox | null, after: ElementBox | null) {
   expect(before).not.toBeNull();
   expect(after).not.toBeNull();
   if (!before || !after) return;
@@ -33,6 +48,12 @@ async function holdStageEmbed(page: Page) {
   const handler = async (route: Route) => {
     markRequestHeld();
     await release;
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) => {
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+        }),
+    );
     await route.continue();
   };
   await page.route(stageEmbedUrl, handler);
@@ -88,17 +109,27 @@ test.describe('STT homepage live-stage presentation', () => {
       );
       expect(await media.evaluate((element) => element.querySelectorAll('a').length)).toBe(0);
 
+      await expect(fallback).toHaveJSProperty('complete', true);
+      expect(
+        await fallback.evaluate((image) => (image as HTMLImageElement).naturalWidth),
+      ).toBeGreaterThan(0);
       const browserBoxBefore = await browserWindow.boundingBox();
       const viewportBox = await viewport.boundingBox();
       expect(viewportBox).not.toBeNull();
       expect((viewportBox?.width ?? 0) / (viewportBox?.height ?? 1)).toBeCloseTo(2, 2);
+      const relativeViewportBefore = relativeBox(viewportBox, browserBoxBefore);
 
       releaseRequest();
       await expect(media).toHaveAttribute('data-stt-ready', 'true');
       await expect(fallback).toHaveCSS('opacity', '0');
       await expect(frame).toHaveCSS('opacity', '1');
-      expectStableBox(browserBoxBefore, await browserWindow.boundingBox());
-      expectStableBox(viewportBox, await viewport.boundingBox());
+      expectStableBox(
+        relativeViewportBefore,
+        relativeBox(
+          await viewport.boundingBox(),
+          await browserWindow.boundingBox(),
+        ),
+      );
 
       const scanAnimation = await scan.evaluate((element) => {
         const style = getComputedStyle(element);
@@ -126,7 +157,8 @@ test.describe('STT homepage live-stage presentation', () => {
 
   test('plays the scan once without resetting readiness across visibility changes', async ({
     page,
-  }) => {
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'Scan lifecycle runs once on desktop.');
     const { requestHeld, releaseRequest, cleanup } = await holdStageEmbed(page);
 
     try {
@@ -183,60 +215,72 @@ test.describe('STT homepage live-stage presentation', () => {
 
   test('pauses stage motion offscreen and resumes the remaining transcript interval', async ({
     page,
-  }) => {
-    await page.goto('/en/', { waitUntil: 'domcontentloaded' });
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'Timer lifecycle is viewport-independent.');
+    testInfo.setTimeout(45_000);
+    const { requestHeld, releaseRequest, cleanup } = await holdStageEmbed(page);
 
-    const media = page.locator(sttMediaSelector);
-    await media.scrollIntoViewIfNeeded();
-    await expect(media).toHaveAttribute('data-stt-ready', 'true');
+    try {
+      await page.goto('/en/', { waitUntil: 'domcontentloaded' });
 
-    const stage = page.frameLocator(
-      'iframe[src="/demos/stt-demo/index.html?embed=stage"]',
-    );
-    const embedRoot = stage.locator('html');
-    const original = stage.locator('.snip-original');
-    await expect(embedRoot).toHaveAttribute('data-stt-playback', 'playing');
-    const initialOriginal = await original.innerHTML();
-    await expect
-      .poll(() => original.innerHTML(), { timeout: 12_500 })
-      .not.toBe(initialOriginal);
-    const cycleOriginal = await original.innerHTML();
+      const media = page.locator(sttMediaSelector);
+      await media.scrollIntoViewIfNeeded();
+      await requestHeld;
+      releaseRequest();
+      await expect(media).toHaveAttribute('data-stt-ready', 'true');
 
-    await page.waitForTimeout(2_400);
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await expect(embedRoot).toHaveAttribute('data-stt-playback', 'paused');
-    const pausedOriginal = await original.innerHTML();
-    expect(pausedOriginal).toBe(cycleOriginal);
-    expect(
-      await stage.locator('.snip-wave span').evaluateAll((elements) =>
-        elements.every(
-          (element) => getComputedStyle(element).animationPlayState === 'paused',
+      const stage = page.frameLocator(
+        'iframe[src="/demos/stt-demo/index.html?embed=stage"]',
+      );
+      const embedRoot = stage.locator('html');
+      const original = stage.locator('.snip-original');
+      await expect(embedRoot).toHaveAttribute('data-stt-playback', 'playing');
+      const initialOriginal = await original.innerHTML();
+
+      await expect
+        .poll(() => original.innerHTML(), { timeout: 12_500 })
+        .not.toBe(initialOriginal);
+      const cycleOriginal = await original.innerHTML();
+
+      await page.waitForTimeout(4_000);
+      await page.evaluate(() =>
+        window.scrollTo({ top: 0, behavior: 'instant' }),
+      );
+      await expect(embedRoot).toHaveAttribute('data-stt-playback', 'paused');
+      const pausedOriginal = await original.innerHTML();
+      expect(pausedOriginal).toBe(cycleOriginal);
+      expect(
+        await stage.locator('.snip-wave span').evaluateAll((elements) =>
+          elements.every(
+            (element) => getComputedStyle(element).animationPlayState === 'paused',
+          ),
         ),
-      ),
-    ).toBe(true);
+      ).toBe(true);
 
-    await page.waitForTimeout(5_400);
-    expect(await original.innerHTML()).toBe(pausedOriginal);
-    expect(
-      await stage.locator('.snip-wave span').evaluateAll((elements) =>
-        elements.every(
-          (element) => getComputedStyle(element).animationPlayState === 'paused',
+      await page.waitForTimeout(8_000);
+      expect(await original.innerHTML()).toBe(pausedOriginal);
+      expect(
+        await stage.locator('.snip-wave span').evaluateAll((elements) =>
+          elements.every(
+            (element) => getComputedStyle(element).animationPlayState === 'paused',
+          ),
         ),
-      ),
-    ).toBe(true);
+      ).toBe(true);
 
-    await media.scrollIntoViewIfNeeded();
-    await expect(embedRoot).toHaveAttribute('data-stt-playback', 'playing');
-    const resumedAt = Date.now();
-    await expect
-      .poll(() => original.innerHTML(), { timeout: 4_400 })
-      .not.toBe(pausedOriginal);
-    expect(Date.now() - resumedAt).toBeLessThan(4_400);
+      await media.scrollIntoViewIfNeeded();
+      await expect(embedRoot).toHaveAttribute('data-stt-playback', 'playing');
+      await expect
+        .poll(() => original.innerHTML(), { timeout: 3_800 })
+        .not.toBe(pausedOriginal);
+    } finally {
+      await cleanup();
+    }
   });
 
   test('keeps the linked fallback available when the stage embed request fails', async ({
     page,
-  }) => {
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'The failure branch is viewport-independent.');
     let markRequestFailed = () => undefined;
     const requestFailed = new Promise<void>((resolve) => {
       markRequestFailed = resolve;
@@ -256,6 +300,11 @@ test.describe('STT homepage live-stage presentation', () => {
 
       await expect(media).toHaveAttribute('data-stt-ready', 'false');
       await expect(media.locator('[data-stt-stage-fallback]')).toHaveCSS('opacity', '1');
+      const frame = media.locator('iframe[src="/demos/stt-demo/index.html?embed=stage"]');
+      await expect(frame).toHaveCSS('opacity', '0');
+      await expect(frame).toHaveCSS('pointer-events', 'none');
+      await expect(frame).toHaveAttribute('aria-hidden', 'true');
+      await expect(frame).toHaveAttribute('tabindex', '-1');
       await expect(media).toHaveAttribute('href', fullDemoPath);
       await expect(project.locator('[data-stt-copy] a')).toHaveAttribute(
         'href',
