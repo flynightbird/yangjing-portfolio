@@ -133,24 +133,53 @@ export async function installLocalSttAdaptation({
   integrationRoot = path.join(root, 'integrations/stt-demo'),
   fileSystem = fs,
 }) {
-  await Promise.all(
-    adapterFiles.map((file) =>
-      fileSystem.copyFile(
-        path.join(integrationRoot, file),
-        path.join(demoRoot, file),
-      ),
+  const transactionDirectory = await fileSystem.mkdtemp(
+    path.join(
+      path.dirname(demoRoot),
+      `.${path.basename(demoRoot)}.adapter-`,
     ),
   );
-  const indexPath = path.join(demoRoot, 'index.html');
-  const html = await fileSystem.readFile(indexPath, 'utf8');
-  const clean = html.replace(
-    /^(?:[ \t]*\r?\n)?[ \t]*<link rel="stylesheet" href="stage-embed\.css" \/>\r?\n[ \t]*<script src="stage-embed\.js"><\/script>\r?\n/m,
-    '',
-  );
-  await fileSystem.writeFile(
-    indexPath,
-    clean.replace('</head>', `${adapterTags}</head>`),
-  );
+  const stagedRoot = path.join(transactionDirectory, 'publication');
+  const backupRoot = path.join(transactionDirectory, 'previous');
+  let preserveTransaction = false;
+
+  try {
+    await fileSystem.cp(demoRoot, stagedRoot, { recursive: true });
+    await Promise.all(
+      adapterFiles.map((file) =>
+        fileSystem.copyFile(
+          path.join(integrationRoot, file),
+          path.join(stagedRoot, file),
+        ),
+      ),
+    );
+    const indexPath = path.join(stagedRoot, 'index.html');
+    const html = await fileSystem.readFile(indexPath, 'utf8');
+    const clean = html.replace(
+      /^(?:[ \t]*\r?\n)?[ \t]*<link rel="stylesheet" href="stage-embed\.css" \/>\r?\n[ \t]*<script src="stage-embed\.js"><\/script>\r?\n/m,
+      '',
+    );
+    await fileSystem.writeFile(
+      indexPath,
+      clean.replace('</head>', `${adapterTags}</head>`),
+    );
+    await commitSyncedDirectory({
+      fileSystem,
+      outputDir: demoRoot,
+      temporaryDir: stagedRoot,
+      backupDir: backupRoot,
+    });
+  } catch (error) {
+    preserveTransaction = error instanceof AggregateError;
+    throw error;
+  } finally {
+    if (!preserveTransaction) {
+      await fileSystem.rm(transactionDirectory, {
+        force: true,
+        recursive: true,
+      });
+    }
+  }
 }
 
 async function removeBackup(fileSystem, backupDir) {

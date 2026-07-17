@@ -4,6 +4,7 @@ import fsPromises, {
   mkdtemp,
   mkdir,
   readFile,
+  readdir,
   rm,
   symlink,
   writeFile,
@@ -67,6 +68,13 @@ async function loadSynchronizer() {
 async function loadContentValidator() {
   const scriptUrl = pathToFileURL(
     resolve(projectRoot, 'scripts/validate-content.mjs'),
+  ).href;
+  return import(/* @vite-ignore */ scriptUrl);
+}
+
+async function loadPublicationChecksumWriter() {
+  const scriptUrl = pathToFileURL(
+    resolve(projectRoot, 'scripts/write-stt-publication-checksums.mjs'),
   ).href;
   return import(/* @vite-ignore */ scriptUrl);
 }
@@ -263,6 +271,107 @@ describe('STT demo source provenance', () => {
         resolve(projectRoot, 'integrations/stt-demo/stage-embed.js'),
       ),
     );
+  });
+
+  it('rolls back a failed standalone adapter replacement', async () => {
+    const rootDir = await makeTemporaryDirectory('stt-adapter-rollback-');
+    const demoRoot = resolve(rootDir, 'stt-demo');
+    const integrationRoot = resolve(rootDir, 'integration');
+    await mkdir(demoRoot);
+    await mkdir(integrationRoot);
+    await writeFile(resolve(demoRoot, 'index.html'), '<head>\n</head>\n');
+    await writeFile(resolve(demoRoot, 'stage-embed.css'), 'old css');
+    await writeFile(resolve(demoRoot, 'stage-embed.js'), 'old js');
+    await writeFile(resolve(integrationRoot, 'stage-embed.css'), 'new css');
+    await writeFile(resolve(integrationRoot, 'stage-embed.js'), 'new js');
+    const original = await Promise.all(
+      ['index.html', 'stage-embed.css', 'stage-embed.js'].map((file) =>
+        readFile(resolve(demoRoot, file)),
+      ),
+    );
+    const { installLocalSttAdaptation } = await loadSynchronizer();
+    let injected = false;
+    const fileSystem = {
+      ...fsPromises,
+      rename: async (source: PathLike, destination: PathLike) => {
+        if (!injected && destination === demoRoot) {
+          injected = true;
+          throw new Error('injected adapter replacement failure');
+        }
+        return fsPromises.rename(source, destination);
+      },
+    };
+
+    await expect(
+      installLocalSttAdaptation({
+        demoRoot,
+        integrationRoot,
+        fileSystem,
+      }),
+    ).rejects.toThrow(/injected adapter replacement failure/i);
+    await expect(
+      Promise.all(
+        ['index.html', 'stage-embed.css', 'stage-embed.js'].map((file) =>
+          readFile(resolve(demoRoot, file)),
+        ),
+      ),
+    ).resolves.toEqual(original);
+    expect((await readdir(rootDir)).sort()).toEqual([
+      'integration',
+      'stt-demo',
+    ]);
+  });
+
+  it('atomically replaces the STT publication checksum contract', async () => {
+    const rootDir = await makeTemporaryDirectory('stt-checksum-write-');
+    const demoRoot = resolve(rootDir, 'demo');
+    const outputPath = resolve(rootDir, 'publication-checksums.json');
+    await mkdir(demoRoot);
+    await writeFile(resolve(demoRoot, 'z-last.txt'), 'last');
+    await writeFile(resolve(demoRoot, 'a-first.txt'), 'first');
+    await writeFile(outputPath, 'old contract');
+    const { writeSttPublicationChecksums } =
+      await loadPublicationChecksumWriter();
+
+    await writeSttPublicationChecksums({ demoRoot, outputPath });
+
+    const output = await readFile(outputPath, 'utf8');
+    const contract = JSON.parse(output);
+    expect(output.endsWith('\n')).toBe(true);
+    expect(contract.files.map((file: { path: string }) => file.path)).toEqual([
+      'a-first.txt',
+      'z-last.txt',
+    ]);
+    expect((await readdir(rootDir)).sort()).toEqual([
+      'demo',
+      'publication-checksums.json',
+    ]);
+  });
+
+  it('preserves the checksum contract when atomic replacement fails', async () => {
+    const rootDir = await makeTemporaryDirectory('stt-checksum-rollback-');
+    const demoRoot = resolve(rootDir, 'demo');
+    const outputPath = resolve(rootDir, 'publication-checksums.json');
+    await mkdir(demoRoot);
+    await writeFile(resolve(demoRoot, 'index.html'), 'demo');
+    await writeFile(outputPath, 'old contract');
+    const { writeSttPublicationChecksums } =
+      await loadPublicationChecksumWriter();
+    const fileSystem = {
+      ...fsPromises,
+      rename: async () => {
+        throw new Error('injected checksum replacement failure');
+      },
+    };
+
+    await expect(
+      writeSttPublicationChecksums({ demoRoot, outputPath, fileSystem }),
+    ).rejects.toThrow(/injected checksum replacement failure/i);
+    await expect(readFile(outputPath, 'utf8')).resolves.toBe('old contract');
+    expect((await readdir(rootDir)).sort()).toEqual([
+      'demo',
+      'publication-checksums.json',
+    ]);
   });
 
   it('commits an exact checksum contract for every published file', async () => {

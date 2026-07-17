@@ -129,9 +129,17 @@ test('the direct stage embed is centered and preserves the complete composition'
   expect(response?.status()).toBe(200);
   await expect(page.locator('html')).toHaveAttribute('data-stt-embed', 'stage');
   const stage = page.locator('.land-visual');
+  const snip = page.locator('.snip');
+  const speaker = page.locator('.snip-speaker');
+  const original = page.locator('.snip-original');
+  const translation = page.locator('.snip-translation');
   const participantRail = page.locator('.snip-side');
   const dock = page.locator('.snip-dock');
   await expect(stage).toBeVisible();
+  await expect(snip).toBeVisible();
+  await expect(speaker).toBeVisible();
+  await expect(original).toBeVisible();
+  await expect(translation).toBeVisible();
   await expect(participantRail).toBeVisible();
   await expect(dock).toBeVisible();
   await expect(page.locator('.land-bar')).toBeHidden();
@@ -141,13 +149,19 @@ test('the direct stage embed is centered and preserves the complete composition'
 
   const viewport = page.viewportSize();
   const stageBox = await stage.boundingBox();
-  const railBox = await participantRail.boundingBox();
-  const dockBox = await dock.boundingBox();
+  const snipBox = await snip.boundingBox();
+  const contentBoxes = await Promise.all(
+    [speaker, original, translation, participantRail, dock].map((locator) =>
+      locator.boundingBox(),
+    ),
+  );
   expect(viewport).not.toBeNull();
   expect(stageBox).not.toBeNull();
-  expect(railBox).not.toBeNull();
-  expect(dockBox).not.toBeNull();
-  if (!viewport || !stageBox || !railBox || !dockBox) return;
+  expect(snipBox).not.toBeNull();
+  expect(contentBoxes).not.toContain(null);
+  if (!viewport || !stageBox || !snipBox || contentBoxes.includes(null)) {
+    return;
+  }
 
   const expectedInset = viewport.width <= 600 ? 8 : 16;
   const horizontalInset = (viewport.width - stageBox.width) / 2;
@@ -162,17 +176,160 @@ test('the direct stage embed is centered and preserves the complete composition'
     viewport.width - (expectedInset + 2) * 2,
   );
   expect(stageBox.width / stageBox.height).toBeCloseTo(1000 / 560, 2);
-
-  for (const childBox of [railBox, dockBox]) {
-    expect(childBox.x).toBeGreaterThanOrEqual(stageBox.x - 1);
-    expect(childBox.y).toBeGreaterThanOrEqual(stageBox.y - 1);
+  for (const childBox of contentBoxes) {
+    if (!childBox) continue;
+    expect(childBox.x).toBeGreaterThanOrEqual(snipBox.x - 1);
+    expect(childBox.y).toBeGreaterThanOrEqual(snipBox.y - 1);
     expect(childBox.x + childBox.width).toBeLessThanOrEqual(
-      stageBox.x + stageBox.width + 1,
+      snipBox.x + snipBox.width + 1,
     );
     expect(childBox.y + childBox.height).toBeLessThanOrEqual(
-      stageBox.y + stageBox.height + 1,
+      snipBox.y + snipBox.height + 1,
     );
   }
+  const scale = await page.locator('html').evaluate((element) =>
+    Number(
+      getComputedStyle(element).getPropertyValue('--stt-stage-scale').trim(),
+    ),
+  );
+  expect(scale).toBeCloseTo(
+    Math.min(
+      (viewport.width - expectedInset * 2) / 1000,
+      (viewport.height - expectedInset * 2) / 560,
+    ),
+    3,
+  );
+  await testInfo.attach(`stt-stage-${testInfo.project.name}`, {
+    body: await page.screenshot(),
+    contentType: 'image/png',
+  });
   expect(runtime.failedLocalRequests).toEqual([]);
   expect(runtime.consoleErrors).toEqual([]);
+});
+
+test('the stage timer shim uses isolated handles and supports both clear APIs', async ({
+  page,
+}) => {
+  await page.goto('/demos/stt-demo/index.html?embed=stage', {
+    waitUntil: 'networkidle',
+  });
+
+  const ids = await page.evaluate(() => {
+    const state = {
+      clearedByTimeout: 0,
+      clearedByInterval: 0,
+    };
+    const nativeTimeoutId = window.setTimeout(() => undefined, 10_000);
+    const timeoutClearedIntervalId = window.setInterval(() => {
+      state.clearedByTimeout += 1;
+    }, 10);
+    const intervalClearedIntervalId = window.setInterval(() => {
+      state.clearedByInterval += 1;
+    }, 10);
+    window.clearTimeout(nativeTimeoutId);
+    window.clearTimeout(timeoutClearedIntervalId);
+    window.clearInterval(intervalClearedIntervalId);
+    window.postMessage(
+      { type: 'stt-stage-playback', paused: false },
+      location.origin,
+    );
+    Object.assign(window, { __sttTimerClearState: state });
+    return {
+      nativeTimeoutId,
+      timeoutClearedIntervalId,
+      intervalClearedIntervalId,
+    };
+  });
+
+  expect(ids.nativeTimeoutId).toBeGreaterThanOrEqual(0);
+  expect(ids.timeoutClearedIntervalId).toBeLessThan(0);
+  expect(ids.intervalClearedIntervalId).toBeLessThan(0);
+  await page.waitForTimeout(80);
+  await expect.poll(() =>
+    page.evaluate(() => (
+      window as Window & {
+        __sttTimerClearState: {
+          clearedByTimeout: number;
+          clearedByInterval: number;
+        };
+      }
+    ).__sttTimerClearState),
+  ).toEqual({ clearedByTimeout: 0, clearedByInterval: 0 });
+});
+
+test('the stage timer shim preserves callback semantics after errors', async ({
+  page,
+}) => {
+  const expectedErrors: string[] = [];
+  page.on('pageerror', (error) => {
+    if (error.message.includes('expected staged interval failure')) {
+      expectedErrors.push(error.message);
+    }
+  });
+  await page.goto('/demos/stt-demo/index.html?embed=stage', {
+    waitUntil: 'networkidle',
+  });
+
+  await page.evaluate(() => {
+    const state = { runs: 0, correctThis: true, args: [] as unknown[] };
+    let intervalId = 0;
+    intervalId = window.setInterval(function (...args) {
+      state.runs += 1;
+      state.correctThis &&= this === window;
+      state.args = args;
+      if (state.runs === 1) {
+        throw new Error('expected staged interval failure');
+      }
+      window.clearInterval(intervalId);
+    }, 10, 'forwarded', 42);
+    Object.assign(window, { __sttTimerCallbackState: state });
+    window.postMessage(
+      { type: 'stt-stage-playback', paused: false },
+      location.origin,
+    );
+  });
+
+  await expect.poll(() => page.evaluate(() => (
+    window as Window & {
+      __sttTimerCallbackState: {
+        runs: number;
+        correctThis: boolean;
+        args: unknown[];
+      };
+    }
+  ).__sttTimerCallbackState)).toEqual({
+    runs: 2,
+    correctThis: true,
+    args: ['forwarded', 42],
+  });
+  expect(expectedErrors).toEqual([
+    expect.stringContaining('expected staged interval failure'),
+  ]);
+});
+
+test('the normal demo leaves native timer functions untouched', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.assign(window, {
+      __sttNativeTimerFunctions: [
+        window.setInterval,
+        window.clearInterval,
+        window.setTimeout,
+        window.clearTimeout,
+      ],
+    });
+  });
+  await page.goto('/demos/stt-demo/index.html', { waitUntil: 'networkidle' });
+
+  await expect(page.locator('html')).not.toHaveAttribute('data-stt-embed');
+  expect(await page.evaluate(() => {
+    const original = (
+      window as Window & { __sttNativeTimerFunctions: unknown[] }
+    ).__sttNativeTimerFunctions;
+    return original.every((timer, index) => timer === [
+      window.setInterval,
+      window.clearInterval,
+      window.setTimeout,
+      window.clearTimeout,
+    ][index]);
+  })).toBe(true);
 });

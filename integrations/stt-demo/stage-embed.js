@@ -11,14 +11,33 @@
   const clearNativeInterval = window.clearInterval.bind(window);
   const intervals = new Map();
   let paused = true;
-  let nextId = 1;
+  let nextId = -1;
+
+  function updateStageScale() {
+    const gutter = innerWidth <= 600 ? 8 : 16;
+    const scale = Math.max(
+      0,
+      Math.min(
+        (innerWidth - gutter * 2) / 1000,
+        (innerHeight - gutter * 2) / 560,
+      ),
+    );
+    root.style.setProperty('--stt-stage-scale', String(scale));
+  }
+
+  updateStageScale();
+  window.addEventListener('resize', updateStageScale);
 
   function schedule(record) {
     record.startedAt = performance.now();
     record.timeoutId = nativeTimeout(() => {
-      record.callback(...record.args);
-      record.remaining = record.delay;
-      if (!paused && intervals.has(record.id)) schedule(record);
+      record.timeoutId = null;
+      try {
+        Reflect.apply(record.callback, window, record.args);
+      } finally {
+        record.remaining = record.delay;
+        if (!paused && intervals.has(record.id)) schedule(record);
+      }
     }, record.remaining);
   }
 
@@ -28,24 +47,33 @@
     }
     const normalized = Math.max(0, Number(delay) || 0);
     const record = {
-      id: nextId++,
+      id: nextId--,
       callback,
       args,
       delay: normalized,
       remaining: normalized,
       startedAt: performance.now(),
-      timeoutId: 0,
+      timeoutId: null,
     };
     intervals.set(record.id, record);
     if (!paused) schedule(record);
     return record.id;
   };
 
-  window.clearInterval = (id) => {
+  function clearSyntheticInterval(id) {
     const record = intervals.get(id);
-    if (!record) return clearNativeInterval(id);
-    clearNativeTimeout(record.timeoutId);
+    if (!record) return false;
+    if (record.timeoutId !== null) clearNativeTimeout(record.timeoutId);
     intervals.delete(id);
+    return true;
+  }
+
+  window.clearTimeout = (id) => {
+    if (!clearSyntheticInterval(id)) clearNativeTimeout(id);
+  };
+
+  window.clearInterval = (id) => {
+    if (!clearSyntheticInterval(id)) clearNativeInterval(id);
   };
 
   function setPaused(next) {
@@ -55,12 +83,14 @@
     const now = performance.now();
     for (const record of intervals.values()) {
       if (paused) {
+        if (record.timeoutId === null) continue;
         clearNativeTimeout(record.timeoutId);
+        record.timeoutId = null;
         record.remaining = Math.max(
           0,
           record.remaining - (now - record.startedAt),
         );
-      } else {
+      } else if (record.timeoutId === null) {
         schedule(record);
       }
     }

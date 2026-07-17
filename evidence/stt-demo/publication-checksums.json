@@ -35,11 +35,11 @@
     },
     {
       "path": "stage-embed.css",
-      "sha256": "be1acda8c5d74cb27199f87d63f0a1a56f876c602d195d52cfe9c7b6165f6999"
+      "sha256": "105e1dbcc90f33b195dff71de75adfb47ebe97d35caef739e0cc1b09228677a6"
     },
     {
       "path": "stage-embed.js",
-      "sha256": "735c4257e8a1c8b2c0b571040395e1f0f58ac5f817f8095c300f987fae8ed58d"
+      "sha256": "383ab5daa490dd2137b314c968dfd0db6c75513f4dba36b286a7820f1527196a"
     },
     {
       "path": "stt-ui-component-library/packages/stt-ui/src/styles/components.css",
