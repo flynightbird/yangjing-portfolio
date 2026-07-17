@@ -23,6 +23,19 @@ html[data-stt-embed='stage'] .land-main {
   pointer-events: none;
 }
 
+html[data-stt-embed='stage'] #pageLanding {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+
+html[data-stt-embed='stage'] .land-main {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  gap: 0;
+  max-width: none;
+  margin: 0;
+}
+
 html[data-stt-embed='stage'] .land-bar,
 html[data-stt-embed='stage'] .land-copy {
   display: none !important;

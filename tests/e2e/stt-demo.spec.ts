@@ -116,3 +116,63 @@ test('the direct pinned prototype loads a nonblank same-origin artifact', async 
   expect(runtime.failedLocalRequests).toEqual([]);
   expect(runtime.consoleErrors).toEqual([]);
 });
+
+test('the direct stage embed is centered and preserves the complete composition', async ({
+  page,
+}, testInfo) => {
+  const runtime = observeRuntime(page, testInfo.project.use.baseURL);
+  const response = await page.goto(
+    '/demos/stt-demo/index.html?embed=stage',
+    { waitUntil: 'networkidle' },
+  );
+
+  expect(response?.status()).toBe(200);
+  await expect(page.locator('html')).toHaveAttribute('data-stt-embed', 'stage');
+  const stage = page.locator('.land-visual');
+  const participantRail = page.locator('.snip-side');
+  const dock = page.locator('.snip-dock');
+  await expect(stage).toBeVisible();
+  await expect(participantRail).toBeVisible();
+  await expect(dock).toBeVisible();
+  await expect(page.locator('.land-bar')).toBeHidden();
+  await expect(page.locator('.land-copy')).toBeHidden();
+  await expect(page.locator('#pageProduct')).toBeHidden();
+  await expect(page.locator('body')).toHaveCSS('overflow', 'hidden');
+
+  const viewport = page.viewportSize();
+  const stageBox = await stage.boundingBox();
+  const railBox = await participantRail.boundingBox();
+  const dockBox = await dock.boundingBox();
+  expect(viewport).not.toBeNull();
+  expect(stageBox).not.toBeNull();
+  expect(railBox).not.toBeNull();
+  expect(dockBox).not.toBeNull();
+  if (!viewport || !stageBox || !railBox || !dockBox) return;
+
+  const expectedInset = viewport.width <= 600 ? 8 : 16;
+  const horizontalInset = (viewport.width - stageBox.width) / 2;
+  const verticalInset = (viewport.height - stageBox.height) / 2;
+  expect(Math.abs(stageBox.x - horizontalInset)).toBeLessThanOrEqual(2);
+  expect(Math.abs(stageBox.y - verticalInset)).toBeLessThanOrEqual(2);
+  expect(stageBox.x).toBeGreaterThanOrEqual(expectedInset - 1);
+  expect(viewport.width - stageBox.x - stageBox.width).toBeGreaterThanOrEqual(
+    expectedInset - 1,
+  );
+  expect(stageBox.width).toBeGreaterThanOrEqual(
+    viewport.width - (expectedInset + 2) * 2,
+  );
+  expect(stageBox.width / stageBox.height).toBeCloseTo(1000 / 560, 2);
+
+  for (const childBox of [railBox, dockBox]) {
+    expect(childBox.x).toBeGreaterThanOrEqual(stageBox.x - 1);
+    expect(childBox.y).toBeGreaterThanOrEqual(stageBox.y - 1);
+    expect(childBox.x + childBox.width).toBeLessThanOrEqual(
+      stageBox.x + stageBox.width + 1,
+    );
+    expect(childBox.y + childBox.height).toBeLessThanOrEqual(
+      stageBox.y + stageBox.height + 1,
+    );
+  }
+  expect(runtime.failedLocalRequests).toEqual([]);
+  expect(runtime.consoleErrors).toEqual([]);
+});
