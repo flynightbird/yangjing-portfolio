@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 
@@ -33,6 +34,16 @@ function loadManifest(): XuelangManifest {
 }
 
 describe('Xuelang evidence manifest', () => {
+  it('uses the approved interaction artwork source', () => {
+    const source = readFileSync(
+      path.join(root, 'evidence/xuelang/source/learning-interaction-board.png'),
+    );
+
+    expect(createHash('sha256').update(source).digest('hex')).toBe(
+      '3c3d03ea8eed58adf4ea31435b10cc54be63a3a2c600b3147f015886e62d837a',
+    );
+  });
+
   it('resolves source and Figma evidence without allowing path escape', () => {
     const resolveSource = (
       assetPreparation as typeof assetPreparation & {

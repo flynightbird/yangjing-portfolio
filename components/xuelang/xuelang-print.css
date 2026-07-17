@@ -45,10 +45,6 @@
     padding: 0 !important;
   }
 
-  [data-xuelang-opening]::before {
-    display: none !important;
-  }
-
   [data-xuelang-hero] {
     display: flex !important;
     min-height: 250mm !important;

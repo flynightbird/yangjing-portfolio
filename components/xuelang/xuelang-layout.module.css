@@ -10,29 +10,13 @@
   --xuelang-green: #466b52;
   --xuelang-line: #d8ded9;
   --xuelang-dark: #121614;
-  position: relative;
-  overflow-x: clip;
   border-block-end: 1px solid var(--xuelang-line);
   background: var(--xuelang-paper);
   color: var(--xuelang-ink);
   font-family: var(--xuelang-font-body);
-  isolation: isolate;
-}
-
-.root::before {
-  position: absolute;
-  z-index: 0;
-  inset: 0 0 auto;
-  height: max(100rem, 180vh);
-  background: url('/images/xuelang/opening-background.webp') center top / cover no-repeat;
-  content: '';
-  opacity: 0.2;
-  pointer-events: none;
 }
 
 .frame {
-  position: relative;
-  z-index: 1;
   display: grid;
   width: min(100%, 100rem);
   grid-template-columns: minmax(9rem, 2fr) minmax(0, 10fr);

@@ -84,7 +84,7 @@ export function XuelangLayout({
 
   return (
     <XuelangMotion>
-      <div className={styles.root} data-xuelang-case data-xuelang-opening>
+      <div className={styles.root} data-xuelang-case>
       <div className={styles.frame}>
         <aside className={styles.rail}>
           <ChapterNav
