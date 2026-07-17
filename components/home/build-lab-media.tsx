@@ -3,6 +3,7 @@
 import { motion, useMotionValue, useReducedMotion, useSpring } from 'motion/react';
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from 'react';
 
+import mediaStyles from './build-lab-media.module.css';
 import styles from './home.module.css';
 
 interface BuildLabMediaProps {
@@ -156,26 +157,36 @@ export function BuildLabMedia({ href }: BuildLabMediaProps) {
           <i />
           <i />
         </span>
-        {shouldLoad && !reduceMotion ? (
-          <iframe
-            ref={setIframeNode}
-            src="/demos/stt-demo/index.html?embed=stage"
-            title="Animated STT Demo conversation stage"
-            aria-hidden="true"
-            tabIndex={-1}
+        <div className={mediaStyles.stageViewport} data-stt-stage-viewport>
+          {shouldLoad && !reduceMotion ? (
+            <iframe
+              ref={setIframeNode}
+              className={mediaStyles.stageFrame}
+              src="/demos/stt-demo/index.html?embed=stage"
+              title="Animated STT Demo conversation stage"
+              aria-hidden="true"
+              tabIndex={-1}
+            />
+          ) : null}
+          {/* This image is rendered from the pinned local STT Demo. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className={mediaStyles.stageFallback}
+            data-stt-stage-fallback
+            src="/images/stt-demo/stt-product-stage@2x.png"
+            width={1266}
+            height={1120}
+            alt="STT Demo product stage showing a speaker, bilingual transcript, translation, and participants"
+            onError={(event) => {
+              event.currentTarget.hidden = true;
+            }}
           />
-        ) : null}
-        {/* This image is rendered from the pinned local STT Demo. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/stt-demo/stt-product-stage@2x.png"
-          width={1266}
-          height={1120}
-          alt="STT Demo product stage showing a speaker, bilingual transcript, translation, and participants"
-          onError={(event) => {
-            event.currentTarget.hidden = true;
-          }}
-        />
+          <span
+            className={mediaStyles.stageScan}
+            data-stt-stage-scan
+            aria-hidden="true"
+          />
+        </div>
       </motion.div>
     </a>
   );
