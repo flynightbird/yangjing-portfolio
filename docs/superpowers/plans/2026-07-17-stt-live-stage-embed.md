@@ -492,6 +492,13 @@ git commit -m "test: verify STT live stage lifecycle"
 **Files:**
 - Verify only; correct only files listed in Tasks 1–4 when a failure demonstrates a defect.
 
+> **Known unrelated baseline:** The existing publication-validation Vitest case runs
+> `node scripts/validate-publication.mjs --mode=development` inside the default
+> 5-second test timeout. Its MDX and media scan can occasionally exceed that limit.
+> Record the timeout separately when it occurs; do not attribute it to the STT embed
+> unless an STT-specific assertion or direct validation command also fails. The timeout
+> did not reproduce in the final STT verification run on 2026-07-17.
+
 - [ ] **Step 1: Run static and unit checks**
 
 ```bash
