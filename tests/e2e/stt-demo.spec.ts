@@ -31,7 +31,7 @@ for (const locale of ['en', 'zh'] as const) {
     }, testInfo) => {
       const runtime = observeRuntime(page, testInfo.project.use.baseURL);
       const response = await page.goto(`/${locale}/build/stt-demo/`, {
-        waitUntil: 'networkidle',
+        waitUntil: 'domcontentloaded',
       });
 
       expect(response?.status()).toBe(200);
@@ -117,6 +117,19 @@ test('the direct pinned prototype loads a nonblank same-origin artifact', async 
   expect(runtime.consoleErrors).toEqual([]);
 });
 
+test('the normal demo primary action remains interactive', async ({ page }) => {
+  await page.goto('/demos/stt-demo/index.html', {
+    waitUntil: 'networkidle',
+  });
+
+  await expect(page.locator('html')).not.toHaveAttribute('data-stt-embed');
+  await expect(page.locator('#pageLanding')).toBeVisible();
+  await page.locator('#landCtaBtn').click();
+  await expect(page.locator('body')).toHaveAttribute('data-page', 'product');
+  await expect(page.locator('#pageLanding')).toBeHidden();
+  await expect(page.locator('#pageProduct')).toBeVisible();
+});
+
 test('the direct stage embed is centered and preserves the complete composition', async ({
   page,
 }, testInfo) => {
@@ -199,6 +212,10 @@ test('the direct stage embed is centered and preserves the complete composition'
     ),
     3,
   );
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(1);
   await testInfo.attach(`stt-stage-${testInfo.project.name}`, {
     body: await page.screenshot(),
     contentType: 'image/png',
