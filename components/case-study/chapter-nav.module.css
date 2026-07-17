@@ -47,6 +47,19 @@
   color: #111512;
 }
 
+.root[data-chapter-variant='xuelang'] .navigation a:hover,
+.root[data-chapter-variant='xuelang'] .navigation a:focus-visible {
+  color: #466b52;
+}
+
+.root[data-chapter-variant='xuelang'] .navigation a:focus-visible {
+  outline-color: #466b52;
+}
+
+.root[data-chapter-variant='xuelang'] .navigation a[aria-current='location'] {
+  box-shadow: none;
+}
+
 @media (max-width: 1100px) {
   .root {
     position: relative;

@@ -27,7 +27,18 @@ function section(source: string, id: string) {
   return match[0];
 }
 
+function chapterMetadata(source: string) {
+  const match = source.match(/chapters:\s*\[([\s\S]*?)\n\s*\],/);
+  if (!match) throw new Error('Missing chapter metadata');
+  return match[1];
+}
+
 describe('Xuelang bilingual case content', () => {
+  it('keeps chapter labels semantic so navigation owns the visible sequence', () => {
+    expect(chapterMetadata(zh)).not.toMatch(/label:\s*['"]\d{2}\s/);
+    expect(chapterMetadata(en)).not.toMatch(/label:\s*['"]\d{2}\s/);
+  });
+
   it('keeps all eight chapters aligned and states lead ownership accurately', () => {
     for (const id of chapterIds) {
       expect(count(zh, `id="${id}"`), id).toBe(1);

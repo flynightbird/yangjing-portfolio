@@ -94,10 +94,13 @@ describe('XuelangLayout', () => {
       'data-compact-at',
       'wide',
     );
-    expect(screen.getByRole('link', { name: /00 (项目概览|Overview)/ })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /^(项目概览|Overview)$/ })).toHaveAttribute(
       'aria-current',
       'location',
     );
+    expect(container.querySelector('[data-chapter-variant="xuelang"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-chapter-index="00"]')).toHaveTextContent('00');
+    expect(container.querySelectorAll('[data-chapter-index]')).toHaveLength(8);
     expect(screen.queryByRole('navigation', { name: projectNav })).not.toBeInTheDocument();
   });
 
