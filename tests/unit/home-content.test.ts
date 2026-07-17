@@ -34,6 +34,7 @@ describe('homepage project contract', () => {
     expect(buildEntries[0]).toMatchObject({
       id: 'stt-demo',
       destination: 'internal-case',
+      href: '/demos/stt-demo/index.html',
     });
   });
 

@@ -62,7 +62,7 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
       <LiveWebsiteProject copy={copy.aidx} href={aidx.href} />
       <BuildLabPreview
         copy={copy.sttDemo}
-        href={`${localeRoot}${sttDemo.href}`}
+        href={sttDemo.href}
       />
     </section>
   );

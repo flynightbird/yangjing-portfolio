@@ -152,7 +152,7 @@ describe('FeaturedWork', () => {
   });
 
   it('renders verified real media for Xuelang, Call Agent, AIDX, and STT Demo', () => {
-    render(<FeaturedWork locale="en" />);
+    const { container } = render(<FeaturedWork locale="en" />);
 
     expect(screen.getByRole('img', { name: /Xuelang product panorama/i })).toHaveAttribute(
       'src',
@@ -166,10 +166,27 @@ describe('FeaturedWork', () => {
       'width',
       '1440',
     );
-    expect(screen.getByRole('img', { name: /STT Demo interface/i })).toHaveAttribute(
-      'src',
-      '/demos/stt-demo/poster.png',
-    );
+    const sttDemo = container.querySelector<HTMLElement>('[data-project-id="stt-demo"]');
+    expect(
+      within(sttDemo as HTMLElement).getByRole('img', { name: /STT Demo product stage/i }),
+    ).toHaveAttribute('src', '/images/stt-demo/stt-product-stage@2x.png');
+    expect(sttDemo?.querySelector('iframe')).not.toBeInTheDocument();
+    expect(sttDemo?.querySelector('[data-stt-media-stage]')).toBeInTheDocument();
+    expect(sttDemo?.querySelector('[data-stt-browser-window]')).toBeInTheDocument();
+  });
+
+  it('opens the complete STT Demo directly from both homepage actions', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+    const sttDemo = container.querySelector<HTMLElement>('[data-project-id="stt-demo"]');
+    const links = within(sttDemo as HTMLElement).getAllByRole('link');
+
+    expect(links).toHaveLength(2);
+    for (const link of links) {
+      expect(link).toHaveAttribute('href', '/demos/stt-demo/index.html');
+      expect(link).toHaveAttribute('target', '_blank');
+      expect(link.getAttribute('rel')).toContain('noopener');
+      expect(link.getAttribute('rel')).toContain('noreferrer');
+    }
   });
 });
 

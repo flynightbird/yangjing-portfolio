@@ -969,34 +969,100 @@
 }
 
 .buildBand {
+  padding-block: clamp(4.5rem, 9vw, 8rem);
+  overflow: hidden;
   background: var(--color-carbon);
   color: var(--color-paper);
 }
 
 .buildInner {
   display: grid;
-  min-height: min(50rem, 88dvh);
+  width: min(100%, var(--content-max));
+  margin-inline: auto;
+  padding-inline: var(--content-gutter);
+  gap: clamp(2rem, 4vw, 4rem);
+  align-items: center;
 }
 
 .buildMedia {
-  min-height: 20rem;
+  position: relative;
+  display: block;
+  order: -1;
+  min-width: 0;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-  border-bottom: 1px solid var(--color-paper-border);
+  border: 1px solid rgba(236, 240, 255, 0.28);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 14% 10%, rgba(237, 242, 255, 0.96), transparent 36%),
+    radial-gradient(circle at 78% 4%, rgba(118, 119, 225, 0.78), transparent 48%),
+    linear-gradient(135deg, #d9e3ff 0%, #a8b9ef 48%, #8c8dde 100%);
+  color: inherit;
+  text-decoration: none;
+  isolation: isolate;
 }
 
-.buildMedia img {
+.buildMedia:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 4px;
+}
+
+.buildBrowserWindow {
+  position: absolute;
+  top: 13%;
+  right: -2%;
+  width: 94%;
+  overflow: hidden;
+  border: 1px solid rgba(18, 24, 42, 0.14);
+  border-radius: 18px 18px 0 0;
+  background: #f5f6fa;
+  box-shadow: 0 2rem 5rem rgba(42, 48, 102, 0.28);
+  will-change: transform;
+}
+
+.buildBrowserChrome {
+  display: flex;
+  height: clamp(1.625rem, 3vw, 2.125rem);
+  align-items: center;
+  gap: 0.375rem;
+  padding-inline: clamp(0.625rem, 1.4vw, 0.875rem);
+  border-bottom: 1px solid rgba(18, 24, 42, 0.08);
+  background: rgba(248, 249, 252, 0.96);
+}
+
+.buildBrowserChrome i {
+  display: block;
+  width: clamp(0.375rem, 0.8vw, 0.5rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #d2d5dc;
+}
+
+.buildBrowserWindow img {
+  display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
+  aspect-ratio: 2 / 1;
   object-fit: cover;
-  object-position: center top;
-  filter: saturate(0.88) contrast(1.04);
+  object-position: center 61%;
+  transition: transform 700ms var(--ease-out);
+}
+
+.buildBrowserWindow img[hidden] {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .buildMedia:hover .buildBrowserWindow img {
+    transform: scale(1.01);
+  }
 }
 
 .buildCopy {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: clamp(4rem, 10vh, 7rem) var(--content-gutter);
+  padding-block: clamp(1rem, 3vw, 2.5rem);
 }
 
 .buildCopy .projectKind {
@@ -1596,17 +1662,15 @@
   }
 
   .buildInner {
-    grid-template-columns: minmax(0, 7fr) minmax(22rem, 5fr);
+    grid-template-columns: minmax(18rem, 4fr) minmax(0, 8fr);
   }
 
   .buildMedia {
-    border-inline-end: 1px solid var(--color-paper-border);
-    border-bottom: 0;
+    order: 0;
   }
 
   .buildCopy {
     justify-content: center;
-    padding-inline: var(--space-7) var(--content-gutter);
   }
 
   .archiveHeader {
@@ -1696,6 +1760,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .projectMedia img,
+  .buildBrowserWindow img,
   .archiveItem,
   .archiveProgress span,
   .archiveStage > img,
@@ -1704,6 +1769,7 @@
   }
 
   .projectBand:hover .projectMedia img,
+  .buildMedia:hover .buildBrowserWindow img,
   .archiveItem:hover .archiveStage > img,
   .archiveItem:hover .archiveStage > button img,
   .archiveItem[data-active='true'] .archiveStage > img,

@@ -1,5 +1,6 @@
 import { ActionLink } from '@/components/ui/action-link';
 
+import { BuildLabMedia } from './build-lab-media';
 import styles from './home.module.css';
 
 interface BuildLabPreviewProps {
@@ -22,17 +23,7 @@ export function BuildLabPreview({ copy, href }: BuildLabPreviewProps) {
       data-project-kind="build-lab"
     >
       <div className={styles.buildInner}>
-        <div className={styles.buildMedia}>
-          {/* This poster belongs to the pinned and checksummed STT artifact. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/demos/stt-demo/poster.png"
-            width={1440}
-            height={900}
-            alt="STT Demo interface showing a bilingual meeting subtitle experience"
-          />
-        </div>
-        <div className={styles.buildCopy}>
+        <div className={styles.buildCopy} data-stt-copy>
           <p className={styles.projectKind}>{copy.kind}</p>
           <h2>{copy.title}</h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
@@ -50,6 +41,7 @@ export function BuildLabPreview({ copy, href }: BuildLabPreviewProps) {
             {copy.action}
           </ActionLink>
         </div>
+        <BuildLabMedia href={href} />
       </div>
     </article>
   );

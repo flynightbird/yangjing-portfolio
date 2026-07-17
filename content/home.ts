@@ -62,7 +62,7 @@ export const homepageProjects = [
     kind: 'build-lab',
     destination: 'internal-case',
     availability: 'complete',
-    href: 'build/stt-demo/',
+    href: '/demos/stt-demo/index.html',
   },
 ] as const satisfies readonly HomepageProject[];
 
