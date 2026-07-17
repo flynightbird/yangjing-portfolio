@@ -104,6 +104,35 @@ describe('Xuelang evidence manifest', () => {
       ]);
   });
 
+  it('declares the three non-duplicate adaptive Course Entry states', () => {
+    const manifest = loadManifest();
+    const courseEntryAssets = manifest.assets.filter((asset) =>
+      ['course-entry-discover', 'course-entry-start', 'course-entry-live'].includes(asset.id),
+    );
+
+    expect(courseEntryAssets.map(({ id, sourcePaths, output }) => ({
+      id,
+      sourcePaths,
+      output,
+    }))).toEqual([
+      {
+        id: 'course-entry-discover',
+        sourcePaths: ['evidence/xuelang/source/course-entry-discover.png'],
+        output: 'public/images/xuelang/course-entry-discover.webp',
+      },
+      {
+        id: 'course-entry-start',
+        sourcePaths: ['evidence/xuelang/source/course-entry-start.png'],
+        output: 'public/images/xuelang/course-entry-start.webp',
+      },
+      {
+        id: 'course-entry-live',
+        sourcePaths: ['evidence/xuelang/source/course-entry-live.png'],
+        output: 'public/images/xuelang/course-entry-live.webp',
+      },
+    ]);
+  });
+
   it('keeps source evidence traceable and replaceable', () => {
     const manifest = loadManifest();
 

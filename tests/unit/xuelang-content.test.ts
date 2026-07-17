@@ -104,12 +104,19 @@ describe('Xuelang bilingual case content', () => {
     for (const phrase of ['课程入口', '沉浸观看', '碎片学习', '互动', '笔记与学习资产']) {
       expect(learningZh).toContain(phrase);
     }
-    for (const source of ['learning-before-board.webp', 'learning-after-board.webp', 'learning-entry-ui.webp', 'learning-interaction.webp']) {
+    for (const source of [
+      'learning-before-board.webp',
+      'learning-after-board.webp',
+      'learning-interaction.webp',
+    ]) {
       expect(learningZh).toContain(`/images/xuelang/${source}`);
     }
+    expect(learningZh).toContain('courseEntry: true');
     expect(learningZh).not.toContain('/images/xuelang/learning-focus.webp');
+    expect(learningZh).not.toContain('/images/xuelang/learning-entry-ui.webp');
+    const learningEn = section(en, 'decision-learning');
+    expect(learningEn).toContain('courseEntry: true');
     for (const source of [
-      'learning-entry-ui.webp',
       'learning-note-player.webp',
       'learning-note-list.webp',
       'learning-note-editor.webp',

@@ -302,6 +302,45 @@
       "replacementPath": "figma://portfolio-supplied/learning-after-board"
     },
     {
+      "id": "course-entry-discover",
+      "chapter": "06",
+      "sourceFrames": ["portfolio-supplied-course-entry-discover"],
+      "sourcePaths": ["evidence/xuelang/source/course-entry-discover.png"],
+      "output": "public/images/xuelang/course-entry-discover.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 621, "height": 1343 },
+      "intrinsic": { "width": 621, "height": 1343 },
+      "purpose": "Show the adaptive course entry before a learner has purchased a course.",
+      "alt": { "zh": "未购课时的课程发现与选课入口", "en": "Course discovery and selection entry before a learner has purchased a course" },
+      "replacementPath": "figma://portfolio-supplied/course-entry-discover"
+    },
+    {
+      "id": "course-entry-start",
+      "chapter": "06",
+      "sourceFrames": ["portfolio-supplied-course-entry-start"],
+      "sourcePaths": ["evidence/xuelang/source/course-entry-start.png"],
+      "output": "public/images/xuelang/course-entry-start.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 621, "height": 1345 },
+      "intrinsic": { "width": 621, "height": 1345 },
+      "purpose": "Show the adaptive course entry immediately after a new course purchase.",
+      "alt": { "zh": "购买新课但尚未开始时的学习入口", "en": "Learning entry for a newly purchased course that has not been started" },
+      "replacementPath": "figma://portfolio-supplied/course-entry-start"
+    },
+    {
+      "id": "course-entry-live",
+      "chapter": "06",
+      "sourceFrames": ["portfolio-supplied-course-entry-live"],
+      "sourcePaths": ["evidence/xuelang/source/course-entry-live.png"],
+      "output": "public/images/xuelang/course-entry-live.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 621, "height": 1345 },
+      "intrinsic": { "width": 621, "height": 1345 },
+      "purpose": "Show the adaptive course entry prioritizing an active teacher livestream.",
+      "alt": { "zh": "老师直播时优先显示实时课程的入口", "en": "Course entry prioritizing a teacher's active livestream" },
+      "replacementPath": "figma://portfolio-supplied/course-entry-live"
+    },
+    {
       "id": "result-evidence",
       "chapter": "07",
       "sourceFrames": ["20220748"],

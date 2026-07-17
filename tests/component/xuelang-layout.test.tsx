@@ -115,10 +115,25 @@ describe('XuelangLayout', () => {
     );
 
     expect(
-      container.querySelectorAll('[data-evidence] img, [data-wipe-interactive] img').length,
+      container.querySelectorAll(
+        '[data-evidence] img, [data-wipe-interactive] img, [data-course-entry-interactive] img',
+      ).length,
     ).toBeGreaterThanOrEqual(12);
     expect(screen.getAllByTestId('learning-state')).toHaveLength(5);
     expect(container.querySelectorAll('[data-learning-compact]')).toHaveLength(3);
+    expect(screen.getByRole('tablist', { name: '课程入口状态' })).toBeVisible();
+    expect(screen.getAllByRole('tab')).toHaveLength(4);
+    expect(screen.getByRole('tab', { name: /最近正在看课/ })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    expect(
+      within(screen.getByRole('tabpanel')).getByRole('img', {
+        name: /学习进度与继续学习/,
+      }),
+    ).toBeVisible();
+    expect(container.querySelector('[data-course-entry-print]')).toBeInTheDocument();
+    expect(container.querySelectorAll('[data-course-entry-print] img')).toHaveLength(4);
     expect(container.querySelector('img[src="/images/xuelang/learning-focus.webp"]'))
       .not.toBeInTheDocument();
     expect(screen.getAllByTestId('xuelang-dark-stage')).toHaveLength(1);
@@ -148,5 +163,7 @@ describe('XuelangLayout', () => {
       .toBeInTheDocument();
     expect(container.querySelector('img[src="/images/xuelang/purchase-selected.webp"]'))
       .toBeInTheDocument();
+    expect(container.querySelector('img[src="/images/xuelang/learning-entry-ui.webp"]'))
+      .not.toBeInTheDocument();
   });
 });
