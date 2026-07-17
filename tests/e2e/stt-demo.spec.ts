@@ -47,6 +47,20 @@ for (const locale of ['en', 'zh'] as const) {
     test('renders the truthful case, provenance, and correct actions', async ({
       page,
     }, testInfo) => {
+      await page.route('https://fonts.googleapis.com/**', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'text/css; charset=utf-8',
+          body: '',
+        });
+      });
+      await page.route('https://fonts.gstatic.com/**', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'font/woff2',
+          body: '',
+        });
+      });
       const runtime = observeRuntime(page, testInfo.project.use.baseURL);
       const embeddedDemoResponses =
         testInfo.project.name !== 'mobile'
