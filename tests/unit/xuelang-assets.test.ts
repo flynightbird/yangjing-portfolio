@@ -133,6 +133,58 @@ describe('Xuelang evidence manifest', () => {
     ]);
   });
 
+  it('declares the supplied opening and learning evidence as semantic assets', () => {
+    const manifest = loadManifest();
+    const refreshedIds = [
+      'opening-background',
+      'learning-interaction',
+      'learning-note-player',
+      'learning-note-list',
+      'learning-note-editor',
+    ];
+    const refreshAssets = manifest.assets.filter((asset) => refreshedIds.includes(asset.id));
+
+    expect(refreshAssets.map(({ id, sourcePaths, output, intrinsic }) => ({
+      id,
+      sourcePaths,
+      output,
+      intrinsic,
+    }))).toEqual([
+      {
+        id: 'opening-background',
+        sourcePaths: ['evidence/xuelang/source/opening-background.png'],
+        output: 'public/images/xuelang/opening-background.webp',
+        intrinsic: { width: 3840, height: 2160 },
+      },
+      {
+        id: 'learning-interaction',
+        sourcePaths: ['evidence/xuelang/source/learning-interaction-board.png'],
+        output: 'public/images/xuelang/learning-interaction.webp',
+        intrinsic: { width: 3840, height: 1876 },
+      },
+      {
+        id: 'learning-note-player',
+        sourcePaths: ['evidence/xuelang/source/learning-note-player.png'],
+        output: 'public/images/xuelang/learning-note-player.webp',
+        intrinsic: { width: 904, height: 1958 },
+      },
+      {
+        id: 'learning-note-list',
+        sourcePaths: ['evidence/xuelang/source/learning-note-list.png'],
+        output: 'public/images/xuelang/learning-note-list.webp',
+        intrinsic: { width: 904, height: 1958 },
+      },
+      {
+        id: 'learning-note-editor',
+        sourcePaths: ['evidence/xuelang/source/learning-note-editor.png'],
+        output: 'public/images/xuelang/learning-note-editor.webp',
+        intrinsic: { width: 904, height: 1958 },
+      },
+    ]);
+    expect(manifest.assets.flatMap(({ sourcePaths }) => sourcePaths))
+      .not.toContain('evidence/xuelang/source/learning-interaction-copy-reference.png');
+  });
+
   it('keeps source evidence traceable and replaceable', () => {
     const manifest = loadManifest();
 

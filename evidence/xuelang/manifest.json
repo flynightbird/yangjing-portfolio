@@ -81,6 +81,19 @@
       "replacementPath": "figma://portfolio-supplied/xuelang-hero-retain"
     },
     {
+      "id": "opening-background",
+      "chapter": "00",
+      "sourceFrames": ["portfolio-supplied-opening-background"],
+      "sourcePaths": ["evidence/xuelang/source/opening-background.png"],
+      "output": "public/images/xuelang/opening-background.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 3840, "height": 2160 },
+      "intrinsic": { "width": 3840, "height": 2160 },
+      "purpose": "Blend a restrained landscape atmosphere through the Xuelang Hero and overview.",
+      "alt": { "zh": "学浪案例首屏使用的浅色沙丘氛围背景", "en": "Light dune atmosphere used behind the Xuelang case opening" },
+      "replacementPath": "figma://portfolio-supplied/xuelang-opening-background"
+    },
+    {
       "id": "quality-standard",
       "chapter": "04",
       "sourceFrames": ["20220723"],
@@ -252,15 +265,15 @@
     {
       "id": "learning-interaction",
       "chapter": "06",
-      "sourceFrames": ["20220739"],
-      "sourcePaths": ["evidence/xuelang/source/20220739.png"],
+      "sourceFrames": ["portfolio-supplied-learning-interaction-board"],
+      "sourcePaths": ["evidence/xuelang/source/learning-interaction-board.png"],
       "output": "public/images/xuelang/learning-interaction.webp",
       "format": "webp",
-      "crop": { "left": 305, "top": 175, "width": 718, "height": 400 },
-      "intrinsic": { "width": 1920, "height": 1080 },
-      "purpose": "Show interactive and fragmented learning states across devices.",
-      "alt": { "zh": "视频、互动练习与碎片化学习在不同设备状态中的衔接", "en": "Video, interactive practice, and fragmented learning connected across device states" },
-      "replacementPath": "figma://t0kTQ49hZ2uIoYjeQD8oh7/20220739"
+      "crop": { "left": 0, "top": 0, "width": 3840, "height": 1876 },
+      "intrinsic": { "width": 3840, "height": 1876 },
+      "purpose": "Show immersive playback controls, fragmented learning, and lesson switching in one product canvas.",
+      "alt": { "zh": "沉浸播放、倍速控制与课时切换的多种学习界面", "en": "Learning interfaces for immersive playback, speed controls, and lesson switching" },
+      "replacementPath": "figma://portfolio-supplied/learning-interaction-board"
     },
     {
       "id": "learning-assets",
@@ -421,41 +434,41 @@
     {
       "id": "learning-note-player",
       "chapter": "06",
-      "sourceFrames": ["1:11618"],
-      "sourcePaths": ["evidence/xuelang/figma/learning-notes-board.png"],
+      "sourceFrames": ["portfolio-supplied-learning-note-player"],
+      "sourcePaths": ["evidence/xuelang/source/learning-note-player.png"],
       "output": "public/images/xuelang/learning-note-player.webp",
       "format": "webp",
-      "crop": { "left": 140, "top": 420, "width": 390, "height": 660 },
-      "intrinsic": { "width": 390, "height": 660 },
+      "crop": { "left": 0, "top": 0, "width": 904, "height": 1958 },
+      "intrinsic": { "width": 904, "height": 1958 },
       "purpose": "Focus the in-player note entry and high-frequency learning controls.",
       "alt": { "zh": "播放器高频操作区中的笔记入口", "en": "Note entry in the player's high-frequency control area" },
-      "replacementPath": "figma://STUOWO6MG2rUvwcLlvJdFK/1:11618"
+      "replacementPath": "figma://portfolio-supplied/learning-note-player"
     },
     {
       "id": "learning-note-list",
       "chapter": "06",
-      "sourceFrames": ["1:11618"],
-      "sourcePaths": ["evidence/xuelang/figma/learning-notes-board.png"],
+      "sourceFrames": ["portfolio-supplied-learning-note-list"],
+      "sourcePaths": ["evidence/xuelang/source/learning-note-list.png"],
       "output": "public/images/xuelang/learning-note-list.webp",
       "format": "webp",
-      "crop": { "left": 605, "top": 415, "width": 355, "height": 665 },
-      "intrinsic": { "width": 355, "height": 665 },
+      "crop": { "left": 0, "top": 0, "width": 904, "height": 1958 },
+      "intrinsic": { "width": 904, "height": 1958 },
       "purpose": "Show notes accumulated across courses as a reusable personal learning asset.",
       "alt": { "zh": "按课程积累的个人笔记列表", "en": "Personal notes accumulated across courses" },
-      "replacementPath": "figma://STUOWO6MG2rUvwcLlvJdFK/1:11618"
+      "replacementPath": "figma://portfolio-supplied/learning-note-list"
     },
     {
       "id": "learning-note-editor",
       "chapter": "06",
-      "sourceFrames": ["1:11618"],
-      "sourcePaths": ["evidence/xuelang/figma/learning-notes-board.png"],
+      "sourceFrames": ["portfolio-supplied-learning-note-editor"],
+      "sourcePaths": ["evidence/xuelang/source/learning-note-editor.png"],
       "output": "public/images/xuelang/learning-note-editor.webp",
       "format": "webp",
-      "crop": { "left": 950, "top": 205, "width": 470, "height": 875 },
-      "intrinsic": { "width": 470, "height": 875 },
+      "crop": { "left": 0, "top": 0, "width": 904, "height": 1958 },
+      "intrinsic": { "width": 904, "height": 1958 },
       "purpose": "Show note capture, timestamp context, and editing inside the learning flow.",
       "alt": { "zh": "保留视频时间点和截图的笔记编辑界面", "en": "Note editor preserving the video timestamp and captured frame" },
-      "replacementPath": "figma://STUOWO6MG2rUvwcLlvJdFK/1:11618"
+      "replacementPath": "figma://portfolio-supplied/learning-note-editor"
     }
   ]
 }
