@@ -14,10 +14,7 @@ describe('XuelangLayout', () => {
       proposition: '从卖课工具，到高品质学习平台',
       role: '项目主负责设计师',
       duration: '2022.03–05 · 2 个月',
-      pdfLabel: '下载 PDF 案例',
-      pdfSizeLabel: 'PDF · 6.5 MB',
       proof: '14 天实验 · 人均 GMV +11.75%',
-      pdfHref: '/files/xuelang-case-study-zh.pdf',
       panoramaAlt: '学浪产品体验全景',
       chapterNav: '案例章节',
       projectNav: '项目导航',
@@ -28,10 +25,7 @@ describe('XuelangLayout', () => {
       proposition: 'From a course-selling tool to a high-quality learning platform',
       role: 'Lead UX Designer',
       duration: 'Mar–May 2022 · 2 months',
-      pdfLabel: 'Download PDF case study',
-      pdfSizeLabel: 'PDF · 5.8 MB',
       proof: '14-day experiment · GMV per user +11.75%',
-      pdfHref: '/files/xuelang-case-study-en.pdf',
       panoramaAlt: 'Xuelang product panorama',
       chapterNav: 'Case study chapters',
       projectNav: 'Project navigation',
@@ -42,10 +36,7 @@ describe('XuelangLayout', () => {
     proposition,
     role,
     duration,
-    pdfLabel,
-    pdfSizeLabel,
     proof,
-    pdfHref,
     panoramaAlt,
     chapterNav,
     projectNav,
@@ -79,9 +70,8 @@ describe('XuelangLayout', () => {
       '/images/xuelang/hero-retain.webp',
     ]);
     expect(panorama?.querySelectorAll('[data-hero-product-state]')).toHaveLength(4);
-    expect(screen.getByRole('link', { name: pdfLabel })).toHaveAttribute('href', pdfHref);
-    expect(screen.getByRole('link', { name: pdfLabel })).toHaveAttribute('download');
-    expect(screen.getByRole('link', { name: pdfLabel })).toHaveTextContent(pdfSizeLabel);
+    expect(screen.queryByRole('link', { name: /PDF/i })).not.toBeInTheDocument();
+    expect(container.querySelector('[data-xuelang-opening]')).toBeInTheDocument();
     expect(screen.getByText(proof, { exact: true })).toBeVisible();
     expect(container.querySelector('[data-hero-thesis]')).toContainElement(
       screen.getByRole('heading', { level: 1, name: title }),

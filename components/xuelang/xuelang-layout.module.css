@@ -35,6 +35,22 @@
   min-width: 0;
 }
 
+.case {
+  position: relative;
+  isolation: isolate;
+}
+
+.case::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: max(100rem, 180vh);
+  background: url('/images/xuelang/opening-background.webp') center top / cover no-repeat;
+  content: '';
+  opacity: 0.2;
+  pointer-events: none;
+}
+
 .hero {
   display: grid;
   min-height: calc(100vh - var(--header-height));
@@ -109,37 +125,6 @@
 
 .heroProof {
   color: var(--xuelang-ink);
-}
-
-.pdfAction {
-  display: inline-flex;
-  min-height: 44px;
-  align-items: center;
-  gap: 0.65rem;
-  margin-block-start: 1.5rem;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--xuelang-ink);
-  border-radius: 4px;
-  color: var(--xuelang-ink);
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background-color 180ms ease, color 180ms ease;
-}
-
-.pdfAction small {
-  padding-inline-start: 0.65rem;
-  border-inline-start: 1px solid currentColor;
-  font-family: var(--xuelang-font-mono);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  opacity: 0.7;
-}
-
-.pdfAction:hover,
-.pdfAction:focus-visible {
-  background: var(--xuelang-ink);
-  color: var(--xuelang-paper);
 }
 
 .panorama {
@@ -264,6 +249,11 @@
   padding-block: clamp(6rem, 12vh, 8rem);
   scroll-margin-block-start: calc(var(--header-height) + 4rem);
   border-block-start: 1px solid var(--xuelang-line);
+}
+
+.content > :global(section:not(#overview)) {
+  position: relative;
+  background: var(--xuelang-paper);
 }
 
 .content > :global(section > *) {
@@ -656,10 +646,6 @@
     padding-block: 0.55rem 0.65rem;
   }
 
-  .pdfAction {
-    margin-block-start: 1rem;
-  }
-
   .panorama {
     margin-block-start: 1.75rem;
   }
@@ -697,10 +683,6 @@
     grid-column: 1 / -1;
   }
 
-  .pdfAction {
-    margin-block-start: 1rem;
-  }
-
   .panorama {
     margin-block-start: 1.25rem;
     aspect-ratio: 4 / 3;
@@ -732,7 +714,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pdfAction,
   .productState img {
     transition: none;
   }

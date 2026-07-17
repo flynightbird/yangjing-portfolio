@@ -1,5 +1,3 @@
-import { Download } from 'lucide-react';
-
 import { ChapterNav } from '@/components/case-study/chapter-nav';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
 
@@ -14,8 +12,6 @@ const copy = {
     role: 'Role',
     duration: 'Duration',
     status: 'Status',
-    download: 'Download PDF case study',
-    downloadSize: 'PDF · 5.8 MB',
     proof: '14-day experiment · GMV per user +11.75%',
     panoramaAlt:
       'Xuelang product panorama showing course discovery, purchase decisions, and learning experiences',
@@ -50,8 +46,6 @@ const copy = {
     role: '角色',
     duration: '周期',
     status: '状态',
-    download: '下载 PDF 案例',
-    downloadSize: 'PDF · 6.5 MB',
     proof: '14 天实验 · 人均 GMV +11.75%',
     panoramaAlt: '学浪产品体验全景，呈现课程发现、购买决策与持续学习体验',
     panoramaKicker: 'PRODUCT EXPERIENCE / 4 STATES',
@@ -87,7 +81,6 @@ export function XuelangLayout({
   children,
 }: ContentLayoutProps) {
   const text = copy[locale];
-  const pdfHref = `/files/xuelang-case-study-${locale}.pdf`;
 
   return (
     <XuelangMotion>
@@ -103,7 +96,7 @@ export function XuelangLayout({
           />
         </aside>
 
-        <article className={styles.case} data-case-study>
+        <article className={styles.case} data-case-study data-xuelang-opening>
           <header className={styles.hero} data-xuelang-hero>
             <div className={styles.heroCopy}>
               <p className={styles.eyebrow}>{text.eyebrow}</p>
@@ -126,16 +119,6 @@ export function XuelangLayout({
                     <dd className={styles.heroProof}>{text.proof}</dd>
                   </div>
                 </dl>
-                <a
-                  className={styles.pdfAction}
-                  href={pdfHref}
-                  download
-                  data-case-web-control
-                >
-                  <Download aria-hidden="true" size={18} strokeWidth={1.7} />
-                  <span>{text.download}</span>
-                  <small aria-hidden="true">{text.downloadSize}</small>
-                </a>
               </div>
             </div>
 
