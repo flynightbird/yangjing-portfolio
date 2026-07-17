@@ -85,9 +85,9 @@ export const zhDictionary = {
         ],
       },
       aidx: {
-        kind: '已上线网站',
+        kind: '新加坡 AI 公司',
         title: 'AIDX',
-        proposition: '通过界面、信息结构与动效塑造的 AI 安全平台官网。',
+        proposition: '为新加坡 AI 安全公司 AIDX 打造的线上官网，通过界面、信息结构与动效塑造品牌表达。',
         role: 'UI/UX 设计、信息架构与动效',
         status: '已上线网站',
         mediaLabel: '公开网站截图',

@@ -237,10 +237,10 @@ export const enDictionary = {
         ],
       },
       aidx: {
-        kind: 'Live website',
+        kind: 'Singapore AI company',
         title: 'AIDX',
         proposition:
-          'A live AI safety platform website shaped through interface, structure, and motion.',
+          'A live website for AIDX, a Singapore AI safety company, shaped through interface, information structure, and motion.',
         role: 'UI/UX design, information architecture, and motion',
         status: 'Live website',
         mediaLabel: 'Public website capture',
