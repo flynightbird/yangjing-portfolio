@@ -10,7 +10,7 @@ import { findSensitiveText } from '../lib/content/privacy.ts';
 
 import {
   STT_DEMO_FULL_COMMIT,
-  loadApprovedChecksums,
+  loadPublicationChecksums,
   validatePublishedSttDirectory,
 } from './sync-stt-demo.mjs';
 
@@ -113,6 +113,8 @@ export async function validateSttDemoPublication(rootDir = root) {
     'stt-ui-component-library/packages/stt-ui/src/styles/components.css',
     'poster.png',
     'source-revision.json',
+    'stage-embed.css',
+    'stage-embed.js',
   ];
 
   let source;
@@ -132,8 +134,11 @@ export async function validateSttDemoPublication(rootDir = root) {
 
   const demoRoot = path.join(rootDir, 'public/demos/stt-demo');
   try {
-    const contract = await loadApprovedChecksums(
-      path.join(rootDir, 'evidence/stt-demo/checksums.json'),
+    const contract = await loadPublicationChecksums(
+      path.join(
+        rootDir,
+        'evidence/stt-demo/publication-checksums.json',
+      ),
     );
     errors.push(...await validatePublishedSttDirectory(demoRoot, contract));
   } catch (error) {

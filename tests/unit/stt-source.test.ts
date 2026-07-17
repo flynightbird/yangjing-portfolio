@@ -78,10 +78,22 @@ async function createSourceFixture() {
   for (const [source, published] of sourceMappings) {
     const sourcePath = resolve(sourceRoot, source);
     await mkdir(resolve(sourcePath, '..'), { recursive: true });
-    await copyFile(
-      resolve(projectRoot, 'public/demos/stt-demo', published),
-      sourcePath,
+    const publishedPath = resolve(
+      projectRoot,
+      'public/demos/stt-demo',
+      published,
     );
+    if (published === 'index.html') {
+      const upstreamHtml = (await readFile(publishedPath, 'utf8'))
+        .replace(
+          /^\s*<link rel="stylesheet" href="stage-embed\.css" \/>\n/m,
+          '',
+        )
+        .replace(/^\s*<script src="stage-embed\.js"><\/script>\n/m, '');
+      await writeFile(sourcePath, upstreamHtml);
+    } else {
+      await copyFile(publishedPath, sourcePath);
+    }
   }
   await execFileAsync('git', ['init', '--quiet', sourceRoot]);
   await execFileAsync('git', ['-C', sourceRoot, 'add', '.']);
@@ -123,6 +135,10 @@ async function createSttPublicationFixture() {
     resolve(rootDir, 'evidence/stt-demo/checksums.json'),
   );
   await cp(
+    resolve(projectRoot, 'evidence/stt-demo/publication-checksums.json'),
+    resolve(rootDir, 'evidence/stt-demo/publication-checksums.json'),
+  );
+  await cp(
     resolve(projectRoot, 'public/demos/stt-demo'),
     resolve(rootDir, 'public/demos/stt-demo'),
     { recursive: true },
@@ -158,9 +174,95 @@ describe('STT demo source provenance', () => {
   it('provides a testable pinned-source synchronizer', async () => {
     await expect(loadSynchronizer()).resolves.toMatchObject({
       commitSyncedDirectory: expect.any(Function),
+      installLocalSttAdaptation: expect.any(Function),
       syncSttDemo: expect.any(Function),
       validateApprovedSourceFiles: expect.any(Function),
     });
+  });
+
+  it('separates the upstream snapshot from the adapted publication', async () => {
+    const upstream = JSON.parse(
+      await readFile(
+        resolve(projectRoot, 'evidence/stt-demo/checksums.json'),
+        'utf8',
+      ),
+    );
+    const publication = JSON.parse(
+      await readFile(
+        resolve(projectRoot, 'evidence/stt-demo/publication-checksums.json'),
+        'utf8',
+      ),
+    );
+
+    expect(upstream.files).toHaveLength(11);
+    expect(
+      upstream.files.map((file: { path: string }) => file.path),
+    ).not.toContain('stage-embed.js');
+    expect(
+      publication.files.map((file: { path: string }) => file.path),
+    ).toEqual(
+      expect.arrayContaining([
+        'index.html',
+        'stage-embed.css',
+        'stage-embed.js',
+      ]),
+    );
+    expect(publication.files).toHaveLength(13);
+  });
+
+  it('installs the local adapter idempotently without changing application bytes', async () => {
+    const rootDir = await makeTemporaryDirectory('stt-adapter-');
+    const demoRoot = resolve(rootDir, 'stt-demo');
+    await cp(resolve(projectRoot, 'public/demos/stt-demo'), demoRoot, {
+      recursive: true,
+    });
+    const indexPath = resolve(demoRoot, 'index.html');
+    const upstreamHtml = (await readFile(indexPath, 'utf8'))
+      .replace(
+        /^\s*<link rel="stylesheet" href="stage-embed\.css" \/>\n/m,
+        '',
+      )
+      .replace(/^\s*<script src="stage-embed\.js"><\/script>\n/m, '');
+    await writeFile(indexPath, upstreamHtml);
+    const originalApp = await readFile(resolve(demoRoot, 'app.js'));
+    const originalStyles = await readFile(resolve(demoRoot, 'styles.css'));
+    const { installLocalSttAdaptation } = await loadSynchronizer();
+
+    await installLocalSttAdaptation({
+      demoRoot,
+      integrationRoot: resolve(projectRoot, 'integrations/stt-demo'),
+    });
+    const firstInstalledHtml = await readFile(
+      indexPath,
+      'utf8',
+    );
+    await installLocalSttAdaptation({
+      demoRoot,
+      integrationRoot: resolve(projectRoot, 'integrations/stt-demo'),
+    });
+
+    const html = await readFile(indexPath, 'utf8');
+    expect(html).toBe(firstInstalledHtml);
+    expect(html.match(/stage-embed\.css/g)).toHaveLength(1);
+    expect(html.match(/stage-embed\.js/g)).toHaveLength(1);
+    expect(await readFile(resolve(demoRoot, 'app.js'))).toEqual(originalApp);
+    expect(await readFile(resolve(demoRoot, 'styles.css'))).toEqual(
+      originalStyles,
+    );
+    await expect(
+      readFile(resolve(demoRoot, 'stage-embed.css')),
+    ).resolves.toEqual(
+      await readFile(
+        resolve(projectRoot, 'integrations/stt-demo/stage-embed.css'),
+      ),
+    );
+    await expect(
+      readFile(resolve(demoRoot, 'stage-embed.js')),
+    ).resolves.toEqual(
+      await readFile(
+        resolve(projectRoot, 'integrations/stt-demo/stage-embed.js'),
+      ),
+    );
   });
 
   it('commits an exact checksum contract for every published file', async () => {
@@ -299,7 +401,10 @@ describe('STT demo source provenance', () => {
     ],
   ])('rejects %s checksum coverage', async (_, mutate) => {
     const rootDir = await createSttPublicationFixture();
-    const contractPath = resolve(rootDir, 'evidence/stt-demo/checksums.json');
+    const contractPath = resolve(
+      rootDir,
+      'evidence/stt-demo/publication-checksums.json',
+    );
     const contract = JSON.parse(await readFile(contractPath, 'utf8'));
     const { validateSttDemoPublication } = await loadContentValidator();
     contract.files = mutate(contract.files);

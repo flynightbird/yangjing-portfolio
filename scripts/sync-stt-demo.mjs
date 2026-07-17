@@ -35,14 +35,27 @@ const requiredFiles = [
     'poster.png',
   ],
 ];
-const approvedPaths = [
+const approvedSourcePaths = [
   ...requiredFiles.map(([, output]) => output),
   'source-revision.json',
+].sort();
+const approvedPublicationPaths = [
+  ...approvedSourcePaths,
+  'stage-embed.css',
+  'stage-embed.js',
 ].sort();
 const defaultChecksumPath = path.join(
   root,
   'evidence/stt-demo/checksums.json',
 );
+const defaultPublicationChecksumPath = path.join(
+  root,
+  'evidence/stt-demo/publication-checksums.json',
+);
+const adapterFiles = ['stage-embed.css', 'stage-embed.js'];
+const adapterTags =
+  '  <link rel="stylesheet" href="stage-embed.css" />\n' +
+  '  <script src="stage-embed.js"></script>\n';
 
 function isInside(parent, candidate) {
   const relative = path.relative(parent, candidate);
@@ -57,7 +70,7 @@ function sha256(buffer) {
   return createHash('sha256').update(buffer).digest('hex');
 }
 
-function validateChecksumContract(contract) {
+function validateChecksumContract(contract, expectedPaths) {
   if (contract?.version !== 1 || !Array.isArray(contract.files)) {
     throw new Error('STT checksum contract must contain version 1 files.');
   }
@@ -78,7 +91,7 @@ function validateChecksumContract(contract) {
   }
 
   const paths = [...seen].sort();
-  if (JSON.stringify(paths) !== JSON.stringify(approvedPaths)) {
+  if (JSON.stringify(paths) !== JSON.stringify(expectedPaths)) {
     throw new Error(
       'STT checksum contract does not exactly cover the approved publication files.',
     );
@@ -96,8 +109,48 @@ export async function loadApprovedChecksums(
   } catch {
     throw new Error('STT checksum contract is missing or invalid JSON.');
   }
-  validateChecksumContract(contract);
+  validateChecksumContract(contract, approvedSourcePaths);
   return contract;
+}
+
+export async function loadPublicationChecksums(
+  checksumPath = defaultPublicationChecksumPath,
+) {
+  let contract;
+  try {
+    contract = JSON.parse(await fs.readFile(checksumPath, 'utf8'));
+  } catch {
+    throw new Error(
+      'STT publication checksum contract is missing or invalid JSON.',
+    );
+  }
+  validateChecksumContract(contract, approvedPublicationPaths);
+  return contract;
+}
+
+export async function installLocalSttAdaptation({
+  demoRoot,
+  integrationRoot = path.join(root, 'integrations/stt-demo'),
+  fileSystem = fs,
+}) {
+  await Promise.all(
+    adapterFiles.map((file) =>
+      fileSystem.copyFile(
+        path.join(integrationRoot, file),
+        path.join(demoRoot, file),
+      ),
+    ),
+  );
+  const indexPath = path.join(demoRoot, 'index.html');
+  const html = await fileSystem.readFile(indexPath, 'utf8');
+  const clean = html.replace(
+    /^(?:[ \t]*\r?\n)?[ \t]*<link rel="stylesheet" href="stage-embed\.css" \/>\r?\n[ \t]*<script src="stage-embed\.js"><\/script>\r?\n/m,
+    '',
+  );
+  await fileSystem.writeFile(
+    indexPath,
+    clean.replace('</head>', `${adapterTags}</head>`),
+  );
 }
 
 async function removeBackup(fileSystem, backupDir) {
@@ -153,7 +206,7 @@ export async function commitSyncedDirectory({
 export async function validateApprovedSourceFiles(sourceRootValue, contract) {
   const sourceRoot = path.resolve(sourceRootValue);
   const realSourceRoot = await fs.realpath(sourceRoot);
-  const checksums = validateChecksumContract(contract);
+  const checksums = validateChecksumContract(contract, approvedSourcePaths);
   const files = [];
 
   for (const [source, output] of requiredFiles) {
@@ -202,7 +255,10 @@ async function listPublishedFiles(directory, relative = '') {
 export async function validatePublishedSttDirectory(demoRoot, contract) {
   let checksums;
   try {
-    checksums = validateChecksumContract(contract);
+    checksums = validateChecksumContract(
+      contract,
+      approvedPublicationPaths,
+    );
   } catch (error) {
     return [error instanceof Error ? error.message : String(error)];
   }
@@ -220,7 +276,7 @@ export async function validatePublishedSttDirectory(demoRoot, contract) {
 
   const errors = [];
   const actualPaths = new Set(publishedFiles.map((file) => file.path));
-  for (const expectedPath of approvedPaths) {
+  for (const expectedPath of approvedPublicationPaths) {
     if (!actualPaths.has(expectedPath)) {
       errors.push(`missing STT demo file: ${expectedPath}`);
     }
@@ -306,7 +362,10 @@ export async function syncSttDemo(options = {}) {
   const transactionRoot = path.resolve(
     options.transactionRoot ?? path.join(root, '.asset-transactions'),
   );
-  const { commit, contract, files } = await validateSource(sourceRootValue);
+  const { commit, files } = await validateSource(sourceRootValue);
+  const publicationContract = await loadPublicationChecksums(
+    options.publicationChecksumPath,
+  );
 
   try {
     const outputStat = await fs.lstat(outputDir);
@@ -344,9 +403,13 @@ export async function syncSttDemo(options = {}) {
         2,
       )}\n`,
     );
+    await installLocalSttAdaptation({
+      demoRoot: temporaryDir,
+      integrationRoot: options.integrationRoot,
+    });
     const stagedErrors = await validatePublishedSttDirectory(
       temporaryDir,
-      contract,
+      publicationContract,
     );
     if (stagedErrors.length > 0) {
       throw new Error(`Staged STT demo failed validation: ${stagedErrors.join('; ')}`);
@@ -357,7 +420,7 @@ export async function syncSttDemo(options = {}) {
     throw error;
   }
 
-  return files.length + 1;
+  return files.length + 1 + adapterFiles.length;
 }
 
 if (process.argv[1] === scriptPath) {
