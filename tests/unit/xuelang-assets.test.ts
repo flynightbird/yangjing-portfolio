@@ -4,6 +4,8 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
 
+import * as assetPreparation from '../../scripts/prepare-xuelang-assets.mjs';
+
 interface XuelangAsset {
   readonly id: string;
   readonly chapter: string;
@@ -31,6 +33,27 @@ function loadManifest(): XuelangManifest {
 }
 
 describe('Xuelang evidence manifest', () => {
+  it('resolves source and Figma evidence without allowing path escape', () => {
+    const resolveSource = (
+      assetPreparation as typeof assetPreparation & {
+        resolveXuelangSourcePath?: (sourcePath: string) => string;
+      }
+    ).resolveXuelangSourcePath;
+
+    expect(resolveSource).toBeTypeOf('function');
+    if (!resolveSource) return;
+
+    expect(resolveSource('evidence/xuelang/source/20220723.png')).toBe(
+      path.join(root, 'evidence/xuelang/source/20220723.png'),
+    );
+    expect(resolveSource('evidence/xuelang/figma/quality-detail.png')).toBe(
+      path.join(root, 'evidence/xuelang/figma/quality-detail.png'),
+    );
+    expect(() => resolveSource('evidence/outside.png')).toThrow(
+      /source must stay inside evidence\/xuelang/i,
+    );
+  });
+
   it('declares matched before and after boards for the learning comparison', () => {
     const manifest = loadManifest();
     const comparisonAssets = manifest.assets.filter((asset) =>
@@ -48,6 +71,37 @@ describe('Xuelang evidence manifest', () => {
         /^public\/images\/xuelang\/learning-(before|after)-board\.webp$/,
       );
     }
+  });
+
+  it('declares dedicated source evidence for the four Hero product states', () => {
+    const manifest = loadManifest();
+    const heroAssets = manifest.assets.filter((asset) =>
+      ['hero-discover', 'hero-decide', 'hero-learn', 'hero-retain'].includes(asset.id),
+    );
+
+    expect(heroAssets.map(({ id, sourcePaths, output }) => ({ id, sourcePaths, output })))
+      .toEqual([
+        {
+          id: 'hero-discover',
+          sourcePaths: ['evidence/xuelang/source/hero-discover.png'],
+          output: 'public/images/xuelang/hero-discover.webp',
+        },
+        {
+          id: 'hero-decide',
+          sourcePaths: ['evidence/xuelang/source/hero-decide.png'],
+          output: 'public/images/xuelang/hero-decide.webp',
+        },
+        {
+          id: 'hero-learn',
+          sourcePaths: ['evidence/xuelang/source/hero-learn.png'],
+          output: 'public/images/xuelang/hero-learn.webp',
+        },
+        {
+          id: 'hero-retain',
+          sourcePaths: ['evidence/xuelang/source/hero-retain.png'],
+          output: 'public/images/xuelang/hero-retain.webp',
+        },
+      ]);
   });
 
   it('keeps source evidence traceable and replaceable', () => {

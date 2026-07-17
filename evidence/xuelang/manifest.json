@@ -29,6 +29,58 @@
       "replacementPath": "figma://t0kTQ49hZ2uIoYjeQD8oh7/20220732+20220735+20220737+20220739_1"
     },
     {
+      "id": "hero-discover",
+      "chapter": "00",
+      "sourceFrames": ["portfolio-supplied-xuelang-hero-discover"],
+      "sourcePaths": ["evidence/xuelang/source/hero-discover.png"],
+      "output": "public/images/xuelang/hero-discover.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 896, "height": 1941 },
+      "intrinsic": { "width": 896, "height": 1941 },
+      "purpose": "Introduce the course-discovery state with categories, recommendations, and selection entry points.",
+      "alt": { "zh": "课程发现页中的课程分类、内容推荐与选课入口", "en": "Course discovery with categories, recommendations, and selection entry points" },
+      "replacementPath": "figma://portfolio-supplied/xuelang-hero-discover"
+    },
+    {
+      "id": "hero-decide",
+      "chapter": "00",
+      "sourceFrames": ["portfolio-supplied-xuelang-hero-decide"],
+      "sourcePaths": ["evidence/xuelang/source/hero-decide.png"],
+      "output": "public/images/xuelang/hero-decide.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 896, "height": 1941 },
+      "intrinsic": { "width": 896, "height": 1941 },
+      "purpose": "Introduce the course-detail state that supports evaluation, trial, and purchase decisions.",
+      "alt": { "zh": "课程详情页中的课程信息、试听内容与购买决策入口", "en": "Course details supporting evaluation, trial content, and the purchase decision" },
+      "replacementPath": "figma://portfolio-supplied/xuelang-hero-decide"
+    },
+    {
+      "id": "hero-learn",
+      "chapter": "00",
+      "sourceFrames": ["portfolio-supplied-xuelang-hero-learn"],
+      "sourcePaths": ["evidence/xuelang/source/hero-learn.png"],
+      "output": "public/images/xuelang/hero-learn.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 897, "height": 1942 },
+      "intrinsic": { "width": 897, "height": 1942 },
+      "purpose": "Introduce the learning-entry state with organized content, progress, and continuation context.",
+      "alt": { "zh": "课程学习入口中的内容组织、学习进度与继续学习状态", "en": "Learning entry with organized content, progress, and a continue-learning state" },
+      "replacementPath": "figma://portfolio-supplied/xuelang-hero-learn"
+    },
+    {
+      "id": "hero-retain",
+      "chapter": "00",
+      "sourceFrames": ["portfolio-supplied-xuelang-hero-retain"],
+      "sourcePaths": ["evidence/xuelang/source/hero-retain.png"],
+      "output": "public/images/xuelang/hero-retain.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 904, "height": 1958 },
+      "intrinsic": { "width": 904, "height": 1958 },
+      "purpose": "Introduce note capture as a retained learning asset inside the active learning context.",
+      "alt": { "zh": "播放器内记录笔记并保留学习上下文的编辑状态", "en": "In-player note capture that preserves the active learning context" },
+      "replacementPath": "figma://portfolio-supplied/xuelang-hero-retain"
+    },
+    {
       "id": "quality-standard",
       "chapter": "04",
       "sourceFrames": ["20220723"],

@@ -73,10 +73,10 @@ describe('XuelangLayout', () => {
     expect(
       Array.from(panorama?.querySelectorAll('img') ?? [], (image) => image.getAttribute('src')),
     ).toEqual([
-      '/images/xuelang/quality-detail-ui.webp',
-      '/images/xuelang/purchase-selected.webp',
-      '/images/xuelang/learning-entry-ui.webp',
-      '/images/xuelang/learning-note-editor.webp',
+      '/images/xuelang/hero-discover.webp',
+      '/images/xuelang/hero-decide.webp',
+      '/images/xuelang/hero-learn.webp',
+      '/images/xuelang/hero-retain.webp',
     ]);
     expect(panorama?.querySelectorAll('[data-hero-product-state]')).toHaveLength(4);
     expect(screen.getByRole('link', { name: pdfLabel })).toHaveAttribute('href', pdfHref);
