@@ -1,4 +1,4 @@
-import { expect, test, type Page, type Route } from '@playwright/test';
+import { expect, test, type Locator, type Page, type Route } from '@playwright/test';
 
 const fullDemoPath = '/demos/stt-demo/index.html';
 const stageEmbedUrl = /\/demos\/stt-demo\/index\.html\?embed=stage$/;
@@ -33,6 +33,18 @@ function expectStableBox(before: ElementBox | null, after: ElementBox | null) {
   for (const dimension of ['x', 'y', 'width', 'height'] as const) {
     expect(Math.abs(after[dimension] - before[dimension])).toBeLessThanOrEqual(1);
   }
+}
+
+async function offsetBox(locator: Locator): Promise<ElementBox> {
+  return locator.evaluate((element) => {
+    const htmlElement = element as HTMLElement;
+    return {
+      x: htmlElement.offsetLeft,
+      y: htmlElement.offsetTop,
+      width: htmlElement.offsetWidth,
+      height: htmlElement.offsetHeight,
+    };
+  });
 }
 
 async function holdStageEmbed(page: Page) {
@@ -113,8 +125,11 @@ test.describe('STT homepage live-stage presentation', () => {
       expect(
         await fallback.evaluate((image) => (image as HTMLImageElement).naturalWidth),
       ).toBeGreaterThan(0);
+      await page.evaluate(() => document.fonts.ready.then(() => undefined));
       const browserBoxBefore = await browserWindow.boundingBox();
       const viewportBox = await viewport.boundingBox();
+      const browserOffsetsBefore = await offsetBox(browserWindow);
+      const viewportOffsetsBefore = await offsetBox(viewport);
       expect(viewportBox).not.toBeNull();
       expect((viewportBox?.width ?? 0) / (viewportBox?.height ?? 1)).toBeCloseTo(2, 2);
       const relativeViewportBefore = relativeBox(viewportBox, browserBoxBefore);
@@ -123,6 +138,8 @@ test.describe('STT homepage live-stage presentation', () => {
       await expect(media).toHaveAttribute('data-stt-ready', 'true');
       await expect(fallback).toHaveCSS('opacity', '0');
       await expect(frame).toHaveCSS('opacity', '1');
+      expectStableBox(browserOffsetsBefore, await offsetBox(browserWindow));
+      expectStableBox(viewportOffsetsBefore, await offsetBox(viewport));
       expectStableBox(
         relativeViewportBefore,
         relativeBox(
@@ -272,6 +289,81 @@ test.describe('STT homepage live-stage presentation', () => {
       await expect
         .poll(() => original.innerHTML(), { timeout: 3_800 })
         .not.toBe(pausedOriginal);
+    } finally {
+      await cleanup();
+    }
+  });
+
+  test('freezes a pending transcript fade timeout while the stage is paused', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'Timer lifecycle is viewport-independent.');
+    testInfo.setTimeout(30_000);
+    const { requestHeld, releaseRequest, cleanup } = await holdStageEmbed(page);
+
+    try {
+      await page.goto('/en/', { waitUntil: 'domcontentloaded' });
+      const media = page.locator(sttMediaSelector);
+      await media.scrollIntoViewIfNeeded();
+      await requestHeld;
+      releaseRequest();
+      await expect(media).toHaveAttribute('data-stt-ready', 'true');
+
+      const stage = page.frameLocator(
+        'iframe[src="/demos/stt-demo/index.html?embed=stage"]',
+      );
+      const embedRoot = stage.locator('html');
+      const original = stage.locator('.snip-original');
+      await expect(embedRoot).toHaveAttribute('data-stt-playback', 'playing');
+      await original.evaluate((element) => {
+        const observedWindow = window as Window & {
+          __sttPendingFadeObserved?: boolean;
+        };
+        observedWindow.__sttPendingFadeObserved = false;
+        const observer = new MutationObserver(() => {
+          if (
+            observedWindow.__sttPendingFadeObserved ||
+            (element as HTMLElement).style.opacity !== '0'
+          ) {
+            return;
+          }
+          observedWindow.__sttPendingFadeObserved = true;
+          observer.disconnect();
+          parent.scrollTo({ top: 0, behavior: 'instant' });
+        });
+        observer.observe(element, {
+          attributes: true,
+          attributeFilter: ['style'],
+        });
+      });
+
+      await expect
+        .poll(
+          () =>
+            original.evaluate(
+              () =>
+                (window as Window & { __sttPendingFadeObserved?: boolean })
+                  .__sttPendingFadeObserved,
+            ),
+          { timeout: 7_000 },
+        )
+        .toBe(true);
+      await expect(embedRoot).toHaveAttribute('data-stt-playback', 'paused');
+      const pausedText = await original.innerHTML();
+      expect(await original.evaluate((element) => element.style.opacity)).toBe('0');
+
+      await page.waitForTimeout(650);
+      expect(await original.innerHTML()).toBe(pausedText);
+      expect(await original.evaluate((element) => element.style.opacity)).toBe('0');
+      await expect(embedRoot).toHaveAttribute('data-stt-playback', 'paused');
+
+      await media.scrollIntoViewIfNeeded();
+      await expect(embedRoot).toHaveAttribute('data-stt-playback', 'playing');
+      await expect
+        .poll(() => original.evaluate((element) => element.style.opacity), {
+          timeout: 1_000,
+        })
+        .toBe('1');
     } finally {
       await cleanup();
     }

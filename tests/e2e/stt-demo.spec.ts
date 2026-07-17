@@ -328,13 +328,13 @@ test('the stage timer shim freezes functional one-shot timeouts while paused', a
       state.runs += 1;
       state.correctThis &&= this === window;
       state.args = args;
-    }, 300, 'forwarded', 42);
+    }, 1_000, 'forwarded', 42);
     Object.assign(window, { __sttOneShotState: state });
     return id;
   });
   expect(timeoutId).toBeLessThan(0);
 
-  await page.waitForTimeout(100);
+  await page.waitForTimeout(700);
   await page.evaluate(() => {
     window.postMessage(
       { type: 'stt-stage-playback', paused: true },
@@ -342,7 +342,7 @@ test('the stage timer shim freezes functional one-shot timeouts while paused', a
     );
   });
   await expect(page.locator('html')).toHaveAttribute('data-stt-playback', 'paused');
-  await page.waitForTimeout(350);
+  await page.waitForTimeout(1_200);
   expect(await page.evaluate(() => (
     window as Window & {
       __sttOneShotState: {
@@ -367,12 +367,15 @@ test('the stage timer shim freezes functional one-shot timeouts while paused', a
         args: unknown[];
       };
     }
-  ).__sttOneShotState)).toEqual({
+  ).__sttOneShotState), {
+    timeout: 600,
+    intervals: [25, 50, 100],
+  }).toEqual({
     runs: 1,
     correctThis: true,
     args: ['forwarded', 42],
   });
-  await page.waitForTimeout(350);
+  await page.waitForTimeout(1_100);
   expect(await page.evaluate(() => (
     window as Window & { __sttOneShotState: { runs: number } }
   ).__sttOneShotState.runs)).toBe(1);
