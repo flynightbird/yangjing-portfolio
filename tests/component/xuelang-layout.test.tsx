@@ -71,7 +71,12 @@ describe('XuelangLayout', () => {
     ]);
     expect(panorama?.querySelectorAll('[data-hero-product-state]')).toHaveLength(4);
     expect(screen.queryByRole('link', { name: /PDF/i })).not.toBeInTheDocument();
-    expect(container.querySelector('[data-xuelang-opening]')).toBeInTheDocument();
+    const xuelangRoot = container.querySelector('[data-xuelang-case]');
+    expect(xuelangRoot).toHaveAttribute('data-xuelang-opening');
+    expect(xuelangRoot?.querySelector('[data-case-study]')).toBeInTheDocument();
+    expect(container.querySelector('[data-case-study]')).not.toHaveAttribute(
+      'data-xuelang-opening',
+    );
     expect(screen.getByText(proof, { exact: true })).toBeVisible();
     expect(container.querySelector('[data-hero-thesis]')).toContainElement(
       screen.getByRole('heading', { level: 1, name: title }),
