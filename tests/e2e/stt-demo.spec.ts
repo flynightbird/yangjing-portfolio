@@ -2,6 +2,24 @@ import { expect, test, type Page } from '@playwright/test';
 
 test.setTimeout(60_000);
 
+const embeddedDemoResources = [
+  ['/demos/stt-demo/index.html', 'document'],
+  ['/demos/stt-demo/poster.png', 'image'],
+  [
+    '/demos/stt-demo/stt-ui-component-library/packages/stt-ui/src/tokens/tokens.css',
+    'stylesheet',
+  ],
+  [
+    '/demos/stt-demo/stt-ui-component-library/packages/stt-ui/src/styles/components.css',
+    'stylesheet',
+  ],
+  ['/demos/stt-demo/styles.css', 'stylesheet'],
+  ['/demos/stt-demo/stage-embed.css', 'stylesheet'],
+  ['/demos/stt-demo/stage-embed.js', 'script'],
+  ['/demos/stt-demo/app.js', 'script'],
+  ['/demos/stt-demo/assets/agora-logo.svg', 'image'],
+] as const;
+
 function observeRuntime(page: Page, baseURL: string | undefined) {
   if (!baseURL) throw new Error('STT E2E requires a configured base URL');
 
@@ -32,12 +50,7 @@ for (const locale of ['en', 'zh'] as const) {
       const runtime = observeRuntime(page, testInfo.project.use.baseURL);
       const embeddedDemoResponses =
         testInfo.project.name !== 'mobile'
-          ? [
-              ['/demos/stt-demo/index.html', 'document'],
-              ['/demos/stt-demo/app.js', 'script'],
-              ['/demos/stt-demo/stage-embed.js', 'script'],
-              ['/demos/stt-demo/styles.css', 'stylesheet'],
-            ].map(([pathname, resourceType]) =>
+          ? embeddedDemoResources.map(([pathname, resourceType]) =>
               page.waitForResponse((candidate) => {
                 const url = new URL(candidate.url());
                 return (
@@ -88,10 +101,14 @@ for (const locale of ['en', 'zh'] as const) {
           embeddedDemoResponses,
         )) {
           expect(embeddedDemoResponse.status()).toBe(200);
+          expect(await embeddedDemoResponse.finished()).toBeNull();
         }
         const prototype = page.frameLocator(
           'iframe[src="/demos/stt-demo/index.html"]',
         );
+        await expect(
+          prototype.locator('#prestartPanel .prestart-tabs'),
+        ).toHaveCount(1);
         await expect(prototype.locator('#pageLanding')).toBeVisible();
         await expect(prototype.locator('body')).not.toHaveText('');
       }
