@@ -30,16 +30,23 @@ for (const locale of ['en', 'zh'] as const) {
       page,
     }, testInfo) => {
       const runtime = observeRuntime(page, testInfo.project.use.baseURL);
-      const embeddedDemoResponse =
-        testInfo.project.name === 'desktop'
-          ? page.waitForResponse((candidate) => {
-              const url = new URL(candidate.url());
-              return (
-                url.pathname === '/demos/stt-demo/index.html' &&
-                candidate.request().resourceType() === 'document'
-              );
-            })
-          : null;
+      const embeddedDemoResponses =
+        testInfo.project.name !== 'mobile'
+          ? [
+              ['/demos/stt-demo/index.html', 'document'],
+              ['/demos/stt-demo/app.js', 'script'],
+              ['/demos/stt-demo/stage-embed.js', 'script'],
+              ['/demos/stt-demo/styles.css', 'stylesheet'],
+            ].map(([pathname, resourceType]) =>
+              page.waitForResponse((candidate) => {
+                const url = new URL(candidate.url());
+                return (
+                  url.pathname === pathname &&
+                  candidate.request().resourceType() === resourceType
+                );
+              }),
+            )
+          : [];
       const response = await page.goto(`/${locale}/build/stt-demo/`, {
         waitUntil: 'domcontentloaded',
       });
@@ -76,17 +83,17 @@ for (const locale of ['en', 'zh'] as const) {
           document.documentElement.clientWidth,
       );
       expect(overflow).toBeLessThanOrEqual(1);
-      if (embeddedDemoResponse) {
-        expect((await embeddedDemoResponse).status()).toBe(200);
+      if (embeddedDemoResponses.length > 0) {
+        for (const embeddedDemoResponse of await Promise.all(
+          embeddedDemoResponses,
+        )) {
+          expect(embeddedDemoResponse.status()).toBe(200);
+        }
         const prototype = page.frameLocator(
           'iframe[src="/demos/stt-demo/index.html"]',
         );
-        await expect
-          .poll(() =>
-            prototype.locator('html').evaluate(() => document.readyState),
-          )
-          .toBe('complete');
         await expect(prototype.locator('#pageLanding')).toBeVisible();
+        await expect(prototype.locator('body')).not.toHaveText('');
       }
       expect(runtime.failedLocalRequests).toEqual([]);
       expect(runtime.consoleErrors).toEqual([]);
@@ -328,13 +335,13 @@ test('the stage timer shim freezes functional one-shot timeouts while paused', a
       state.runs += 1;
       state.correctThis &&= this === window;
       state.args = args;
-    }, 1_000, 'forwarded', 42);
+    }, 4_000, 'forwarded', 42);
     Object.assign(window, { __sttOneShotState: state });
     return id;
   });
   expect(timeoutId).toBeLessThan(0);
 
-  await page.waitForTimeout(700);
+  await page.waitForTimeout(2_000);
   await page.evaluate(() => {
     window.postMessage(
       { type: 'stt-stage-playback', paused: true },
@@ -342,7 +349,7 @@ test('the stage timer shim freezes functional one-shot timeouts while paused', a
     );
   });
   await expect(page.locator('html')).toHaveAttribute('data-stt-playback', 'paused');
-  await page.waitForTimeout(1_200);
+  await page.waitForTimeout(4_300);
   expect(await page.evaluate(() => (
     window as Window & {
       __sttOneShotState: {
@@ -368,8 +375,8 @@ test('the stage timer shim freezes functional one-shot timeouts while paused', a
       };
     }
   ).__sttOneShotState), {
-    timeout: 600,
-    intervals: [25, 50, 100],
+    timeout: 2_800,
+    intervals: [50, 100, 200],
   }).toEqual({
     runs: 1,
     correctThis: true,
