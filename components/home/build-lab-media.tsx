@@ -15,7 +15,8 @@ export function BuildLabMedia({ href }: BuildLabMediaProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const isVisibleRef = useRef(false);
   const [shouldLoad, setShouldLoad] = useState(false);
-  const [isReady, setIsReady] = useState(false);
+  const [iframeSource, setIframeSource] = useState<Window | null>(null);
+  const [readySource, setReadySource] = useState<Window | null>(null);
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
   const x = useSpring(rawX, { stiffness: 150, damping: 22, mass: 0.7 });
@@ -28,6 +29,14 @@ export function BuildLabMedia({ href }: BuildLabMediaProps) {
     );
   }, []);
 
+  const setIframeNode = useCallback((iframe: HTMLIFrameElement | null) => {
+    iframeRef.current = iframe;
+    const source = iframe?.contentWindow ?? null;
+    setIframeSource((currentSource) =>
+      currentSource === source ? currentSource : source,
+    );
+  }, []);
+
   useEffect(() => {
     if (reduceMotion) return;
 
@@ -37,7 +46,10 @@ export function BuildLabMedia({ href }: BuildLabMediaProps) {
     if (typeof IntersectionObserver === 'undefined') {
       let isMounted = true;
       queueMicrotask(() => {
-        if (isMounted) setShouldLoad(true);
+        if (!isMounted) return;
+
+        isVisibleRef.current = true;
+        setShouldLoad(true);
       });
       return () => {
         isMounted = false;
@@ -81,17 +93,19 @@ export function BuildLabMedia({ href }: BuildLabMediaProps) {
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
+      const currentIframeSource = iframeRef.current?.contentWindow;
       if (
+        !currentIframeSource ||
         !event.data ||
         typeof event.data !== 'object' ||
         event.data.type !== 'stt-stage-ready' ||
         event.origin !== window.location.origin ||
-        event.source !== iframeRef.current?.contentWindow
+        event.source !== currentIframeSource
       ) {
         return;
       }
 
-      setIsReady(true);
+      setReadySource(currentIframeSource);
       postPlaybackState(!isVisibleRef.current);
     };
 
@@ -111,6 +125,12 @@ export function BuildLabMedia({ href }: BuildLabMediaProps) {
     rawX.set(0);
     rawY.set(0);
   };
+
+  const isReady =
+    !reduceMotion &&
+    shouldLoad &&
+    iframeSource !== null &&
+    readySource === iframeSource;
 
   return (
     <a
@@ -138,7 +158,7 @@ export function BuildLabMedia({ href }: BuildLabMediaProps) {
         </span>
         {shouldLoad && !reduceMotion ? (
           <iframe
-            ref={iframeRef}
+            ref={setIframeNode}
             src="/demos/stt-demo/index.html?embed=stage"
             title="Animated STT Demo conversation stage"
             aria-hidden="true"

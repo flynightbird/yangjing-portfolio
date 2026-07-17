@@ -127,6 +127,57 @@ describe('BuildLabMedia live STT stage', () => {
     expect(screen.getByRole('img', { name: /STT Demo product stage/i })).toBeVisible();
   });
 
+  it('requires a replacement iframe to send its own ready message after reduced motion', () => {
+    const { container, rerender } = renderMedia();
+    loadStage();
+    const anchor = screen.getByRole('link');
+    const firstIframe = container.querySelector('iframe') as HTMLIFrameElement;
+
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { type: 'stt-stage-ready' },
+          origin: window.location.origin,
+          source: firstIframe.contentWindow,
+        }),
+      );
+    });
+    expect(anchor).toHaveAttribute('data-stt-ready', 'true');
+
+    motionPreference.reduced = true;
+    rerender(<BuildLabMedia href="/demos/stt-demo/index.html" />);
+    expect(container.querySelector('iframe')).not.toBeInTheDocument();
+    expect(anchor).toHaveAttribute('data-stt-ready', 'false');
+
+    motionPreference.reduced = false;
+    rerender(<BuildLabMedia href="/demos/stt-demo/index.html" />);
+    const replacementIframe = container.querySelector('iframe') as HTMLIFrameElement;
+    expect(replacementIframe).not.toBe(firstIframe);
+    expect(anchor).toHaveAttribute('data-stt-ready', 'false');
+
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { type: 'stt-stage-ready' },
+          origin: window.location.origin,
+          source: firstIframe.contentWindow,
+        }),
+      );
+    });
+    expect(anchor).toHaveAttribute('data-stt-ready', 'false');
+
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { type: 'stt-stage-ready' },
+          origin: window.location.origin,
+          source: replacementIframe.contentWindow,
+        }),
+      );
+    });
+    expect(anchor).toHaveAttribute('data-stt-ready', 'true');
+  });
+
   it('posts playback changes from a separate visibility observer without marking ready', () => {
     const { container } = renderMedia();
     loadStage();
@@ -208,9 +259,10 @@ describe('BuildLabMedia live STT stage', () => {
     );
   });
 
-  it('loads immediately when IntersectionObserver is unavailable', async () => {
+  it('loads immediately and treats the eager fallback as visible without IntersectionObserver', async () => {
     vi.stubGlobal('IntersectionObserver', undefined);
     const { container } = renderMedia();
+    const anchor = screen.getByRole('link');
 
     await waitFor(() => {
       expect(container.querySelector('iframe')).toHaveAttribute(
@@ -218,6 +270,38 @@ describe('BuildLabMedia live STT stage', () => {
         '/demos/stt-demo/index.html?embed=stage',
       );
     });
+    const iframe = container.querySelector('iframe') as HTMLIFrameElement;
+    const postMessage = vi.spyOn(iframe.contentWindow as Window, 'postMessage');
+
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { type: 'stt-stage-ready' },
+          origin: window.location.origin,
+          source: iframe.contentWindow,
+        }),
+      );
+    });
+
+    expect(anchor).toHaveAttribute('data-stt-ready', 'true');
+    expect(postMessage).toHaveBeenCalledWith(
+      { type: 'stt-stage-playback', paused: false },
+      window.location.origin,
+    );
+  });
+
+  it('cancels the immediate-load microtask when unmounted', async () => {
+    vi.stubGlobal('IntersectionObserver', undefined);
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const { container, unmount } = renderMedia();
+
+    unmount();
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(container.querySelector('iframe')).not.toBeInTheDocument();
+    expect(consoleError).not.toHaveBeenCalled();
   });
 
   it('disconnects active observers and removes the message listener on unmount', () => {
@@ -229,11 +313,17 @@ describe('BuildLabMedia live STT stage', () => {
     const messageListener = addEventListener.mock.calls.find(
       ([type]) => type === 'message',
     )?.[1];
+    const proximityDisconnectsBeforeUnmount = proximityObserver.disconnect.mock.calls.length;
+    const visibilityDisconnectsBeforeUnmount = visibilityObserver.disconnect.mock.calls.length;
 
     unmount();
 
-    expect(proximityObserver.disconnect).toHaveBeenCalled();
-    expect(visibilityObserver.disconnect).toHaveBeenCalled();
+    expect(proximityObserver.disconnect).toHaveBeenCalledTimes(
+      proximityDisconnectsBeforeUnmount + 1,
+    );
+    expect(visibilityObserver.disconnect).toHaveBeenCalledTimes(
+      visibilityDisconnectsBeforeUnmount + 1,
+    );
     expect(messageListener).toBeDefined();
     expect(removeEventListener).toHaveBeenCalledWith('message', messageListener);
   });
