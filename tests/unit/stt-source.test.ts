@@ -322,6 +322,94 @@ describe('STT demo source provenance', () => {
     ]);
   });
 
+  it('keeps a committed adapter when transaction cleanup fails', async () => {
+    const rootDir = await makeTemporaryDirectory('stt-adapter-cleanup-');
+    const demoRoot = resolve(rootDir, 'stt-demo');
+    const integrationRoot = resolve(rootDir, 'integration');
+    await mkdir(demoRoot);
+    await mkdir(integrationRoot);
+    await writeFile(resolve(demoRoot, 'index.html'), '<head>\n</head>\n');
+    await writeFile(resolve(integrationRoot, 'stage-embed.css'), 'new css');
+    await writeFile(resolve(integrationRoot, 'stage-embed.js'), 'new js');
+    const { installLocalSttAdaptation } = await loadSynchronizer();
+    let transactionDirectory: string | undefined;
+    const cleanupError = new Error('injected transaction cleanup failure');
+    const fileSystem = {
+      ...fsPromises,
+      mkdtemp: async (prefix: string) => {
+        transactionDirectory = await fsPromises.mkdtemp(prefix);
+        return transactionDirectory;
+      },
+      rm: async (target: PathLike, options?: RmOptions) => {
+        if (target === transactionDirectory) throw cleanupError;
+        return fsPromises.rm(target, options);
+      },
+    };
+
+    await expect(
+      installLocalSttAdaptation({
+        demoRoot,
+        integrationRoot,
+        fileSystem,
+      }),
+    ).resolves.toBeUndefined();
+    await expect(readFile(resolve(demoRoot, 'stage-embed.css'), 'utf8')).resolves
+      .toBe('new css');
+    await expect(readFile(resolve(demoRoot, 'stage-embed.js'), 'utf8')).resolves
+      .toBe('new js');
+    await expect(readFile(resolve(demoRoot, 'index.html'), 'utf8')).resolves
+      .toContain('stage-embed.js');
+  });
+
+  it('preserves a staging error when transaction cleanup also fails', async () => {
+    const rootDir = await makeTemporaryDirectory(
+      'stt-adapter-staging-cleanup-',
+    );
+    const demoRoot = resolve(rootDir, 'stt-demo');
+    const integrationRoot = resolve(rootDir, 'integration');
+    await mkdir(demoRoot);
+    await mkdir(integrationRoot);
+    await writeFile(resolve(demoRoot, 'index.html'), '<head>\n</head>\n');
+    await writeFile(resolve(integrationRoot, 'stage-embed.css'), 'new css');
+    await writeFile(resolve(integrationRoot, 'stage-embed.js'), 'new js');
+    const { installLocalSttAdaptation } = await loadSynchronizer();
+    let transactionDirectory: string | undefined;
+    const stagingError = new Error('injected adapter staging failure');
+    const cleanupError = new Error('injected transaction cleanup failure');
+    const fileSystem = {
+      ...fsPromises,
+      mkdtemp: async (prefix: string) => {
+        transactionDirectory = await fsPromises.mkdtemp(prefix);
+        return transactionDirectory;
+      },
+      copyFile: async () => {
+        throw stagingError;
+      },
+      rm: async (target: PathLike, options?: RmOptions) => {
+        if (target === transactionDirectory) throw cleanupError;
+        return fsPromises.rm(target, options);
+      },
+    };
+
+    let rejection: unknown;
+    try {
+      await installLocalSttAdaptation({
+        demoRoot,
+        integrationRoot,
+        fileSystem,
+      });
+    } catch (error) {
+      rejection = error;
+    }
+
+    expect(rejection).toBeDefined();
+    if (rejection instanceof AggregateError) {
+      expect(rejection.errors[0]).toBe(stagingError);
+    } else {
+      expect(rejection).toBe(stagingError);
+    }
+  });
+
   it('atomically replaces the STT publication checksum contract', async () => {
     const rootDir = await makeTemporaryDirectory('stt-checksum-write-');
     const demoRoot = resolve(rootDir, 'demo');

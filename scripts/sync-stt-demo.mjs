@@ -141,6 +141,8 @@ export async function installLocalSttAdaptation({
   );
   const stagedRoot = path.join(transactionDirectory, 'publication');
   const backupRoot = path.join(transactionDirectory, 'previous');
+  let commitCompleted = false;
+  let installationError;
   let preserveTransaction = false;
 
   try {
@@ -169,15 +171,32 @@ export async function installLocalSttAdaptation({
       temporaryDir: stagedRoot,
       backupDir: backupRoot,
     });
+    commitCompleted = true;
   } catch (error) {
+    installationError = error;
     preserveTransaction = error instanceof AggregateError;
     throw error;
   } finally {
     if (!preserveTransaction) {
-      await fileSystem.rm(transactionDirectory, {
-        force: true,
-        recursive: true,
-      });
+      try {
+        await fileSystem.rm(transactionDirectory, {
+          force: true,
+          recursive: true,
+        });
+      } catch (cleanupError) {
+        if (commitCompleted) {
+          console.warn(
+            `Unable to remove STT adapter transaction ${transactionDirectory}: ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`,
+          );
+        } else if (installationError) {
+          throw new AggregateError(
+            [installationError, cleanupError],
+            'STT adapter installation failed and its transaction directory could not be removed.',
+          );
+        } else {
+          throw cleanupError;
+        }
+      }
     }
   }
 }
