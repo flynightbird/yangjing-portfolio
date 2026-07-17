@@ -106,9 +106,10 @@ describe('XuelangLayout', () => {
 
     expect(
       container.querySelectorAll(
-        '[data-evidence] img, [data-wipe-interactive] img, [data-course-entry-interactive] img',
+        '[data-evidence] img, [data-wipe-interactive] img, [data-course-entry-interactive] img, [data-interaction-board] img',
       ).length,
     ).toBeGreaterThanOrEqual(12);
+    expect(container.querySelector('[data-interaction-board]')).toBeInTheDocument();
     expect(screen.getAllByTestId('learning-state')).toHaveLength(5);
     expect(container.querySelectorAll('[data-learning-compact]')).toHaveLength(3);
     expect(screen.getByRole('tablist', { name: '课程入口状态' })).toBeVisible();

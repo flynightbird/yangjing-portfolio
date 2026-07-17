@@ -174,7 +174,7 @@ export const metadata = {
       { index: '01', title: '课程入口', description: '入口不再固定展示同一内容，而是根据未购课、新课未看、最近学习与老师直播四种状态，给出此刻最相关的下一步行动。', courseEntry: true },
       { index: '02', title: '沉浸观看', description: '收拢干扰信息，让内容与必要控制保持清晰。' },
       { index: '03', title: '碎片学习', description: '在短时间返回时，保留进度与上下文，让学习可以继续。' },
-      { index: '04', title: '互动', description: '把问题、反馈与课程内容放在同一学习语境中。', image: { src: '/images/xuelang/learning-interaction.webp', width: 1920, height: 1080, alt: '课程学习中的互动与反馈界面', label: 'INTERACTION', caption: '互动围绕内容发生，而不是跳出学习场景。' } },
+      { index: '04', title: '互动', description: '把沉浸观看、高频控制与课时切换放在同一学习语境中。', interactionBoard: true },
       { index: '05', title: '笔记与学习资产', description: '让笔记与成果持续积累，形成再次访问的个人价值。' },
     ]}
   />
@@ -189,10 +189,10 @@ export const metadata = {
       { title: '自动保留上下文', description: '截图和视频时间点共同保存，回看时能快速定位。' },
       { title: '形成个人资产', description: '笔记按课程持续积累，而不是一次性的观看记录。' },
     ]}
-    primary={{ src: '/images/xuelang/learning-note-editor.webp', width: 470, height: 875, alt: '播放器内的笔记编辑界面', label: '03 / EDIT IN CONTEXT', caption: '记录动作不离开当前视频。' }}
+    primary={{ src: '/images/xuelang/learning-note-editor.webp', width: 904, height: 1958, alt: '播放器内保留视频时间点与截图的笔记编辑界面', label: '02 / EDIT IN CONTEXT', caption: '记录动作不离开当前视频。' }}
     supporting={[
-      { src: '/images/xuelang/learning-note-player.webp', width: 390, height: 660, alt: '播放器中的笔记入口', label: '01 / CAPTURE', caption: '高频操作区直接进入笔记。' },
-      { src: '/images/xuelang/learning-note-list.webp', width: 355, height: 665, alt: '按课程积累的个人笔记列表', label: '02 / ACCUMULATE', caption: '观看记录被组织为可回看的资产。' },
+      { src: '/images/xuelang/learning-note-player.webp', width: 904, height: 1958, alt: '播放器高频操作区中的笔记入口', label: '01 / CAPTURE', caption: '高频操作区直接进入笔记。' },
+      { src: '/images/xuelang/learning-note-list.webp', width: 904, height: 1958, alt: '按课程持续积累的个人笔记列表', label: '03 / ACCUMULATE', caption: '观看记录被组织为可回看的资产。' },
     ]}
   />
 </section>

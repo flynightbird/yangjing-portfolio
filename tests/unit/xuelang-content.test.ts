@@ -107,22 +107,28 @@ describe('Xuelang bilingual case content', () => {
     for (const source of [
       'learning-before-board.webp',
       'learning-after-board.webp',
-      'learning-interaction.webp',
     ]) {
       expect(learningZh).toContain(`/images/xuelang/${source}`);
     }
     expect(learningZh).toContain('courseEntry: true');
+    expect(learningZh).toContain('interactionBoard: true');
+    expect(learningZh).not.toContain("image: { src: '/images/xuelang/learning-interaction.webp'");
     expect(learningZh).not.toContain('/images/xuelang/learning-focus.webp');
     expect(learningZh).not.toContain('/images/xuelang/learning-entry-ui.webp');
     const learningEn = section(en, 'decision-learning');
     expect(learningEn).toContain('courseEntry: true');
+    expect(learningEn).toContain('interactionBoard: true');
+    expect(learningEn).not.toContain("image: { src: '/images/xuelang/learning-interaction.webp'");
     for (const source of [
       'learning-note-player.webp',
       'learning-note-list.webp',
       'learning-note-editor.webp',
     ]) {
       expect(learningZh).toContain(`/images/xuelang/${source}`);
+      expect(learningEn).toContain(`/images/xuelang/${source}`);
     }
+    expect(learningZh.match(/width: 904, height: 1958/g)).toHaveLength(3);
+    expect(learningEn.match(/width: 904, height: 1958/g)).toHaveLength(3);
   });
 
   it('publishes only the approved results and their 14-day basis', () => {
