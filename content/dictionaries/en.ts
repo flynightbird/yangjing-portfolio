@@ -280,7 +280,7 @@ export const enDictionary = {
       },
     },
     archive: {
-      title: 'Visual Archive',
+      title: 'More Consumer Product Work',
       description:
         'A lighter image-led view of selected product, brand, and character work.',
       draftSlot: 'Draft media slot',

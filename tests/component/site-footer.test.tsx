@@ -6,10 +6,7 @@ import { SiteFooter } from '@/components/shell/site-footer';
 afterEach(cleanup);
 
 describe('SiteFooter', () => {
-  it.each([
-    ['en', '/en/about/'],
-    ['zh', '/zh/about/'],
-  ] as const)('offers direct email and About only in %s', (locale, aboutHref) => {
+  it.each(['en', 'zh'] as const)('offers direct email and minimal metadata in %s', (locale) => {
     const { container } = render(<SiteFooter locale={locale} />);
 
     expect(container.querySelector('[data-liquid-field="footer"]')).toBeInTheDocument();
@@ -17,10 +14,9 @@ describe('SiteFooter', () => {
       'href',
       'mailto:yangux@qq.com',
     );
-    expect(screen.getByRole('link', { name: /about|关于/i })).toHaveAttribute(
-      'href',
-      aboutHref,
-    );
+    expect(screen.queryByRole('link', { name: /about|关于/i })).not.toBeInTheDocument();
+    expect(screen.queryByText(/Cloudflare Web Analytics|静态网站使用/i)).not.toBeInTheDocument();
+    expect(screen.getByText('© 2026 Yang Jing')).toBeVisible();
     expect(screen.queryByText(/resume|简历/i)).not.toBeInTheDocument();
   });
 });

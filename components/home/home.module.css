@@ -15,7 +15,7 @@
   --hero-coral: #ff6b55;
   --hero-line: rgba(244, 244, 239, 0.16);
   position: relative;
-  min-height: max(48rem, calc(100dvh - 1rem));
+  min-height: max(44rem, calc(100dvh - 1rem));
   overflow: hidden;
   border-bottom: 1px solid var(--color-carbon);
   background: var(--hero-black);
@@ -23,42 +23,20 @@
   isolation: isolate;
 }
 
-.heroTopbar {
+.heroTitle {
   position: absolute;
-  z-index: 20;
-  inset: 78px 0 auto;
-  display: grid;
-  height: 3.75rem;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  align-items: center;
-  padding-inline: var(--content-gutter);
-  border-bottom: 1px solid var(--hero-line);
-  background: rgba(5, 5, 5, 0.9);
-  backdrop-filter: blur(14px);
-}
-
-.heroTopbar h1,
-.heroTopbar span {
+  width: 1px;
+  height: 1px;
+  padding: 0;
   margin: 0;
-  font-family: var(--font-mono);
-  font-size: 0.67rem;
-  font-weight: 500;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.heroDirection {
-  color: var(--hero-iris);
-}
-
-.heroIdentity {
-  justify-self: end;
-  color: var(--hero-muted);
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
 }
 
 .heroLayer {
   position: absolute;
-  inset: calc(78px + 3.75rem) 0 0;
+  inset: 78px 0 0;
   overflow: hidden;
 }
 
@@ -190,7 +168,7 @@
 .heroPortrait {
   position: absolute;
   z-index: 3;
-  inset-block-start: 0.75rem;
+  inset-block-start: 5.25rem;
   inset-inline-start: 50%;
   width: min(55vw, 46.875rem);
   max-width: none;
@@ -267,7 +245,7 @@
 .heroDivider {
   position: absolute;
   z-index: 15;
-  inset-block: calc(78px + 3.75rem) 0;
+  inset-block: 78px 0;
   inset-inline-start: var(--hero-split);
   width: 2.75rem;
   min-height: 0;
@@ -358,22 +336,12 @@
     min-height: max(40rem, calc(100dvh - var(--header-height) - 1.5rem));
   }
 
-  .heroTopbar {
-    inset-block-start: 64px;
-    height: 3.5rem;
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
-  .heroDirection {
-    display: none;
-  }
-
   .heroLayer {
-    inset-block-start: calc(64px + 3.5rem);
+    inset-block-start: 64px;
   }
 
   .heroPortrait {
-    inset-block-start: 7.4rem;
+    inset-block-start: 9rem;
     width: min(145vw, 38rem);
   }
 
@@ -422,7 +390,7 @@
   }
 
   .heroDivider {
-    inset-block-start: calc(64px + 3.5rem);
+    inset-block-start: 64px;
   }
 
   .heroDivider span {
@@ -1551,7 +1519,7 @@ a.whiteCta:focus-visible {
 .archiveViewport {
   width: 100%;
   overflow-x: auto;
-  overscroll-behavior-inline: contain;
+  overscroll-behavior-inline: auto;
   scroll-behavior: smooth;
   scroll-padding-inline: var(--content-gutter);
   scroll-snap-type: x mandatory;
@@ -1971,7 +1939,17 @@ a.whiteCta:focus-visible {
   .evidence .projectMedia {
     grid-column: 1 / 8;
     order: 1;
+    align-self: center;
+    aspect-ratio: 4 / 3;
     border-inline: 0 1px solid var(--color-carbon);
+  }
+
+  .archiveViewport {
+    scroll-snap-type: x proximity;
+  }
+
+  .archiveItem {
+    scroll-snap-stop: normal;
   }
 
   .meetingStates {

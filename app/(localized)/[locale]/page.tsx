@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 
-import { AboutPreview } from '@/components/home/about-preview';
 import { DualIdentityHero } from '@/components/home/dual-identity-hero';
 import { FeaturedWork } from '@/components/home/featured-work';
 import { IntroStory } from '@/components/home/intro-story';
@@ -28,7 +27,6 @@ export default async function LocaleHomePage({ params }: LocaleHomePageProps) {
       <div id="archive" className={styles.archiveBridge} data-archive-bridge>
         <VisualArchive locale={locale} />
       </div>
-      <AboutPreview locale={locale} />
     </div>
   );
 }

@@ -353,11 +353,9 @@ export function HeroMotion({
       onPointerMove={handleHeroMove}
       onPointerLeave={handleHeroLeave}
     >
-      <header className={styles.heroTopbar}>
-        <h1 id="home-title">{name}</h1>
-        <span className={styles.heroDirection}>Material Blueprint</span>
-        <span className={styles.heroIdentity}>Designer / Builder</span>
-      </header>
+      <h1 id="home-title" className={styles.heroTitle}>
+        {name}
+      </h1>
 
       <div className={`${styles.heroLayer} ${styles.builderField}`} aria-hidden="true">
         <canvas ref={canvasRef} className={styles.codeCanvas} data-hero-code-canvas />

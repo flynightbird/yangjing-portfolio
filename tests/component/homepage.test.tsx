@@ -13,7 +13,9 @@ describe('DualIdentityHero', () => {
   it('gives both identities equal semantic weight in the interactive portrait scene', () => {
     const { container } = render(<DualIdentityHero locale="en" />);
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Yang Jing' })).toBeVisible();
+    expect(screen.getByRole('heading', { level: 1, name: 'Yang Jing' })).toBeInTheDocument();
+    expect(screen.queryByText('Designer / Builder')).not.toBeInTheDocument();
+    expect(screen.queryByText('Material Blueprint')).not.toBeInTheDocument();
     expect(
       screen.getByRole('heading', { level: 2, name: 'Product Designer' }),
     ).toBeVisible();
@@ -324,6 +326,9 @@ describe('VisualArchive', () => {
   it('renders English company, period, description, and skills for every project', () => {
     const { container } = render(<VisualArchive locale="en" />);
 
+    expect(
+      screen.getByRole('heading', { name: 'More Consumer Product Work' }),
+    ).toBeVisible();
     expect(screen.getByText('Alibaba')).toBeVisible();
     expect(screen.getAllByText('ByteDance')).toHaveLength(2);
     expect(screen.getByText('Tongcheng Travel')).toBeVisible();
@@ -345,6 +350,9 @@ describe('VisualArchive', () => {
   it('localizes project content and carousel controls in Chinese', () => {
     render(<VisualArchive locale="zh" />);
 
+    expect(
+      screen.getByRole('heading', { name: 'More C端用户设计作品' }),
+    ).toBeVisible();
     expect(screen.getByRole('button', { name: '上一个视觉项目' })).toBeVisible();
     expect(screen.getByRole('button', { name: '下一个视觉项目' })).toBeVisible();
     expect(screen.getByText('每平每屋')).toBeVisible();
