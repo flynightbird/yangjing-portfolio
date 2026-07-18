@@ -863,7 +863,9 @@ describe('STT demo source provenance', () => {
 
       expect(page.props).toHaveProperty('previous', {
         href: `/${locale}/work/meeting/`,
-        title: 'Meeting',
+        title: locale === 'en'
+          ? 'Agora Meeting: A Real-time Collaboration System'
+          : 'Agora Meeting：实时协作系统',
       });
       expect(page.props).toHaveProperty('next', undefined);
     },

@@ -65,7 +65,7 @@ describe('homepage project contract', () => {
     });
   });
 
-  it('publishes Xuelang while keeping Meeting explicitly draft', () => {
+  it('publishes Xuelang and Meeting as complete internal cases', () => {
     expect(homepageProjects.find((project) => project.id === 'xuelang')).toMatchObject({
       destination: 'internal-case',
       availability: 'complete',
@@ -73,7 +73,8 @@ describe('homepage project contract', () => {
     });
     expect(homepageProjects.find((project) => project.id === 'meeting')).toMatchObject({
       destination: 'internal-case',
-      availability: 'draft',
+      availability: 'complete',
+      href: 'work/meeting/',
     });
   });
 });

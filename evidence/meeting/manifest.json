@@ -1,0 +1,178 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "meeting-hero",
+      "kind": "image",
+      "source": "evidence/meeting/source/meeting-hero.png",
+      "output": "public/images/meeting/meeting-hero.webp",
+      "purpose": "Orient the reviewer to the shipped Agora Meeting stage and product scale.",
+      "alt": {
+        "en": "Agora Meeting desktop stage with participant video, controls, and live meeting state",
+        "zh": "Agora Meeting 桌面会议舞台，包含参会者视频、控制栏与实时会议状态"
+      }
+    },
+    {
+      "id": "adaptive-layout-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/adaptive-layout-poster.png",
+      "output": "public/images/meeting/adaptive-layout-poster.webp",
+      "purpose": "Provide a static fallback for the adaptive stage transition recording.",
+      "alt": {
+        "en": "Representative shipped meeting-stage states showing the gallery and whiteboard workspace",
+        "zh": "两种代表性已上线会议舞台状态：宫格与白板工作区"
+      }
+    },
+    {
+      "id": "adaptive-layout-demo",
+      "kind": "video",
+      "source": "evidence/meeting/source/adaptive-layout-demo.mp4",
+      "output": "public/videos/meeting/adaptive-layout-demo.mp4",
+      "poster": "/images/meeting/adaptive-layout-poster.webp",
+      "captions": {
+        "en": "/captions/meeting/adaptive-layout-demo.en.vtt",
+        "zh": "/captions/meeting/adaptive-layout-demo.zh.vtt"
+      },
+      "purpose": "Prove that live meeting events cause continuous, shipped stage transitions."
+    },
+    {
+      "id": "meeting-state-matrix",
+      "kind": "image",
+      "source": "evidence/meeting/source/meeting-state-matrix.png",
+      "output": "public/images/meeting/meeting-state-matrix.webp",
+      "purpose": "Explain how verified meeting triggers map to information priority and stage layout.",
+      "alt": {
+        "en": "Meeting state matrix linking sharing, whiteboard, and participant count to layout",
+        "zh": "会议状态矩阵，将共享、白板和人数变化映射到布局"
+      }
+    },
+    {
+      "id": "device-comparison",
+      "kind": "image",
+      "source": "evidence/meeting/source/device-comparison.png",
+      "output": "public/images/meeting/device-comparison.webp",
+      "purpose": "Prove that the same meeting task adapts intentionally across four platform categories.",
+      "alt": {
+        "en": "The same Agora Meeting task across Desktop, Web, Tablet, and Mobile",
+        "zh": "同一 Agora Meeting 任务在桌面、Web、平板和手机端的呈现"
+      }
+    },
+    {
+      "id": "whiteboard-multidevice",
+      "kind": "image",
+      "source": "evidence/meeting/source/whiteboard-multidevice.png",
+      "output": "public/images/meeting/whiteboard-multidevice.webp",
+      "purpose": "Show canvas priority and participant awareness across whiteboard layouts.",
+      "alt": {
+        "en": "Whiteboard workspace across desktop, tablet, mobile portrait, and mobile landscape",
+        "zh": "白板工作区在桌面、平板、手机竖屏和横屏中的布局"
+      }
+    },
+    {
+      "id": "participant-priority",
+      "kind": "image",
+      "source": "evidence/meeting/source/participant-priority.png",
+      "output": "public/images/meeting/participant-priority.webp",
+      "purpose": "Explain the verified participant-view priority used above the portrait whiteboard.",
+      "alt": {
+        "en": "Five-level participant-view priority for the mobile portrait whiteboard",
+        "zh": "手机竖屏白板上方用户视窗的五级优先顺序"
+      }
+    },
+    {
+      "id": "transcript-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/transcript-poster.png",
+      "output": "public/images/meeting/transcript-poster.webp",
+      "purpose": "Provide a static fallback for the real-time information-layer recording.",
+      "alt": {
+        "en": "Live captions, transcript panel, language selection, and bilingual output",
+        "zh": "实时字幕、转写面板、语言选择和双语输出"
+      }
+    },
+    {
+      "id": "transcript-demo",
+      "kind": "video",
+      "source": "evidence/meeting/source/transcript-demo.mp4",
+      "output": "public/videos/meeting/transcript-demo.mp4",
+      "poster": "/images/meeting/transcript-poster.webp",
+      "captions": {
+        "en": "/captions/meeting/transcript-demo.en.vtt",
+        "zh": "/captions/meeting/transcript-demo.zh.vtt"
+      },
+      "purpose": "Prove the shipped relationship among captions, transcription, translation, and interpretation."
+    },
+    {
+      "id": "caption-vs-transcript",
+      "kind": "image",
+      "source": "evidence/meeting/source/caption-vs-transcript.png",
+      "output": "public/images/meeting/caption-vs-transcript.webp",
+      "purpose": "Explain personal caption control and host-governed transcript activation.",
+      "alt": {
+        "en": "Personal Live Captions compared with host-governed Transcript Panel controls",
+        "zh": "个人实时字幕与主持人治理的转写面板控制对比"
+      }
+    },
+    {
+      "id": "speech-to-api",
+      "kind": "image",
+      "source": "evidence/meeting/source/speech-to-api.png",
+      "output": "public/images/meeting/speech-to-api.webp",
+      "purpose": "Define the shipped boundary from live speech processing to the customer API.",
+      "alt": {
+        "en": "Speech flows through live processing and Meeting UI into the customer API",
+        "zh": "语音经过实时处理和会议界面进入客户 API 的流程"
+      }
+    },
+    {
+      "id": "capability-system",
+      "kind": "image",
+      "source": "evidence/meeting/source/capability-system.png",
+      "output": "public/images/meeting/capability-system.webp",
+      "purpose": "Preserve the shipped Breakout Room entry as interface evidence for the broader capability system.",
+      "alt": {
+        "en": "Shipped Agora Meeting Breakout Room entry inside the in-meeting application menu",
+        "zh": "Agora Meeting 会中应用菜单内已上线的分组讨论入口"
+      }
+    },
+    {
+      "id": "launch-coverage",
+      "kind": "image",
+      "source": "evidence/meeting/source/launch-coverage.png",
+      "output": "public/images/meeting/launch-coverage.webp",
+      "purpose": "Summarize shipped platform coverage without implying unsupported product metrics.",
+      "alt": {
+        "en": "Shipped Agora Meeting coverage across Desktop, Web, Tablet, and Mobile",
+        "zh": "Agora Meeting 在桌面、Web、平板和手机四类终端的上线覆盖"
+      }
+    },
+    {
+      "id": "adaptive-layout-captions-en",
+      "kind": "captions",
+      "source": "evidence/meeting/source/adaptive-layout-demo.en.vtt",
+      "output": "public/captions/meeting/adaptive-layout-demo.en.vtt",
+      "purpose": "Provide English text access for the adaptive layout recording."
+    },
+    {
+      "id": "adaptive-layout-captions-zh",
+      "kind": "captions",
+      "source": "evidence/meeting/source/adaptive-layout-demo.zh.vtt",
+      "output": "public/captions/meeting/adaptive-layout-demo.zh.vtt",
+      "purpose": "Provide Chinese text access for the adaptive layout recording."
+    },
+    {
+      "id": "transcript-captions-en",
+      "kind": "captions",
+      "source": "evidence/meeting/source/transcript-demo.en.vtt",
+      "output": "public/captions/meeting/transcript-demo.en.vtt",
+      "purpose": "Provide English text access for the transcript recording."
+    },
+    {
+      "id": "transcript-captions-zh",
+      "kind": "captions",
+      "source": "evidence/meeting/source/transcript-demo.zh.vtt",
+      "output": "public/captions/meeting/transcript-demo.zh.vtt",
+      "purpose": "Provide Chinese text access for the transcript recording."
+    }
+  ]
+}

@@ -18,6 +18,7 @@ import sharp from 'sharp';
 
 import {
   findDraftPublicationMarkers,
+  findMissingPublicationInputs,
   publicationInputs,
   runPublicationValidation,
 } from '@/scripts/validate-publication.mjs';
@@ -114,6 +115,45 @@ describe('draft publication boundary', () => {
 });
 
 describe('publication validation CLI', () => {
+  it('requires the current Meeting evidence contract and accepts complete fixtures', async () => {
+    const meetingInputs = [
+      'evidence/meeting/manifest.json',
+      'public/images/meeting/meeting-hero.webp',
+      'public/images/meeting/adaptive-layout-poster.webp',
+      'public/images/meeting/whiteboard-multidevice.webp',
+      'public/images/meeting/transcript-poster.webp',
+      'public/videos/meeting/adaptive-layout-demo.mp4',
+      'public/videos/meeting/transcript-demo.mp4',
+      'public/captions/meeting/adaptive-layout-demo.en.vtt',
+      'public/captions/meeting/adaptive-layout-demo.zh.vtt',
+      'public/captions/meeting/transcript-demo.en.vtt',
+      'public/captions/meeting/transcript-demo.zh.vtt',
+    ];
+    expect(publicationInputs).toEqual(expect.arrayContaining(meetingInputs));
+    expect(publicationInputs).not.toContain(
+      'public/videos/meeting/interaction-sequence.mp4',
+    );
+
+    const root = createRoot();
+    const image = await sharp({
+      create: { width: 16, height: 9, channels: 3, background: '#111315' },
+    }).webp().toBuffer();
+    const mp4 = Buffer.concat([
+      Buffer.from([0, 0, 0, 24]),
+      Buffer.from('ftypisom'),
+      Buffer.alloc(256),
+    ]);
+    for (const input of meetingInputs) {
+      if (input.endsWith('.webp')) write(root, input, image);
+      else if (input.endsWith('.mp4')) write(root, input, mp4);
+      else if (input.endsWith('.vtt')) write(root, input, 'WEBVTT\n\n');
+      else write(root, input, JSON.stringify({ version: 1, assets: [] }));
+    }
+
+    const missing = await findMissingPublicationInputs(root);
+    expect(missing.filter((value) => value.includes('/meeting/'))).toEqual([]);
+  });
+
   it('reports absent publication inputs deterministically in development mode', () => {
     const result = spawnSync(
       process.execPath,

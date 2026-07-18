@@ -170,14 +170,14 @@ describe('FeaturedWork', () => {
     ).toHaveLength(2);
   });
 
-  it('uses the complete Xuelang route and keeps Meeting draft', () => {
+  it('uses complete Xuelang and Meeting case routes', () => {
     render(<FeaturedWork locale="en" />);
 
     expect(screen.getByRole('link', { name: 'View case study Xuelang Commercial Experience Upgrade' })).toHaveAttribute(
       'href',
       '/en/work/xuelang/',
     );
-    expect(screen.getByRole('link', { name: 'Open draft case Meeting' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'View case study Agora Meeting' })).toHaveAttribute(
       'href',
       '/en/work/meeting/',
     );
@@ -225,14 +225,17 @@ describe('FeaturedWork', () => {
     expect(screen.queryByRole('link', { name: /AIDX case/i })).not.toBeInTheDocument();
   });
 
-  it('describes Meeting through three text states without drawing fake UI', () => {
+  it('describes Meeting through three system decisions without drawing fake UI', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const meeting = container.querySelector<HTMLElement>('[data-project-id="meeting"]');
 
     expect(meeting).toBeInTheDocument();
-    expect(within(meeting as HTMLElement).getByText('Before the meeting')).toBeVisible();
-    expect(within(meeting as HTMLElement).getByText('During the meeting')).toBeVisible();
-    expect(within(meeting as HTMLElement).getByText('After the meeting')).toBeVisible();
+    expect(meeting).toHaveAttribute('data-publication-state', 'complete');
+    expect(within(meeting as HTMLElement).getByText('Adaptive stage')).toBeVisible();
+    expect(within(meeting as HTMLElement).getByText('Collaborative workspace')).toBeVisible();
+    expect(within(meeting as HTMLElement).getByText('Real-time information')).toBeVisible();
+    expect(within(meeting as HTMLElement).queryByText('Before the meeting')).not.toBeInTheDocument();
+    expect(within(meeting as HTMLElement).queryByText('After the meeting')).not.toBeInTheDocument();
     expect(within(meeting as HTMLElement).queryByRole('img')).not.toBeInTheDocument();
   });
 

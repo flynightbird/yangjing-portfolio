@@ -4,7 +4,7 @@ import { ProjectMeta } from './project-meta';
 
 import styles from './home.module.css';
 
-interface MeetingStage {
+interface MeetingDecision {
   readonly title: string;
   readonly description: string;
 }
@@ -19,7 +19,7 @@ interface MeetingPreviewProps {
     readonly status: string;
     readonly mediaLabel: string;
     readonly action: string;
-    readonly stages: readonly MeetingStage[];
+    readonly stages: readonly MeetingDecision[];
   };
   readonly href: string;
 }
@@ -30,7 +30,7 @@ export function MeetingPreview({ copy, href }: MeetingPreviewProps) {
       className={styles.meetingBand}
       data-project-id="meeting"
       data-project-kind="deep-case"
-      data-publication-state="draft"
+      data-publication-state="complete"
     >
       <div className={styles.meetingInner}>
         <div className={styles.meetingHeading}>

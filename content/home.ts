@@ -71,7 +71,7 @@ export const homepageProjects = [
     companyId: 'agora',
     kind: 'deep-case',
     destination: 'internal-case',
-    availability: 'draft',
+    availability: 'complete',
     href: 'work/meeting/',
   },
   {

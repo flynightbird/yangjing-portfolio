@@ -58,6 +58,14 @@
   backdrop-filter: blur(22px) saturate(140%);
 }
 
+.root[data-surface='light'][data-scrolled='false'] .capsule {
+  color: var(--color-ink, #171917);
+}
+
+.root[data-surface='light'][data-scrolled='false'] .separator {
+  background: rgba(23, 25, 23, 0.2);
+}
+
 .home,
 .desktopNav a,
 .mobileMenu a,

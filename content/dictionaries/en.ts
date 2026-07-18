@@ -228,29 +228,29 @@ export const enDictionary = {
       },
       meeting: {
         company: 'Agora / 声网',
-        kind: 'Interaction deep dive',
-        title: 'Meeting',
+        kind: 'Enterprise meeting aPaaS',
+        title: 'Agora Meeting',
         proposition:
-          'Make highly dynamic real-time collaboration visible and controllable.',
-        role: 'Product Designer',
-        status: 'Shipped interface and 2026 retrospective',
-        mediaLabel: 'Approved interaction media pending',
-        action: 'Open draft case',
+          'A multi-device real-time collaboration system shaped by changing people, content, roles, and devices.',
+        role: 'Sole Product Designer · 2024-2026',
+        status: 'Shipped across four platforms',
+        mediaLabel: 'Three meeting-system decisions',
+        action: 'View case study',
         stages: [
           {
-            title: 'Before the meeting',
+            title: 'Adaptive stage',
             description:
-              'Clarify identity, devices, permissions, and readiness before entry.',
+              'Meeting events change content priority and layout state.',
           },
           {
-            title: 'During the meeting',
+            title: 'Collaborative workspace',
             description:
-              'Keep speaking, collaboration, and control states visible as they change.',
+              'Whiteboard keeps creation primary without losing participant awareness.',
           },
           {
-            title: 'After the meeting',
+            title: 'Real-time information',
             description:
-              'Preserve an understandable record of what happened and what follows.',
+              'Captions and transcription separate personal control from host governance.',
           },
         ],
       },

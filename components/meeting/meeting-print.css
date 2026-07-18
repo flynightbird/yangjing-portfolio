@@ -1,0 +1,21 @@
+@media print {
+  [data-meeting-case] {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  [data-meeting-case] aside,
+  [data-meeting-case] nav {
+    display: none !important;
+  }
+
+  [data-meeting-case] article > div > section:nth-child(n + 5) {
+    break-before: page;
+  }
+
+  [data-meeting-case] img,
+  [data-meeting-case] figure,
+  [data-meeting-case] table {
+    break-inside: avoid;
+  }
+}

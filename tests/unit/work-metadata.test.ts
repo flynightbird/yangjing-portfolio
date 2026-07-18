@@ -18,4 +18,15 @@ describe('localized work metadata', () => {
     expect(metadata.title).toBe(title);
     expect(metadata.description).toBe(description);
   });
+
+  it.each([
+    ['en', 'Agora Meeting: A Real-time Collaboration System | Yang Jing'],
+    ['zh', 'Agora Meeting：实时协作系统 | Yang Jing'],
+  ] as const)('uses the approved Meeting title in %s metadata', async (locale, title) => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ locale, slug: 'meeting' }),
+    });
+
+    expect(metadata.title).toBe(title);
+  });
 });

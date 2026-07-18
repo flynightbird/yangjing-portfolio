@@ -18,14 +18,11 @@ import SttDemoEn, {
 import SttDemoZh, {
   metadata as sttDemoZhMetadata,
 } from '@/content/build/stt-demo.zh.mdx';
-import {
-  MeetingDraftEn,
-  MeetingDraftZh,
-  meetingDraftEnMetadata,
-  meetingDraftZhMetadata,
-} from '@/content/work/meeting-draft';
+import MeetingEn, { metadata as meetingEnMetadata } from '@/content/work/meeting.en.mdx';
+import MeetingZh, { metadata as meetingZhMetadata } from '@/content/work/meeting.zh.mdx';
 import { CallAgentActions } from '@/components/case-study/call-agent-actions';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
+import { MeetingLayout } from '@/components/meeting/meeting-layout';
 import { XuelangLayout } from '@/components/xuelang/xuelang-layout';
 import { contentMetaSchema, type ContentMeta } from '@/content/schema';
 import type {
@@ -111,12 +108,14 @@ export const contentEntries: readonly ContentEntry[] = [
     Actions: CallAgentActions,
   },
   {
-    meta: meetingDraftEnMetadata,
-    Component: MeetingDraftEn,
+    meta: contentMetaSchema.parse(meetingEnMetadata),
+    Component: MeetingEn,
+    Layout: MeetingLayout,
   },
   {
-    meta: meetingDraftZhMetadata,
-    Component: MeetingDraftZh,
+    meta: contentMetaSchema.parse(meetingZhMetadata),
+    Component: MeetingZh,
+    Layout: MeetingLayout,
   },
   {
     meta: contentMetaSchema.parse(sttDemoEnMetadata),

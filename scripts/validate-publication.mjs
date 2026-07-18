@@ -31,12 +31,17 @@ export const publicationInputs = [
   'public/files/xuelang-case-study-zh.pdf',
   'public/files/xuelang-case-study-en.pdf',
   'evidence/xuelang/manifest.json',
-  'public/images/meeting/shipped-room-overview.avif',
-  'public/images/meeting/shipped-control-states.avif',
-  'public/images/meeting/retrospective-state-model.avif',
-  'public/videos/meeting/interaction-sequence.mp4',
-  'public/videos/meeting/interaction-sequence.vtt',
-  'public/images/meeting/interaction-sequence-poster.avif',
+  'evidence/meeting/manifest.json',
+  'public/images/meeting/meeting-hero.webp',
+  'public/images/meeting/adaptive-layout-poster.webp',
+  'public/images/meeting/whiteboard-multidevice.webp',
+  'public/images/meeting/transcript-poster.webp',
+  'public/videos/meeting/adaptive-layout-demo.mp4',
+  'public/videos/meeting/transcript-demo.mp4',
+  'public/captions/meeting/adaptive-layout-demo.en.vtt',
+  'public/captions/meeting/adaptive-layout-demo.zh.vtt',
+  'public/captions/meeting/transcript-demo.en.vtt',
+  'public/captions/meeting/transcript-demo.zh.vtt',
   'public/files/yang-jing-resume-en.pdf',
   'public/files/yang-jing-resume-zh.pdf',
   'public/images/contact/wechat-qr.avif',
@@ -693,11 +698,29 @@ async function validateExistingMedia(rootDir) {
       errors.push(`Invalid MP4 signature: ${relativePath}`);
     }
   }
-  const video = 'public/videos/meeting/interaction-sequence.mp4';
-  if (await isRegularFile(path.join(rootDir, video))) {
+  const meetingVideos = [
+    {
+      video: 'public/videos/meeting/adaptive-layout-demo.mp4',
+      poster: 'public/images/meeting/adaptive-layout-poster.webp',
+      captions: [
+        'public/captions/meeting/adaptive-layout-demo.en.vtt',
+        'public/captions/meeting/adaptive-layout-demo.zh.vtt',
+      ],
+    },
+    {
+      video: 'public/videos/meeting/transcript-demo.mp4',
+      poster: 'public/images/meeting/transcript-poster.webp',
+      captions: [
+        'public/captions/meeting/transcript-demo.en.vtt',
+        'public/captions/meeting/transcript-demo.zh.vtt',
+      ],
+    },
+  ];
+  for (const { video, poster, captions } of meetingVideos) {
+    if (!(await isRegularFile(path.join(rootDir, video)))) continue;
     const relationships = [
-      ['public/videos/meeting/interaction-sequence.vtt', '.vtt caption'],
-      ['public/images/meeting/interaction-sequence-poster.avif', 'poster'],
+      [poster, 'poster'],
+      ...captions.map((caption) => [caption, '.vtt caption']),
     ];
     for (const [requiredPath, label] of relationships) {
       if (!(await isRegularFile(path.join(rootDir, requiredPath)))) {
@@ -739,6 +762,9 @@ async function validateApprovedContent(rootDir) {
     'content/work/xuelang.zh.mdx',
     'content/work/call-agent.en.mdx',
     'content/work/call-agent.zh.mdx',
+    'evidence/meeting/manifest.json',
+    'content/work/meeting.en.mdx',
+    'content/work/meeting.zh.mdx',
     'content/build/stt-demo.en.mdx',
     'content/build/stt-demo.zh.mdx',
   ];
