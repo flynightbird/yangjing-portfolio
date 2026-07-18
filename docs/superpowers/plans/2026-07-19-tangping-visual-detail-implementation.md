@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Publish a bilingual Tangping visual-detail page and connect it to the homepage Visual Archive card for Mei Ping Mei Wu.
+**Goal:** Publish a bilingual Tangping visual-detail page, rename all user-facing Mei Ping Mei Wu labels to Tangping / 躺平, and connect it to the homepage Visual Archive card.
 
 **Architecture:** Register Tangping in the existing typed content registry with a dedicated layout. A numeric frame manifest owns ordering, localized copy, text-free production media, and layout variants; the frame component renders desktop overlays and accessible mobile reflow without loading text-bearing references in the public page.
 
@@ -26,7 +26,7 @@
 - Modify `content/types.ts`: add the `tangping` work slug.
 - Modify `content/registry.ts`: register both localized MDX entries and the dedicated layout.
 - Modify `lib/content/validate.ts`: include Tangping in canonical work navigation.
-- Modify `content/home.ts`: give the Mei Ping Mei Wu archive entry an internal Tangping destination.
+- Modify `content/home.ts`: rename the archive entry to Tangping / 躺平 and give it an internal destination.
 - Modify `components/home/visual-archive.tsx`: render internal archive entries as localized links while preserving other lightboxes.
 - Modify focused registry, homepage, and publication tests for the new route and destination contract.
 - Add `/public/images/tangping/frame-{06,10,11,20}.png`: copies of `6-1`, `10-1`, `11-1`, and `20-1`.
@@ -154,7 +154,7 @@ Update canonical navigation validation to place `tangping` after `meeting`, with
 
 - [ ] **Step 4: Add both MDX entries**
 
-Each file exports complete metadata. Chinese uses title `每平每屋设计家`, proposition `从用户研究到设计师赋能的产品机会画布`; English uses `Mei Ping Mei Wu Designer` and `From user research to a product opportunity map for empowering designers`. Both use `evidenceLevel: 'retrospective'`, a unique `featuredOrder`, and `<TangpingStory locale="zh" />` or `<TangpingStory locale="en" />` as their only body content.
+Each file exports complete metadata. Chinese uses title `躺平设计家`, proposition `从用户研究到设计师赋能的产品机会画布`; English uses `Tangping Designer` and `From user research to a product opportunity map for empowering designers`. Both use `evidenceLevel: 'retrospective'`, a unique `featuredOrder`, and `<TangpingStory locale="zh" />` or `<TangpingStory locale="en" />` as their only body content.
 
 - [ ] **Step 5: Add a compiling layout shell and register both MDX entries**
 
@@ -173,7 +173,7 @@ git add content/types.ts content/registry.ts lib/content/validate.ts content/wor
 git commit -m "feat: register Tangping work routes"
 ```
 
-### Task 3: Connect The Homepage Mei Ping Mei Wu Card
+### Task 3: Connect The Homepage Tangping Card
 
 **Files:**
 - Modify: `content/home.ts`
@@ -183,7 +183,7 @@ git commit -m "feat: register Tangping work routes"
 
 - [ ] **Step 1: Write the failing destination and link tests**
 
-Assert that `alibaba-meipingmeiwu` has `destination: 'internal-case'` and `href: 'work/tangping/'`. Render `VisualArchive locale="zh"` and expect a link named with `每平每屋` to have `/zh/work/tangping/`. Also assert the other three archive projects still expose lightbox buttons and no internal project link.
+Assert that `alibaba-meipingmeiwu` has `destination: 'internal-case'`, `href: 'work/tangping/'`, and localized title `Tangping / 躺平`. Render `VisualArchive locale="zh"` and expect a link named with `躺平` to have `/zh/work/tangping/`. Also assert the other three archive projects still expose lightbox buttons and no internal project link.
 
 - [ ] **Step 2: Run focused homepage tests**
 
@@ -216,7 +216,7 @@ Expected: PASS.
 
 ```bash
 git add content/home.ts components/home/visual-archive.tsx tests/unit/home-content.test.ts tests/component/homepage.test.tsx
-git commit -m "feat: link Mei Ping Mei Wu to Tangping detail"
+git commit -m "feat: link Tangping archive card to detail"
 ```
 
 ### Task 4: Build The Cover Hero And Four Contiguous Frames
@@ -234,7 +234,7 @@ git commit -m "feat: link Mei Ping Mei Wu to Tangping detail"
 Render `TangpingLayout` with `TangpingStory` and assert:
 
 ```ts
-expect(screen.getByRole('heading', { level: 1, name: /每平每屋/ })).toBeVisible();
+expect(screen.getByRole('heading', { level: 1, name: /躺平/ })).toBeVisible();
 expect(screen.getByText('Alibaba / 2019–2020.12')).toBeVisible();
 expect(container.querySelectorAll('[data-tangping-frame]')).toHaveLength(4);
 expect([...container.querySelectorAll('[data-tangping-frame]')].map((node) => node.getAttribute('data-frame-id'))).toEqual(['6', '10', '11', '20']);
@@ -301,7 +301,7 @@ git commit -m "feat: build Tangping visual detail story"
 
 - [ ] **Step 1: Add route and homepage E2E coverage**
 
-Test `/zh/`, scroll to Visual Archive, click the Mei Ping Mei Wu internal link, and expect `/zh/work/tangping/`. Test `/en/work/tangping/` directly and verify the English heading and all four frames.
+Test `/zh/`, scroll to Visual Archive, click the Tangping / 躺平 internal link, and expect `/zh/work/tangping/`. Test `/en/work/tangping/` directly and verify the English heading and all four frames.
 
 - [ ] **Step 2: Add visual layout assertions**
 
