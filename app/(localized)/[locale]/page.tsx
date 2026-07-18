@@ -25,7 +25,7 @@ export default async function LocaleHomePage({ params }: LocaleHomePageProps) {
       <DualIdentityHero locale={locale} />
       <IntroStory locale={locale} />
       <FeaturedWork locale={locale} />
-      <div className={styles.archiveBridge} data-archive-bridge>
+      <div id="archive" className={styles.archiveBridge} data-archive-bridge>
         <VisualArchive locale={locale} />
       </div>
       <AboutPreview locale={locale} />

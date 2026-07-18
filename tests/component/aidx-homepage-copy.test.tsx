@@ -26,9 +26,11 @@ describe('AIDX Singapore positioning', () => {
     expect(aidx).toBeInTheDocument();
     expect(within(aidx as HTMLElement).getByText(kind)).toBeVisible();
     expect(within(aidx as HTMLElement).getByText(proposition)).toBeVisible();
-    expect(within(aidx as HTMLElement).getByRole('link')).toHaveAttribute(
-      'href',
-      'https://aidxtech.com/',
-    );
+    const links = within(aidx as HTMLElement).getAllByRole('link');
+    expect(links).toHaveLength(2);
+    for (const link of links) {
+      expect(link).toHaveAttribute('href', 'https://aidxtech.com/');
+      expect(link).toHaveAttribute('target', '_blank');
+    }
   });
 });

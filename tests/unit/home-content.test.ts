@@ -3,28 +3,55 @@ import { describe, expect, it } from 'vitest';
 import {
   archiveEntrySchema,
   archiveProjects,
+  coreProjectOrder,
   homepageProjects,
 } from '@/content/home';
 import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
 
 describe('homepage project contract', () => {
-  it('keeps the approved five-project presentation order', () => {
+  it('keeps the approved six-project presentation order', () => {
     expect(homepageProjects.map((project) => project.id)).toEqual([
       'xuelang',
       'call-agent',
+      'convo-ai',
       'meeting',
       'aidx',
       'stt-demo',
     ]);
   });
 
-  it('keeps AIDX external-only and the STT Demo as the sole Build Lab entry', () => {
+  it('records the approved company ownership and core-work order', () => {
+    expect(homepageProjects.map(({ id, companyId }) => [id, companyId])).toEqual([
+      ['xuelang', 'bytedance'],
+      ['call-agent', 'agora'],
+      ['convo-ai', 'agora'],
+      ['meeting', 'agora'],
+      ['aidx', 'aidx'],
+      ['stt-demo', 'agora'],
+    ]);
+    expect(coreProjectOrder).toEqual([
+      'call-agent',
+      'convo-ai',
+      'meeting',
+      'stt-demo',
+      'aidx',
+      'xuelang',
+    ]);
+  });
+
+  it('keeps ConvoAI and AIDX external-only and STT as the sole Build Lab entry', () => {
+    const convoAi = homepageProjects.find((project) => project.id === 'convo-ai');
     const aidx = homepageProjects.find((project) => project.id === 'aidx');
     const buildEntries = homepageProjects.filter(
       (project) => project.kind === 'build-lab',
     );
 
+    expect(convoAi).toMatchObject({
+      destination: 'external-live-site',
+      availability: 'awaiting-assets',
+      href: 'https://conversational-ai.shengwang.cn/',
+    });
     expect(aidx).toMatchObject({
       destination: 'external-live-site',
       availability: 'complete',
@@ -162,6 +189,7 @@ describe('homepage localization', () => {
       expect(Object.keys(dictionary.home.projects)).toEqual([
         'xuelang',
         'callAgent',
+        'convoAi',
         'meeting',
         'aidx',
         'sttDemo',

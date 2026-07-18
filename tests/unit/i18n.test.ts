@@ -79,12 +79,15 @@ describe('shell dictionaries', () => {
   });
 
   it('contains the shell, action, 404, and direct-contact labels', () => {
-    expect(enDictionary.navigation).toMatchObject({
+    expect(enDictionary.navigation).toEqual({
       work: 'Work',
+      archive: 'Archive',
       about: 'About',
-      resume: 'Resume',
-      contact: 'Contact',
     });
+    expect(enDictionary.home.projects.callAgent.company).toBe('Agora / 声网');
+    expect(zhDictionary.home.projects.xuelang.company).toBe('ByteDance / 字节跳动');
+    expect(enDictionary.home.projects.aidx.company).toBe('Singapore AIDX');
+    expect(zhDictionary.home.projects.sttDemo.company).toBe('Agora / 声网');
     expect(enDictionary.actions).toHaveProperty('downloadPdf');
     expect(enDictionary.actions).toHaveProperty('next');
     expect(enDictionary.notFound).toHaveProperty('title');

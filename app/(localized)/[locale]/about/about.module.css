@@ -7,7 +7,7 @@
 .hero,
 .career,
 .opportunity,
-.pending {
+.contact {
   padding-block: clamp(4rem, 10vh, 8rem);
   border-bottom: 1px solid var(--color-border-strong);
 }
@@ -19,7 +19,7 @@
 .hero h1,
 .career h2,
 .opportunity h2,
-.pending h2 {
+.contact h2 {
   max-width: 18ch;
   margin: 0;
   font-family: var(--font-display);
@@ -30,7 +30,7 @@
 .hero p,
 .career p,
 .opportunity p,
-.pending p {
+.contact p {
   max-width: 52ch;
   margin: var(--space-6) 0 0;
   color: var(--color-ink-muted);
@@ -38,28 +38,18 @@
   line-height: 1.35;
 }
 
-.pending {
+.contact {
   margin-inline: calc(-1 * var(--content-gutter));
   padding-inline: var(--content-gutter);
-  background: var(--color-signal);
-}
-
-.pending ul {
-  display: grid;
-  max-width: 52rem;
-  padding: 0;
-  margin: var(--space-7) 0 0;
-  list-style: none;
-}
-
-.pending li {
-  padding-block: var(--space-4);
-  border-top: 1px solid var(--color-carbon);
-}
-
-.pending p {
+  background: var(--color-iris);
   color: var(--color-carbon);
-  font-size: 1rem;
+}
+
+.contact a {
+  display: inline-block;
+  margin-top: var(--space-7);
+  color: var(--color-carbon);
+  font-size: clamp(1.35rem, 3vw, 2.5rem);
 }
 
 @media (min-width: 768px) {

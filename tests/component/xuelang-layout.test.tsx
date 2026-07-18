@@ -2,6 +2,7 @@ import { cleanup, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { XuelangLayout } from '@/components/xuelang/xuelang-layout';
+import styles from '@/components/xuelang/xuelang-layout.module.css';
 import { getEntry } from '@/content/registry';
 
 afterEach(cleanup);
@@ -83,6 +84,10 @@ describe('XuelangLayout', () => {
     expect(screen.getByRole('link', { name: pdfLabel })).toHaveAttribute('download');
     expect(screen.getByRole('link', { name: pdfLabel })).toHaveTextContent(pdfSizeLabel);
     expect(screen.getByText(proof, { exact: true })).toBeVisible();
+    const noise = container.querySelector('[data-xuelang-noise]');
+    expect(noise).toHaveAttribute('aria-hidden', 'true');
+    expect(noise).toHaveClass(styles.noise);
+    expect(noise?.parentElement).toHaveAttribute('data-xuelang-case');
     expect(container.querySelector('[data-hero-thesis]')).toContainElement(
       screen.getByRole('heading', { level: 1, name: title }),
     );

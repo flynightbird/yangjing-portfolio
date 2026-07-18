@@ -11,11 +11,11 @@
   --hero-paper: #f4f4ef;
   --hero-muted: #9b9e97;
   --hero-signal: #c7ff38;
-  --hero-blue: #4b7aff;
+  --hero-iris: var(--color-iris-luminous);
   --hero-coral: #ff6b55;
   --hero-line: rgba(244, 244, 239, 0.16);
   position: relative;
-  min-height: max(42rem, calc(100dvh - var(--header-height) - 1.25rem));
+  min-height: max(48rem, calc(100dvh - 1rem));
   overflow: hidden;
   border-bottom: 1px solid var(--color-carbon);
   background: var(--hero-black);
@@ -48,7 +48,7 @@
 }
 
 .heroDirection {
-  color: var(--hero-blue);
+  color: var(--hero-iris);
 }
 
 .heroIdentity {
@@ -72,7 +72,7 @@
   position: absolute;
   z-index: 5;
   inset-block-start: 1.25rem;
-  color: var(--hero-blue);
+  color: var(--hero-iris);
   content: 'SYSTEM FIELD';
   font-family: var(--font-mono);
   font-size: 0.58rem;
@@ -239,7 +239,7 @@
 }
 
 .builderRole > span {
-  color: var(--hero-blue);
+  color: var(--hero-iris);
 }
 
 .heroRole h2 {
@@ -448,8 +448,8 @@
 .introStory {
   position: relative;
   border-bottom: 1px solid rgba(242, 244, 240, 0.14);
-  background: #0d0e10;
-  color: #f2f4f0;
+  background: var(--color-carbon);
+  color: var(--color-paper);
   isolation: isolate;
 }
 
@@ -495,23 +495,27 @@
   place-items: center;
 }
 
-.introStatement {
+.introScene {
   position: absolute;
   grid-area: 1 / 1;
   width: 100%;
-  margin: 0;
-  color: #f2f4f0;
-  font-family: var(--font-body);
-  font-size: clamp(2.5rem, 4.17vw, 3.75rem);
-  font-weight: 600;
-  line-height: 1.12;
   pointer-events: none;
-  text-align: center;
-  text-wrap: balance;
   visibility: hidden;
   opacity: 0;
   transform: translateY(1.625rem);
   will-change: opacity, transform;
+}
+
+.introStatement {
+  width: 100%;
+  margin: 0;
+  color: var(--color-paper);
+  font-family: var(--font-body);
+  font-size: clamp(2.5rem, 4.17vw, 3.75rem);
+  font-weight: 600;
+  line-height: 1.12;
+  text-align: center;
+  text-wrap: balance;
 }
 
 .introStatementCurrent {
@@ -521,8 +525,22 @@
 }
 
 .introStatement strong {
-  color: #c7ff38;
+  color: var(--color-signal);
   font-weight: inherit;
+}
+
+.introSupport {
+  max-width: 48ch;
+  margin: 1.5rem auto 0;
+  color: rgba(244, 245, 242, 0.7);
+  font-size: 1.5rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.introSupport strong {
+  color: var(--color-iris);
+  font-weight: 600;
 }
 
 .introStory:lang(zh-CN) .introStatement {
@@ -608,6 +626,11 @@
     line-height: 1.18;
   }
 
+  .introSupport {
+    margin-top: 1rem;
+    font-size: clamp(1.125rem, 4.8vw, 1.25rem);
+  }
+
   .introStory:lang(zh-CN) .introStatement {
     font-size: clamp(1.5rem, 6.7vw, 2.125rem);
   }
@@ -673,7 +696,276 @@
 }
 
 .featuredWork {
+  --projects-black: #0d0e10;
+  --projects-ink: #f1f2ed;
+  --projects-muted: #969a96;
+  --projects-border: rgba(241, 242, 237, 0.18);
   background: var(--theme-canvas);
+}
+
+.flagshipStage {
+  width: min(100%, var(--content-max));
+  margin-inline: auto;
+  padding: clamp(3rem, 6vw, 5.5rem) var(--content-gutter) clamp(4rem, 7vw, 6rem);
+  overflow: hidden;
+  border-bottom: 1px solid var(--projects-border);
+  background: var(--projects-black);
+  color: var(--projects-ink);
+}
+
+.flagshipGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+  gap: clamp(1rem, 1.6vw, 1.375rem);
+  align-items: start;
+}
+
+.flagshipProject {
+  min-width: 0;
+}
+
+.flagshipCopy {
+  display: flex;
+  min-height: clamp(14.5rem, 20vw, 17rem);
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.flagshipKind {
+  margin: 0 0 clamp(1.5rem, 2.4vw, 2rem);
+  color: var(--projects-muted);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.flagshipTitleLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.flagshipTitleLink:hover,
+.flagshipTitleLink:focus-visible {
+  color: var(--projects-ink);
+}
+
+.flagshipTitleLink h2 {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: clamp(3.25rem, 5.5vw, 4.75rem);
+  font-weight: 700;
+  line-height: 0.9;
+  text-wrap: nowrap;
+}
+
+.flagshipSummary {
+  max-width: 31ch;
+  margin: 1.125rem 0 0;
+  color: #c4c7c2;
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+
+.flagshipCta {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.625rem;
+  margin-top: auto;
+  border-bottom: 1px solid currentColor;
+  color: var(--projects-ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.flagshipCta svg {
+  transition: transform 400ms var(--ease-out);
+}
+
+.flagshipCta:hover,
+.flagshipCta:focus-visible {
+  color: var(--projects-ink);
+}
+
+.flagshipCta:hover svg,
+.flagshipCta:focus-visible svg {
+  transform: translate(3px, -3px);
+}
+
+.flagshipMedia {
+  position: relative;
+  display: block;
+  height: clamp(20rem, 33vw, 26.25rem);
+  margin-top: 1rem;
+  overflow: hidden;
+  border-radius: 20px;
+  color: inherit;
+  text-decoration: none;
+  transition:
+    transform 700ms var(--ease-out),
+    opacity 700ms var(--ease-out);
+  will-change: transform;
+}
+
+.flagshipCallMedia {
+  z-index: 2;
+  background: #565b55;
+  transform-origin: left center;
+}
+
+.flagshipConvoMedia {
+  z-index: 1;
+  background: #494f58;
+  transform-origin: right center;
+}
+
+.flagshipMedia img {
+  transition: transform 700ms var(--ease-out);
+}
+
+.flagshipCallImage {
+  position: absolute;
+  right: 5%;
+  bottom: -1px;
+  left: 5%;
+  width: 90%;
+  height: 84%;
+  object-fit: cover;
+  object-position: left top;
+  transform-origin: bottom center;
+}
+
+.flagshipConvoWeb {
+  position: absolute;
+  right: -16%;
+  bottom: -1px;
+  width: 105%;
+  height: 86%;
+  object-fit: cover;
+  object-position: 54% center;
+  transform-origin: bottom right;
+}
+
+.flagshipConvoPhone {
+  position: absolute;
+  z-index: 2;
+  right: 7%;
+  bottom: 1.25rem;
+  width: 8.25rem;
+  height: 16.875rem;
+  object-fit: cover;
+  object-position: 68% center;
+  border: 5px solid #222428;
+  border-radius: 1.875rem;
+  box-shadow: 0 1.75rem 4.375rem rgba(0, 0, 0, 0.36);
+  transform: rotate(2deg);
+  transform-origin: bottom center;
+}
+
+.flagshipStage[data-flagship-focus='call-agent'] .flagshipCallMedia {
+  z-index: 3;
+  transform: translateX(7px) scaleX(1.045) scaleY(1.018);
+}
+
+.flagshipStage[data-flagship-focus='call-agent'] .flagshipConvoMedia {
+  transform: translateX(14px) scaleX(0.96) scaleY(0.98);
+  opacity: 0.55;
+}
+
+.flagshipStage[data-flagship-focus='call-agent'] .flagshipCallImage {
+  transform: scale(1.025);
+}
+
+.flagshipStage[data-flagship-focus='convo-ai'] .flagshipCallMedia {
+  transform: translateX(-14px) scaleX(0.96) scaleY(0.98);
+  opacity: 0.55;
+}
+
+.flagshipStage[data-flagship-focus='convo-ai'] .flagshipConvoMedia {
+  z-index: 3;
+  transform: translateX(-7px) scaleX(1.055) scaleY(1.018);
+}
+
+.flagshipStage[data-flagship-focus='convo-ai'] .flagshipConvoWeb,
+.flagshipStage[data-flagship-focus='convo-ai'] .flagshipConvoPhone {
+  transform: scale(1.025);
+}
+
+.flagshipStage[data-flagship-focus='convo-ai'] .flagshipConvoPhone {
+  transform: rotate(2deg) scale(1.025);
+}
+
+.flagshipSource {
+  margin: 1rem 0 0;
+  color: #777c78;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 767px) {
+  .flagshipStage {
+    padding-block: 3rem 4rem;
+  }
+
+  .flagshipGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4.5rem;
+  }
+
+  .flagshipCopy {
+    min-height: 14.75rem;
+  }
+
+  .flagshipTitleLink h2 {
+    font-size: clamp(3rem, 15vw, 4rem);
+  }
+
+  .flagshipMedia {
+    height: min(72vw, 26.25rem);
+    min-height: 20rem;
+  }
+
+  .flagshipStage[data-flagship-focus] .flagshipMedia,
+  .flagshipStage[data-flagship-focus] .flagshipMedia img {
+    transform: none;
+    opacity: 1;
+  }
+
+  .flagshipStage[data-flagship-focus] .flagshipConvoPhone {
+    transform: rotate(2deg);
+  }
+
+  .flagshipConvoWeb {
+    right: -8%;
+    width: 100%;
+  }
+
+  .flagshipConvoPhone {
+    width: 7rem;
+    height: 14.375rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flagshipMedia,
+  .flagshipMedia img,
+  .flagshipCta svg {
+    transition: none;
+  }
+
+  .flagshipStage[data-flagship-focus] .flagshipMedia,
+  .flagshipStage[data-flagship-focus] .flagshipMedia img {
+    transform: none;
+    opacity: 1;
+  }
+
+  .flagshipStage[data-flagship-focus] .flagshipConvoPhone {
+    transform: rotate(2deg);
+  }
 }
 
 .archiveBridge {
@@ -681,6 +973,19 @@
   padding-block-start: clamp(1.5rem, 4vh, 3rem);
   border-top: 1px solid var(--theme-border);
   background: var(--theme-canvas);
+}
+
+.communicationChapter {
+  display: block;
+  border-bottom: 1px solid var(--theme-border);
+}
+
+.communicationChapter > * {
+  min-width: 0;
+}
+
+.communicationChapter > :last-child {
+  border-top: 1px solid var(--theme-border);
 }
 
 @supports (animation-timeline: view()) {
@@ -918,7 +1223,7 @@
 }
 
 .liveBand {
-  background: rgba(25, 75, 255, 0.035);
+  background: rgba(181, 163, 230, 0.04);
 }
 
 .liveInner {

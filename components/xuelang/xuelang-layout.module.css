@@ -10,13 +10,27 @@
   --xuelang-green: #466b52;
   --xuelang-line: #d8ded9;
   --xuelang-dark: #121614;
+  position: relative;
+  isolation: isolate;
   border-block-end: 1px solid var(--xuelang-line);
   background: var(--xuelang-paper);
   color: var(--xuelang-ink);
   font-family: var(--xuelang-font-body);
 }
 
+.noise {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background-image: url('/images/xuelang/paper-noise.png');
+  background-repeat: repeat;
+  opacity: 0.035;
+  pointer-events: none;
+}
+
 .frame {
+  position: relative;
+  z-index: 1;
   display: grid;
   width: min(100%, 100rem);
   grid-template-columns: minmax(9rem, 2fr) minmax(0, 10fr);

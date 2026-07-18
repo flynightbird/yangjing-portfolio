@@ -17,7 +17,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
   const copy = locale === 'zh' ? zhDictionary.aboutPage : enDictionary.aboutPage;
 
   return (
-    <article className={styles.root} data-publication-state="draft">
+    <article className={styles.root}>
       <header className={styles.hero}>
         <h1>{copy.title}</h1>
         <p>{copy.intro}</p>
@@ -33,14 +33,9 @@ export default async function AboutPage({ params }: AboutPageProps) {
         <p>{copy.opportunity}</p>
       </section>
 
-      <section id="contact" className={styles.pending}>
-        <h2>{copy.awaitingTitle}</h2>
-        <ul>
-          <li>{copy.portrait}</li>
-          <li>{copy.resumes}</li>
-          <li>{copy.contact}</li>
-        </ul>
-        <p>{copy.contactDescription}</p>
+      <section id="contact" className={styles.contact}>
+        <h2>{locale === 'zh' ? '一起创造真实体验' : 'Make something real together'}</h2>
+        <a href="mailto:yangux@qq.com">yangux@qq.com</a>
       </section>
     </article>
   );

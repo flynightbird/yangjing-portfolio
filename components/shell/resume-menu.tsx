@@ -13,7 +13,7 @@ export function ResumeMenu({ locale }: ResumeMenuProps) {
 
   return (
     <details>
-      <summary>{dictionary.navigation.resume}</summary>
+      <summary>{dictionary.actions.viewResume}</summary>
       <ul>
         <li>
           <a href="/files/yang-jing-resume-en.pdf" download>

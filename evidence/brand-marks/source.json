@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "retrievedAt": "2026-07-18",
+  "marks": [
+    {
+      "id": "agora",
+      "path": "/images/brands/agora.svg",
+      "source": "https://cdn.prod.website-files.com/660affa848e8af81bdd03909/668e9bd9f92518e8822cd5f1_agora-logo.svg"
+    },
+    {
+      "id": "bytedance",
+      "path": "/images/brands/bytedance.svg",
+      "source": "https://commons.wikimedia.org/wiki/Special:Redirect/file/ByteDance_logo.svg"
+    },
+    {
+      "id": "aidx",
+      "path": "/images/brands/aidx.svg",
+      "source": "https://aidxtech.com/"
+    }
+  ]
+}

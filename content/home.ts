@@ -16,12 +16,25 @@ export type HomepageProjectKind =
 export type HomepageProjectId =
   | 'xuelang'
   | 'call-agent'
+  | 'convo-ai'
   | 'meeting'
   | 'aidx'
   | 'stt-demo';
 
+export type HomepageCompanyId = 'agora' | 'bytedance' | 'aidx';
+
+export const coreProjectOrder = [
+  'call-agent',
+  'convo-ai',
+  'meeting',
+  'stt-demo',
+  'aidx',
+  'xuelang',
+] as const satisfies readonly HomepageProjectId[];
+
 export interface HomepageProject {
   readonly id: HomepageProjectId;
+  readonly companyId: HomepageCompanyId;
   readonly kind: HomepageProjectKind;
   readonly destination: ProjectDestination;
   readonly availability: ProjectAvailability;
@@ -31,6 +44,7 @@ export interface HomepageProject {
 export const homepageProjects = [
   {
     id: 'xuelang',
+    companyId: 'bytedance',
     kind: 'deep-case',
     destination: 'internal-case',
     availability: 'complete',
@@ -38,13 +52,23 @@ export const homepageProjects = [
   },
   {
     id: 'call-agent',
+    companyId: 'agora',
     kind: 'deep-case',
     destination: 'internal-case',
     availability: 'complete',
     href: 'work/call-agent/',
   },
   {
+    id: 'convo-ai',
+    companyId: 'agora',
+    kind: 'live-launch',
+    destination: 'external-live-site',
+    availability: 'awaiting-assets',
+    href: 'https://conversational-ai.shengwang.cn/',
+  },
+  {
     id: 'meeting',
+    companyId: 'agora',
     kind: 'deep-case',
     destination: 'internal-case',
     availability: 'draft',
@@ -52,6 +76,7 @@ export const homepageProjects = [
   },
   {
     id: 'aidx',
+    companyId: 'aidx',
     kind: 'live-launch',
     destination: 'external-live-site',
     availability: 'complete',
@@ -59,6 +84,7 @@ export const homepageProjects = [
   },
   {
     id: 'stt-demo',
+    companyId: 'agora',
     kind: 'build-lab',
     destination: 'internal-case',
     availability: 'complete',

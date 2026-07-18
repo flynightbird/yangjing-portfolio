@@ -65,8 +65,8 @@ describe('About framework', () => {
         'From large-scale consumer product design, into complex B2B and AI systems, then into AI-assisted product building.',
       ),
     ).toBeVisible();
-    expect(container.querySelector('[data-publication-state="draft"]')).toBeInTheDocument();
-    expect(container.querySelector('a[href^="mailto:"]')).toBeNull();
+    expect(container.querySelector('[data-publication-state="draft"]')).not.toBeInTheDocument();
+    expect(container.querySelector('a[href="mailto:yangux@qq.com"]')).toBeInTheDocument();
     expect(container.querySelector('a[href*="linkedin.com"]')).toBeNull();
     expect(container.querySelector('a[href$=".pdf"]')).toBeNull();
     expect(container.querySelector('img')).toBeNull();

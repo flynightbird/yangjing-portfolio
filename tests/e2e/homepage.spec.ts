@@ -53,12 +53,22 @@ test.describe('portfolio homepage framework', () => {
           projects.map((project) => project.getAttribute('data-project-id')),
         );
       expect(projectIds).toEqual([
-        'xuelang',
         'call-agent',
+        'convo-ai',
         'meeting',
-        'aidx',
         'stt-demo',
+        'aidx',
+        'xuelang',
       ]);
+
+      await expect(page.locator('[data-company-mark]')).toHaveCount(6);
+      await expect(page.locator('[data-project-chapter]')).toHaveCount(4);
+      await expect(page.locator('[data-aidx-showcase]')).toHaveCount(1);
+      await expect(page.locator('[data-aidx-browser]')).toHaveCount(1);
+      await expect(page.locator('[data-liquid-field="footer"]')).toHaveCount(1);
+      await expect(page.locator('#archive')).toHaveCount(1);
+      await expect(page.locator('[data-about-preview]')).toHaveCount(1);
+      await expect(page.locator('footer a[href="mailto:yangux@qq.com"]')).toHaveCount(1);
 
       await expect(page.locator('[data-project-kind="build-lab"]')).toHaveCount(1);
       await expect(page.locator('[data-archive-card]')).toHaveCount(4);
@@ -72,22 +82,92 @@ test.describe('portfolio homepage framework', () => {
         'href',
         `/${locale}/work/meeting/`,
       );
+      await expect(page.locator('[data-project-id="convo-ai"]')).toHaveAttribute(
+        'data-publication-state',
+        'temporary-media',
+      );
 
-      for (const projectId of projectIds) {
-        const projectLink = page.locator(`[data-project-id="${projectId}"] a`);
-        await expect(projectLink).toHaveAttribute('target', '_blank');
-        await expect(projectLink).toHaveAttribute(
+      for (const [projectId, tone] of Object.entries({
+        xuelang: 'light',
+        'call-agent': 'dark',
+        meeting: 'dark',
+      })) {
+        const projectLinks = page.locator(`[data-project-id="${projectId}"] a`);
+        for (let index = 0; index < await projectLinks.count(); index += 1) {
+          await expect(projectLinks.nth(index)).toHaveAttribute(
+            'data-page-transition-tone',
+            tone,
+          );
+          await expect(projectLinks.nth(index)).not.toHaveAttribute('target');
+        }
+      }
+
+      for (const projectId of ['convo-ai', 'aidx', 'stt-demo']) {
+        const projectLinks = page.locator(`[data-project-id="${projectId}"] a`);
+        for (let index = 0; index < await projectLinks.count(); index += 1) {
+          await expect(projectLinks.nth(index)).not.toHaveAttribute(
+            'data-page-transition-tone',
+          );
+          await expect(projectLinks.nth(index)).toHaveAttribute('target', '_blank');
+          await expect(projectLinks.nth(index)).toHaveAttribute(
+            'rel',
+            /noopener.*noreferrer|noreferrer.*noopener/,
+          );
+        }
+      }
+
+      const aidxLinks = page.locator('[data-project-id="aidx"] a');
+      await expect(aidxLinks).toHaveCount(2);
+      for (let index = 0; index < 2; index += 1) {
+        await expect(aidxLinks.nth(index)).toHaveAttribute('href', 'https://aidxtech.com/');
+        await expect(aidxLinks.nth(index)).toHaveAttribute('target', '_blank');
+        await expect(aidxLinks.nth(index)).toHaveAttribute(
           'rel',
           /noopener.*noreferrer|noreferrer.*noopener/,
         );
       }
-
-      const aidx = page.locator('[data-project-id="aidx"] a');
-      await expect(aidx).toHaveAttribute('href', 'https://aidxtech.com/');
-      await expect(aidx).toHaveAttribute('target', '_blank');
-      await expect(aidx).toHaveAttribute('rel', /noopener.*noreferrer|noreferrer.*noopener/);
     });
   }
+
+  test('finishes the destination-toned sweep before same-tab navigation', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'One canonical motion viewport is sufficient.');
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    await page
+      .getByRole('link', {
+        name: 'View case study Xuelang Commercial Experience Upgrade',
+      })
+      .click();
+
+    const overlay = page.locator('[data-testid="page-transition-layer"]');
+    await expect(overlay).toHaveAttribute('data-state', 'running');
+    await expect(overlay).toHaveAttribute('data-tone', 'light');
+    await page.waitForTimeout(600);
+    expect(new URL(page.url()).pathname).toBe('/en/');
+    await page.waitForURL('**/en/work/xuelang/');
+
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+    await page
+      .locator('[data-project-id="call-agent"] [data-page-transition-tone="dark"]')
+      .first()
+      .click();
+    await expect(page.locator('[data-testid="page-transition-layer"]')).toHaveAttribute(
+      'data-tone',
+      'dark',
+    );
+    await page.waitForURL('**/en/work/call-agent/');
+  });
+
+  test('has no page-level horizontal overflow', async ({ page }) => {
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+    const dimensions = await page.evaluate(() => ({
+      viewport: document.documentElement.clientWidth,
+      page: document.documentElement.scrollWidth,
+    }));
+    expect(dimensions.page).toBeLessThanOrEqual(dimensions.viewport);
+  });
 
   test('keeps both identities in the taller first viewport with weight 800', async ({
     page,
@@ -132,11 +212,138 @@ test.describe('portfolio homepage framework', () => {
     );
   });
 
+  test('renders the approved flagship materials and desktop focus motion', async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== 'desktop',
+      'Desktop expansion is disabled for compact viewports.',
+    );
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const stage = page.locator('[data-flagship-focus]');
+    const callMedia = page.locator('[data-project-id="call-agent"] [data-media-radius="20"]');
+    const convoMedia = page.locator('[data-project-id="convo-ai"] [data-media-radius="20"]');
+
+    await callMedia.scrollIntoViewIfNeeded();
+    await expect(stage).toHaveAttribute('data-flagship-focus', 'call-agent');
+    await expect(callMedia).toHaveCSS('border-radius', '20px');
+    await expect(convoMedia).toHaveCSS('border-radius', '20px');
+    await expect(callMedia).toHaveCSS('background-color', 'rgb(86, 91, 85)');
+    await expect(convoMedia).toHaveCSS('background-color', 'rgb(73, 79, 88)');
+    await expect(callMedia).toHaveCSS('background-image', 'none');
+    await expect(convoMedia).toHaveCSS('background-image', 'none');
+
+    await convoMedia.hover();
+    await expect(stage).toHaveAttribute('data-flagship-focus', 'convo-ai');
+    await expect(callMedia).toHaveCSS('opacity', '0.55');
+
+    await page.locator('[data-project-id="meeting"] h2').hover();
+    await expect(stage).toHaveAttribute('data-flagship-focus', 'call-agent');
+  });
+
+  test('stacks flagship media without transforms on mobile', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'mobile', 'Mobile-only fallback contract.');
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const call = page.locator('[data-project-id="call-agent"]');
+    const convo = page.locator('[data-project-id="convo-ai"]');
+    const callMedia = call.locator('[data-media-radius="20"]');
+    const convoMedia = convo.locator('[data-media-radius="20"]');
+    const callBox = await call.boundingBox();
+    const convoBox = await convo.boundingBox();
+
+    expect(callBox).not.toBeNull();
+    expect(convoBox).not.toBeNull();
+    expect(convoBox?.y ?? 0).toBeGreaterThan((callBox?.y ?? 0) + (callBox?.height ?? 0));
+    await expect(callMedia).toHaveCSS('transform', 'none');
+    await expect(convoMedia).toHaveCSS('transform', 'none');
+  });
+
+  test('uses a media-dominant STT stage with direct prototype actions', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'Desktop STT composition contract.');
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const stt = page.locator('[data-project-id="stt-demo"]');
+    const copy = stt.locator('[data-stt-copy]');
+    const media = stt.locator('[data-stt-media-stage]');
+    const browserWindow = stt.locator('[data-stt-browser-window]');
+    const copyBox = await copy.boundingBox();
+    const mediaBox = await media.boundingBox();
+
+    expect(copyBox).not.toBeNull();
+    expect(mediaBox).not.toBeNull();
+    expect((mediaBox?.width ?? 0) / (copyBox?.width ?? 1)).toBeGreaterThan(1.7);
+    await expect(media).toHaveCSS('border-radius', '20px');
+    await expect(stt.locator('iframe')).toHaveCount(0);
+    await expect(stt.locator('img')).toHaveAttribute(
+      'src',
+      '/images/stt-demo/stt-product-stage@2x.png',
+    );
+
+    const links = stt.locator('a');
+    await expect(links).toHaveCount(2);
+    for (let index = 0; index < 2; index += 1) {
+      await expect(links.nth(index)).toHaveAttribute(
+        'href',
+        '/demos/stt-demo/index.html',
+      );
+    }
+
+    const restingTransform = await browserWindow.evaluate(
+      (element) => getComputedStyle(element).transform,
+    );
+    await media.hover({ position: { x: (mediaBox?.width ?? 400) - 24, y: 36 } });
+    await expect
+      .poll(() => browserWindow.evaluate((element) => getComputedStyle(element).transform))
+      .not.toBe(restingTransform);
+
+    await page.mouse.move(24, 24);
+    await expect
+      .poll(() => browserWindow.evaluate((element) => getComputedStyle(element).transform))
+      .toBe(restingTransform);
+  });
+
+  test('keeps the STT window static for reduced motion and stacks media first on mobile', async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      !['desktop', 'mobile'].includes(testInfo.project.name),
+      'STT fallback contract only needs desktop and mobile coverage.',
+    );
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const stt = page.locator('[data-project-id="stt-demo"]');
+    const copy = stt.locator('[data-stt-copy]');
+    const media = stt.locator('[data-stt-media-stage]');
+    const browserWindow = stt.locator('[data-stt-browser-window]');
+    await stt.scrollIntoViewIfNeeded();
+    const mediaBox = await media.boundingBox();
+
+    expect(mediaBox).not.toBeNull();
+    const restingTransform = await browserWindow.evaluate(
+      (element) => getComputedStyle(element).transform,
+    );
+    await media.hover({ position: { x: (mediaBox?.width ?? 320) - 16, y: 24 } });
+    await expect(browserWindow).toHaveCSS('transform', restingTransform);
+
+    if (testInfo.project.name === 'mobile') {
+      const copyBox = await copy.boundingBox();
+      expect(copyBox).not.toBeNull();
+      expect(mediaBox?.y ?? Number.POSITIVE_INFINITY).toBeLessThan(
+        copyBox?.y ?? Number.NEGATIVE_INFINITY,
+      );
+    }
+  });
+
   test('loads every real homepage image and has no horizontal overflow', async ({ page }) => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
     const images = page.locator('main img:not([data-placeholder-media])');
-    await expect(images).toHaveCount(10);
+    await expect(images).toHaveCount(12);
     for (let index = 0; index < await images.count(); index += 1) {
       const image = images.nth(index);
       await image.scrollIntoViewIfNeeded();
@@ -316,14 +523,15 @@ test.describe('portfolio homepage framework', () => {
     });
     await meetingLink.focus();
     await expect(meetingLink).toBeFocused();
-    const [meetingPage] = await Promise.all([
-      page.context().waitForEvent('page'),
-      meetingLink.press('Enter'),
-    ]);
-    await meetingPage.waitForLoadState('networkidle');
+    await page.keyboard.press('Enter');
+    await expect(page.locator('[data-testid="page-transition-layer"]')).toHaveAttribute(
+      'data-tone',
+      'dark',
+    );
+    await page.waitForURL('**/en/work/meeting/');
 
-    await expect(meetingPage).toHaveURL(/\/en\/work\/meeting\/$/);
-    await expect(meetingPage.locator('[data-publication-state="draft"]')).toBeVisible();
-    await expect(meetingPage.getByText('Draft', { exact: true }).first()).toBeVisible();
+    await expect(page).toHaveURL(/\/en\/work\/meeting\/$/);
+    await expect(page.locator('[data-publication-state="draft"]')).toBeVisible();
+    await expect(page.getByText('Draft', { exact: true }).first()).toBeVisible();
   });
 });

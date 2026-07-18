@@ -1,4 +1,5 @@
 import { ActionLink } from '@/components/ui/action-link';
+import { CompanyMark } from '@/components/home/company-mark';
 
 import styles from './home.module.css';
 
@@ -10,6 +11,7 @@ interface MeetingStage {
 interface MeetingPreviewProps {
   readonly copy: {
     readonly kind: string;
+    readonly company: string;
     readonly title: string;
     readonly proposition: string;
     readonly role: string;
@@ -31,6 +33,7 @@ export function MeetingPreview({ copy, href }: MeetingPreviewProps) {
     >
       <div className={styles.meetingInner}>
         <div className={styles.meetingHeading}>
+          <CompanyMark companyId="agora" label={copy.company} />
           <p className={styles.projectKind}>{copy.kind}</p>
           <h2>{copy.title}</h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
@@ -51,7 +54,7 @@ export function MeetingPreview({ copy, href }: MeetingPreviewProps) {
           <p>{copy.role}</p>
           <ActionLink
             href={href}
-            target="_blank"
+            data-page-transition-tone="dark"
             variant="secondary"
             aria-label={`${copy.action} ${copy.title}`}
           >

@@ -1,10 +1,13 @@
 import { ActionLink } from '@/components/ui/action-link';
+import { AidxShowcase } from '@/components/home/aidx-showcase';
+import { CompanyMark } from '@/components/home/company-mark';
 
 import styles from './home.module.css';
 
 interface LiveWebsiteProjectProps {
   readonly copy: {
     readonly kind: string;
+    readonly company: string;
     readonly title: string;
     readonly proposition: string;
     readonly role: string;
@@ -25,6 +28,7 @@ export function LiveWebsiteProject({ copy, href }: LiveWebsiteProjectProps) {
     >
       <div className={styles.liveInner}>
         <div className={styles.liveCopy}>
+          <CompanyMark companyId="aidx" label={copy.company} />
           <p className={styles.projectKind}>{copy.kind}</p>
           <h2>{copy.title}</h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
@@ -43,17 +47,9 @@ export function LiveWebsiteProject({ copy, href }: LiveWebsiteProjectProps) {
             {copy.action}
           </ActionLink>
         </div>
-        <figure className={styles.liveMedia}>
-          {/* Captured from the public AIDX homepage in July 2026. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/aidx/home-2026-07.png"
-            width={1440}
-            height={900}
-            alt="AIDX public website homepage with Tested AI, Trusted AI positioning"
-          />
-          <figcaption>{copy.captureCaption}</figcaption>
-        </figure>
+        <div className={styles.liveMedia}>
+          <AidxShowcase href={href} caption={copy.captureCaption} />
+        </div>
       </div>
     </article>
   );

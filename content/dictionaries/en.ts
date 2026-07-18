@@ -6,9 +6,8 @@ export interface Dictionary {
   };
   navigation: {
     work: string;
+    archive: string;
     about: string;
-    resume: string;
-    contact: string;
   };
   languages: {
     en: string;
@@ -43,6 +42,9 @@ export interface Dictionary {
     projects: {
       xuelang: ProjectCopy;
       callAgent: ProjectCopy;
+      convoAi: ProjectCopy & {
+        temporaryNotice: string;
+      };
       meeting: ProjectCopy & {
         stages: readonly ProjectStageCopy[];
       };
@@ -135,6 +137,7 @@ interface ProjectStageCopy {
 }
 
 interface ProjectCopy {
+  company: string;
   kind: string;
   title: string;
   proposition: string;
@@ -152,9 +155,8 @@ export const enDictionary = {
   },
   navigation: {
     work: 'Work',
+    archive: 'Archive',
     about: 'About',
-    resume: 'Resume',
-    contact: 'Contact',
   },
   languages: {
     en: 'English',
@@ -190,6 +192,7 @@ export const enDictionary = {
     },
     projects: {
       xuelang: {
+        company: 'ByteDance / 字节跳动',
         kind: 'Deep case study',
         title: 'Xuelang Commercial Experience Upgrade',
         proposition:
@@ -200,6 +203,7 @@ export const enDictionary = {
         action: 'View case study',
       },
       callAgent: {
+        company: 'Agora / 声网',
         kind: 'Deep case study',
         title: 'Call Agent',
         proposition:
@@ -209,7 +213,21 @@ export const enDictionary = {
         mediaLabel: 'Real product evidence',
         action: 'View case study',
       },
+      convoAi: {
+        company: 'Agora / 声网',
+        kind: 'Consumer experience',
+        title: 'ConvoAI',
+        proposition:
+          'AI conversation designed for the people directly experiencing it.',
+        role: 'Product Designer',
+        status: 'Public product, media replacement pending',
+        mediaLabel: 'Temporary web and app media',
+        action: 'View live product',
+        temporaryNotice:
+          'Temporary third-party imagery. Replace with owned project assets before publishing.',
+      },
       meeting: {
+        company: 'Agora / 声网',
         kind: 'Interaction deep dive',
         title: 'Meeting',
         proposition:
@@ -237,6 +255,7 @@ export const enDictionary = {
         ],
       },
       aidx: {
+        company: 'Singapore AIDX',
         kind: 'Singapore AI company',
         title: 'AIDX',
         proposition:
@@ -249,6 +268,7 @@ export const enDictionary = {
         captureCaption: 'Public website captured in July 2026.',
       },
       sttDemo: {
+        company: 'Agora / 声网',
         kind: 'Build Lab',
         title: 'STT Demo',
         proposition:

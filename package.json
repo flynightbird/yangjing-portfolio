@@ -19,6 +19,7 @@
     "pdf:xuelang": "npm run build:framework && node scripts/generate-xuelang-pdfs.mjs",
     "verify:xuelang-pdf": "node --test tests/export/xuelang-pdf.test.mjs",
     "sync:stt": "node scripts/sync-stt-demo.mjs",
+    "capture:aidx": "node scripts/capture-aidx-showcase.mjs",
     "verify:export": "npm run build:framework && npm run test:export && npm run test:e2e:export",
     "verify:publish": "npm run lint && npm test && npm run build && npm run test:e2e"
   },

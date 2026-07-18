@@ -92,76 +92,77 @@ export function XuelangLayout({
   return (
     <XuelangMotion>
       <div className={styles.root} data-xuelang-case>
-      <div className={styles.frame}>
-        <aside className={styles.rail}>
-          <ChapterNav chapters={meta.chapters ?? []} locale={locale} compactAt="wide" />
-        </aside>
+        <div className={styles.noise} data-xuelang-noise aria-hidden="true" />
+        <div className={styles.frame}>
+          <aside className={styles.rail}>
+            <ChapterNav chapters={meta.chapters ?? []} locale={locale} compactAt="wide" />
+          </aside>
 
-        <article className={styles.case} data-case-study>
-          <header className={styles.hero} data-xuelang-hero>
-            <div className={styles.heroCopy}>
-              <p className={styles.eyebrow}>{text.eyebrow}</p>
-              <div className={styles.heroThesis} data-hero-thesis>
-                <h1>{meta.title}</h1>
-              </div>
-              <div className={styles.heroSupport} data-hero-support>
-                <p className={styles.proposition}>{meta.proposition}</p>
-                <dl className={styles.facts} aria-label={text.facts}>
-                  <div>
-                    <dt>{text.role}</dt>
-                    <dd>{meta.role}</dd>
-                  </div>
-                  <div>
-                    <dt>{text.duration}</dt>
-                    <dd>{meta.duration}</dd>
-                  </div>
-                  <div>
-                    <dt>{text.status}</dt>
-                    <dd className={styles.heroProof}>{text.proof}</dd>
-                  </div>
-                </dl>
-                <a
-                  className={styles.pdfAction}
-                  href={pdfHref}
-                  download
-                  data-case-web-control
-                >
-                  <Download aria-hidden="true" size={18} strokeWidth={1.7} />
-                  <span>{text.download}</span>
-                  <small aria-hidden="true">{text.downloadSize}</small>
-                </a>
-              </div>
-            </div>
-
-            <figure
-              className={styles.panorama}
-              data-hero-panorama
-              aria-label={text.panoramaAlt}
-            >
-              <div className={styles.panoramaMeta} aria-hidden="true">
-                <span>{text.panoramaKicker}</span>
-                <span>{text.panoramaFlow}</span>
-              </div>
-              <span className={styles.panoramaWord} aria-hidden="true">XUELANG</span>
-              <div className={styles.productStates}>
-                {text.heroStates.map((state, index) => (
-                  <div
-                    key={state.src}
-                    className={`${styles.productState} ${styles[`productState${index + 1}`]}`}
-                    data-hero-product-state
+          <article className={styles.case} data-case-study>
+            <header className={styles.hero} data-xuelang-hero>
+              <div className={styles.heroCopy}>
+                <p className={styles.eyebrow}>{text.eyebrow}</p>
+                <div className={styles.heroThesis} data-hero-thesis>
+                  <h1>{meta.title}</h1>
+                </div>
+                <div className={styles.heroSupport} data-hero-support>
+                  <p className={styles.proposition}>{meta.proposition}</p>
+                  <dl className={styles.facts} aria-label={text.facts}>
+                    <div>
+                      <dt>{text.role}</dt>
+                      <dd>{meta.role}</dd>
+                    </div>
+                    <div>
+                      <dt>{text.duration}</dt>
+                      <dd>{meta.duration}</dd>
+                    </div>
+                    <div>
+                      <dt>{text.status}</dt>
+                      <dd className={styles.heroProof}>{text.proof}</dd>
+                    </div>
+                  </dl>
+                  <a
+                    className={styles.pdfAction}
+                    href={pdfHref}
+                    download
+                    data-case-web-control
                   >
-                    <span aria-hidden="true">{state.label}</span>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={state.src} alt={state.alt} />
-                  </div>
-                ))}
+                    <Download aria-hidden="true" size={18} strokeWidth={1.7} />
+                    <span>{text.download}</span>
+                    <small aria-hidden="true">{text.downloadSize}</small>
+                  </a>
+                </div>
               </div>
-            </figure>
-          </header>
 
-          <div className={styles.content}>{children}</div>
-        </article>
-      </div>
+              <figure
+                className={styles.panorama}
+                data-hero-panorama
+                aria-label={text.panoramaAlt}
+              >
+                <div className={styles.panoramaMeta} aria-hidden="true">
+                  <span>{text.panoramaKicker}</span>
+                  <span>{text.panoramaFlow}</span>
+                </div>
+                <span className={styles.panoramaWord} aria-hidden="true">XUELANG</span>
+                <div className={styles.productStates}>
+                  {text.heroStates.map((state, index) => (
+                    <div
+                      key={state.src}
+                      className={`${styles.productState} ${styles[`productState${index + 1}`]}`}
+                      data-hero-product-state
+                    >
+                      <span aria-hidden="true">{state.label}</span>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={state.src} alt={state.alt} />
+                    </div>
+                  ))}
+                </div>
+              </figure>
+            </header>
+
+            <div className={styles.content}>{children}</div>
+          </article>
+        </div>
       </div>
     </XuelangMotion>
   );

@@ -52,6 +52,11 @@ test.describe('Xuelang case study', () => {
       }
 
       await expect(page.locator('[data-testid="xuelang-dark-stage"]')).toHaveCount(1);
+      const noise = page.locator('[data-xuelang-noise]');
+      await expect(noise).toHaveCount(1);
+      await expect(noise).toHaveAttribute('aria-hidden', 'true');
+      await expect(noise).toHaveCSS('pointer-events', 'none');
+      await expect(noise).toHaveCSS('opacity', '0.035');
       await expect(page.locator('[data-testid="learning-state"]')).toHaveCount(5);
       await expect(page.getByRole('navigation', { name: locale === 'zh' ? '项目导航' : 'Project navigation' })).toHaveCount(0);
 

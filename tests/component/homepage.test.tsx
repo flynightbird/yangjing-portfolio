@@ -71,6 +71,13 @@ describe('IntroStory', () => {
     );
     expect(scenes[1]).toHaveTextContent(/将复杂状态转化为清晰、可控的产品体验/);
     expect(scenes[2]).toHaveTextContent(/从概念、原型走向真实体验/);
+    expect(scenes[0]).toHaveTextContent(
+      '欢迎来到这个由我亲手设计，并通过 Vibe Coding 构建的作品集。',
+    );
+    expect(scenes[0].querySelector('[data-intro-support]')).toBeInTheDocument();
+    expect(container.querySelector('[data-intro-vibe]')).toHaveTextContent(
+      'Vibe Coding',
+    );
   });
 
   it('provides three progress controls and exposes the first scene as current', () => {
@@ -86,20 +93,59 @@ describe('IntroStory', () => {
 });
 
 describe('FeaturedWork', () => {
-  it('renders the five approved project treatments in order', () => {
+  it('renders the six approved project treatments in order', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const projectIds = Array.from(
       container.querySelectorAll<HTMLElement>('[data-project-id]'),
     ).map((project) => project.dataset.projectId);
 
     expect(projectIds).toEqual([
-      'xuelang',
       'call-agent',
+      'convo-ai',
       'meeting',
-      'aidx',
       'stt-demo',
+      'aidx',
+      'xuelang',
     ]);
     expect(container.querySelectorAll('[data-project-kind="build-lab"]')).toHaveLength(1);
+    expect(container.querySelectorAll('[data-company-mark]')).toHaveLength(6);
+    expect(container.querySelectorAll('[data-project-chapter]')).toHaveLength(4);
+  });
+
+  it('uses dark same-tab transitions for Call Agent and secure external links for ConvoAI', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+
+    const callAgent = container.querySelector<HTMLElement>('[data-project-id="call-agent"]');
+    const callAgentLinks = within(callAgent as HTMLElement).getAllByRole('link');
+    expect(callAgentLinks).toHaveLength(3);
+    for (const link of callAgentLinks) {
+      expect(link).toHaveAttribute('data-page-transition-tone', 'dark');
+      expect(link).not.toHaveAttribute('target');
+    }
+
+    const convoAi = container.querySelector<HTMLElement>('[data-project-id="convo-ai"]');
+    const convoAiLinks = within(convoAi as HTMLElement).getAllByRole('link');
+    expect(convoAiLinks).toHaveLength(3);
+    for (const link of convoAiLinks) {
+      expect(link).not.toHaveAttribute('data-page-transition-tone');
+      expect(link).toHaveAttribute('target', '_blank');
+      expect(link.getAttribute('rel')).toContain('noopener');
+      expect(link.getAttribute('rel')).toContain('noreferrer');
+    }
+  });
+
+  it('defaults to Call Agent focus and marks ConvoAI media as temporary', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+
+    expect(container.querySelector('[data-flagship-focus]')).toHaveAttribute(
+      'data-flagship-focus',
+      'call-agent',
+    );
+    expect(container.querySelector('[data-project-id="convo-ai"]')).toHaveAttribute(
+      'data-publication-state',
+      'temporary-media',
+    );
+    expect(container.querySelectorAll('[data-media-radius="20"]')).toHaveLength(2);
   });
 
   it('uses the complete Xuelang route and keeps Meeting draft', () => {
@@ -115,15 +161,32 @@ describe('FeaturedWork', () => {
     );
   });
 
-  it('opens every homepage project destination in a secure new tab', () => {
+  it('uses page sweeps only for internal case-study destinations', () => {
     const { container } = render(<FeaturedWork locale="en" />);
 
-    for (const project of container.querySelectorAll<HTMLElement>('[data-project-id]')) {
-      const link = project.querySelector('a');
-      expect(link, project.dataset.projectId).not.toBeNull();
-      expect(link).toHaveAttribute('target', '_blank');
-      expect(link?.getAttribute('rel')).toContain('noopener');
-      expect(link?.getAttribute('rel')).toContain('noreferrer');
+    const expectedInternalTones = {
+      xuelang: 'light',
+      'call-agent': 'dark',
+      meeting: 'dark',
+    } as const;
+    for (const [projectId, tone] of Object.entries(expectedInternalTones)) {
+      const project = container.querySelector<HTMLElement>(`[data-project-id="${projectId}"]`);
+      const links = within(project as HTMLElement).getAllByRole('link');
+      for (const link of links) {
+        expect(link).toHaveAttribute('data-page-transition-tone', tone);
+        expect(link).not.toHaveAttribute('target');
+      }
+    }
+
+    for (const projectId of ['convo-ai', 'aidx', 'stt-demo']) {
+      const project = container.querySelector<HTMLElement>(`[data-project-id="${projectId}"]`);
+      const links = within(project as HTMLElement).getAllByRole('link');
+      for (const link of links) {
+        expect(link).not.toHaveAttribute('data-page-transition-tone');
+        expect(link).toHaveAttribute('target', '_blank');
+        expect(link.getAttribute('rel')).toContain('noopener');
+        expect(link.getAttribute('rel')).toContain('noreferrer');
+      }
     }
   });
 
@@ -166,6 +229,9 @@ describe('FeaturedWork', () => {
       'width',
       '1440',
     );
+    const aidx = container.querySelector<HTMLElement>('[data-project-id="aidx"]');
+    expect(aidx?.querySelector('[data-aidx-showcase]')).toBeInTheDocument();
+    expect(aidx?.querySelector('[data-aidx-browser]')).toBeInTheDocument();
     const sttDemo = container.querySelector<HTMLElement>('[data-project-id="stt-demo"]');
     expect(
       within(sttDemo as HTMLElement).getByRole('img', { name: /STT Demo product stage/i }),
@@ -187,6 +253,21 @@ describe('FeaturedWork', () => {
       expect(link.getAttribute('rel')).toContain('noopener');
       expect(link.getAttribute('rel')).toContain('noreferrer');
     }
+  });
+
+  it('labels both ConvoAI images as temporary placeholders', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+    const convoAi = container.querySelector<HTMLElement>('[data-project-id="convo-ai"]');
+
+    expect(
+      within(convoAi as HTMLElement).getByRole('img', { name: /temporary ConvoAI web/i }),
+    ).toHaveAttribute('src', '/images/convo-ai/temporary-web.webp');
+    expect(
+      within(convoAi as HTMLElement).getByRole('img', { name: /temporary ConvoAI app/i }),
+    ).toHaveAttribute('src', '/images/convo-ai/temporary-app.webp');
+    expect(
+      within(convoAi as HTMLElement).getByText(/replace with owned project assets/i),
+    ).toBeVisible();
   });
 });
 

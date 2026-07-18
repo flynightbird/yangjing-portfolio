@@ -55,10 +55,14 @@
   --theme-border: var(--theme-dark-border);
   --theme-border-strong: var(--theme-dark-border-strong);
 
-  --color-paper: #F3F5F2;
-  --color-carbon: #10110F;
-  --color-signal: #B7FF3C;
-  --color-cobalt: #194BFF;
+  --color-paper: #F4F5F2;
+  --color-carbon: #0E100F;
+  --color-graphite: #191B19;
+  --color-iris: #B5A3E6;
+  --color-iris-luminous: #C8B9FF;
+  --color-iris-deep: #5F4B86;
+  --color-signal: #C5FF63;
+  --color-focus: var(--color-iris-luminous);
   --color-coral: #FF654D;
   --color-ink-muted: var(--theme-muted);
   --color-border: var(--theme-border);
@@ -180,7 +184,7 @@ select {
 button,
 summary,
 a {
-  -webkit-tap-highlight-color: rgba(25, 75, 255, 0.18);
+  -webkit-tap-highlight-color: rgba(200, 185, 255, 0.2);
 }
 
 button,
@@ -199,11 +203,11 @@ a {
 }
 
 a:hover {
-  color: var(--color-cobalt);
+  color: var(--color-iris-luminous);
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-cobalt);
+  outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
 

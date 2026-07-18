@@ -13,15 +13,22 @@ const actionLinkCss = readFileSync(actionLinkPath, 'utf8');
 
 describe('Interface X-Ray design tokens', () => {
   it.each([
-    ['paper', '#F3F5F2'],
-    ['carbon', '#10110F'],
-    ['signal', '#B7FF3C'],
-    ['cobalt', '#194BFF'],
+    ['paper', '#F4F5F2'],
+    ['carbon', '#0E100F'],
+    ['graphite', '#191B19'],
+    ['iris', '#B5A3E6'],
+    ['iris-luminous', '#C8B9FF'],
+    ['iris-deep', '#5F4B86'],
+    ['signal', '#C5FF63'],
     ['coral', '#FF654D'],
   ])('defines the exact %s color', (name, value) => {
     expect(globalsCss).toMatch(
       new RegExp(`--color-${name}:\\s*${value}`, 'i'),
     );
+  });
+
+  it('removes the previous cobalt brand token', () => {
+    expect(globalsCss).not.toMatch(/--color-cobalt:/i);
   });
 
   it('caps shared geometry at a six pixel radius', () => {

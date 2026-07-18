@@ -15,6 +15,11 @@ const introCopy = {
         lead: "Hi, I'm Yang Jing, a ",
         emphasis: 'UX/UI designer',
         trail: ' with more than a decade of experience.',
+        support: {
+          lead: 'Welcome to a portfolio I designed and built through ',
+          emphasis: 'Vibe Coding',
+          trail: '.',
+        },
       },
       {
         lead: 'I work across large-scale consumer products and complex B2B and AI systems, turning complexity into ',
@@ -37,6 +42,11 @@ const introCopy = {
         lead: '嗨，我是杨静，一名拥有十多年经验的 ',
         emphasis: 'UX/UI 设计师',
         trail: '。',
+        support: {
+          lead: '欢迎来到这个由我亲手设计，并通过 ',
+          emphasis: 'Vibe Coding',
+          trail: ' 构建的作品集。',
+        },
       },
       {
         lead: '我的工作横跨大规模 C 端产品、复杂 B2B 与 AI 系统，将复杂状态转化为',

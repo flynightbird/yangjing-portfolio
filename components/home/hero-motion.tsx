@@ -268,7 +268,7 @@ export function HeroMotion({
         const y = height * fragment.v + (smoothY - 0.48) * 18 * fragment.depth;
         context.font = `${fragment.size}px "DM Mono", monospace`;
         context.fillStyle = fragment.accent
-          ? `rgba(75, 122, 255, ${0.09 + reveal * (0.22 + fragment.depth * 0.28)})`
+          ? `rgba(200, 185, 255, ${0.09 + reveal * (0.22 + fragment.depth * 0.28)})`
           : `rgba(226, 230, 222, ${0.06 + reveal * (0.12 + fragment.depth * 0.2)})`;
         context.fillText(fragment.text, x, y);
       }
@@ -281,7 +281,7 @@ export function HeroMotion({
         context.lineTo(boundary + travel - 76 - height * 0.42, height);
         context.lineTo(boundary + travel - 150 - height * 0.42, height);
         context.closePath();
-        context.fillStyle = 'rgba(75, 122, 255, 0.08)';
+        context.fillStyle = 'rgba(200, 185, 255, 0.08)';
         context.fill();
         context.beginPath();
         context.moveTo(boundary + travel, 0);

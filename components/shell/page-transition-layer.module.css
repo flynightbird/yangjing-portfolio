@@ -1,0 +1,40 @@
+.overlay {
+  position: fixed;
+  z-index: 1000;
+  inset: -18vmin;
+  pointer-events: none;
+  visibility: hidden;
+  clip-path: polygon(-200% 0, -50% 0, -100% 100%, -200% 100%);
+  filter: blur(9vmin);
+  will-change: clip-path;
+}
+
+.overlay[data-tone='light'] {
+  background: #fff;
+}
+
+.overlay[data-tone='dark'] {
+  background: #050605;
+}
+
+.overlay[data-state='running'] {
+  visibility: visible;
+  animation: page-sweep 1.2s cubic-bezier(0.27, 0, 0.51, 1) both;
+}
+
+@keyframes page-sweep {
+  from {
+    clip-path: polygon(-200% 0, -50% 0, -100% 100%, -200% 100%);
+  }
+
+  to {
+    clip-path: polygon(-200% 0, 200% 0, 150% 100%, -200% 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay[data-state='running'] {
+    display: none;
+    animation: none;
+  }
+}

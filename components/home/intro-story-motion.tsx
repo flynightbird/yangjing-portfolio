@@ -20,6 +20,11 @@ interface IntroStoryMotionProps {
     readonly lead: string;
     readonly emphasis: string;
     readonly trail: string;
+    readonly support?: {
+      readonly lead: string;
+      readonly emphasis: string;
+      readonly trail: string;
+    };
   }[];
 }
 
@@ -180,19 +185,30 @@ export function IntroStoryMotion({
         <div className={styles.introFrame}>
           <div className={styles.introScenes} aria-live="polite">
             {scenes.map((scene, index) => (
-              <p
+              <div
                 key={`${scene.lead}${scene.emphasis}${scene.trail}`}
-                className={`${styles.introStatement} ${
+                className={`${styles.introScene} ${
                   index === currentScene ? styles.introStatementCurrent : ''
                 }`}
                 aria-hidden={reducedMotion || index === currentScene ? undefined : true}
-                aria-label={`${scene.lead}${scene.emphasis}${scene.trail}`}
                 data-intro-scene={index + 1}
               >
-                {scene.lead}
-                <strong data-intro-emphasis>{scene.emphasis}</strong>
-                {scene.trail}
-              </p>
+                <p
+                  className={styles.introStatement}
+                  aria-label={`${scene.lead}${scene.emphasis}${scene.trail}`}
+                >
+                  {scene.lead}
+                  <strong data-intro-emphasis>{scene.emphasis}</strong>
+                  {scene.trail}
+                </p>
+                {scene.support ? (
+                  <p className={styles.introSupport} data-intro-support>
+                    {scene.support.lead}
+                    <strong data-intro-vibe>{scene.support.emphasis}</strong>
+                    {scene.support.trail}
+                  </p>
+                ) : null}
+              </div>
             ))}
           </div>
 

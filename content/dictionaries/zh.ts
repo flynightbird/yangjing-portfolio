@@ -8,9 +8,8 @@ export const zhDictionary = {
   },
   navigation: {
     work: '作品',
+    archive: '视觉档案',
     about: '关于',
-    resume: '简历',
-    contact: '联系',
   },
   languages: {
     en: '英语',
@@ -44,6 +43,7 @@ export const zhDictionary = {
     },
     projects: {
       xuelang: {
+        company: 'ByteDance / 字节跳动',
         kind: '深度案例',
         title: '学浪商业化体验升级',
         proposition: '从卖课工具，到高品质学习平台',
@@ -53,6 +53,7 @@ export const zhDictionary = {
         action: '查看案例',
       },
       callAgent: {
+        company: 'Agora / 声网',
         kind: '深度案例',
         title: 'Call Agent',
         proposition: '让 AI 在发布前可见、可验证、可控制。',
@@ -61,7 +62,19 @@ export const zhDictionary = {
         mediaLabel: '真实产品证据',
         action: '查看案例',
       },
+      convoAi: {
+        company: 'Agora / 声网',
+        kind: 'C 端体验',
+        title: 'ConvoAI',
+        proposition: '为直接使用 AI 对话的人设计自然、清晰的跨端体验。',
+        role: '产品设计师',
+        status: '公开产品，等待替换项目素材',
+        mediaLabel: '临时 Web 与 App 素材',
+        action: '查看线上产品',
+        temporaryNotice: '当前为临时第三方图片，正式发布前需替换为本人项目素材。',
+      },
       meeting: {
+        company: 'Agora / 声网',
         kind: '复杂交互案例',
         title: 'Meeting',
         proposition: '让高度动态的实时协作始终可见、可控。',
@@ -85,6 +98,7 @@ export const zhDictionary = {
         ],
       },
       aidx: {
+        company: '新加坡 AIDX',
         kind: '新加坡 AI 公司',
         title: 'AIDX',
         proposition: '为新加坡 AI 安全公司 AIDX 打造的线上官网，通过界面、信息结构与动效塑造品牌表达。',
@@ -96,6 +110,7 @@ export const zhDictionary = {
         captureCaption: '公开网站截图于 2026 年 7 月获取。',
       },
       sttDemo: {
+        company: 'Agora / 声网',
         kind: 'Build Lab',
         title: 'STT Demo',
         proposition: '让双语对话在发生的当下清晰可读。',

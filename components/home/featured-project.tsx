@@ -1,9 +1,12 @@
 import { ActionLink } from '@/components/ui/action-link';
-import type { ProjectAvailability } from '@/content/home';
+import { CompanyMark } from '@/components/home/company-mark';
+import type { PageTransitionTone } from '@/components/shell/page-transition-layer';
+import type { HomepageCompanyId, ProjectAvailability } from '@/content/home';
 
 import styles from './home.module.css';
 
 interface ProjectCopy {
+  readonly company: string;
   readonly kind: string;
   readonly title: string;
   readonly proposition: string;
@@ -27,7 +30,9 @@ interface FeaturedProjectProps {
   readonly availability: ProjectAvailability;
   readonly media?: ProjectMedia;
   readonly order: string;
+  readonly transitionTone: PageTransitionTone;
   readonly variant: 'flagship' | 'evidence';
+  readonly companyId: HomepageCompanyId;
 }
 
 export function FeaturedProject({
@@ -37,7 +42,9 @@ export function FeaturedProject({
   availability,
   media,
   order,
+  transitionTone,
   variant,
+  companyId,
 }: FeaturedProjectProps) {
   const isDraft = availability === 'draft';
 
@@ -50,6 +57,7 @@ export function FeaturedProject({
     >
       <div className={styles.projectInner}>
         <div className={styles.projectCopy}>
+          <CompanyMark companyId={companyId} label={copy.company} />
           <h2>{copy.title}</h2>
           <div className={styles.projectMeta}>
             <p className={styles.projectKind}>{copy.kind}</p>
@@ -70,7 +78,7 @@ export function FeaturedProject({
           </dl>
           <ActionLink
             href={href}
-            target="_blank"
+            data-page-transition-tone={transitionTone}
             variant={variant === 'flagship' ? 'primary' : 'secondary'}
             aria-label={`${copy.action} ${copy.title}`}
           >

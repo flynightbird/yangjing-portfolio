@@ -1,7 +1,7 @@
-import { BuildLabPreview } from '@/components/home/build-lab-preview';
+import { CommunicationProjects } from '@/components/home/communication-projects';
 import { FeaturedProject } from '@/components/home/featured-project';
+import { FlagshipProjects } from '@/components/home/flagship-projects';
 import { LiveWebsiteProject } from '@/components/home/live-website-project';
-import { MeetingPreview } from '@/components/home/meeting-preview';
 import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
 import { homepageProjects } from '@/content/home';
@@ -16,7 +16,7 @@ interface FeaturedWorkProps {
 export function FeaturedWork({ locale }: FeaturedWorkProps) {
   const copy = locale === 'zh' ? zhDictionary.home.projects : enDictionary.home.projects;
   const localeRoot = `/${locale}/`;
-  const [xuelang, callAgent, meeting, aidx, sttDemo] = homepageProjects;
+  const [xuelang, callAgent, convoAi, meeting, aidx, sttDemo] = homepageProjects;
 
   return (
     <section
@@ -24,46 +24,45 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
       className={styles.featuredWork}
       aria-label={locale === 'zh' ? '精选作品' : 'Selected work'}
     >
-      <FeaturedProject
-        id="xuelang"
-        copy={copy.xuelang}
-        href={`${localeRoot}${xuelang.href}`}
-        availability={xuelang.availability}
-        order="01"
-        variant="flagship"
-        media={{
-          src: '/images/xuelang/hero-panorama.webp',
-          width: 3000,
-          height: 1500,
-          alt:
-            locale === 'zh'
-              ? '学浪产品体验全景，呈现发现、决策与学习的关键界面'
-              : 'Xuelang product panorama showing key discovery, purchase, and learning interfaces',
+      <FlagshipProjects
+        callAgent={{
+          copy: copy.callAgent,
+          href: `${localeRoot}${callAgent.href}`,
+        }}
+        convoAi={{
+          copy: copy.convoAi,
+          href: convoAi.href,
         }}
       />
-      <FeaturedProject
-        id="call-agent"
-        copy={copy.callAgent}
-        href={`${localeRoot}${callAgent.href}`}
-        availability={callAgent.availability}
-        order="02"
-        variant="evidence"
-        media={{
-          src: '/images/call-agent/ai-preview-live.png',
-          width: 2934,
-          height: 1466,
-          alt: 'Call Agent configuration next to a live call preview with runtime feedback',
-        }}
+      <CommunicationProjects
+        locale={locale}
+        meeting={{ copy: copy.meeting, href: `${localeRoot}${meeting.href}` }}
+        stt={{ copy: copy.sttDemo, href: sttDemo.href }}
       />
-      <MeetingPreview
-        copy={copy.meeting}
-        href={`${localeRoot}${meeting.href}`}
-      />
-      <LiveWebsiteProject copy={copy.aidx} href={aidx.href} />
-      <BuildLabPreview
-        copy={copy.sttDemo}
-        href={sttDemo.href}
-      />
+      <section data-project-chapter="visual-brand">
+        <LiveWebsiteProject copy={copy.aidx} href={aidx.href} />
+      </section>
+      <section data-project-chapter="product-foundation">
+        <FeaturedProject
+          id="xuelang"
+          copy={copy.xuelang}
+          href={`${localeRoot}${xuelang.href}`}
+          availability={xuelang.availability}
+          companyId="bytedance"
+          order="06"
+          variant="evidence"
+          media={{
+            src: '/images/xuelang/hero-panorama.webp',
+            width: 3000,
+            height: 1500,
+            alt:
+              locale === 'zh'
+                ? '学浪产品体验全景，呈现发现、决策与学习的关键界面'
+                : 'Xuelang product panorama showing key discovery, purchase, and learning interfaces',
+          }}
+          transitionTone="light"
+        />
+      </section>
     </section>
   );
 }

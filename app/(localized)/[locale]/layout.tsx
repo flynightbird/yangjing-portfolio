@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 
 import '@/app/globals.css';
 
+import { PageTransitionLayer } from '@/components/shell/page-transition-layer';
 import { SiteFooter } from '@/components/shell/site-footer';
 import { SiteHeader } from '@/components/shell/site-header';
 import { enDictionary } from '@/content/dictionaries/en';
@@ -42,14 +43,16 @@ export default async function LocaleLayout({
   return (
     <html lang={documentLanguage} data-scroll-behavior="smooth">
       <body>
-        <a className="skip-link" href="#main-content">
-          {dictionary.site.skipToContent}
-        </a>
-        <SiteHeader locale={locale} />
-        <main id="main-content" tabIndex={-1}>
-          {children}
-        </main>
-        <SiteFooter locale={locale} />
+        <PageTransitionLayer>
+          <a className="skip-link" href="#main-content">
+            {dictionary.site.skipToContent}
+          </a>
+          <SiteHeader locale={locale} />
+          <main id="main-content" tabIndex={-1}>
+            {children}
+          </main>
+          <SiteFooter locale={locale} />
+        </PageTransitionLayer>
       </body>
     </html>
   );
