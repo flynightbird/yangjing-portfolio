@@ -189,6 +189,24 @@ test.describe('portfolio homepage framework', () => {
     await page.waitForURL('**/en/work/call-agent/');
   });
 
+  test('opens the latest Xuelang evidence case from the homepage', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'One canonical entry path is sufficient.');
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    await page
+      .getByRole('link', {
+        name: 'View case study Xuelang Commercial Experience Upgrade',
+      })
+      .click();
+    await page.waitForURL('**/en/work/xuelang/');
+
+    await expect(page.locator('[data-hero-product-state]')).toHaveCount(4);
+    await expect(page.locator('[data-course-entry-interactive]')).toHaveCount(1);
+    await expect(page.locator('[data-interaction-board]')).toHaveCount(1);
+  });
+
   test('has no page-level horizontal overflow', async ({ page }) => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
     const dimensions = await page.evaluate(() => ({

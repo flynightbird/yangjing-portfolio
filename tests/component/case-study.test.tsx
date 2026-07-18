@@ -19,6 +19,29 @@ afterEach(() => {
 });
 
 describe('ChapterNav', () => {
+  it('supports an explicit zero-based Xuelang sequence without changing link names', () => {
+    const { container } = render(
+      <ChapterNav
+        chapters={chapters}
+        locale="en"
+        indexStart={0}
+        variant="xuelang"
+      />,
+    );
+
+    expect(container.querySelector('[data-chapter-variant="xuelang"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-chapter-index="00"]')).toHaveTextContent('00');
+    expect(container.querySelector('[data-chapter-index="01"]')).toHaveTextContent('01');
+    expect(screen.getByRole('link', { name: 'Overview' })).toBeVisible();
+  });
+
+  it('keeps shared case navigation on its existing one-based sequence', () => {
+    const { container } = render(<ChapterNav chapters={chapters} locale="en" />);
+
+    expect(container.querySelector('[data-chapter-index="01"]')).toHaveTextContent('01');
+    expect(container.querySelector('[data-chapter-index="02"]')).toHaveTextContent('02');
+  });
+
   it('exposes a keyboard-operable compact chapter menu', async () => {
     const user = userEvent.setup();
     render(<ChapterNav chapters={chapters} locale="en" />);
