@@ -22,9 +22,10 @@ export function SectionReveal({ children, tone, className }: SectionRevealProps)
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
-    if (reducedMotion || typeof IntersectionObserver === 'undefined') {
-      setRevealed(true);
-      return;
+    if (reducedMotion) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      const frame = requestAnimationFrame(() => setRevealed(true));
+      return () => cancelAnimationFrame(frame);
     }
 
     const observer = new IntersectionObserver(

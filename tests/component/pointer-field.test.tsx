@@ -54,7 +54,7 @@ describe('PointerField', () => {
     const { container } = render(
       <>
         <PointerField />
-        <a href="/en/about/">About</a>
+        <a href="https://example.com/about">About</a>
         <div data-pointer-suppress>Archive</div>
       </>,
     );

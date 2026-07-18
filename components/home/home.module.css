@@ -972,6 +972,7 @@ a.whiteCta:focus-visible {
   padding-block-start: clamp(1.5rem, 4vh, 3rem);
   border-top: 1px solid var(--theme-border);
   background: var(--theme-canvas);
+  scroll-margin-top: 6.5rem;
 }
 
 .communicationChapter {

@@ -1,7 +1,7 @@
 'use client';
 
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
-import { type CSSProperties, useRef, useState } from 'react';
+import { type CSSProperties, type WheelEvent, useRef, useState } from 'react';
 
 import { Lightbox } from '@/components/media/lightbox';
 import { ActionLink } from '@/components/ui/action-link';
@@ -119,6 +119,12 @@ export function VisualArchive({
     setActiveIndex(closestIndex);
   };
 
+  const forwardVerticalWheel = (event: WheelEvent<HTMLDivElement>) => {
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    event.preventDefault();
+    window.scrollBy({ top: event.deltaY, behavior: 'auto' });
+  };
+
   const progressStyle = {
     '--archive-progress': (activeIndex + 1) / total,
   } as CSSProperties;
@@ -181,6 +187,7 @@ export function VisualArchive({
         aria-label={copy.carouselLabel}
         data-archive-scroller
         onScroll={updateActiveIndex}
+        onWheel={forwardVerticalWheel}
       >
         <div className={styles.archiveTrack}>
           {parsedEntries.map((entry, index) => {

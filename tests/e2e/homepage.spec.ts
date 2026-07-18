@@ -206,6 +206,27 @@ test.describe('portfolio homepage framework', () => {
       .toBeLessThan(topWidth);
   });
 
+  test('keeps capsule actions and anchored sections clear of the floating header', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'Desktop navigation overlap contract.');
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    await expect(
+      page.locator('[data-project-id="aidx"] [data-action-variant="signal"]'),
+    ).toHaveCSS('border-radius', '999px');
+
+    await page.getByRole('link', { name: 'Archive' }).click();
+    await expect(page).toHaveURL(/#archive$/);
+    const header = await page.getByRole('banner').boundingBox();
+    const title = await page.getByRole('heading', {
+      name: 'More Consumer Product Work',
+    }).boundingBox();
+    expect(header).not.toBeNull();
+    expect(title).not.toBeNull();
+    expect(title?.y ?? 0).toBeGreaterThan((header?.y ?? 0) + (header?.height ?? 0));
+  });
+
   test('keeps both identities in the taller first viewport with weight 800', async ({
     page,
   }) => {
@@ -442,12 +463,19 @@ test.describe('portfolio homepage framework', () => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
     const scroller = page.locator('[data-archive-scroller]');
-    await scroller.scrollIntoViewIfNeeded();
+    await scroller.evaluate((element) => {
+      const top = element.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: Math.max(0, top - 120), behavior: 'instant' });
+    });
     const box = await scroller.boundingBox();
     if (!box) throw new Error('Missing Visual Archive scroller bounds');
 
     await page.mouse.move(box.x + box.width / 2, box.y + Math.min(box.height / 2, 160));
     const before = await page.evaluate(() => window.scrollY);
+    const maximum = await page.evaluate(
+      () => document.documentElement.scrollHeight - window.innerHeight,
+    );
+    expect(maximum - before).toBeGreaterThan(100);
     await page.mouse.wheel(0, 500);
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(before + 100);
   });
