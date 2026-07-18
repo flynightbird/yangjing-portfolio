@@ -142,6 +142,13 @@ test.describe('STT homepage live-stage presentation', () => {
       );
       const fill = await embed.locator('.land-visual').evaluate((element) => {
         const rect = element.getBoundingClientRect();
+        const selectors = [
+          '.snip-speaker',
+          '.snip-original',
+          '.snip-translation',
+          '.snip-side',
+          '.snip-dock',
+        ];
         return {
           x: rect.x,
           y: rect.y,
@@ -149,20 +156,35 @@ test.describe('STT homepage live-stage presentation', () => {
           height: rect.height,
           viewportWidth: document.documentElement.clientWidth,
           viewportHeight: document.documentElement.clientHeight,
+          content: selectors.map((selector) => {
+            const childRect = document.querySelector(selector)?.getBoundingClientRect();
+            return childRect
+              ? {
+                  selector,
+                  x: childRect.x,
+                  y: childRect.y,
+                  width: childRect.width,
+                  height: childRect.height,
+                }
+              : null;
+          }),
         };
       });
       expect(fill.x).toBeCloseTo(0, 0);
       expect(fill.y).toBeCloseTo(0, 0);
       expect(fill.width).toBeCloseTo(fill.viewportWidth, 0);
       expect(fill.height).toBeCloseTo(fill.viewportHeight, 0);
-      for (const selector of [
-        '.snip-speaker',
-        '.snip-original',
-        '.snip-translation',
-        '.snip-side',
-        '.snip-dock',
-      ]) {
-        await expect(embed.locator(selector)).toBeInViewport();
+      expect(fill.content).not.toContain(null);
+      for (const child of fill.content) {
+        if (!child) continue;
+        expect(child.x, child.selector).toBeGreaterThanOrEqual(-1);
+        expect(child.y, child.selector).toBeGreaterThanOrEqual(-1);
+        expect(child.x + child.width, child.selector).toBeLessThanOrEqual(
+          fill.viewportWidth + 1,
+        );
+        expect(child.y + child.height, child.selector).toBeLessThanOrEqual(
+          fill.viewportHeight + 1,
+        );
       }
       expectStableBox(browserOffsetsBefore, await offsetBox(browserWindow));
       expectStableBox(viewportOffsetsBefore, await offsetBox(viewport));
