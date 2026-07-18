@@ -302,8 +302,8 @@ test.describe('portfolio homepage framework', () => {
     await expect(stage).toHaveAttribute('data-flagship-focus', 'call-agent');
     await expect(callMedia).toHaveCSS('border-radius', '20px');
     await expect(convoMedia).toHaveCSS('border-radius', '20px');
-    await expect(callMedia).toHaveCSS('background-color', 'rgb(86, 91, 85)');
-    await expect(convoMedia).toHaveCSS('background-color', 'rgb(73, 79, 88)');
+    await expect(callMedia).toHaveCSS('background-color', 'rgb(232, 221, 187)');
+    await expect(convoMedia).toHaveCSS('background-color', 'rgb(220, 233, 239)');
     await expect(callMedia).toHaveCSS('background-image', 'none');
     await expect(convoMedia).toHaveCSS('background-image', 'none');
 

@@ -789,13 +789,13 @@ a.whiteCta:focus-visible {
 
 .flagshipCallMedia {
   z-index: 2;
-  background: #565b55;
+  background: #e8ddbb;
   transform-origin: left center;
 }
 
 .flagshipConvoMedia {
   z-index: 1;
-  background: #494f58;
+  background: #dce9ef;
   transform-origin: right center;
 }
 
