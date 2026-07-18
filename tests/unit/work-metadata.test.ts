@@ -29,4 +29,20 @@ describe('localized work metadata', () => {
 
     expect(metadata.title).toBe(title);
   });
+
+  it.each([
+    ['en', 'Tangping Designer | Yang Jing', 'From user research to a product opportunity map for empowering designers'],
+    ['zh', '躺平设计家 | Yang Jing', '从用户研究到设计师赋能的产品机会画布'],
+  ] as const)('identifies the Tangping case in %s metadata', async (
+    locale,
+    title,
+    description,
+  ) => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ locale, slug: 'tangping' }),
+    });
+
+    expect(metadata.title).toBe(title);
+    expect(metadata.description).toBe(description);
+  });
 });
