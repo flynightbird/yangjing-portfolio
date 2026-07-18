@@ -55,7 +55,7 @@ export function MeetingPreview({ copy, href }: MeetingPreviewProps) {
           <ActionLink
             href={href}
             data-page-transition-tone="dark"
-            variant="secondary"
+            variant="primary"
             className={styles.whiteCta}
             aria-label={`${copy.action} ${copy.title}`}
             data-cta-treatment="white"

@@ -40,7 +40,7 @@ export function LiveWebsiteProject({ copy, href }: LiveWebsiteProjectProps) {
             href={href}
             external
             externalLabel="(opens in a new tab)"
-            variant="secondary"
+            variant="signal"
             aria-label={`${copy.action} ${copy.title} (opens in a new tab)`}
           >
             {copy.action}

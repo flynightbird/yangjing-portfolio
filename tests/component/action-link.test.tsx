@@ -9,7 +9,7 @@ import styles from '@/components/ui/action-link.module.css';
 afterEach(cleanup);
 
 describe('ActionLink', () => {
-  it.each(['primary', 'secondary', 'text'] as const)(
+  it.each(['primary', 'signal', 'secondary', 'text'] as const)(
     'applies the %s treatment',
     (variant) => {
       render(
@@ -18,10 +18,12 @@ describe('ActionLink', () => {
         </ActionLink>,
       );
 
-      expect(screen.getByRole('link', { name: 'View work' })).toHaveClass(
+      const link = screen.getByRole('link', { name: 'View work' });
+      expect(link).toHaveClass(
         styles.root,
         styles[variant],
       );
+      expect(link).toHaveAttribute('data-action-variant', variant);
     },
   );
 
@@ -55,10 +57,11 @@ describe('ActionLink', () => {
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', expect.stringContaining('noopener'));
     expect(link).toHaveAttribute('rel', expect.stringContaining('noreferrer'));
-    expect(container.querySelector('svg')).toHaveAttribute(
+    expect(container.querySelector('[data-remix-icon="arrow-right-up-line"]')).toHaveAttribute(
       'aria-hidden',
       'true',
     );
+    expect(container.querySelector('svg')).not.toBeInTheDocument();
   });
 
   it('secures explicit blank targets for internal links', () => {

@@ -78,7 +78,7 @@ export function FeaturedProject({
           <ActionLink
             href={href}
             data-page-transition-tone={transitionTone}
-            variant={variant === 'flagship' ? 'primary' : 'secondary'}
+            variant="primary"
             aria-label={`${copy.action} ${copy.title}`}
           >
             {copy.action}
