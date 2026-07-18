@@ -45,34 +45,11 @@
   background: var(--hero-black);
 }
 
-.builderField::after,
-.designerField::after {
-  position: absolute;
-  z-index: 5;
-  inset-block-start: 1.25rem;
-  color: var(--hero-iris);
-  content: 'SYSTEM FIELD';
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  font-weight: 500;
-  line-height: 1;
-}
-
-.builderField::after {
-  inset-inline-end: var(--content-gutter);
-}
-
 .designerField {
   z-index: 4;
   background: #0b1007;
   clip-path: inset(0 calc(100% - var(--hero-split)) 0 0);
   will-change: clip-path;
-}
-
-.designerField::after {
-  inset-inline-start: var(--content-gutter);
-  color: var(--hero-signal);
-  content: 'DESIGN FIELD';
 }
 
 .codeCanvas,

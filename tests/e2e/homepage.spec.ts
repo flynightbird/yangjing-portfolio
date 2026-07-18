@@ -1,6 +1,21 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('portfolio homepage framework', () => {
+  test('does not show field labels in the hero corners', async ({ page }) => {
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const fieldLabels = await page.evaluate(() => {
+      const builder = document.querySelector('[data-hero-code-canvas]')?.parentElement;
+      const designer = document.querySelector('[data-designer-art="material-blueprint"]')?.parentElement;
+
+      return [builder, designer].map((field) =>
+        field ? getComputedStyle(field, '::after').content : null,
+      );
+    });
+
+    expect(fieldLabels).toEqual(['none', 'none']);
+  });
+
   test('uses the dark theme by default without exposing a theme switcher', async ({
     page,
   }) => {
