@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { expect, test, type Locator, type Page, type Route } from '@playwright/test';
 
 const fullDemoPath = '/demos/stt-demo/index.html';
@@ -60,13 +62,10 @@ async function holdStageEmbed(page: Page) {
   const handler = async (route: Route) => {
     markRequestHeld();
     await release;
-    await page.evaluate(
-      () =>
-        new Promise<void>((resolve) => {
-          requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
-        }),
-    );
-    await route.continue();
+    await route.fulfill({
+      contentType: 'text/html',
+      path: path.join(process.cwd(), 'public/demos/stt-demo/index.html'),
+    });
   };
   await page.route(stageEmbedUrl, handler);
 
@@ -138,6 +137,33 @@ test.describe('STT homepage live-stage presentation', () => {
       await expect(media).toHaveAttribute('data-stt-ready', 'true');
       await expect(fallback).toHaveCSS('opacity', '0');
       await expect(frame).toHaveCSS('opacity', '1');
+      const embed = page.frameLocator(
+        'iframe[src="/demos/stt-demo/index.html?embed=stage"]',
+      );
+      const fill = await embed.locator('.land-visual').evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          x: rect.x,
+          y: rect.y,
+          width: rect.width,
+          height: rect.height,
+          viewportWidth: document.documentElement.clientWidth,
+          viewportHeight: document.documentElement.clientHeight,
+        };
+      });
+      expect(fill.x).toBeCloseTo(0, 0);
+      expect(fill.y).toBeCloseTo(0, 0);
+      expect(fill.width).toBeCloseTo(fill.viewportWidth, 0);
+      expect(fill.height).toBeCloseTo(fill.viewportHeight, 0);
+      for (const selector of [
+        '.snip-speaker',
+        '.snip-original',
+        '.snip-translation',
+        '.snip-side',
+        '.snip-dock',
+      ]) {
+        await expect(embed.locator(selector)).toBeInViewport();
+      }
       expectStableBox(browserOffsetsBefore, await offsetBox(browserWindow));
       expectStableBox(viewportOffsetsBefore, await offsetBox(viewport));
       expectStableBox(
