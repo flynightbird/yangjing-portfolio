@@ -54,17 +54,17 @@
 }
 
 .inner {
-  display: flex;
+  display: grid;
   width: min(100%, var(--content-max));
   min-height: inherit;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: clamp(5rem, 12vh, 8rem) var(--content-gutter) var(--space-6);
+  grid-template-rows: minmax(0, 1fr) auto;
+  padding: 0 var(--content-gutter) var(--space-6);
   margin-inline: auto;
 }
 
 .cta {
   max-width: 64rem;
+  align-self: center;
 }
 
 .cta > p {

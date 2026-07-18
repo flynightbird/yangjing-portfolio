@@ -43,6 +43,24 @@ test.describe('homepage Footer reveal', () => {
       await expect(footer.getByRole('link', { name: /yangux@qq\.com/i })).toBeVisible();
       await expect(footer.getByText('© 2026 Yang Jing')).toBeVisible();
 
+      if (testInfo.project.name === 'desktop') {
+        const spacing = await footer.evaluate((element) => {
+          const layer = element.querySelector('[data-footer-reveal-layer]');
+          const cta = element.querySelector('[data-footer-cta]');
+          const meta = element.querySelector('[data-footer-meta]');
+          if (!layer || !cta || !meta) return null;
+          const layerBox = layer.getBoundingClientRect();
+          const ctaBox = cta.getBoundingClientRect();
+          const metaBox = meta.getBoundingClientRect();
+          return {
+            before: ctaBox.top - layerBox.top,
+            after: metaBox.top - ctaBox.bottom,
+          };
+        });
+        expect(spacing).not.toBeNull();
+        expect(Math.abs((spacing?.before ?? 0) - (spacing?.after ?? 0))).toBeLessThanOrEqual(4);
+      }
+
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth - document.documentElement.clientWidth,

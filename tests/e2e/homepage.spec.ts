@@ -468,6 +468,39 @@ test.describe('portfolio homepage framework', () => {
     expect(
       await scroller.evaluate((element) => getComputedStyle(element).scrollSnapType),
     ).toContain('x');
+    await expect(archive).toHaveCSS('border-bottom-width', '0px');
+  });
+
+  test('keeps AIDX navigation visible and centers the Xuelang media', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'Desktop project geometry contract.');
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const aidx = page.locator('[data-aidx-showcase]');
+    await aidx.scrollIntoViewIfNeeded();
+    const frame = aidx.locator('iframe');
+    await expect(frame).toBeAttached();
+    await expect
+      .poll(() =>
+        frame.evaluate((element: HTMLIFrameElement) => {
+          const video = element.contentDocument?.querySelector('video');
+          return video ? getComputedStyle(video).objectPosition : null;
+        }),
+      )
+      .toBe('50% 0%');
+
+    const xuelang = page.locator('[data-project-id="xuelang"]');
+    const inner = xuelang.locator('> div');
+    const media = xuelang.locator('[data-project-media-frame]');
+    const [innerBox, mediaBox] = await Promise.all([
+      inner.boundingBox(),
+      media.boundingBox(),
+    ]);
+    if (!innerBox || !mediaBox) throw new Error('Missing Xuelang project geometry');
+    const topSpace = mediaBox.y - innerBox.y;
+    const bottomSpace = innerBox.y + innerBox.height - mediaBox.y - mediaBox.height;
+    expect(Math.abs(topSpace - bottomSpace)).toBeLessThanOrEqual(4);
   });
 
   test('keeps vertical page scrolling active over the Visual Archive', async ({ page }, testInfo) => {

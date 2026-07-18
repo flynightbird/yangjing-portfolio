@@ -1,5 +1,5 @@
-import { cleanup, render, screen, within } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AboutPreview } from '@/components/home/about-preview';
 import { DualIdentityHero } from '@/components/home/dual-identity-hero';
@@ -300,6 +300,37 @@ describe('FeaturedWork', () => {
 });
 
 describe('VisualArchive', () => {
+  it('forwards vertical wheel movement once per animation frame without cancelling it', () => {
+    const scrollBy = vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);
+    const frames: FrameRequestCallback[] = [];
+    const requestFrame = vi
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => {
+        frames.push(callback);
+        return frames.length;
+      });
+    const { container } = render(<VisualArchive locale="en" />);
+    const scroller = container.querySelector('[data-archive-scroller]');
+    if (!(scroller instanceof HTMLElement)) throw new Error('Missing archive scroller');
+
+    const wheels = [200, 180, 120].map((deltaY) => new WheelEvent('wheel', {
+        bubbles: true,
+        cancelable: true,
+        deltaY,
+      }));
+    wheels.forEach((wheel) => fireEvent(scroller, wheel));
+
+    expect(wheels.every((wheel) => !wheel.defaultPrevented)).toBe(true);
+    expect(frames).toHaveLength(1);
+    expect(scrollBy).not.toHaveBeenCalled();
+    frames[0]?.(0);
+    expect(scrollBy).toHaveBeenCalledOnce();
+    expect(scrollBy).toHaveBeenCalledWith({ top: 500, behavior: 'auto' });
+
+    requestFrame.mockRestore();
+    scrollBy.mockRestore();
+  });
+
   it('renders four real projects with distinct cover treatments', () => {
     const { container } = render(<VisualArchive locale="en" />);
 

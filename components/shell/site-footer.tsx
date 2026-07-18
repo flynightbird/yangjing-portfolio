@@ -24,7 +24,7 @@ export function SiteFooter({ locale }: SiteFooterProps) {
       <div className={styles.revealLayer} data-footer-reveal-layer>
         <LiquidField variant="footer" interactive className={styles.liquid} />
         <div className={styles.inner}>
-          <div className={styles.cta}>
+          <div className={styles.cta} data-footer-cta>
             <p>{copy.eyebrow}</p>
             <h2>{copy.title}</h2>
             <a className={styles.email} href="mailto:yangux@qq.com">
@@ -36,7 +36,7 @@ export function SiteFooter({ locale }: SiteFooterProps) {
               />
             </a>
           </div>
-          <div className={styles.meta}>
+          <div className={styles.meta} data-footer-meta>
             <p>© 2026 Yang Jing</p>
           </div>
         </div>
