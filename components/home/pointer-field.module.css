@@ -1,0 +1,88 @@
+.root {
+  --pointer-x: 50vw;
+  --pointer-y: 50vh;
+  position: fixed;
+  z-index: 45;
+  inset: 0;
+  overflow: hidden;
+  color: #e8e3ff;
+  font-family: var(--font-mono);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.trail,
+.cloud {
+  position: absolute;
+  top: var(--pointer-y);
+  left: var(--pointer-x);
+  will-change: transform, opacity;
+}
+
+.trail span {
+  position: absolute;
+  display: block;
+  font-size: 0.76rem;
+  line-height: 1;
+  opacity: 0;
+  text-shadow: 0 0 1.25rem rgba(213, 205, 255, 0.28);
+  transform: translate(calc(0.85rem - var(--trail-index, 0) * 0.8rem), calc(0.85rem + var(--trail-index, 0) * 0.38rem));
+  transition: opacity 320ms ease;
+}
+
+.trail span:nth-child(1) { --trail-index: 0; }
+.trail span:nth-child(2) { --trail-index: 1; }
+.trail span:nth-child(3) { --trail-index: 2; }
+.trail span:nth-child(4) { --trail-index: 3; }
+.trail span:nth-child(5) { --trail-index: 4; }
+.trail span:nth-child(6) { --trail-index: 5; }
+
+.root[data-moving='true'] .trail span {
+  opacity: calc(0.7 - var(--trail-index) * 0.085);
+}
+
+.cloud {
+  display: grid;
+  min-width: 14rem;
+  place-items: center;
+  font-size: 0.68rem;
+  line-height: 1.5;
+  text-align: center;
+  text-shadow: 0 0 1.5rem rgba(224, 219, 255, 0.3);
+  transform: translate(-50%, -50%);
+}
+
+.cloud::before {
+  position: absolute;
+  z-index: -1;
+  inset: -2.5rem;
+  background: radial-gradient(circle, rgba(195, 184, 255, 0.1), transparent 68%);
+  content: '';
+  animation: pointer-halo 2650ms ease both;
+}
+
+.cloud span {
+  --line-offset: calc((var(--line-index) - 2) * 1.2rem);
+  display: block;
+  opacity: 0;
+  filter: blur(7px);
+  animation: pointer-line 2500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--line-index) * 110ms);
+  transform: translateY(0) scale(0.82);
+}
+
+@keyframes pointer-line {
+  0% { opacity: 0; filter: blur(8px); transform: translateY(0) scale(0.78); }
+  24% { opacity: 0.7; filter: blur(0); transform: translateY(var(--line-offset)) scale(1); }
+  62% { opacity: 0.64; filter: blur(0); transform: translateY(var(--line-offset)) scale(1); }
+  100% { opacity: 0; filter: blur(6px); transform: translateY(var(--line-offset)) scale(0.96); }
+}
+
+@keyframes pointer-halo {
+  0%, 100% { opacity: 0; transform: scale(0.7); }
+  35%, 65% { opacity: 1; transform: scale(1); }
+}
+
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .root { display: none; }
+}

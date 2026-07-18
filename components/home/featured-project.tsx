@@ -54,6 +54,7 @@ export function FeaturedProject({
       data-project-id={id}
       data-project-kind="deep-case"
       data-publication-state={isDraft ? 'draft' : undefined}
+      data-pointer-suppress={id === 'xuelang' ? '' : undefined}
     >
       <div className={styles.projectInner}>
         <div className={styles.projectCopy}>
