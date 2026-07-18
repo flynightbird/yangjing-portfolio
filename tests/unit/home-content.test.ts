@@ -94,6 +94,15 @@ describe('Visual Archive contract', () => {
       'mr-chong',
     ]);
 
+    expect(archiveProjects[0]).toMatchObject({
+      destination: 'internal-case',
+      href: 'work/tangping/',
+      title: { primary: { en: 'Tangping', zh: '躺平' } },
+    });
+    expect(archiveProjects.slice(1).every(({ destination }) => destination === 'lightbox-only')).toBe(
+      true,
+    );
+
     for (const project of archiveProjects) {
       expect(project.kind).toBe('real-entry');
       expect(project.description.en).toBeTruthy();
@@ -107,6 +116,7 @@ describe('Visual Archive contract', () => {
     const valid = {
       key: 'real-project',
       kind: 'real-entry',
+      destination: 'lightbox-only',
       company: { en: 'Company', zh: '公司' },
       period: {
         start: {
@@ -163,6 +173,19 @@ describe('Visual Archive contract', () => {
     expect(() => archiveEntrySchema.parse({ ...valid, skills: [] })).toThrow();
     expect(() =>
       archiveEntrySchema.parse({ ...valid, coverVariant: 'unknown' }),
+    ).toThrow();
+    expect(() =>
+      archiveEntrySchema.parse({
+        ...valid,
+        destination: 'internal-case',
+      }),
+    ).toThrow();
+    expect(() =>
+      archiveEntrySchema.parse({
+        ...valid,
+        destination: 'lightbox-only',
+        href: 'work/tangping/',
+      }),
     ).toThrow();
     expect(() =>
       archiveEntrySchema.parse({

@@ -337,7 +337,12 @@ describe('VisualArchive', () => {
     expect(screen.getByText('Tongcheng Travel')).toBeVisible();
     expect(container.querySelector('[data-cover-variant="alibaba"] [data-archive-period]')).toHaveTextContent('2019–2020.12');
     expect(container.querySelector('[data-cover-variant="doudou-fox"] [data-archive-period]')).toHaveTextContent('2021.09–10');
-    expect(screen.getByText('Mei Ping Mei Wu')).toBeVisible();
+    expect(screen.getByText('Tangping')).toBeVisible();
+    expect(screen.queryByText('Mei Ping Mei Wu')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'View project: Tangping' })).toHaveAttribute(
+      'href',
+      '/en/work/tangping/',
+    );
     expect(screen.getByText('Design Principles')).toBeVisible();
     expect(screen.getByText('Doudou Fox')).toBeVisible();
     expect(screen.getByText('MR CHONG')).toBeVisible();
@@ -358,7 +363,12 @@ describe('VisualArchive', () => {
     ).toBeVisible();
     expect(screen.getByRole('button', { name: '上一个视觉项目' })).toBeVisible();
     expect(screen.getByRole('button', { name: '下一个视觉项目' })).toBeVisible();
-    expect(screen.getByText('每平每屋')).toBeVisible();
+    expect(screen.getByText('躺平')).toBeVisible();
+    expect(screen.queryByText('每平每屋')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '查看项目：躺平' })).toHaveAttribute(
+      'href',
+      '/zh/work/tangping/',
+    );
     expect(screen.getByText('开言设计原则')).toBeVisible();
     expect(screen.getByText('豆豆狐')).toBeVisible();
     expect(

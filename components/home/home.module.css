@@ -1581,13 +1581,16 @@ a.whiteCta:focus-visible {
 }
 
 .archiveStage > img,
+.archiveStage > a,
 .archiveStage > button,
+.archiveStage > a img,
 .archiveStage > button img {
   width: 100%;
   height: 100%;
 }
 
 .archiveStage > img,
+.archiveStage > a img,
 .archiveStage > button img {
   display: block;
   object-fit: cover;
@@ -1601,13 +1604,25 @@ a.whiteCta:focus-visible {
   border-radius: inherit;
 }
 
+.archiveStage > a {
+  display: block;
+  border-radius: inherit;
+}
+
+.archiveStage > a:focus-visible {
+  outline: 3px solid var(--color-cobalt);
+  outline-offset: -5px;
+}
+
 .archiveItem[data-active='true'] .archiveStage > img,
+.archiveItem[data-active='true'] .archiveStage > a img,
 .archiveItem[data-active='true'] .archiveStage > button img {
   transform: scale(1.012);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .archiveItem:hover .archiveStage > img,
+  .archiveItem:hover .archiveStage > a img,
   .archiveItem:hover .archiveStage > button img {
     transform: scale(1.035);
   }

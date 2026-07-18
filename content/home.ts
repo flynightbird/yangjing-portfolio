@@ -162,7 +162,7 @@ const archiveCoverVariantSchema = z.enum([
   'mr-chong',
 ]);
 
-export const realArchiveEntrySchema = z.object({
+const realArchiveEntryBaseSchema = z.object({
   key: nonEmptyString,
   kind: z.literal('real-entry'),
   company: localizedStringSchema,
@@ -175,13 +175,28 @@ export const realArchiveEntrySchema = z.object({
   externalUrl: z.string().url().startsWith('https://').optional(),
 });
 
+const lightboxArchiveEntrySchema = realArchiveEntryBaseSchema.extend({
+  destination: z.literal('lightbox-only'),
+  href: z.never().optional(),
+});
+
+const internalArchiveEntrySchema = realArchiveEntryBaseSchema.extend({
+  destination: z.literal('internal-case'),
+  href: nonEmptyString.regex(/^work\/[a-z0-9-]+\/$/),
+});
+
+export const realArchiveEntrySchema = z.discriminatedUnion('destination', [
+  lightboxArchiveEntrySchema,
+  internalArchiveEntrySchema,
+]);
+
 export const draftArchiveSlotSchema = z.object({
   key: nonEmptyString,
   kind: z.literal('draft-slot'),
   layoutIndex: z.number().int().min(0).max(7),
 });
 
-export const archiveEntrySchema = z.discriminatedUnion('kind', [
+export const archiveEntrySchema = z.union([
   realArchiveEntrySchema,
   draftArchiveSlotSchema,
 ]);
@@ -194,6 +209,8 @@ export const archiveProjects = [
   {
     key: 'alibaba-meipingmeiwu',
     kind: 'real-entry',
+    destination: 'internal-case',
+    href: 'work/tangping/',
     company: { en: 'Alibaba', zh: '阿里巴巴' },
     period: {
       start: { dateTime: '2019', label: { en: '2019', zh: '2019' } },
@@ -203,8 +220,8 @@ export const archiveProjects = [
       },
     },
     title: {
-      primary: { en: 'Mei Ping Mei Wu', zh: '每平每屋' },
-      secondary: { en: 'Design', zh: '设计家' },
+      primary: { en: 'Tangping', zh: '躺平' },
+      secondary: { en: 'Designer', zh: '设计家' },
       supporting: {
         en: 'App & Main Website',
         zh: 'APP & 官网主站',
@@ -221,14 +238,15 @@ export const archiveProjects = [
       width: 2880,
       height: 1620,
       alt: {
-        en: 'Mei Ping Mei Wu app and website interface system',
-        zh: '每平每屋设计家 APP 与官网界面系统',
+        en: 'Tangping Designer app and website interface system',
+        zh: '躺平设计家 APP 与官网界面系统',
       },
     },
   },
   {
     key: 'bytedance-open-language',
     kind: 'real-entry',
+    destination: 'lightbox-only',
     company: { en: 'ByteDance', zh: '字节跳动' },
     period: {
       start: { dateTime: '2021', label: { en: '2021', zh: '2021' } },
@@ -257,6 +275,7 @@ export const archiveProjects = [
   {
     key: 'bytedance-doudou-fox',
     kind: 'real-entry',
+    destination: 'lightbox-only',
     company: { en: 'ByteDance', zh: '字节跳动' },
     period: {
       start: {
@@ -288,6 +307,7 @@ export const archiveProjects = [
   {
     key: 'tongcheng-mr-chong',
     kind: 'real-entry',
+    destination: 'lightbox-only',
     company: { en: 'Tongcheng Travel', zh: '同程旅游' },
     period: {
       start: { dateTime: '2019', label: { en: '2019', zh: '2019' } },
