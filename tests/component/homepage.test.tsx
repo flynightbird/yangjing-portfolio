@@ -112,6 +112,24 @@ describe('FeaturedWork', () => {
     expect(container.querySelectorAll('[data-project-chapter]')).toHaveLength(4);
   });
 
+  it('aligns company and project type for all six projects and reserves white CTAs for the first three', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+    const projects = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-project-id]'),
+    );
+
+    expect(projects).toHaveLength(6);
+    for (const project of projects) {
+      expect(project.querySelectorAll('[data-project-meta]')).toHaveLength(1);
+    }
+
+    expect(
+      Array.from(container.querySelectorAll<HTMLElement>('[data-cta-treatment="white"]')).map(
+        (cta) => cta.closest<HTMLElement>('[data-project-id]')?.dataset.projectId,
+      ),
+    ).toEqual(['call-agent', 'convo-ai', 'meeting']);
+  });
+
   it('uses dark same-tab transitions for Call Agent and secure external links for ConvoAI', () => {
     const { container } = render(<FeaturedWork locale="en" />);
 
@@ -145,7 +163,9 @@ describe('FeaturedWork', () => {
       'data-publication-state',
       'temporary-media',
     );
-    expect(container.querySelectorAll('[data-media-radius="20"]')).toHaveLength(2);
+    expect(
+      container.querySelectorAll('[data-flagship-focus] [data-media-radius="20"]'),
+    ).toHaveLength(2);
   });
 
   it('uses the complete Xuelang route and keeps Meeting draft', () => {
@@ -231,7 +251,13 @@ describe('FeaturedWork', () => {
     );
     const aidx = container.querySelector<HTMLElement>('[data-project-id="aidx"]');
     expect(aidx?.querySelector('[data-aidx-showcase]')).toBeInTheDocument();
-    expect(aidx?.querySelector('[data-aidx-browser]')).toBeInTheDocument();
+    expect(aidx?.querySelector('[data-aidx-browser]')).toHaveAttribute(
+      'data-browser-theme',
+      'light',
+    );
+    expect(
+      container.querySelector('[data-project-id="xuelang"] [data-project-media-frame]'),
+    ).toHaveAttribute('data-media-radius', '20');
     const sttDemo = container.querySelector<HTMLElement>('[data-project-id="stt-demo"]');
     expect(
       within(sttDemo as HTMLElement).getByRole('img', { name: /STT Demo product stage/i }),

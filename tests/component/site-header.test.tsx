@@ -16,10 +16,27 @@ vi.mock('next/navigation', () => ({
 afterEach(cleanup);
 
 describe('SiteHeader', () => {
+  let intersectionCallback: IntersectionObserverCallback;
+
   beforeEach(() => {
     navigationMocks.pathname = '/en/';
     navigationMocks.replace.mockReset();
-    Object.defineProperty(window, 'scrollY', { configurable: true, value: 0 });
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        constructor(callback: IntersectionObserverCallback) {
+          intersectionCallback = callback;
+        }
+
+        observe = vi.fn();
+        disconnect = vi.fn();
+        unobserve = vi.fn();
+        takeRecords = vi.fn(() => []);
+        root = null;
+        rootMargin = '0px';
+        thresholds = [0];
+      },
+    );
   });
 
   it('renders only Work, Archive, About, and the direct language control', () => {
@@ -44,11 +61,25 @@ describe('SiteHeader', () => {
     ).toBeVisible();
   });
 
-  it('marks the capsule as scrolled without hiding it', () => {
+  it('uses the full name and exposes a top-state observer sentinel', () => {
+    const { container } = render(<SiteHeader locale="en" />);
+
+    expect(screen.getByRole('link', { name: 'Yang Jing home' })).toHaveTextContent(
+      'Yang Jing',
+    );
+    expect(container.querySelector('[data-header-top-sentinel]')).toBeInTheDocument();
+    expect(screen.getByRole('banner')).toHaveAttribute('data-scrolled', 'false');
+  });
+
+  it('morphs into the capsule when the page top leaves the viewport', () => {
     render(<SiteHeader locale="en" />);
 
-    Object.defineProperty(window, 'scrollY', { configurable: true, value: 80 });
-    act(() => window.dispatchEvent(new Event('scroll')));
+    act(() => {
+      intersectionCallback(
+        [{ isIntersecting: false } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+    });
 
     expect(screen.getByRole('banner')).toHaveAttribute('data-scrolled', 'true');
   });

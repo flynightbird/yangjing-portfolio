@@ -15,7 +15,7 @@
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: linear-gradient(180deg, rgba(14, 16, 15, 0.12), rgba(14, 16, 15, 0.56));
+  background: rgba(14, 16, 15, 0.24);
   content: '';
   pointer-events: none;
 }

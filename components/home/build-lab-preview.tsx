@@ -1,7 +1,7 @@
 import { ActionLink } from '@/components/ui/action-link';
-import { CompanyMark } from '@/components/home/company-mark';
 
 import { BuildLabMedia } from './build-lab-media';
+import { ProjectMeta } from './project-meta';
 import styles from './home.module.css';
 
 interface BuildLabPreviewProps {
@@ -26,8 +26,7 @@ export function BuildLabPreview({ copy, href }: BuildLabPreviewProps) {
     >
       <div className={styles.buildInner}>
         <div className={styles.buildCopy} data-stt-copy>
-          <CompanyMark companyId="agora" label={copy.company} />
-          <p className={styles.projectKind}>{copy.kind}</p>
+          <ProjectMeta companyId="agora" company={copy.company} kind={copy.kind} />
           <h2>{copy.title}</h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
           <dl className={styles.buildFacts}>

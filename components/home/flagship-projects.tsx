@@ -3,7 +3,7 @@
 import { ArrowRight, ExternalLink } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import { CompanyMark } from './company-mark';
+import { ProjectMeta } from './project-meta';
 import styles from './home.module.css';
 
 type FlagshipFocus = 'call-agent' | 'convo-ai';
@@ -76,8 +76,11 @@ export function FlagshipProjects({ callAgent, convoAi }: FlagshipProjectsProps) 
           onFocus={() => selectProject('call-agent')}
         >
           <div className={styles.flagshipCopy}>
-            <CompanyMark companyId="agora" label={callAgent.copy.company} />
-            <p className={styles.flagshipKind}>{callAgent.copy.kind}</p>
+            <ProjectMeta
+              companyId="agora"
+              company={callAgent.copy.company}
+              kind={callAgent.copy.kind}
+            />
             <a
               className={styles.flagshipTitleLink}
               href={callAgent.href}
@@ -88,10 +91,11 @@ export function FlagshipProjects({ callAgent, convoAi }: FlagshipProjectsProps) 
             </a>
             <p className={styles.flagshipSummary}>{callAgent.copy.proposition}</p>
             <a
-              className={styles.flagshipCta}
+              className={`${styles.flagshipCta} ${styles.whiteCta}`}
               href={callAgent.href}
               aria-label={`${callAgent.copy.action} ${callAgent.copy.title}`}
               data-page-transition-tone="dark"
+              data-cta-treatment="white"
             >
               <span>{callAgent.copy.action}</span>
               <ArrowRight aria-hidden="true" size={17} strokeWidth={1.75} />
@@ -125,8 +129,11 @@ export function FlagshipProjects({ callAgent, convoAi }: FlagshipProjectsProps) 
           onFocus={() => selectProject('convo-ai')}
         >
           <div className={styles.flagshipCopy}>
-            <CompanyMark companyId="agora" label={convoAi.copy.company} />
-            <p className={styles.flagshipKind}>{convoAi.copy.kind}</p>
+            <ProjectMeta
+              companyId="agora"
+              company={convoAi.copy.company}
+              kind={convoAi.copy.kind}
+            />
             <a
               className={styles.flagshipTitleLink}
               href={convoAi.href}
@@ -137,9 +144,10 @@ export function FlagshipProjects({ callAgent, convoAi }: FlagshipProjectsProps) 
             </a>
             <p className={styles.flagshipSummary}>{convoAi.copy.proposition}</p>
             <a
-              className={styles.flagshipCta}
+              className={`${styles.flagshipCta} ${styles.whiteCta}`}
               href={convoAi.href}
               aria-label={`${convoAi.copy.action} ${convoAi.copy.title}`}
+              data-cta-treatment="white"
               {...secureLinkProps}
             >
               <span>{convoAi.copy.action}</span>

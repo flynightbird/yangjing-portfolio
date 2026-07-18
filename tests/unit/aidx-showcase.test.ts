@@ -6,6 +6,17 @@ import { describe, expect, it } from 'vitest';
 const root = process.cwd();
 
 describe('AIDX showcase publication', () => {
+  it('renders the approved soft silk palette without hard polygon waves', async () => {
+    const liquidSource = await readFile(
+      resolve(root, 'components/ui/liquid-field.tsx'),
+      'utf8',
+    );
+
+    expect(liquidSource).toContain("['#d9e3ff', '#a8b9ef', '#8c8dde']");
+    expect(liquidSource).toContain('createRadialGradient');
+    expect(liquidSource).not.toContain('context.lineTo');
+  });
+
   it('pins a local video capture to a verified manifest', async () => {
     const manifest = JSON.parse(
       await readFile(resolve(root, 'evidence/aidx/showcase-source.json'), 'utf8'),

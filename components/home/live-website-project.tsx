@@ -1,7 +1,7 @@
 import { ActionLink } from '@/components/ui/action-link';
 import { AidxShowcase } from '@/components/home/aidx-showcase';
-import { CompanyMark } from '@/components/home/company-mark';
 
+import { ProjectMeta } from './project-meta';
 import styles from './home.module.css';
 
 interface LiveWebsiteProjectProps {
@@ -28,8 +28,7 @@ export function LiveWebsiteProject({ copy, href }: LiveWebsiteProjectProps) {
     >
       <div className={styles.liveInner}>
         <div className={styles.liveCopy}>
-          <CompanyMark companyId="aidx" label={copy.company} />
-          <p className={styles.projectKind}>{copy.kind}</p>
+          <ProjectMeta companyId="aidx" company={copy.company} kind={copy.kind} />
           <h2>{copy.title}</h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
           <ul className={styles.scopeList} aria-label={copy.role}>
@@ -41,7 +40,7 @@ export function LiveWebsiteProject({ copy, href }: LiveWebsiteProjectProps) {
             href={href}
             external
             externalLabel="(opens in a new tab)"
-            variant="primary"
+            variant="secondary"
             aria-label={`${copy.action} ${copy.title} (opens in a new tab)`}
           >
             {copy.action}

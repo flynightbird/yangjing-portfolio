@@ -1,8 +1,8 @@
 import { ActionLink } from '@/components/ui/action-link';
-import { CompanyMark } from '@/components/home/company-mark';
 import type { PageTransitionTone } from '@/components/shell/page-transition-layer';
 import type { HomepageCompanyId, ProjectAvailability } from '@/content/home';
 
+import { ProjectMeta } from './project-meta';
 import styles from './home.module.css';
 
 interface ProjectCopy {
@@ -57,10 +57,9 @@ export function FeaturedProject({
     >
       <div className={styles.projectInner}>
         <div className={styles.projectCopy}>
-          <CompanyMark companyId={companyId} label={copy.company} />
+          <ProjectMeta companyId={companyId} company={copy.company} kind={copy.kind} />
           <h2>{copy.title}</h2>
           <div className={styles.projectMeta}>
-            <p className={styles.projectKind}>{copy.kind}</p>
             <span className={styles.projectOrder} aria-hidden="true">
               {order}
             </span>
@@ -86,7 +85,11 @@ export function FeaturedProject({
           </ActionLink>
         </div>
 
-        <div className={styles.projectMedia}>
+        <div
+          className={styles.projectMedia}
+          data-project-media-frame
+          data-media-radius="20"
+        >
           {media ? (
             // The image is verified product evidence with preserved dimensions.
             // eslint-disable-next-line @next/next/no-img-element

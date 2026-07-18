@@ -17,8 +17,8 @@
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: rgba(18, 14, 22, 0.18);
-  backdrop-filter: saturate(112%);
+  background: rgba(49, 55, 92, 0.08);
+  backdrop-filter: saturate(108%);
 }
 
 .browser {
@@ -26,10 +26,10 @@
   width: min(88%, 68rem);
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  border: 1px solid rgba(244, 245, 242, 0.38);
+  border: 1px solid rgba(35, 40, 61, 0.14);
   border-radius: 20px;
-  background: #0e100f;
-  box-shadow: 0 2.5rem 7rem rgba(7, 5, 10, 0.46);
+  background: #f5f6fa;
+  box-shadow: 0 2.5rem 7rem rgba(44, 48, 92, 0.28);
   transform: perspective(70rem) rotateX(1deg) translateY(0);
   transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -48,21 +48,21 @@
   align-items: center;
   gap: 0.42rem;
   padding-inline: 0.875rem;
-  border-bottom: 1px solid rgba(244, 245, 242, 0.18);
-  background: rgba(14, 16, 15, 0.9);
-  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(18, 24, 42, 0.08);
+  background: rgba(248, 249, 252, 0.96);
+  backdrop-filter: blur(14px) saturate(112%);
 }
 
 .chrome i {
   width: 0.42rem;
   height: 0.42rem;
   border-radius: 50%;
-  background: rgba(244, 245, 242, 0.34);
+  background: #d2d5dc;
 }
 
 .chrome span {
   margin-inline: auto;
-  color: rgba(244, 245, 242, 0.5);
+  color: rgba(18, 24, 42, 0.46);
   font-family: var(--font-mono);
   font-size: 0.61rem;
 }
@@ -93,10 +93,10 @@
   right: 1rem;
   bottom: 1rem;
   padding: 0.5rem 0.65rem;
-  border: 1px solid rgba(244, 245, 242, 0.2);
+  border: 1px solid rgba(18, 24, 42, 0.12);
   border-radius: 999px;
-  background: rgba(14, 16, 15, 0.62);
-  color: rgba(244, 245, 242, 0.72);
+  background: rgba(248, 249, 252, 0.72);
+  color: rgba(18, 24, 42, 0.62);
   font-family: var(--font-mono);
   font-size: 0.62rem;
   backdrop-filter: blur(12px);

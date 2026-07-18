@@ -1,7 +1,7 @@
 'use client';
 
 import { Menu } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 
 import { LocaleSwitcher } from '@/components/shell/locale-switcher';
 import { enDictionary } from '@/content/dictionaries/en';
@@ -14,12 +14,17 @@ export function SiteHeader({ locale }: { readonly locale: Locale }) {
   const dictionary = locale === 'zh' ? zhDictionary : enDictionary;
   const localeRoot = `/${locale}/`;
   const [scrolled, setScrolled] = useState(false);
+  const topSentinelRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const update = () => setScrolled(window.scrollY > 32);
-    update();
-    window.addEventListener('scroll', update, { passive: true });
-    return () => window.removeEventListener('scroll', update);
+    const sentinel = topSentinelRef.current;
+    if (!sentinel || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setScrolled(!(entry?.isIntersecting ?? true)),
+      { threshold: 0 },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
   }, []);
 
   const links = (
@@ -31,27 +36,37 @@ export function SiteHeader({ locale }: { readonly locale: Locale }) {
   );
 
   return (
-    <header className={styles.root} data-scrolled={scrolled ? 'true' : 'false'}>
-      <div className={styles.capsule}>
-        <a
-          className={styles.home}
-          href={localeRoot}
-          aria-label={dictionary.site.homeLabel}
-        >
-          YJ
-        </a>
+    <Fragment>
+      <span
+        ref={topSentinelRef}
+        className={styles.topSentinel}
+        data-header-top-sentinel
+        aria-hidden="true"
+      />
+      <header className={styles.root} data-scrolled={scrolled ? 'true' : 'false'}>
+        <div className={styles.capsule}>
+          <a
+            className={styles.home}
+            href={localeRoot}
+            aria-label={dictionary.site.homeLabel}
+          >
+            Yang Jing
+          </a>
         <nav className={styles.desktopNav} aria-label={dictionary.menu.label}>
           {links}
         </nav>
-        <details className={styles.mobileMenu}>
-          <summary aria-label={dictionary.menu.open}>
-            <Menu aria-hidden="true" size={20} />
-          </summary>
-          <nav aria-label={dictionary.menu.label}>{links}</nav>
-        </details>
-        <span className={styles.separator} aria-hidden="true" />
-        <LocaleSwitcher locale={locale} />
-      </div>
-    </header>
+          <div className={styles.actions}>
+            <details className={styles.mobileMenu}>
+              <summary aria-label={dictionary.menu.open}>
+                <Menu aria-hidden="true" size={20} />
+              </summary>
+              <nav aria-label={dictionary.menu.label}>{links}</nav>
+            </details>
+            <span className={styles.separator} aria-hidden="true" />
+            <LocaleSwitcher locale={locale} />
+          </div>
+        </div>
+      </header>
+    </Fragment>
   );
 }

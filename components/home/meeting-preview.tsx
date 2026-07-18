@@ -1,5 +1,6 @@
 import { ActionLink } from '@/components/ui/action-link';
-import { CompanyMark } from '@/components/home/company-mark';
+
+import { ProjectMeta } from './project-meta';
 
 import styles from './home.module.css';
 
@@ -33,8 +34,7 @@ export function MeetingPreview({ copy, href }: MeetingPreviewProps) {
     >
       <div className={styles.meetingInner}>
         <div className={styles.meetingHeading}>
-          <CompanyMark companyId="agora" label={copy.company} />
-          <p className={styles.projectKind}>{copy.kind}</p>
+          <ProjectMeta companyId="agora" company={copy.company} kind={copy.kind} />
           <h2>{copy.title}</h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
           <p className={styles.meetingStatus}>{copy.status}</p>
@@ -56,7 +56,9 @@ export function MeetingPreview({ copy, href }: MeetingPreviewProps) {
             href={href}
             data-page-transition-tone="dark"
             variant="secondary"
+            className={styles.whiteCta}
             aria-label={`${copy.action} ${copy.title}`}
+            data-cta-treatment="white"
           >
             {copy.action}
           </ActionLink>

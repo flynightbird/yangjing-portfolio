@@ -68,7 +68,7 @@ export function AidxShowcase({ href, caption }: AidxShowcaseProps) {
     >
       <LiquidField variant="aidx" className={styles.liquid} />
       <span className={styles.veil} aria-hidden="true" />
-      <div className={styles.browser} data-aidx-browser>
+      <div className={styles.browser} data-aidx-browser data-browser-theme="light">
         <div className={styles.chrome} aria-hidden="true">
           <i />
           <i />

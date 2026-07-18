@@ -62,9 +62,17 @@ test.describe('portfolio homepage framework', () => {
       ]);
 
       await expect(page.locator('[data-company-mark]')).toHaveCount(6);
+      await expect(page.locator('[data-project-meta]')).toHaveCount(6);
+      await expect(page.locator('[data-cta-treatment="white"]')).toHaveCount(3);
       await expect(page.locator('[data-project-chapter]')).toHaveCount(4);
       await expect(page.locator('[data-aidx-showcase]')).toHaveCount(1);
-      await expect(page.locator('[data-aidx-browser]')).toHaveCount(1);
+      await expect(page.locator('[data-aidx-browser]')).toHaveAttribute(
+        'data-browser-theme',
+        'light',
+      );
+      await expect(
+        page.locator('[data-project-id="xuelang"] [data-project-media-frame]'),
+      ).toHaveCSS('border-radius', '20px');
       await expect(page.locator('[data-liquid-field="footer"]')).toHaveCount(1);
       await expect(page.locator('#archive')).toHaveCount(1);
       await expect(page.locator('[data-about-preview]')).toHaveCount(1);
@@ -167,6 +175,29 @@ test.describe('portfolio homepage framework', () => {
       page: document.documentElement.scrollWidth,
     }));
     expect(dimensions.page).toBeLessThanOrEqual(dimensions.viewport);
+  });
+
+  test('morphs the full-width header into a centered capsule', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'Desktop navigation geometry contract.');
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const header = page.getByRole('banner');
+    const home = page.getByRole('link', { name: 'Yang Jing home' });
+    const topWidth = await header.locator('> div').evaluate(
+      (element) => element.getBoundingClientRect().width,
+    );
+
+    await expect(home).toHaveText('Yang Jing');
+    await expect(header).toHaveAttribute('data-scrolled', 'false');
+    await page.evaluate(() => window.scrollTo(0, 160));
+    await expect(header).toHaveAttribute('data-scrolled', 'true');
+    await expect
+      .poll(() =>
+        header.locator('> div').evaluate(
+          (element) => element.getBoundingClientRect().width,
+        ),
+      )
+      .toBeLessThan(topWidth);
   });
 
   test('keeps both identities in the taller first viewport with weight 800', async ({

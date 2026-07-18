@@ -26,7 +26,7 @@
 .heroTopbar {
   position: absolute;
   z-index: 20;
-  inset: 0 0 auto;
+  inset: 78px 0 auto;
   display: grid;
   height: 3.75rem;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -58,7 +58,7 @@
 
 .heroLayer {
   position: absolute;
-  inset: 3.75rem 0 0;
+  inset: calc(78px + 3.75rem) 0 0;
   overflow: hidden;
 }
 
@@ -267,7 +267,7 @@
 .heroDivider {
   position: absolute;
   z-index: 15;
-  inset-block: 3.75rem 0;
+  inset-block: calc(78px + 3.75rem) 0;
   inset-inline-start: var(--hero-split);
   width: 2.75rem;
   min-height: 0;
@@ -359,6 +359,7 @@
   }
 
   .heroTopbar {
+    inset-block-start: 64px;
     height: 3.5rem;
     grid-template-columns: minmax(0, 1fr) auto;
   }
@@ -368,7 +369,7 @@
   }
 
   .heroLayer {
-    inset-block-start: 3.5rem;
+    inset-block-start: calc(64px + 3.5rem);
   }
 
   .heroPortrait {
@@ -421,7 +422,7 @@
   }
 
   .heroDivider {
-    inset-block-start: 3.5rem;
+    inset-block-start: calc(64px + 3.5rem);
   }
 
   .heroDivider span {
@@ -731,13 +732,28 @@
   align-items: flex-start;
 }
 
-.flagshipKind {
+.projectMetadata {
+  display: flex;
+  max-width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
   margin: 0 0 clamp(1.5rem, 2.4vw, 2rem);
   color: var(--projects-muted);
   font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 500;
-  line-height: 1;
+  line-height: 1.3;
+}
+
+.projectMetadata [data-company-mark] {
+  margin: 0;
+  color: inherit;
+  font: inherit;
+}
+
+.projectMetaSeparator {
+  color: color-mix(in srgb, currentColor 58%, transparent);
 }
 
 .flagshipTitleLink {
@@ -773,13 +789,28 @@
   align-items: center;
   gap: 0.625rem;
   margin-top: auto;
-  border-bottom: 1px solid currentColor;
   color: var(--projects-ink);
   font-size: 0.82rem;
   font-weight: 600;
   line-height: 1.2;
   text-decoration: none;
   white-space: nowrap;
+}
+
+a.whiteCta {
+  min-height: 46px;
+  padding: 0.75rem 1.125rem;
+  border: 1px solid var(--projects-ink);
+  border-radius: 999px;
+  background: var(--projects-ink);
+  color: var(--projects-black);
+}
+
+a.whiteCta:hover,
+a.whiteCta:focus-visible {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: var(--projects-black);
 }
 
 .flagshipCta svg {
@@ -800,7 +831,7 @@
   position: relative;
   display: block;
   height: clamp(20rem, 33vw, 26.25rem);
-  margin-top: 1rem;
+  margin-top: 2rem;
   overflow: hidden;
   border-radius: 20px;
   color: inherit;
@@ -1050,9 +1081,8 @@
 
 .projectKind {
   margin: 0;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  line-height: 1.4;
+  color: inherit;
+  font: inherit;
 }
 
 .projectMeta {
@@ -1166,6 +1196,15 @@
   background: rgba(16, 17, 15, 0.025);
 }
 
+.evidence .projectMedia {
+  min-height: 0;
+  aspect-ratio: 2 / 1;
+  margin: 0 var(--content-gutter) clamp(4rem, 8vw, 7rem);
+  overflow: hidden;
+  border: 1px solid var(--theme-border);
+  border-radius: 20px;
+}
+
 .meetingBand {
   border-top: 6px solid var(--color-coral);
 }
@@ -1220,6 +1259,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
+  padding-block-end: var(--space-4);
 }
 
 .liveBand {
@@ -1368,6 +1408,10 @@
   flex-direction: column;
   align-items: flex-start;
   padding-block: clamp(1rem, 3vw, 2.5rem);
+}
+
+.buildCopy .projectMetadata {
+  color: var(--color-paper-muted);
 }
 
 .buildCopy .projectKind {
