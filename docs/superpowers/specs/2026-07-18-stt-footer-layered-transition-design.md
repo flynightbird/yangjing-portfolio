@@ -124,7 +124,7 @@ If the required browser APIs are unavailable, render the same static rounded lay
 - `SiteFooter` continues to own Footer content and the liquid field.
 - Homepage-only shell styling owns sticky/underlay positioning and reverse parallax activation. The homepage marker is the sole route gate; other routes do not receive the treatment.
 
-Use a small focused client controller inside the Footer to calculate reveal progress only when the homepage marker exists. It reads the Footer bounds through one request-animation-frame-throttled scroll listener and writes a bounded `0..1` CSS custom property. CSS uses that property to interpolate the underlay from `8%` to `0%` on desktop and `4%` to `0%` on mobile. The controller must never prevent default scrolling, attach wheel handlers, or set React state during scroll.
+Use a small focused client controller inside the Footer to calculate reveal progress only when the homepage marker exists. It reads the Footer bounds through one request-animation-frame-throttled scroll listener and writes a bounded `0..1` progress custom property plus its derived offset. CSS applies the offset to move the underlay from `8%` to `0%` on desktop and `4%` to `0%` on mobile. The controller must never prevent default scrolling, attach wheel handlers, or set React state during scroll.
 
 ## Accessibility And Interaction Safety
 
