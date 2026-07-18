@@ -39,7 +39,7 @@ export function BuildLabPreview({ copy, href }: BuildLabPreviewProps) {
               <dd>{copy.status}</dd>
             </div>
           </dl>
-          <ActionLink href={href} target="_blank" variant="primary">
+          <ActionLink href={href} target="_blank" variant="signal">
             {copy.action}
           </ActionLink>
         </div>

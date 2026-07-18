@@ -12,7 +12,7 @@ describe('AIDX showcase publication', () => {
       'utf8',
     );
 
-    expect(liquidSource).toContain("['#d9e3ff', '#a8b9ef', '#8c8dde']");
+    expect(liquidSource).toContain("['#eeeaff', '#c9bdff', '#a797ee', '#fbfaff']");
     expect(liquidSource).toContain('createRadialGradient');
     expect(liquidSource).not.toContain('context.lineTo');
   });

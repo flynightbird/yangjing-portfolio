@@ -1,7 +1,8 @@
 'use client';
 
-import { ArrowRight, ExternalLink } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+
+import { ActionLink } from '@/components/ui/action-link';
 
 import { ProjectMeta } from './project-meta';
 import styles from './home.module.css';
@@ -90,16 +91,16 @@ export function FlagshipProjects({ callAgent, convoAi }: FlagshipProjectsProps) 
               <h2>{callAgent.copy.title}</h2>
             </a>
             <p className={styles.flagshipSummary}>{callAgent.copy.proposition}</p>
-            <a
+            <ActionLink
               className={`${styles.flagshipCta} ${styles.whiteCta}`}
               href={callAgent.href}
               aria-label={`${callAgent.copy.action} ${callAgent.copy.title}`}
               data-page-transition-tone="dark"
               data-cta-treatment="white"
+              variant="primary"
             >
-              <span>{callAgent.copy.action}</span>
-              <ArrowRight aria-hidden="true" size={17} strokeWidth={1.75} />
-            </a>
+              {callAgent.copy.action}
+            </ActionLink>
           </div>
 
           <a
@@ -143,16 +144,18 @@ export function FlagshipProjects({ callAgent, convoAi }: FlagshipProjectsProps) 
               <h2>{convoAi.copy.title}</h2>
             </a>
             <p className={styles.flagshipSummary}>{convoAi.copy.proposition}</p>
-            <a
+            <ActionLink
               className={`${styles.flagshipCta} ${styles.whiteCta}`}
               href={convoAi.href}
               aria-label={`${convoAi.copy.action} ${convoAi.copy.title}`}
               data-cta-treatment="white"
+              variant="primary"
+              external
+              externalLabel="(opens in a new tab)"
               {...secureLinkProps}
             >
-              <span>{convoAi.copy.action}</span>
-              <ExternalLink aria-hidden="true" size={17} strokeWidth={1.75} />
-            </a>
+              {convoAi.copy.action}
+            </ActionLink>
           </div>
 
           <a

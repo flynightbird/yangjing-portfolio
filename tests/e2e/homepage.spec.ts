@@ -22,7 +22,8 @@ test.describe('portfolio homepage framework', () => {
     test(`${locale} keeps the approved hierarchy and destinations`, async ({ page }) => {
       await page.goto(`/${locale}/`, { waitUntil: 'networkidle' });
 
-      await expect(page.getByRole('heading', { level: 1, name: 'Yang Jing' })).toBeVisible();
+      await expect(page.getByRole('heading', { level: 1, name: 'Yang Jing' })).toBeAttached();
+      await expect(page.getByText('Designer / Builder', { exact: true })).toHaveCount(0);
       await expect(
         page.getByRole('heading', {
           level: 2,
@@ -75,7 +76,12 @@ test.describe('portfolio homepage framework', () => {
       ).toHaveCSS('border-radius', '20px');
       await expect(page.locator('[data-liquid-field="footer"]')).toHaveCount(1);
       await expect(page.locator('#archive')).toHaveCount(1);
-      await expect(page.locator('[data-about-preview]')).toHaveCount(1);
+      await expect(page.locator('[data-about-preview]')).toHaveCount(0);
+      await expect(
+        page.getByRole('heading', {
+          name: locale === 'zh' ? 'More C端用户设计作品' : 'More Consumer Product Work',
+        }),
+      ).toBeVisible();
       await expect(page.locator('footer a[href="mailto:yangux@qq.com"]')).toHaveCount(1);
 
       await expect(page.locator('[data-project-kind="build-lab"]')).toHaveCount(1);
@@ -198,6 +204,27 @@ test.describe('portfolio homepage framework', () => {
         ),
       )
       .toBeLessThan(topWidth);
+  });
+
+  test('keeps capsule actions and anchored sections clear of the floating header', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'Desktop navigation overlap contract.');
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    await expect(
+      page.locator('[data-project-id="aidx"] [data-action-variant="signal"]'),
+    ).toHaveCSS('border-radius', '999px');
+
+    await page.getByRole('link', { name: 'Archive' }).click();
+    await expect(page).toHaveURL(/#archive$/);
+    const header = await page.getByRole('banner').boundingBox();
+    const title = await page.getByRole('heading', {
+      name: 'More Consumer Product Work',
+    }).boundingBox();
+    expect(header).not.toBeNull();
+    expect(title).not.toBeNull();
+    expect(title?.y ?? 0).toBeGreaterThan((header?.y ?? 0) + (header?.height ?? 0));
   });
 
   test('keeps both identities in the taller first viewport with weight 800', async ({
@@ -426,6 +453,31 @@ test.describe('portfolio homepage framework', () => {
     expect(
       await scroller.evaluate((element) => getComputedStyle(element).scrollSnapType),
     ).toContain('x');
+  });
+
+  test('keeps vertical page scrolling active over the Visual Archive', async ({ page }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== 'desktop',
+      'Fine-pointer wheel behavior is verified at the desktop viewport.',
+    );
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const scroller = page.locator('[data-archive-scroller]');
+    await scroller.evaluate((element) => {
+      const top = element.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: Math.max(0, top - 120), behavior: 'instant' });
+    });
+    const box = await scroller.boundingBox();
+    if (!box) throw new Error('Missing Visual Archive scroller bounds');
+
+    await page.mouse.move(box.x + box.width / 2, box.y + Math.min(box.height / 2, 160));
+    const before = await page.evaluate(() => window.scrollY);
+    const maximum = await page.evaluate(
+      () => document.documentElement.scrollHeight - window.innerHeight,
+    );
+    expect(maximum - before).toBeGreaterThan(100);
+    await page.mouse.wheel(0, 500);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(before + 100);
   });
 
   test('moves the Visual Archive with explicit controls and reports position', async ({

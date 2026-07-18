@@ -54,6 +54,7 @@ export function FeaturedProject({
       data-project-id={id}
       data-project-kind="deep-case"
       data-publication-state={isDraft ? 'draft' : undefined}
+      data-pointer-suppress={id === 'xuelang' ? '' : undefined}
     >
       <div className={styles.projectInner}>
         <div className={styles.projectCopy}>
@@ -78,7 +79,7 @@ export function FeaturedProject({
           <ActionLink
             href={href}
             data-page-transition-tone={transitionTone}
-            variant={variant === 'flagship' ? 'primary' : 'secondary'}
+            variant="primary"
             aria-label={`${copy.action} ${copy.title}`}
           >
             {copy.action}

@@ -13,8 +13,8 @@ interface LiquidFieldProps {
 }
 
 const palette = {
-  aidx: ['#d9e3ff', '#a8b9ef', '#8c8dde'],
-  footer: ['#5c4777', '#8169a7', '#b5a3e6'],
+  aidx: ['#eeeaff', '#c9bdff', '#a797ee', '#fbfaff'],
+  footer: ['#4f3d68', '#8b70bd', '#c8b7f2', '#f0ebff'],
 } as const;
 
 const fieldLayout = [
@@ -23,6 +23,13 @@ const fieldLayout = [
   { x: 0.26, y: 0.88, radiusX: 0.58, radiusY: 0.54, phase: 4.2 },
   { x: 0.96, y: 0.82, radiusX: 0.5, radiusY: 0.64, phase: 5.4 },
 ] as const;
+
+const particleLayout = Array.from({ length: 22 }, (_, index) => ({
+  x: ((index * 37) % 101) / 100,
+  y: ((index * 61 + 17) % 103) / 102,
+  radius: 0.55 + (index % 4) * 0.32,
+  phase: index * 0.73,
+}));
 
 export function LiquidField({
   variant,
@@ -71,12 +78,12 @@ export function LiquidField({
       const pointerY = interactive ? pointerRef.current.y - 0.5 : 0;
 
       context.clearRect(0, 0, width, height);
-      context.fillStyle = variant === 'footer' ? '#171219' : '#919fd3';
+      context.fillStyle = variant === 'footer' ? '#171219' : '#a89bdd';
       context.fillRect(0, 0, width, height);
 
       fieldLayout.forEach((field, index) => {
         const direction = index % 2 === 0 ? 1 : -1;
-        const speed = variant === 'footer' ? 0.055 : 0.07;
+        const speed = variant === 'footer' ? 0.072 : 0.085;
         const phase = field.phase + elapsed * speed * direction;
         const driftX = Math.sin(phase) * width * 0.09;
         const driftY = Math.cos(phase * 0.82) * height * 0.075;
@@ -87,9 +94,9 @@ export function LiquidField({
         const color = palette[variant][index % palette[variant].length];
         const gradient = context.createRadialGradient(0, 0, 0, 0, 0, 1);
 
-        gradient.addColorStop(0, `${color}e6`);
-        gradient.addColorStop(0.42, `${color}9c`);
-        gradient.addColorStop(0.76, `${color}35`);
+        gradient.addColorStop(0, `${color}d9`);
+        gradient.addColorStop(0.38, `${color}8f`);
+        gradient.addColorStop(0.82, `${color}24`);
         gradient.addColorStop(1, `${color}00`);
 
         context.save();
@@ -103,6 +110,19 @@ export function LiquidField({
         context.fill();
         context.restore();
       });
+
+      if (!reducedMotion) {
+        particleLayout.forEach((particle, index) => {
+          const phase = elapsed * (0.09 + (index % 3) * 0.018) + particle.phase;
+          const x = particle.x * width + Math.sin(phase) * width * 0.018;
+          const y = particle.y * height + Math.cos(phase * 0.87) * height * 0.022;
+          context.beginPath();
+          context.globalAlpha = variant === 'footer' ? 0.16 : 0.12;
+          context.fillStyle = index % 5 === 0 ? '#f8f4ff' : '#d9ceff';
+          context.arc(x, y, particle.radius, 0, Math.PI * 2);
+          context.fill();
+        });
+      }
       context.globalAlpha = 1;
     };
 
@@ -138,6 +158,8 @@ export function LiquidField({
       ref={canvasRef}
       className={[styles.root, className].filter(Boolean).join(' ')}
       data-liquid-field={variant}
+      data-field-palette="soft-iris"
+      data-particle-count={reducedMotion ? 0 : particleLayout.length}
       data-motion={reducedMotion ? 'reduced' : visible ? 'running' : 'paused'}
       aria-hidden="true"
     />

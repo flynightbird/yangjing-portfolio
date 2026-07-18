@@ -63,40 +63,33 @@
   text-decoration: none;
 }
 
-.email svg {
+.emailIcon {
+  display: block;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: 0 0 1.75rem;
+  align-self: center;
+  background: currentColor;
+  mask: url('/icons/remix/arrow-right-up-line.svg') center / contain no-repeat;
   transition: transform 350ms var(--ease-out);
 }
 
-.email:hover svg,
-.email:focus-visible svg {
+.email:hover .emailIcon,
+.email:focus-visible .emailIcon {
   transform: translate(0.2rem, -0.2rem);
 }
 
 .meta {
-  display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr);
-  align-items: end;
-  gap: var(--space-5);
+  display: flex;
+  justify-content: center;
   padding-top: var(--space-6);
   border-top: 1px solid rgba(244, 245, 242, 0.25);
 }
 
-.meta a,
 .meta p {
   margin: 0;
   color: rgba(244, 245, 242, 0.72);
   font-size: var(--font-size-small);
-}
-
-.meta a {
-  min-width: 44px;
-  min-height: 44px;
-  color: var(--color-paper);
-}
-
-.meta p:last-child {
-  justify-self: end;
-  text-align: end;
 }
 
 @media (max-width: 767px) {
@@ -104,19 +97,10 @@
     min-height: 42rem;
   }
 
-  .meta {
-    grid-template-columns: 1fr auto;
-  }
-
-  .meta p:last-child {
-    grid-column: 1 / -1;
-    justify-self: start;
-    text-align: start;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .email svg {
+  .emailIcon {
     transition: none;
   }
 }

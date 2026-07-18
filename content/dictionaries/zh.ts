@@ -121,7 +121,7 @@ export const zhDictionary = {
       },
     },
     archive: {
-      title: '视觉作品集',
+      title: 'More C端用户设计作品',
       description: '以图片为主，轻量呈现产品、品牌与角色设计作品。',
       draftSlot: '草稿媒体槽位',
       placeholderLabel: '视觉占位图',
