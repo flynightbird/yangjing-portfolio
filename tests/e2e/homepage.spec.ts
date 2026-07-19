@@ -88,6 +88,9 @@ test.describe('portfolio homepage framework', () => {
       await expect(page.locator('[data-archive-card]')).toHaveCount(4);
       await expect(page.locator('[data-archive-slot]')).toHaveCount(0);
       await expect(page.locator('[data-cover-variant]')).toHaveCount(4);
+      await expect(
+        page.locator('[data-archive-card]').first().getByRole('link'),
+      ).toHaveAttribute('href', `/${locale}/work/tangping/`);
       await expect(page.locator('[data-project-id="xuelang"] a')).toHaveAttribute(
         'href',
         `/${locale}/work/xuelang/`,

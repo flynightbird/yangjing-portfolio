@@ -57,6 +57,9 @@ describe('static portfolio architecture', () => {
     expect(
       fs.existsSync(path.join(root, 'tests/e2e/call-agent.spec.ts')),
     ).toBe(true);
+    expect(
+      fs.existsSync(path.join(root, 'tests/e2e/tangping.spec.ts')),
+    ).toBe(true);
     expect(playwrightConfig).toContain("testDir: './tests/e2e'");
     expect(exportPlaywrightConfig).toContain('reuseExistingServer: false');
   });

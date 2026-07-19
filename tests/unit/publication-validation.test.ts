@@ -680,6 +680,7 @@ export const metadata = {
       'evidence/media',
       'public/demos/stt-demo',
       'public/images/call-agent',
+      'public/images/archive',
       'public/images/xuelang',
     ]) {
       cpSync(path.join(process.cwd(), relativePath), path.join(root, relativePath), {

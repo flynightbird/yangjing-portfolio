@@ -817,8 +817,8 @@ describe('STT demo source provenance', () => {
         translationKey: 'build.stt-demo',
         heroMedia: '/demos/stt-demo/poster.png',
         evidenceLevel: 'prototype',
-        featuredOrder: 4,
-        previousSlug: 'meeting',
+        featuredOrder: 5,
+        previousSlug: 'tangping',
         status: locale === 'en' ? 'Pinned static prototype' : '固定版本静态原型',
       });
       expect(getEntry('build', 'stt-demo', locale).meta.nextSlug).toBeUndefined();
@@ -855,17 +855,17 @@ describe('STT demo source provenance', () => {
   });
 
   it.each(['en', 'zh'] as const)(
-    'links the %s Build Lab route back to the registered Meeting case',
+    'links the %s Build Lab route back to the registered Tangping case',
     async (locale) => {
       const page = await BuildLabPage({
         params: Promise.resolve({ locale, slug: 'stt-demo' }),
       });
 
       expect(page.props).toHaveProperty('previous', {
-        href: `/${locale}/work/meeting/`,
+        href: `/${locale}/work/tangping/`,
         title: locale === 'en'
-          ? 'Agora Meeting: A Real-time Collaboration System'
-          : 'Agora Meeting：实时协作系统',
+          ? 'Tangping Designer'
+          : '躺平设计家',
       });
       expect(page.props).toHaveProperty('next', undefined);
     },

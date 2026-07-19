@@ -55,6 +55,8 @@ describe('Call Agent native content registry', () => {
       { locale: 'zh', slug: 'call-agent' },
       { locale: 'en', slug: 'meeting' },
       { locale: 'zh', slug: 'meeting' },
+      { locale: 'en', slug: 'tangping' },
+      { locale: 'zh', slug: 'tangping' },
     ]);
   });
 });
