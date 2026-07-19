@@ -282,7 +282,7 @@
 
 .content > :global(section:not(#overview)) {
   position: relative;
-  background: var(--xuelang-paper);
+  background: transparent;
 }
 
 .content > :global(section > *) {
