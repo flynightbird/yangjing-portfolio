@@ -37,12 +37,32 @@ function StandardCopy({ frame, locale }: { readonly frame: TangpingFrame; readon
           <CopyGroup key={group.label} group={group} />
         ))}
       </div>
-      <div className={styles.labels} data-reveal-layer="labels">
+      <div
+        className={styles.labels}
+        data-reveal-layer="labels"
+        data-persona-grid={frame.layout === 'personas' ? 'true' : undefined}
+      >
         {copy.groups.slice(bodyCount).map((group) => (
           <CopyGroup key={group.label} group={group} />
         ))}
       </div>
     </div>
+  );
+}
+
+function LegendGroup({ group }: { readonly group: TangpingCopyGroup }) {
+  return (
+    <section className={styles.legend} data-copy-group>
+      <h3>{group.label}</h3>
+      <ul>
+        {group.items.map((item, index) => (
+          <li key={`${index}-${item}`}>
+            <span data-legend-swatch aria-hidden="true">{index === 1 ? '字' : ''}</span>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -57,7 +77,7 @@ function NeedsMatrixCopy({ frame, locale }: { readonly frame: TangpingFrame; rea
         <CopyGroup group={model} />
       </div>
       <div className={styles.labels} data-reveal-layer="labels">
-        <CopyGroup group={legend} className={styles.legend} />
+        <LegendGroup group={legend} />
         <CopyGroup group={roles} className={styles.roles} />
         <div className={styles.matrix}>
           {rows.map((group) => (

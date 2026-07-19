@@ -19,14 +19,15 @@ export function TangpingFrameReveal({
 }: TangpingFrameRevealProps) {
   const rootRef = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotionPreference();
-  const [revealed, setRevealed] = useState(reducedMotion);
+  const [revealed, setRevealed] = useState(false);
+  const isRevealed = reducedMotion || revealed;
 
   useEffect(() => {
     const root = rootRef.current;
-    if (!root || revealed) return;
-    if (reducedMotion || typeof IntersectionObserver === 'undefined') {
-      setRevealed(true);
-      return;
+    if (!root || reducedMotion) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      const frame = requestAnimationFrame(() => setRevealed(true));
+      return () => cancelAnimationFrame(frame);
     }
 
     const observer = new IntersectionObserver(
@@ -39,7 +40,7 @@ export function TangpingFrameReveal({
     );
     observer.observe(root);
     return () => observer.disconnect();
-  }, [reducedMotion, revealed]);
+  }, [reducedMotion]);
 
   return (
     <section
@@ -49,7 +50,7 @@ export function TangpingFrameReveal({
       data-frame-id={frameId}
       data-layout={layout}
       data-contiguous="true"
-      data-reveal-state={revealed ? 'revealed' : 'pending'}
+      data-reveal-state={isRevealed ? 'revealed' : 'pending'}
     >
       {children}
     </section>

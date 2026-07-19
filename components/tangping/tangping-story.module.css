@@ -162,8 +162,9 @@
 }
 
 .frame[data-layout='personas'] .labels {
-  inset: auto auto 7% 5.2%;
+  inset: 61% auto auto 5.2%;
   width: 28.5%;
+  height: 34%;
 }
 
 .frame[data-layout='personas'] .labels h3 {
@@ -175,13 +176,19 @@
 }
 
 .frame[data-layout='personas'] .labels ul {
+  position: absolute;
+  inset: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 4.3vw 0.7vw;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  column-gap: 0.7vw;
+  height: 100%;
   text-align: center;
 }
 
 .frame[data-layout='personas'] .labels li {
+  align-self: end;
+  padding-block-end: 6%;
   color: #222;
   font-size: clamp(0.42rem, 0.86vw, 1.05rem);
 }
@@ -226,7 +233,34 @@
 }
 
 .legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
   font-size: clamp(0.34rem, 0.72vw, 0.9rem);
+}
+
+.legend [data-legend-swatch] {
+  display: inline-grid;
+  flex: 0 0 auto;
+  width: clamp(0.45rem, 1.4vw, 1.75rem);
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 50%;
+  background: #69e8df;
+  color: #171717;
+  font-size: 0.72em;
+}
+
+.legend li:nth-child(2) [data-legend-swatch] {
+  background: #fff;
+}
+
+.legend li:nth-child(3) [data-legend-swatch] {
+  background: #ffd200;
+}
+
+.legend li:nth-child(4) [data-legend-swatch] {
+  background: #ff666b;
 }
 
 .roles {
@@ -350,6 +384,12 @@
     text-align: left;
   }
 
+  .frame[data-layout='personas'] .labels ul {
+    position: static;
+    inset: auto;
+    height: auto;
+  }
+
   .legend,
   .roles,
   .matrix,
@@ -380,6 +420,7 @@
   .body,
   .labels,
   .frame[data-reveal-state] [data-reveal-layer] {
+    animation: none !important;
     opacity: 1 !important;
     transition: none !important;
     transform: none !important;

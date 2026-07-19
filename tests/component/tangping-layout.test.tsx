@@ -55,6 +55,8 @@ describe('Tangping visual detail', () => {
     expect(screen.getAllByText('家装设计驱动型设计师')).toHaveLength(2);
     expect(screen.getByText('机会点 / 竞品未匹配')).toBeVisible();
     expect(container.querySelectorAll('[data-copy-group]')).toHaveLength(14);
+    expect(container.querySelector('[data-persona-grid]')).toBeInTheDocument();
+    expect(container.querySelectorAll('[data-legend-swatch]')).toHaveLength(4);
 
     for (const frame of container.querySelectorAll<HTMLElement>('[data-tangping-frame]')) {
       expect(within(frame).getByRole('heading', { level: 2 })).toBeVisible();
