@@ -325,6 +325,50 @@ test.describe('portfolio homepage framework', () => {
     await expect(callMedia).toHaveCSS('background-image', 'none');
     await expect(convoMedia).toHaveCSS('background-image', 'none');
 
+    const studioFrame = callMedia.locator('[data-convo-studio-frame]');
+    await expect(studioFrame).toHaveAttribute(
+      'src',
+      '/demos/convo-ai-studio/en/index.html',
+    );
+    await expect(studioFrame).toHaveAttribute('tabindex', '-1');
+    await expect(studioFrame).toHaveCSS('pointer-events', 'none');
+    await expect(callMedia.locator('a')).toHaveCount(1);
+
+    const callBox = await callMedia.boundingBox();
+    expect(callBox).not.toBeNull();
+    await page.mouse.move(
+      (callBox?.x ?? 0) + (callBox?.width ?? 0) * 0.8,
+      (callBox?.y ?? 0) + (callBox?.height ?? 0) * 0.3,
+    );
+    await expect
+      .poll(() =>
+        callMedia.evaluate((element) =>
+          getComputedStyle(element).getPropertyValue('--studio-drift-x').trim(),
+        ),
+      )
+      .not.toBe('0px');
+
+    const studioDocument = studioFrame.contentFrame();
+    const studioSidebar = studioDocument.locator('[data-studio-sidebar]');
+    const studioScrollPanel = studioDocument.locator('[data-studio-scroll-panel]');
+    const sidebarStart = await studioSidebar.evaluate(
+      (element) => element.getBoundingClientRect().y,
+    );
+    const panelTransformStart = await studioScrollPanel.evaluate(
+      (element) => getComputedStyle(element).transform,
+    );
+
+    await page.waitForTimeout(2400);
+
+    const sidebarEnd = await studioSidebar.evaluate(
+      (element) => element.getBoundingClientRect().y,
+    );
+    const panelTransformEnd = await studioScrollPanel.evaluate(
+      (element) => getComputedStyle(element).transform,
+    );
+    expect(sidebarEnd).toBeCloseTo(sidebarStart, 4);
+    expect(panelTransformEnd).not.toBe(panelTransformStart);
+
     await convoMedia.hover();
     await expect(stage).toHaveAttribute('data-flagship-focus', 'convo-ai');
     await expect(callMedia).toHaveCSS('opacity', '0.55');
@@ -349,6 +393,19 @@ test.describe('portfolio homepage framework', () => {
     expect(convoBox?.y ?? 0).toBeGreaterThan((callBox?.y ?? 0) + (callBox?.height ?? 0));
     await expect(callMedia).toHaveCSS('transform', 'none');
     await expect(convoMedia).toHaveCSS('transform', 'none');
+    await expect(callMedia.locator('[data-convo-studio-window]')).toHaveCSS(
+      'transform',
+      'none',
+    );
+    const studioFrame = callMedia.locator('[data-convo-studio-frame]');
+    const scrollPanel = studioFrame.contentFrame().locator('[data-studio-scroll-panel]');
+    const transformStart = await scrollPanel.evaluate(
+      (element) => getComputedStyle(element).transform,
+    );
+    await page.waitForTimeout(1200);
+    await expect
+      .poll(() => scrollPanel.evaluate((element) => getComputedStyle(element).transform))
+      .toBe(transformStart);
   });
 
   test('uses a media-dominant STT stage with direct prototype actions', async ({

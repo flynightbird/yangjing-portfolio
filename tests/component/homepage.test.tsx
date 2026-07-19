@@ -243,10 +243,19 @@ describe('FeaturedWork', () => {
       'src',
       '/images/xuelang/hero-panorama.webp',
     );
-    expect(screen.getByRole('img', { name: /Call Agent configuration/i })).toHaveAttribute(
-      'src',
-      '/images/call-agent/ai-preview-live.png',
+    const callAgent = container.querySelector<HTMLElement>('[data-project-id="call-agent"]');
+    const studioFrame = callAgent?.querySelector<HTMLIFrameElement>('[data-convo-studio-frame]');
+    expect(callAgent?.querySelector('[data-convo-studio-window]')).toHaveAttribute(
+      'data-locale',
+      'en',
     );
+    expect(studioFrame).toHaveAttribute('src', '/demos/convo-ai-studio/en/index.html');
+    expect(studioFrame).toHaveAttribute('tabindex', '-1');
+    expect(studioFrame).toHaveAttribute('aria-hidden', 'true');
+    expect(studioFrame).toHaveAttribute('sandbox', 'allow-scripts');
+    expect(
+      callAgent?.querySelectorAll('[data-media-radius="20"] a'),
+    ).toHaveLength(1);
     expect(screen.getByRole('img', { name: /AIDX public website homepage/i })).toHaveAttribute(
       'width',
       '1440',
@@ -267,6 +276,16 @@ describe('FeaturedWork', () => {
     expect(sttDemo?.querySelector('iframe')).not.toBeInTheDocument();
     expect(sttDemo?.querySelector('[data-stt-media-stage]')).toBeInTheDocument();
     expect(sttDemo?.querySelector('[data-stt-browser-window]')).toBeInTheDocument();
+  });
+
+  it('uses the localized Chinese Convo AI Studio document inside Call Agent', () => {
+    const { container } = render(<FeaturedWork locale="zh" />);
+    const frame = container.querySelector<HTMLIFrameElement>(
+      '[data-project-id="call-agent"] [data-convo-studio-frame]',
+    );
+
+    expect(frame).toHaveAttribute('src', '/demos/convo-ai-studio/zh/index.html');
+    expect(frame).toHaveAttribute('title', '声网 Convo AI Studio 控制台预览');
   });
 
   it('opens the complete STT Demo directly from both homepage actions', () => {

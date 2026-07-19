@@ -788,9 +788,120 @@ a.whiteCta:focus-visible {
 }
 
 .flagshipCallMedia {
+  --studio-drift-x: 0px;
+  --studio-drift-y: 0px;
   z-index: 2;
   background: #e8ddbb;
   transform-origin: left center;
+}
+
+.flagshipMediaLink {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.flagshipMediaLink:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: -4px;
+}
+
+.studioWindow {
+  position: absolute;
+  inset: 2rem 1.75rem -1.25rem;
+  overflow: hidden;
+  border: 1px solid rgba(16, 24, 40, 0.15);
+  border-radius: 15px 15px 0 0;
+  background: #ffffff;
+  box-shadow:
+    0 2rem 4.5rem rgba(57, 49, 32, 0.18),
+    0 0.35rem 1.25rem rgba(57, 49, 32, 0.1);
+  transform: translate3d(var(--studio-drift-x), var(--studio-drift-y), 0);
+  transition: transform 520ms var(--ease-out);
+  will-change: transform;
+}
+
+.studioBrowserBar {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  height: 38px;
+  grid-template-columns: 4.5rem minmax(0, 1fr) 4.5rem;
+  align-items: center;
+  border-bottom: 1px solid #e6e8eb;
+  background: rgba(250, 250, 250, 0.96);
+  color: #7d838c;
+}
+
+.studioTrafficLights {
+  display: flex;
+  gap: 5px;
+  padding-left: 14px;
+}
+
+.studioTrafficLights i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d3d6da;
+}
+
+.studioTrafficLights i:first-child {
+  background: #ff716a;
+}
+
+.studioTrafficLights i:nth-child(2) {
+  background: #f6c451;
+}
+
+.studioTrafficLights i:last-child {
+  background: #64c76a;
+}
+
+.studioAddress {
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px 1rem;
+  border: 1px solid #e7e9ec;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #777e88;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.studioLock {
+  margin-right: 0.3rem;
+  color: #8b9199;
+  font-size: 0.38rem;
+  vertical-align: 0.08rem;
+}
+
+.studioBrowserAction {
+  justify-self: end;
+  padding-right: 15px;
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+}
+
+.studioViewport {
+  position: absolute;
+  inset: 38px 0 0;
+  overflow: hidden;
+  background: #eef0f3;
+}
+
+.studioFrame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
 }
 
 .flagshipConvoMedia {
@@ -801,18 +912,6 @@ a.whiteCta:focus-visible {
 
 .flagshipMedia img {
   transition: transform 700ms var(--ease-out);
-}
-
-.flagshipCallImage {
-  position: absolute;
-  right: 5%;
-  bottom: -1px;
-  left: 5%;
-  width: 90%;
-  height: 84%;
-  object-fit: cover;
-  object-position: left top;
-  transform-origin: bottom center;
 }
 
 .flagshipConvoWeb {
@@ -852,8 +951,8 @@ a.whiteCta:focus-visible {
   opacity: 0.55;
 }
 
-.flagshipStage[data-flagship-focus='call-agent'] .flagshipCallImage {
-  transform: scale(1.025);
+.flagshipStage[data-flagship-focus='call-agent'] .studioWindow {
+  transform: translate3d(var(--studio-drift-x), var(--studio-drift-y), 0) scale(1.015);
 }
 
 .flagshipStage[data-flagship-focus='convo-ai'] .flagshipCallMedia {
@@ -924,6 +1023,18 @@ a.whiteCta:focus-visible {
     width: 7rem;
     height: 14.375rem;
   }
+
+  .studioWindow {
+    inset: 1.5rem 1rem -0.75rem;
+  }
+
+  .flagshipStage[data-flagship-focus='call-agent'] .studioWindow {
+    transform: none;
+  }
+
+  .studioBrowserBar {
+    grid-template-columns: 3.75rem minmax(0, 1fr) 3.75rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -941,6 +1052,12 @@ a.whiteCta:focus-visible {
 
   .flagshipStage[data-flagship-focus] .flagshipConvoPhone {
     transform: rotate(2deg);
+  }
+
+  .studioWindow,
+  .flagshipStage[data-flagship-focus='call-agent'] .studioWindow {
+    transform: none;
+    transition: none;
   }
 }
 
