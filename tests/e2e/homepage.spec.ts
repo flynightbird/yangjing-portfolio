@@ -661,6 +661,91 @@ test.describe('portfolio homepage framework', () => {
     await expect(next).toBeDisabled();
   });
 
+  test('archive gallery restores desktop position and focus after keyboard navigation', async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== 'desktop',
+      'Desktop gallery behavior needs the canonical wide viewport.',
+    );
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const archive = page.locator('[data-archive-carousel]');
+    const trigger = archive.getByRole('button', {
+      name: 'Open project image: Doudou Fox',
+    });
+    await archive.scrollIntoViewIfNeeded();
+    await trigger.scrollIntoViewIfNeeded();
+    await expect(trigger).toBeVisible();
+
+    const scrollBeforeOpen = await page.evaluate(() => window.scrollY);
+    const triggerBoxBeforeOpen = await trigger.boundingBox();
+    expect(triggerBoxBeforeOpen).not.toBeNull();
+
+    await trigger.click();
+    await expect(page.getByRole('dialog', { name: /Doudou Fox/ })).toBeVisible();
+    await expect(page.locator('[data-gallery-desktop]')).toBeVisible();
+    await expect(page.getByText('01 / 07', { exact: true })).toBeVisible();
+
+    await page.keyboard.press('ArrowRight');
+    await expect(page.getByText('02 / 07', { exact: true })).toBeVisible();
+
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+
+    const scrollAfterClose = await page.evaluate(() => window.scrollY);
+    expect(Math.abs(scrollAfterClose - scrollBeforeOpen)).toBeLessThanOrEqual(2);
+    await expect(trigger).toBeFocused();
+  });
+
+  test('archive gallery stacks MR CHONG media in its mobile backdrop without overflow', async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== 'mobile',
+      'The vertical gallery stack needs the canonical mobile viewport.',
+    );
+    expect(page.viewportSize()).toEqual({ width: 390, height: 844 });
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const archive = page.locator('[data-archive-carousel]');
+    const trigger = archive.getByRole('button', {
+      name: 'Open project image: MR CHONG',
+    });
+    await archive.scrollIntoViewIfNeeded();
+    await trigger.scrollIntoViewIfNeeded();
+    await trigger.click();
+
+    const dialog = page.getByRole('dialog', { name: /MR CHONG/ });
+    const mobileGallery = page.locator('[data-gallery-mobile]');
+    const close = page.getByRole('button', { name: 'Close image' });
+    await expect(dialog).toBeVisible();
+    await expect(mobileGallery).toBeVisible();
+    await expect(page.locator('[data-gallery-desktop]')).toBeHidden();
+    await expect(mobileGallery.locator('img')).toHaveCount(4);
+
+    await dialog.evaluate((element) => {
+      element.scrollTo({ top: element.scrollHeight, behavior: 'auto' });
+    });
+    await expect.poll(() => dialog.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+    await expect(mobileGallery.locator('img').last()).toBeInViewport();
+    await expect(close).toBeVisible();
+
+    const openDimensions = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+    }));
+    expect(openDimensions.scrollWidth).toBeLessThanOrEqual(openDimensions.clientWidth);
+
+    await close.click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    const closedDimensions = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+    }));
+    expect(closedDimensions.scrollWidth).toBeLessThanOrEqual(closedDimensions.clientWidth);
+  });
+
   test('keeps reduced-motion output static and readable', async ({ page }) => {
     const hydrationErrors: string[] = [];
     page.on('console', (message) => {

@@ -105,6 +105,7 @@ export function Lightbox({
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousOverflowRef = useRef('');
+  const previousScrollPositionRef = useRef({ left: 0, top: 0 });
   const activeIndexRef = useRef(0);
   const dialogTitleId = useId();
 
@@ -147,6 +148,10 @@ export function Lightbox({
     }
 
     previousOverflowRef.current = document.body.style.overflow;
+    previousScrollPositionRef.current = {
+      left: window.scrollX,
+      top: window.scrollY,
+    };
     document.body.style.overflow = 'hidden';
     closeRef.current?.focus();
     const returnFocusTo = triggerRef.current;
@@ -220,7 +225,11 @@ export function Lightbox({
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = previousOverflowRef.current;
-      returnFocusTo?.focus();
+      returnFocusTo?.focus({ preventScroll: true });
+      const { left, top } = previousScrollPositionRef.current;
+      if (window.scrollX !== left || window.scrollY !== top) {
+        window.scrollTo(left, top);
+      }
     };
   }, [closeDialog, isGallery, media.length, moveToIndex, open]);
 
