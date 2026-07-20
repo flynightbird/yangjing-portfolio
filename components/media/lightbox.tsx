@@ -156,6 +156,21 @@ export function Lightbox({
     closeRef.current?.focus();
     const returnFocusTo = triggerRef.current;
 
+    return () => {
+      document.body.style.overflow = previousOverflowRef.current;
+      returnFocusTo?.focus({ preventScroll: true });
+      const { left, top } = previousScrollPositionRef.current;
+      if (window.scrollX !== left || window.scrollY !== top) {
+        window.scrollTo(left, top);
+      }
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
@@ -224,12 +239,6 @@ export function Lightbox({
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = previousOverflowRef.current;
-      returnFocusTo?.focus({ preventScroll: true });
-      const { left, top } = previousScrollPositionRef.current;
-      if (window.scrollX !== left || window.scrollY !== top) {
-        window.scrollTo(left, top);
-      }
     };
   }, [closeDialog, isGallery, media.length, moveToIndex, open]);
 

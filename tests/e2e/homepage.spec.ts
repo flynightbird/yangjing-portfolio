@@ -674,13 +674,28 @@ test.describe('portfolio homepage framework', () => {
     const trigger = archive.getByRole('button', {
       name: 'Open project image: Doudou Fox',
     });
-    await archive.scrollIntoViewIfNeeded();
-    await trigger.scrollIntoViewIfNeeded();
+    await trigger.evaluate((element) => {
+      element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+    });
     await expect(trigger).toBeVisible();
+    await page.evaluate(async () => {
+      const nextFrame = () => new Promise<void>((resolve) => {
+        requestAnimationFrame(() => resolve());
+      });
+      let previous = window.scrollY;
+
+      for (let attempt = 0; attempt < 10; attempt += 1) {
+        await nextFrame();
+        const current = window.scrollY;
+        await nextFrame();
+        if (current === previous && window.scrollY === current) return;
+        previous = window.scrollY;
+      }
+
+      throw new Error('Page scroll did not settle before opening the archive gallery');
+    });
 
     const scrollBeforeOpen = await page.evaluate(() => window.scrollY);
-    const triggerBoxBeforeOpen = await trigger.boundingBox();
-    expect(triggerBoxBeforeOpen).not.toBeNull();
 
     await trigger.click();
     await expect(page.getByRole('dialog', { name: /Doudou Fox/ })).toBeVisible();

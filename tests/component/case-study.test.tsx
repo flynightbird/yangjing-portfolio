@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ChapterNav } from '@/components/case-study/chapter-nav';
 import { CaseLayout } from '@/components/case-study/case-layout';
@@ -47,6 +47,7 @@ const expandedGallery = [
 afterEach(() => {
   cleanup();
   document.body.removeAttribute('style');
+  vi.restoreAllMocks();
 });
 
 describe('ChapterNav', () => {
@@ -360,6 +361,49 @@ describe('Lightbox', () => {
     expect(within(desktopGallery!).getByRole('img', { name: 'Second gallery image' })).toBeVisible();
     expect(screen.getByRole('button', { name: 'Previous image' })).toBeEnabled();
     expect(screen.getByRole('button', { name: 'Next image' })).toBeDisabled();
+  });
+
+  it('keeps the dialog session locked while clamping a shorter gallery', async () => {
+    const user = userEvent.setup();
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+    const scrollY = vi.spyOn(window, 'scrollY', 'get').mockReturnValue(240);
+    const props = {
+      src: expandedGallery[0].src,
+      width: expandedGallery[0].width,
+      height: expandedGallery[0].height,
+      alt: expandedGallery[0].alt,
+      triggerLabel: 'Open scroll-stable gallery',
+      dialogLabel: 'Scroll-stable gallery',
+      closeLabel: 'Close gallery',
+      previousLabel: 'Previous image',
+      nextLabel: 'Next image',
+      positionLabel: 'Gallery position',
+    };
+    const { rerender } = render(<Lightbox {...props} gallery={expandedGallery} />);
+    const trigger = screen.getByRole('button', { name: 'Open scroll-stable gallery' });
+
+    await user.click(trigger);
+    const next = screen.getByRole('button', { name: 'Next image' });
+    await user.click(next);
+    await user.click(next);
+    await user.click(next);
+    expect(screen.getByText('04 / 04')).toBeVisible();
+    expect(document.body.style.overflow).toBe('hidden');
+
+    scrollY.mockReturnValue(20);
+    rerender(<Lightbox {...props} gallery={gallery} />);
+
+    expect(screen.getByText('02 / 02')).toBeVisible();
+    expect(document.body.style.overflow).toBe('hidden');
+    expect(trigger).not.toHaveFocus();
+    expect(scrollTo).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('button', { name: 'Close gallery' }));
+
+    expect(trigger).toHaveFocus();
+    expect(document.body.style.overflow).toBe('');
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+    expect(scrollTo).toHaveBeenCalledWith(0, 240);
   });
 
   it('closes on Escape, returns focus, and restores the exact body overflow', async () => {
