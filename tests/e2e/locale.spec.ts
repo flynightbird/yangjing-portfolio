@@ -35,8 +35,7 @@ test('resolves a stored Chinese preference from the root page', async ({ page })
 test('switches locale while preserving the homepage identity', async ({ page }) => {
   await page.goto('/en/');
 
-  await page.getByRole('button', { name: 'Select language' }).click();
-  await page.getByRole('button', { name: 'Simplified Chinese' }).click();
+  await page.getByRole('button', { name: 'Switch to Simplified Chinese' }).click();
 
   await expect(page).toHaveURL(/\/zh\/$/);
   await expect(page.locator('main')).toContainText('产品设计师');

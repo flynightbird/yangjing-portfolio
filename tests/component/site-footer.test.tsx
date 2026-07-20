@@ -9,6 +9,8 @@ describe('SiteFooter', () => {
   it.each(['en', 'zh'] as const)('offers direct email and minimal metadata in %s', (locale) => {
     const { container } = render(<SiteFooter locale={locale} />);
 
+    expect(container.firstElementChild).toHaveAttribute('data-site-footer');
+    expect(container.querySelector('[data-footer-reveal-layer]')).toBeInTheDocument();
     expect(container.querySelector('[data-liquid-field="footer"]')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /yangux@qq\.com/i })).toHaveAttribute(
       'href',

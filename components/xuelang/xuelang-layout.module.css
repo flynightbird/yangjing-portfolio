@@ -280,6 +280,11 @@
   border-block-start: 1px solid var(--xuelang-line);
 }
 
+.content > :global(section:not(#overview)) {
+  position: relative;
+  background: transparent;
+}
+
 .content > :global(section > *) {
   grid-column: 1 / span 7;
 }

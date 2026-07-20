@@ -1,9 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type PointerEvent } from 'react';
 
 import { ActionLink } from '@/components/ui/action-link';
+import type { Locale } from '@/content/types';
 
+import { ConvoAiStudioWindow } from './convo-ai-studio-window';
 import { ProjectMeta } from './project-meta';
 import styles from './home.module.css';
 
@@ -22,6 +24,7 @@ interface ConvoAiCopy extends FlagshipCopy {
 }
 
 interface FlagshipProjectsProps {
+  readonly locale: Locale;
   readonly callAgent: {
     readonly copy: FlagshipCopy;
     readonly href: string;
@@ -37,7 +40,7 @@ const secureLinkProps = {
   rel: 'noopener noreferrer',
 } as const;
 
-export function FlagshipProjects({ callAgent, convoAi }: FlagshipProjectsProps) {
+export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProjectsProps) {
   const [focus, setFocus] = useState<FlagshipFocus>('call-agent');
   const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -54,6 +57,20 @@ export function FlagshipProjects({ callAgent, convoAi }: FlagshipProjectsProps) 
   const scheduleReset = () => {
     cancelReset();
     resetTimer.current = setTimeout(() => setFocus('call-agent'), 220);
+  };
+
+  const updateStudioDrift = (event: PointerEvent<HTMLDivElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+
+    event.currentTarget.style.setProperty('--studio-drift-x', `${(x * 8).toFixed(2)}px`);
+    event.currentTarget.style.setProperty('--studio-drift-y', `${(y * 6).toFixed(2)}px`);
+  };
+
+  const resetStudioDrift = (event: PointerEvent<HTMLDivElement>) => {
+    event.currentTarget.style.setProperty('--studio-drift-x', '0px');
+    event.currentTarget.style.setProperty('--studio-drift-y', '0px');
   };
 
   useEffect(() => cancelReset, []);
@@ -103,22 +120,20 @@ export function FlagshipProjects({ callAgent, convoAi }: FlagshipProjectsProps) 
             </ActionLink>
           </div>
 
-          <a
+          <div
             className={`${styles.flagshipMedia} ${styles.flagshipCallMedia}`}
-            href={callAgent.href}
-            aria-label="Open Call Agent project media"
             data-media-radius="20"
-            data-page-transition-tone="dark"
+            onPointerMove={updateStudioDrift}
+            onPointerLeave={resetStudioDrift}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className={styles.flagshipCallImage}
-              src="/images/call-agent/ai-preview-live.png"
-              width={2934}
-              height={1466}
-              alt="Call Agent configuration next to a live call preview with runtime feedback"
+            <ConvoAiStudioWindow locale={locale} />
+            <a
+              className={styles.flagshipMediaLink}
+              href={callAgent.href}
+              aria-label="Open Call Agent project media"
+              data-page-transition-tone="dark"
             />
-          </a>
+          </div>
         </article>
 
         <article

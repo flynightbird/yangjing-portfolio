@@ -13,21 +13,6 @@
   let paused = true;
   let nextId = -1;
 
-  function updateStageScale() {
-    const gutter = innerWidth <= 600 ? 8 : 16;
-    const scale = Math.max(
-      0,
-      Math.min(
-        (innerWidth - gutter * 2) / 1000,
-        (innerHeight - gutter * 2) / 560,
-      ),
-    );
-    root.style.setProperty('--stt-stage-scale', String(scale));
-  }
-
-  updateStageScale();
-  window.addEventListener('resize', updateStageScale);
-
   function schedule(record) {
     record.startedAt = performance.now();
     record.timeoutId = nativeTimeout(() => {

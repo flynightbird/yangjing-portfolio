@@ -1,10 +1,43 @@
 .root {
+  --footer-reveal-progress: 0;
+  --footer-reveal-offset: 8%;
   position: relative;
   min-height: min(46rem, 86dvh);
   overflow: hidden;
   background: #171219;
   color: var(--color-paper);
   isolation: isolate;
+}
+
+.revealLayer {
+  position: relative;
+  min-height: inherit;
+  isolation: isolate;
+}
+
+:global(body:has([data-homepage]) #main-content) {
+  position: relative;
+  z-index: 1;
+}
+
+:global(body:has([data-homepage]) [data-homepage]) {
+  overflow: clip;
+  border-radius: 0 0 32px 32px;
+  background: var(--theme-canvas);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.28);
+}
+
+:global(body:has([data-homepage])) .root {
+  position: sticky;
+  z-index: 0;
+  bottom: 0;
+  padding-top: 32px;
+  margin-top: -32px;
+}
+
+:global(body:has([data-homepage])) .revealLayer {
+  transform: translate3d(0, var(--footer-reveal-offset), 0);
+  will-change: transform;
 }
 
 .liquid {
@@ -21,17 +54,17 @@
 }
 
 .inner {
-  display: flex;
+  display: grid;
   width: min(100%, var(--content-max));
   min-height: inherit;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: clamp(5rem, 12vh, 8rem) var(--content-gutter) var(--space-6);
+  grid-template-rows: minmax(0, 1fr) auto;
+  padding: 0 var(--content-gutter) var(--space-6);
   margin-inline: auto;
 }
 
 .cta {
   max-width: 64rem;
+  align-self: center;
 }
 
 .cta > p {
@@ -94,12 +127,17 @@
 
 @media (max-width: 767px) {
   .root {
+    --footer-reveal-offset: 4%;
     min-height: 42rem;
   }
 
 }
 
 @media (prefers-reduced-motion: reduce) {
+  :global(body:has([data-homepage])) .revealLayer {
+    transform: none;
+  }
+
   .emailIcon {
     transition: none;
   }

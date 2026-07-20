@@ -184,19 +184,20 @@
   }
 
   [data-xuelang-case] [data-learning-sequence] {
-    display: grid !important;
-    min-height: 220mm !important;
-    grid-template-columns: minmax(34mm, 0.62fr) minmax(0, 1.38fr) !important;
-    gap: 7mm !important;
-    align-items: center !important;
+    display: block !important;
+    min-height: 0 !important;
     margin-block-start: 7mm !important;
-    break-inside: avoid;
+    break-inside: auto !important;
+  }
+
+  [data-xuelang-case] [data-learning-sequence] > div:first-child {
+    margin-block-end: 5mm !important;
   }
 
   [data-xuelang-case] [data-learning-sequence] > div:last-child {
     display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 0 5mm !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 5mm !important;
   }
 
   [data-xuelang-case] [data-learning-state] {
@@ -209,6 +210,93 @@
 
   [data-xuelang-case] [data-learning-state] [data-evidence] img {
     max-height: 52mm !important;
+  }
+
+  [data-xuelang-case] [data-course-entry] {
+    margin-block-start: 3mm !important;
+    break-inside: avoid;
+  }
+
+  [data-xuelang-case] [data-learning-state]:has([data-course-entry]) {
+    grid-column: 1 / -1 !important;
+    break-inside: avoid !important;
+  }
+
+  [data-xuelang-case] [data-learning-state]:has([data-interaction-board]) {
+    grid-column: 1 / -1 !important;
+    break-inside: avoid !important;
+  }
+
+  [data-xuelang-case] [data-interaction-board] {
+    margin-block-start: 3mm !important;
+    break-inside: avoid !important;
+  }
+
+  [data-xuelang-case] [data-interaction-board] > div {
+    display: grid !important;
+    overflow: visible !important;
+    height: auto !important;
+    grid-template-columns: minmax(0, 1.45fr) minmax(42mm, 0.55fr) !important;
+    gap: 4mm !important;
+    align-items: start !important;
+    border: 0 !important;
+    aspect-ratio: auto !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  [data-xuelang-case] [data-interaction-board] img {
+    width: 100% !important;
+    max-height: 80mm !important;
+    object-fit: contain !important;
+  }
+
+  [data-xuelang-case] [data-interaction-board] ol {
+    position: static !important;
+    display: grid !important;
+    width: auto !important;
+    gap: 2mm !important;
+    margin: 0 !important;
+  }
+
+  [data-xuelang-case] [data-interaction-board] li {
+    padding: 2.5mm !important;
+    background: #f5f7f5 !important;
+    box-shadow: none !important;
+    print-color-adjust: exact;
+  }
+
+  [data-xuelang-case] [data-course-entry-interactive] {
+    display: none !important;
+  }
+
+  [data-xuelang-case] [data-course-entry-print] {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 4mm !important;
+    align-items: start !important;
+  }
+
+  [data-xuelang-case] [data-course-entry-print] figure {
+    display: grid !important;
+    height: auto !important;
+    min-height: 0 !important;
+    grid-template-columns: 27mm minmax(0, 1fr) !important;
+    gap: 3mm !important;
+    align-items: center !important;
+    padding: 3mm !important;
+  }
+
+  [data-xuelang-case] [data-course-entry-print] figure > div {
+    width: 27mm !important;
+    height: 52mm !important;
+    min-height: 52mm !important;
+  }
+
+  [data-xuelang-case] [data-course-entry-print] figcaption {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
   }
 
   [data-xuelang-case] [data-story-variant='learning'] {

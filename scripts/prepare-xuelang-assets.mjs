@@ -6,12 +6,20 @@ import sharp from 'sharp';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const manifestPath = path.join(projectRoot, 'evidence/xuelang/manifest.json');
-const sourceRoot = path.join(projectRoot, 'evidence/xuelang/source');
+const evidenceRoot = path.join(projectRoot, 'evidence/xuelang');
 const outputRoot = path.join(projectRoot, 'public/images/xuelang');
 
 function isInside(parent, candidate) {
   const relative = path.relative(parent, candidate);
   return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+}
+
+export function resolveXuelangSourcePath(sourcePath, assetId = sourcePath) {
+  const absolutePath = path.resolve(projectRoot, sourcePath);
+  if (!isInside(evidenceRoot, absolutePath)) {
+    throw new Error(`${assetId}: source must stay inside evidence/xuelang`);
+  }
+  return absolutePath;
 }
 
 function positiveRect(rect) {
@@ -63,13 +71,8 @@ async function cropBuffer(sourcePath, crop, target) {
 
 async function prepareAsset(asset) {
   const outputPath = path.resolve(projectRoot, asset.output);
-  const sourcePaths = asset.sourcePaths.map((sourcePath) => {
-    const absolutePath = path.resolve(projectRoot, sourcePath);
-    if (!isInside(sourceRoot, absolutePath)) {
-      throw new Error(`${asset.id}: source must stay inside evidence/xuelang/source`);
-    }
-    return absolutePath;
-  });
+  const sourcePaths = asset.sourcePaths.map((sourcePath) =>
+    resolveXuelangSourcePath(sourcePath, asset.id));
 
   await Promise.all(sourcePaths.map((sourcePath) => fs.access(sourcePath)));
   await fs.mkdir(path.dirname(outputPath), { recursive: true });
