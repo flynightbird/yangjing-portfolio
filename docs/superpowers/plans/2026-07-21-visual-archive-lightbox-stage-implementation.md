@@ -116,6 +116,7 @@ git commit -m "feat: open every visual archive project in lightbox"
 **Files:**
 - Modify: `tests/component/case-study.test.tsx`
 - Modify: `tests/e2e/homepage.spec.ts`
+- Modify: `components/home/visual-archive.tsx`
 - Modify: `components/media/lightbox.tsx`
 - Modify: `components/media/lightbox.module.css`
 
@@ -177,6 +178,8 @@ interface LightboxProps {
 Resolve `variant = 'default'`, add `data-lightbox-variant` to the dialog, and conditionally apply archive classes. For archive mode, render the existing semantic title, counter, and controls inside a `data-testid="lightbox-rail"` container. Default mode retains its current header DOM and classes.
 
 Use the existing refs and state for both variants. Add `backdropRef`, `surfaceRef`, and `railRef`; do not duplicate navigation or close handlers.
+
+Update `VisualArchive` to pass `variant="archive"` to each real-entry Lightbox after the shared component accepts the prop.
 
 - [ ] **Step 4: Add scoped GSAP opening and closing motion**
 
@@ -247,7 +250,7 @@ Expected: PASS, including all existing Lightbox lifecycle tests and new variant-
 - [ ] **Step 8: Commit the visual variant**
 
 ```bash
-git add components/media/lightbox.tsx components/media/lightbox.module.css tests/component/case-study.test.tsx tests/component/homepage.test.tsx tests/e2e/homepage.spec.ts
+git add components/home/visual-archive.tsx components/media/lightbox.tsx components/media/lightbox.module.css tests/component/case-study.test.tsx tests/component/homepage.test.tsx tests/e2e/homepage.spec.ts
 git commit -m "feat: add visual archive gallery stage"
 ```
 
