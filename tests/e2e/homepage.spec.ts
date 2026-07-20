@@ -738,7 +738,8 @@ test.describe('portfolio homepage framework', () => {
     await expect(next).toHaveCSS('background-color', 'rgb(244, 244, 241)');
     await expect(next).toHaveCSS('color', 'rgb(13, 13, 15)');
     await page.mouse.move(0, 0);
-    await next.focus();
+    await page.keyboard.press('Tab');
+    await expect(next).toBeFocused();
     await expect(next).toHaveCSS('background-color', 'rgb(244, 244, 241)');
     await expect(next).toHaveCSS('color', 'rgb(13, 13, 15)');
 
