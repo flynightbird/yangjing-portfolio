@@ -176,20 +176,10 @@ const realArchiveEntryBaseSchema = z.object({
   externalUrl: z.string().url().startsWith('https://').optional(),
 });
 
-const lightboxArchiveEntrySchema = realArchiveEntryBaseSchema.extend({
+export const realArchiveEntrySchema = realArchiveEntryBaseSchema.extend({
   destination: z.literal('lightbox-only'),
   href: z.never().optional(),
 });
-
-const internalArchiveEntrySchema = realArchiveEntryBaseSchema.extend({
-  destination: z.literal('internal-case'),
-  href: nonEmptyString.regex(/^work\/[a-z0-9-]+\/$/),
-});
-
-export const realArchiveEntrySchema = z.discriminatedUnion('destination', [
-  lightboxArchiveEntrySchema,
-  internalArchiveEntrySchema,
-]);
 
 export const draftArchiveSlotSchema = z.object({
   key: nonEmptyString,
@@ -210,8 +200,7 @@ export const archiveProjects = [
   {
     key: 'alibaba-meipingmeiwu',
     kind: 'real-entry',
-    destination: 'internal-case',
-    href: 'work/tangping/',
+    destination: 'lightbox-only',
     company: { en: 'Alibaba', zh: '阿里巴巴' },
     period: {
       start: { dateTime: '2019', label: { en: '2019', zh: '2019' } },

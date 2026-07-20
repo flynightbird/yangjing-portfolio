@@ -277,41 +277,20 @@ export function VisualArchive({
                 data-active={activeIndex === index ? 'true' : 'false'}
               >
                 <div className={styles.archiveStage}>
-                  {entry.destination === 'internal-case' ? (
-                    <a
-                      className={styles.archiveProjectLink}
-                      href={`/${locale}/${entry.href}`}
-                      aria-label={
-                        locale === 'zh'
-                          ? `查看项目：${primaryTitle}`
-                          : `View project: ${primaryTitle}`
-                      }
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={entry.image.src}
-                        width={entry.image.width}
-                        height={entry.image.height}
-                        alt={alt}
-                        loading="lazy"
-                      />
-                    </a>
-                  ) : (
-                    <Lightbox
-                      src={entry.image.src}
-                      width={entry.image.width}
-                      height={entry.image.height}
-                      alt={alt}
-                      triggerLabel={`${copy.openImage}: ${primaryTitle}`}
-                      dialogLabel={`${copy.imageDialog}: ${primaryTitle}`}
-                      closeLabel={copy.closeImage}
-                      gallery={gallery}
-                      previousLabel={copy.previousImage}
-                      nextLabel={copy.nextImage}
-                      positionLabel={copy.galleryPosition}
-                      errorLabel={copy.imageUnavailable}
-                    />
-                  )}
+                  <Lightbox
+                    src={entry.image.src}
+                    width={entry.image.width}
+                    height={entry.image.height}
+                    alt={alt}
+                    triggerLabel={`${copy.openImage}: ${primaryTitle}`}
+                    dialogLabel={`${copy.imageDialog}: ${primaryTitle}`}
+                    closeLabel={copy.closeImage}
+                    gallery={gallery}
+                    previousLabel={copy.previousImage}
+                    nextLabel={copy.nextImage}
+                    positionLabel={copy.galleryPosition}
+                    errorLabel={copy.imageUnavailable}
+                  />
                   <div className={styles.archiveCoverIndex}>
                     <span>{company}</span>
                     <span aria-hidden="true"> / </span>

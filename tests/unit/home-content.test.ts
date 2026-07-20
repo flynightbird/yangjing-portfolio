@@ -124,14 +124,14 @@ describe('Visual Archive contract', () => {
       'mr-chong',
     ]);
 
-    expect(archiveProjects[0]).toMatchObject({
-      destination: 'internal-case',
-      href: 'work/tangping/',
-      title: { primary: { en: 'Tangping', zh: '躺平' } },
-    });
-    expect(archiveProjects.slice(1).every(({ destination }) => destination === 'lightbox-only')).toBe(
+    expect(archiveProjects).toHaveLength(4);
+    expect(archiveProjects.every(({ destination }) => destination === 'lightbox-only')).toBe(
       true,
     );
+    expect(archiveProjects.some((project) => 'href' in project)).toBe(false);
+    expect(archiveProjects[0]).toMatchObject({
+      title: { primary: { en: 'Tangping', zh: '躺平' } },
+    });
 
     for (const project of archiveProjects) {
       expect(project.kind).toBe('real-entry');
