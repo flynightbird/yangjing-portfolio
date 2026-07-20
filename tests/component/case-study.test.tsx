@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -12,6 +12,21 @@ const chapters = [
   { id: 'overview', label: 'Overview' },
   { id: 'decision-preview', label: 'Preview decision' },
 ];
+
+const gallery = [
+  {
+    src: '/images/archive/details/test/01.webp',
+    width: 1600,
+    height: 900,
+    alt: 'First gallery image',
+  },
+  {
+    src: '/images/archive/details/test/02.webp',
+    width: 1600,
+    height: 900,
+    alt: 'Second gallery image',
+  },
+] as const;
 
 afterEach(() => {
   cleanup();
@@ -137,6 +152,67 @@ describe('EvidenceFigure', () => {
 });
 
 describe('Lightbox', () => {
+  it('supports ordered gallery navigation with a localized position label', async () => {
+    const user = userEvent.setup();
+    render(
+      <Lightbox
+        src={gallery[0].src}
+        width={gallery[0].width}
+        height={gallery[0].height}
+        alt={gallery[0].alt}
+        gallery={gallery}
+        triggerLabel="Open gallery"
+        dialogLabel="Archive gallery"
+        closeLabel="Close gallery"
+        previousLabel="Previous image"
+        nextLabel="Next image"
+        positionLabel="Gallery position"
+        errorLabel="Image unavailable"
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Open gallery' }));
+
+    expect(screen.getByText('01 / 02')).toHaveAccessibleName('Gallery position');
+    expect(screen.getByRole('button', { name: 'Previous image' })).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: 'Next image' }));
+    expect(screen.getByText('02 / 02')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Next image' })).toBeDisabled();
+
+    await user.keyboard('{ArrowLeft}');
+    expect(screen.getByText('01 / 02')).toBeVisible();
+  });
+
+  it('keeps gallery controls available when the active desktop image fails', async () => {
+    const user = userEvent.setup();
+    render(
+      <Lightbox
+        src={gallery[0].src}
+        width={gallery[0].width}
+        height={gallery[0].height}
+        alt={gallery[0].alt}
+        gallery={gallery}
+        triggerLabel="Open failing gallery"
+        dialogLabel="Archive gallery"
+        closeLabel="Close gallery"
+        previousLabel="Previous image"
+        nextLabel="Next image"
+        positionLabel="Gallery position"
+        errorLabel="Image unavailable"
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Open failing gallery' }));
+    const desktopGallery = document.querySelector('[data-gallery-desktop]');
+    expect(desktopGallery).not.toBeNull();
+    fireEvent.error(desktopGallery!.querySelector('img')!);
+
+    expect(desktopGallery).toHaveTextContent('Image unavailable');
+    expect(screen.getByRole('button', { name: 'Close gallery' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Next image' })).toBeVisible();
+  });
+
   it('closes on Escape, returns focus, and restores the exact body overflow', async () => {
     const user = userEvent.setup();
     document.body.style.overflow = 'clip';
