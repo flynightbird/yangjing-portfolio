@@ -768,11 +768,14 @@ test.describe('portfolio homepage framework', () => {
     const mobileImages = mobileGallery.locator('img');
     await expect(mobileImages).toHaveCount(4);
     await expect
-      .poll(() => mobileImages.evaluateAll((images) => (
-        images.every(
+      .poll(() => page.evaluate(() => {
+        const images = Array.from(
+          document.querySelectorAll<HTMLImageElement>('[data-gallery-mobile] img'),
+        );
+        return images.length === 4 && images.every(
           (image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0,
-        )
-      )))
+        );
+      }))
       .toBe(true);
     await expect
       .poll(() => mobileImages.evaluateAll((images) => (
