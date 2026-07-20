@@ -722,7 +722,51 @@ test.describe('portfolio homepage framework', () => {
     await expect(dialog).toBeVisible();
     await expect(mobileGallery).toBeVisible();
     await expect(page.locator('[data-gallery-desktop]')).toBeHidden();
-    await expect(mobileGallery.locator('img')).toHaveCount(4);
+    const mobileImages = mobileGallery.locator('img');
+    await expect(mobileImages).toHaveCount(4);
+    await expect
+      .poll(() => mobileImages.evaluateAll((images) => (
+        images.every((image) => image.getBoundingClientRect().height > 0)
+      )))
+      .toBe(true);
+
+    const imageBoxes = await mobileImages.evaluateAll((images) => (
+      images.map((image) => {
+        const { top, bottom, left, right } = image.getBoundingClientRect();
+        return { top, bottom, left, right };
+      })
+    ));
+    for (let index = 1; index < imageBoxes.length; index += 1) {
+      expect(imageBoxes[index].top).toBeGreaterThanOrEqual(imageBoxes[index - 1].bottom - 1);
+    }
+
+    const horizontalState = await dialog.evaluate((element) => {
+      const gallery = element.querySelector<HTMLElement>('[data-gallery-mobile]');
+      if (!gallery) throw new Error('Missing mobile gallery');
+
+      gallery.scrollLeft = 100;
+      element.scrollLeft = 100;
+      return {
+        dialog: {
+          scrollWidth: element.scrollWidth,
+          clientWidth: element.clientWidth,
+          scrollLeft: element.scrollLeft,
+        },
+        gallery: {
+          scrollWidth: gallery.scrollWidth,
+          clientWidth: gallery.clientWidth,
+          scrollLeft: gallery.scrollLeft,
+        },
+      };
+    });
+    expect(horizontalState.dialog.scrollWidth).toBeLessThanOrEqual(
+      horizontalState.dialog.clientWidth,
+    );
+    expect(horizontalState.gallery.scrollWidth).toBeLessThanOrEqual(
+      horizontalState.gallery.clientWidth,
+    );
+    expect(horizontalState.dialog.scrollLeft).toBe(0);
+    expect(horizontalState.gallery.scrollLeft).toBe(0);
 
     await dialog.evaluate((element) => {
       element.scrollTo({ top: element.scrollHeight, behavior: 'auto' });
@@ -730,6 +774,7 @@ test.describe('portfolio homepage framework', () => {
     await expect.poll(() => dialog.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
     await expect(mobileGallery.locator('img').last()).toBeInViewport();
     await expect(close).toBeVisible();
+    await expect(close).toBeInViewport();
 
     const openDimensions = await page.evaluate(() => ({
       scrollWidth: document.documentElement.scrollWidth,
