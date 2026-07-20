@@ -209,6 +209,9 @@
     width: 100%;
     min-height: 100dvh;
     max-height: none;
+    align-content: start;
+    align-items: start;
+    justify-items: stretch;
     padding: 4.5rem 0.375rem 0.375rem;
     border-inline: 0;
   }

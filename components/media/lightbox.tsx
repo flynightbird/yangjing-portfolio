@@ -57,6 +57,16 @@ const isVisibleFocusable = (element: HTMLElement) => {
   return true;
 };
 
+const isEditableTarget = (target: EventTarget | null) => {
+  if (!(target instanceof Element)) return false;
+
+  return Boolean(
+    target.closest(
+      'input, textarea, select, [contenteditable]:not([contenteditable="false"])',
+    ),
+  );
+};
+
 export function Lightbox({
   src,
   width,
@@ -82,6 +92,7 @@ export function Lightbox({
   const resolvedErrorLabel = errorLabel ?? 'Image unavailable';
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [previousMediaLength, setPreviousMediaLength] = useState(media.length);
   const [failedSources, setFailedSources] = useState<ReadonlySet<string>>(
     () => new Set(),
   );
@@ -96,7 +107,16 @@ export function Lightbox({
   const previousOverflowRef = useRef('');
   const activeIndexRef = useRef(0);
   const dialogTitleId = useId();
-  const activeMedia = media[Math.min(activeIndex, media.length - 1)];
+
+  if (previousMediaLength !== media.length) {
+    const nextIndex = Math.min(activeIndex, media.length - 1);
+    setPreviousMediaLength(media.length);
+    setActiveIndex(nextIndex);
+  }
+
+  const clampedActiveIndex = Math.min(activeIndex, media.length - 1);
+  const activeMedia = media[clampedActiveIndex];
+  const position = `${String(clampedActiveIndex + 1).padStart(2, '0')} / ${String(media.length).padStart(2, '0')}`;
 
   const closeDialog = useCallback(() => {
     activeIndexRef.current = 0;
@@ -118,6 +138,10 @@ export function Lightbox({
   };
 
   useEffect(() => {
+    activeIndexRef.current = clampedActiveIndex;
+  }, [clampedActiveIndex]);
+
+  useEffect(() => {
     if (!open) {
       return;
     }
@@ -134,19 +158,30 @@ export function Lightbox({
         return;
       }
 
-      if (isGallery && event.key === 'ArrowLeft' && activeIndexRef.current > 0) {
+      const dialog = dialogRef.current;
+      const canNavigateWithArrow =
+        isGallery &&
+        dialog?.contains(event.target as Node) &&
+        !isEditableTarget(event.target) &&
+        !event.altKey &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.shiftKey;
+      const currentIndex = Math.min(activeIndexRef.current, media.length - 1);
+
+      if (canNavigateWithArrow && event.key === 'ArrowLeft' && currentIndex > 0) {
         event.preventDefault();
-        moveToIndex(activeIndexRef.current - 1);
+        moveToIndex(currentIndex - 1);
         return;
       }
 
       if (
-        isGallery
+        canNavigateWithArrow
         && event.key === 'ArrowRight'
-        && activeIndexRef.current < media.length - 1
+        && currentIndex < media.length - 1
       ) {
         event.preventDefault();
-        moveToIndex(activeIndexRef.current + 1);
+        moveToIndex(currentIndex + 1);
         return;
       }
 
@@ -244,17 +279,20 @@ export function Lightbox({
                     <div className={styles.galleryMeta}>
                       <span
                         className={styles.galleryCounter}
-                        aria-label={resolvedPositionLabel}
+                        role="status"
+                        aria-label={`${resolvedPositionLabel}: ${position}`}
+                        aria-live="polite"
+                        aria-atomic="true"
                       >
-                        {`${String(activeIndex + 1).padStart(2, '0')} / ${String(media.length).padStart(2, '0')}`}
+                        {position}
                       </span>
                       <div className={styles.galleryControls}>
                         <button
                           className={styles.galleryControl}
                           type="button"
                           aria-label={resolvedPreviousLabel}
-                          disabled={activeIndex === 0}
-                          onClick={() => moveToIndex(activeIndex - 1)}
+                          disabled={clampedActiveIndex === 0}
+                          onClick={() => moveToIndex(clampedActiveIndex - 1)}
                         >
                           <ArrowLeft aria-hidden="true" size={20} />
                         </button>
@@ -262,8 +300,8 @@ export function Lightbox({
                           className={styles.galleryControl}
                           type="button"
                           aria-label={resolvedNextLabel}
-                          disabled={activeIndex === media.length - 1}
-                          onClick={() => moveToIndex(activeIndex + 1)}
+                          disabled={clampedActiveIndex === media.length - 1}
+                          onClick={() => moveToIndex(clampedActiveIndex + 1)}
                         >
                           <ArrowRight aria-hidden="true" size={20} />
                         </button>

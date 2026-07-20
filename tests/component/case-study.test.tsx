@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -25,6 +25,22 @@ const gallery = [
     width: 1600,
     height: 900,
     alt: 'Second gallery image',
+  },
+] as const;
+
+const expandedGallery = [
+  ...gallery,
+  {
+    src: '/images/archive/details/test/03.webp',
+    width: 1600,
+    height: 900,
+    alt: 'Third gallery image',
+  },
+  {
+    src: '/images/archive/details/test/04.webp',
+    width: 1600,
+    height: 900,
+    alt: 'Fourth gallery image',
   },
 ] as const;
 
@@ -174,13 +190,18 @@ describe('Lightbox', () => {
     await user.click(screen.getByRole('button', { name: 'Open gallery' }));
 
     expect(screen.getByText('Archive gallery')).toBeVisible();
-    expect(screen.getByText('01 / 02')).toHaveAccessibleName('Gallery position');
+    const firstPosition = screen.getByText('01 / 02');
+    expect(firstPosition).toHaveAccessibleName('Gallery position: 01 / 02');
+    expect(firstPosition).toHaveAttribute('role', 'status');
+    expect(firstPosition).toHaveAttribute('aria-live', 'polite');
+    expect(firstPosition).toHaveAttribute('aria-atomic', 'true');
     expect(screen.getByRole('button', { name: 'Previous image' })).toBeDisabled();
 
     await user.click(screen.getByRole('button', { name: 'Next image' }));
-    expect(screen.getByText('02 / 02')).toBeVisible();
+    expect(screen.getByText('02 / 02')).toHaveAccessibleName('Gallery position: 02 / 02');
     expect(screen.getByRole('button', { name: 'Next image' })).toBeDisabled();
 
+    screen.getByRole('dialog', { name: 'Archive gallery' }).focus();
     await user.keyboard('{ArrowLeft}');
     expect(screen.getByText('01 / 02')).toBeVisible();
   });
@@ -236,7 +257,7 @@ describe('Lightbox', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open focus gallery' }));
     const next = screen.getByRole('button', { name: 'Next image' });
-    next.style.display = 'none';
+    next.parentElement!.style.display = 'none';
 
     const close = screen.getByRole('button', { name: 'Close gallery' });
     expect(close).toHaveFocus();
@@ -244,6 +265,101 @@ describe('Lightbox', () => {
     await user.tab();
     expect(close).toHaveFocus();
     expect(screen.getByRole('button', { name: 'Background action' })).not.toHaveFocus();
+  });
+
+  it('only handles unmodified gallery arrows from non-editable dialog targets', async () => {
+    const user = userEvent.setup();
+    render(
+      <Lightbox
+        src={gallery[0].src}
+        width={gallery[0].width}
+        height={gallery[0].height}
+        alt={gallery[0].alt}
+        gallery={gallery}
+        triggerLabel="Open keyboard gallery"
+        dialogLabel="Keyboard gallery"
+        closeLabel="Close gallery"
+        previousLabel="Previous image"
+        nextLabel="Next image"
+      />,
+    );
+
+    const trigger = screen.getByRole('button', { name: 'Open keyboard gallery' });
+    await user.click(trigger);
+    const dialog = screen.getByRole('dialog', { name: 'Keyboard gallery' });
+    const dispatchArrow = (
+      target: EventTarget,
+      modifiers: KeyboardEventInit = {},
+    ) => {
+      const event = new KeyboardEvent('keydown', {
+        bubbles: true,
+        cancelable: true,
+        key: 'ArrowRight',
+        ...modifiers,
+      });
+      fireEvent(target, event);
+      return event;
+    };
+
+    for (const modifiers of [
+      { altKey: true },
+      { altKey: true, ctrlKey: true },
+      { metaKey: true },
+      { shiftKey: true },
+    ]) {
+      expect(dispatchArrow(dialog, modifiers).defaultPrevented).toBe(false);
+      expect(screen.getByText('01 / 02')).toBeVisible();
+    }
+
+    expect(dispatchArrow(trigger).defaultPrevented).toBe(false);
+    expect(screen.getByText('01 / 02')).toBeVisible();
+
+    const input = document.createElement('input');
+    dialog.append(input);
+    expect(dispatchArrow(input).defaultPrevented).toBe(false);
+
+    const editable = document.createElement('div');
+    editable.setAttribute('contenteditable', 'true');
+    const editableChild = document.createElement('span');
+    editable.append(editableChild);
+    dialog.append(editable);
+    expect(dispatchArrow(editableChild).defaultPrevented).toBe(false);
+    expect(screen.getByText('01 / 02')).toBeVisible();
+
+    expect(dispatchArrow(dialog).defaultPrevented).toBe(true);
+    expect(screen.getByText('02 / 02')).toBeVisible();
+  });
+
+  it('clamps the active gallery item when its media list shrinks', async () => {
+    const user = userEvent.setup();
+    const props = {
+      src: expandedGallery[0].src,
+      width: expandedGallery[0].width,
+      height: expandedGallery[0].height,
+      alt: expandedGallery[0].alt,
+      triggerLabel: 'Open changing gallery',
+      dialogLabel: 'Changing gallery',
+      closeLabel: 'Close gallery',
+      previousLabel: 'Previous image',
+      nextLabel: 'Next image',
+      positionLabel: 'Gallery position',
+    };
+    const { rerender } = render(<Lightbox {...props} gallery={expandedGallery} />);
+
+    await user.click(screen.getByRole('button', { name: 'Open changing gallery' }));
+    const next = screen.getByRole('button', { name: 'Next image' });
+    await user.click(next);
+    await user.click(next);
+    await user.click(next);
+    expect(screen.getByText('04 / 04')).toBeVisible();
+
+    rerender(<Lightbox {...props} gallery={gallery} />);
+
+    expect(screen.getByText('02 / 02')).toBeVisible();
+    const desktopGallery = document.querySelector('[data-gallery-desktop]');
+    expect(within(desktopGallery!).getByRole('img', { name: 'Second gallery image' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Previous image' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Next image' })).toBeDisabled();
   });
 
   it('closes on Escape, returns focus, and restores the exact body overflow', async () => {
