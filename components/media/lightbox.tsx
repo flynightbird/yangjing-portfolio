@@ -1,7 +1,14 @@
 'use client';
 
 import { ArrowLeft, ArrowRight, Maximize2, X } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import { createPortal } from 'react-dom';
 
 import styles from './lightbox.module.css';
@@ -38,6 +45,17 @@ const focusableSelector = [
   'textarea:not([disabled])',
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
+
+const isVisibleFocusable = (element: HTMLElement) => {
+  for (let current: HTMLElement | null = element; current; current = current.parentElement) {
+    const { display, visibility } = window.getComputedStyle(current);
+    if (display === 'none' || visibility === 'hidden' || visibility === 'collapse') {
+      return false;
+    }
+  }
+
+  return true;
+};
 
 export function Lightbox({
   src,
@@ -77,6 +95,7 @@ export function Lightbox({
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousOverflowRef = useRef('');
   const activeIndexRef = useRef(0);
+  const dialogTitleId = useId();
   const activeMedia = media[Math.min(activeIndex, media.length - 1)];
 
   const closeDialog = useCallback(() => {
@@ -140,7 +159,8 @@ export function Lightbox({
         ).filter(
           (element) =>
             !element.hasAttribute('hidden') &&
-            element.getAttribute('aria-hidden') !== 'true',
+            element.getAttribute('aria-hidden') !== 'true' &&
+            isVisibleFocusable(element),
         );
         const first = focusable[0];
         const last = focusable.at(-1);
@@ -198,7 +218,7 @@ export function Lightbox({
               className={styles.backdrop}
               role="dialog"
               aria-modal="true"
-              aria-label={dialogLabel}
+              aria-labelledby={dialogTitleId}
               tabIndex={-1}
               onMouseDown={(event) => {
                 if (event.target === event.currentTarget) {
@@ -216,36 +236,41 @@ export function Lightbox({
                 >
                   <X aria-hidden="true" size={24} />
                 </button>
-                {isGallery ? (
-                  <div className={styles.galleryHeader}>
-                    <span
-                      className={styles.galleryCounter}
-                      aria-label={resolvedPositionLabel}
-                    >
-                      {`${String(activeIndex + 1).padStart(2, '0')} / ${String(media.length).padStart(2, '0')}`}
-                    </span>
-                    <div className={styles.galleryControls}>
-                      <button
-                        className={styles.galleryControl}
-                        type="button"
-                        aria-label={resolvedPreviousLabel}
-                        disabled={activeIndex === 0}
-                        onClick={() => moveToIndex(activeIndex - 1)}
+                <div className={styles.galleryHeader}>
+                  <h2 className={styles.galleryTitle} id={dialogTitleId}>
+                    {dialogLabel}
+                  </h2>
+                  {isGallery ? (
+                    <div className={styles.galleryMeta}>
+                      <span
+                        className={styles.galleryCounter}
+                        aria-label={resolvedPositionLabel}
                       >
-                        <ArrowLeft aria-hidden="true" size={20} />
-                      </button>
-                      <button
-                        className={styles.galleryControl}
-                        type="button"
-                        aria-label={resolvedNextLabel}
-                        disabled={activeIndex === media.length - 1}
-                        onClick={() => moveToIndex(activeIndex + 1)}
-                      >
-                        <ArrowRight aria-hidden="true" size={20} />
-                      </button>
+                        {`${String(activeIndex + 1).padStart(2, '0')} / ${String(media.length).padStart(2, '0')}`}
+                      </span>
+                      <div className={styles.galleryControls}>
+                        <button
+                          className={styles.galleryControl}
+                          type="button"
+                          aria-label={resolvedPreviousLabel}
+                          disabled={activeIndex === 0}
+                          onClick={() => moveToIndex(activeIndex - 1)}
+                        >
+                          <ArrowLeft aria-hidden="true" size={20} />
+                        </button>
+                        <button
+                          className={styles.galleryControl}
+                          type="button"
+                          aria-label={resolvedNextLabel}
+                          disabled={activeIndex === media.length - 1}
+                          onClick={() => moveToIndex(activeIndex + 1)}
+                        >
+                          <ArrowRight aria-hidden="true" size={20} />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ) : null}
+                  ) : null}
+                </div>
                 <div className={styles.gallery} data-lightbox-gallery>
                   <div className={styles.desktopGallery} data-gallery-desktop>
                     {failedSources.has(activeMedia.src) ? (

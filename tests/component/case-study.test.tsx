@@ -173,6 +173,7 @@ describe('Lightbox', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open gallery' }));
 
+    expect(screen.getByText('Archive gallery')).toBeVisible();
     expect(screen.getByText('01 / 02')).toHaveAccessibleName('Gallery position');
     expect(screen.getByRole('button', { name: 'Previous image' })).toBeDisabled();
 
@@ -211,6 +212,38 @@ describe('Lightbox', () => {
     expect(desktopGallery).toHaveTextContent('Image unavailable');
     expect(screen.getByRole('button', { name: 'Close gallery' })).toBeVisible();
     expect(screen.getByRole('button', { name: 'Next image' })).toBeVisible();
+  });
+
+  it('keeps focus inside a gallery dialog when its pager controls are visually hidden', async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <button type="button">Background action</button>
+        <Lightbox
+          src={gallery[0].src}
+          width={gallery[0].width}
+          height={gallery[0].height}
+          alt={gallery[0].alt}
+          gallery={gallery}
+          triggerLabel="Open focus gallery"
+          dialogLabel="Focus gallery"
+          closeLabel="Close gallery"
+          previousLabel="Previous image"
+          nextLabel="Next image"
+        />
+      </>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Open focus gallery' }));
+    const next = screen.getByRole('button', { name: 'Next image' });
+    next.style.display = 'none';
+
+    const close = screen.getByRole('button', { name: 'Close gallery' });
+    expect(close).toHaveFocus();
+
+    await user.tab();
+    expect(close).toHaveFocus();
+    expect(screen.getByRole('button', { name: 'Background action' })).not.toHaveFocus();
   });
 
   it('closes on Escape, returns focus, and restores the exact body overflow', async () => {

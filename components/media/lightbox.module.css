@@ -56,8 +56,9 @@
 .surface {
   position: relative;
   display: grid;
+  box-sizing: border-box;
   width: min(96vw, 96rem);
-  max-height: 94dvh;
+  max-height: calc(100dvh - var(--space-4) - var(--space-4));
   gap: var(--space-3);
   place-items: center;
   padding: 3.5rem var(--space-4) var(--space-4);
@@ -66,12 +67,28 @@
 }
 
 .galleryHeader {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   width: 100%;
   min-height: 44px;
   align-items: center;
-  justify-content: space-between;
+  gap: var(--space-3);
   padding-inline-end: 52px;
+}
+
+.galleryTitle {
+  margin: 0;
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.galleryMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .galleryCounter {
@@ -128,7 +145,16 @@
   width: auto;
   max-width: 100%;
   height: auto;
-  max-height: calc(100dvh - 8rem);
+  max-height: calc(
+    100dvh
+    - var(--space-4)
+    - var(--space-4)
+    - 3.5rem
+    - var(--space-4)
+    - 44px
+    - var(--space-3)
+    - 2px
+  );
   object-fit: contain;
   transition: opacity var(--duration-fast) var(--ease-out);
 }
