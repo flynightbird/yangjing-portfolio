@@ -76,7 +76,6 @@ In `VisualArchive`, replace the internal/link conditional with one Lightbox:
 
 ```tsx
 <Lightbox
-  variant="archive"
   src={entry.image.src}
   width={entry.image.width}
   height={entry.image.height}
@@ -91,6 +90,8 @@ In `VisualArchive`, replace the internal/link conditional with one Lightbox:
   errorLabel={copy.imageUnavailable}
 />
 ```
+
+Task 2 adds the `variant="archive"` prop and updates this caller once the shared Lightbox API supports it.
 
 Remove the unreferenced `.archiveProjectLink` rule only if `rg` confirms it has no remaining consumers.
 
