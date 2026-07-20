@@ -665,8 +665,8 @@ test.describe('portfolio homepage framework', () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== 'desktop',
-      'Desktop gallery behavior needs the canonical wide viewport.',
+      testInfo.project.name === 'mobile',
+      'Desktop gallery behavior is hidden below the desktop gallery breakpoint.',
     );
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
@@ -698,9 +698,37 @@ test.describe('portfolio homepage framework', () => {
     const scrollBeforeOpen = await page.evaluate(() => window.scrollY);
 
     await trigger.click();
-    await expect(page.getByRole('dialog', { name: /Doudou Fox/ })).toBeVisible();
-    await expect(page.locator('[data-gallery-desktop]')).toBeVisible();
+    const dialog = page.getByRole('dialog', { name: /Doudou Fox/ });
+    const desktopGallery = page.locator('[data-gallery-desktop]');
+    const mobileGallery = page.locator('[data-gallery-mobile]');
+    await expect(dialog).toBeVisible();
+    await expect(desktopGallery).toBeVisible();
+    await expect(mobileGallery).toBeHidden();
+    await expect(desktopGallery.locator('img')).toHaveCount(1);
     await expect(page.getByText('01 / 07', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Previous gallery image' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Next gallery image' })).toBeVisible();
+
+    if (testInfo.project.name === 'tablet') {
+      const viewport = page.viewportSize();
+      if (!viewport) throw new Error('Missing tablet viewport');
+      const [surfaceBox, mediaBox] = await Promise.all([
+        dialog.locator(':scope > div').boundingBox(),
+        desktopGallery.locator('img').boundingBox(),
+      ]);
+      expect(surfaceBox).not.toBeNull();
+      expect(mediaBox).not.toBeNull();
+      for (const box of [surfaceBox, mediaBox]) {
+        expect(box?.x ?? Number.NEGATIVE_INFINITY).toBeGreaterThanOrEqual(-1);
+        expect(box?.y ?? Number.NEGATIVE_INFINITY).toBeGreaterThanOrEqual(-1);
+        expect((box?.x ?? Number.POSITIVE_INFINITY) + (box?.width ?? 0)).toBeLessThanOrEqual(
+          viewport.width + 1,
+        );
+        expect((box?.y ?? Number.POSITIVE_INFINITY) + (box?.height ?? 0)).toBeLessThanOrEqual(
+          viewport.height + 1,
+        );
+      }
+    }
 
     await page.keyboard.press('ArrowRight');
     await expect(page.getByText('02 / 07', { exact: true })).toBeVisible();
@@ -739,6 +767,13 @@ test.describe('portfolio homepage framework', () => {
     await expect(page.locator('[data-gallery-desktop]')).toBeHidden();
     const mobileImages = mobileGallery.locator('img');
     await expect(mobileImages).toHaveCount(4);
+    await expect
+      .poll(() => mobileImages.evaluateAll((images) => (
+        images.every(
+          (image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0,
+        )
+      )))
+      .toBe(true);
     await expect
       .poll(() => mobileImages.evaluateAll((images) => (
         images.every((image) => image.getBoundingClientRect().height > 0)
