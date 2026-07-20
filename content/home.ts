@@ -336,8 +336,8 @@ export const archiveProjects = [
         width: 2880,
         height: 1620,
         alt: {
-          en: 'Doudou Fox task entry and pause interfaces',
-          zh: '豆豆狐任务入口与暂停界面',
+          en: 'Doudou Fox task entry and challenge-ended stop state',
+          zh: '豆豆狐任务入口与挑战结束状态',
         },
       },
       {
