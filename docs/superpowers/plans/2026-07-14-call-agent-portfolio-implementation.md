@@ -669,7 +669,7 @@ git commit -m "feat: add responsive and print layouts"
 Add to `package.json`:
 
 ```json
-"homepage": "https://yangjing0006.github.io/call-agent-portfolio/"
+"homepage": "https://flynightbird.github.io/call-agent-portfolio/"
 ```
 
 Create `vite.config.mjs`:
@@ -850,7 +850,7 @@ git push origin main
 
 - [ ] **Step 8: Verify the deployed URL**
 
-Open `https://yangjing0006.github.io/call-agent-portfolio/` with agent-browser, repeat the desktop smoke test, and verify the GitHub Pages build serves images from `/call-agent-portfolio/images/` without 404 responses.
+Open `https://flynightbird.github.io/call-agent-portfolio/` with agent-browser, repeat the desktop smoke test, and verify the GitHub Pages build serves images from `/call-agent-portfolio/images/` without 404 responses.
 
 ## Final Review Checklist
 
