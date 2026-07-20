@@ -169,6 +169,32 @@ describe('EvidenceFigure', () => {
 });
 
 describe('Lightbox', () => {
+  it('scopes the gallery stage hooks to the archive variant', async () => {
+    const user = userEvent.setup();
+    render(
+      <Lightbox
+        variant="archive"
+        src={gallery[0].src}
+        width={gallery[0].width}
+        height={gallery[0].height}
+        alt={gallery[0].alt}
+        gallery={gallery}
+        triggerLabel="Open archive stage"
+        dialogLabel="Archive stage"
+        closeLabel="Close archive stage"
+        previousLabel="Previous image"
+        nextLabel="Next image"
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Open archive stage' }));
+
+    const dialog = screen.getByRole('dialog', { name: 'Archive stage' });
+    expect(dialog).toHaveAttribute('data-lightbox-variant', 'archive');
+    expect(dialog.querySelector('[data-gallery-stage="true"]')).toBeVisible();
+    expect(dialog.querySelector('[data-lightbox-rail]')).toBeVisible();
+  });
+
   it('supports ordered gallery navigation with a localized position label', async () => {
     const user = userEvent.setup();
     render(
@@ -190,6 +216,9 @@ describe('Lightbox', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open gallery' }));
 
+    const dialog = screen.getByRole('dialog', { name: 'Archive gallery' });
+    expect(dialog).toHaveAttribute('data-lightbox-variant', 'default');
+    expect(dialog.querySelector('[data-lightbox-rail]')).not.toBeInTheDocument();
     expect(screen.getByText('Archive gallery')).toBeVisible();
     const firstPosition = screen.getByText('01 / 02');
     expect(firstPosition).toHaveAccessibleName('Gallery position: 01 / 02');
@@ -202,7 +231,7 @@ describe('Lightbox', () => {
     expect(screen.getByText('02 / 02')).toHaveAccessibleName('Gallery position: 02 / 02');
     expect(screen.getByRole('button', { name: 'Next image' })).toBeDisabled();
 
-    screen.getByRole('dialog', { name: 'Archive gallery' }).focus();
+    dialog.focus();
     await user.keyboard('{ArrowLeft}');
     expect(screen.getByText('01 / 02')).toBeVisible();
   });

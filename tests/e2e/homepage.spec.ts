@@ -674,6 +674,19 @@ test.describe('portfolio homepage framework', () => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
     const archive = page.locator('[data-archive-carousel]');
+    const alibabaTrigger = archive.getByRole('button', {
+      name: 'Open project image: Tangping',
+    });
+    const pathnameBeforeOpen = new URL(page.url()).pathname;
+    await alibabaTrigger.scrollIntoViewIfNeeded();
+    await alibabaTrigger.click();
+    const alibabaDialog = page.getByRole('dialog', { name: /Tangping/ });
+    await expect(alibabaDialog).toBeVisible();
+    await expect(alibabaDialog).toHaveAttribute('data-lightbox-variant', 'archive');
+    expect(new URL(page.url()).pathname).toBe(pathnameBeforeOpen);
+    await page.getByRole('button', { name: 'Close image' }).click();
+    await expect(alibabaDialog).toHaveCount(0);
+
     const trigger = archive.getByRole('button', {
       name: 'Open project image: Doudou Fox',
     });
@@ -705,12 +718,29 @@ test.describe('portfolio homepage framework', () => {
     const desktopGallery = page.locator('[data-gallery-desktop]');
     const mobileGallery = page.locator('[data-gallery-mobile]');
     await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAttribute('data-lightbox-variant', 'archive');
+    await expect(dialog.locator('[data-gallery-stage="true"]')).toHaveCSS(
+      'border-radius',
+      '24px',
+    );
+    await expect(dialog.locator('[data-lightbox-rail]')).toBeVisible();
     await expect(desktopGallery).toBeVisible();
     await expect(mobileGallery).toBeHidden();
     await expect(desktopGallery.locator('img')).toHaveCount(1);
     await expect(page.getByText('01 / 07', { exact: true })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Previous gallery image' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Next gallery image' })).toBeVisible();
+    await expect(desktopGallery.locator('img')).toHaveCSS('border-radius', '18px');
+    const previous = page.getByRole('button', { name: 'Previous gallery image' });
+    const next = page.getByRole('button', { name: 'Next gallery image' });
+    await expect(previous).toBeVisible();
+    await expect(next).toBeVisible();
+    await expect(next).toHaveCSS('border-radius', '999px');
+    await next.hover();
+    await expect(next).toHaveCSS('background-color', 'rgb(244, 244, 241)');
+    await expect(next).toHaveCSS('color', 'rgb(13, 13, 15)');
+    await page.mouse.move(0, 0);
+    await next.focus();
+    await expect(next).toHaveCSS('background-color', 'rgb(244, 244, 241)');
+    await expect(next).toHaveCSS('color', 'rgb(13, 13, 15)');
 
     if (testInfo.project.name === 'tablet') {
       const viewport = page.viewportSize();
@@ -755,6 +785,9 @@ test.describe('portfolio homepage framework', () => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
     const archive = page.locator('[data-archive-carousel]');
+    await expect(
+      archive.getByRole('button', { name: /^Open project image:/ }),
+    ).toHaveCount(4);
     const trigger = archive.getByRole('button', {
       name: 'Open project image: MR CHONG',
     });
@@ -766,10 +799,18 @@ test.describe('portfolio homepage framework', () => {
     const mobileGallery = page.locator('[data-gallery-mobile]');
     const close = page.getByRole('button', { name: 'Close image' });
     await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAttribute('data-lightbox-variant', 'archive');
     await expect(mobileGallery).toBeVisible();
     await expect(page.locator('[data-gallery-desktop]')).toBeHidden();
+    await expect(
+      page.getByRole('button', { name: 'Previous gallery image' }),
+    ).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Next gallery image' })).toBeHidden();
     const mobileImages = mobileGallery.locator('img');
     await expect(mobileImages).toHaveCount(4);
+    for (let index = 0; index < 4; index += 1) {
+      await expect(mobileImages.nth(index)).toHaveCSS('border-radius', '20px');
+    }
     await expect
       .poll(() => page.evaluate(() => {
         const images = Array.from(

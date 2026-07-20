@@ -278,6 +278,7 @@ export function VisualArchive({
               >
                 <div className={styles.archiveStage}>
                   <Lightbox
+                    variant="archive"
                     src={entry.image.src}
                     width={entry.image.width}
                     height={entry.image.height}

@@ -434,6 +434,10 @@ describe('VisualArchive', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Open project image: Doudou Fox' }));
 
+    expect(screen.getByRole('dialog', { name: /Doudou Fox/ })).toHaveAttribute(
+      'data-lightbox-variant',
+      'archive',
+    );
     expect(screen.getByText('01 / 07')).toBeVisible();
     expect(
       screen.getByRole('button', { name: 'Previous gallery image' }),

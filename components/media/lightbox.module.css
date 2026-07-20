@@ -198,6 +198,118 @@
   color: var(--color-signal);
 }
 
+.archiveBackdrop {
+  padding: 20px;
+  background: rgba(8, 8, 10, 0.82);
+  backdrop-filter: blur(18px);
+}
+
+.archiveSurface {
+  width: min(94vw, 100rem);
+  max-height: calc(100dvh - 40px);
+  grid-template-columns: minmax(0, 1fr) clamp(6rem, 7vw, 7rem);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 0;
+  place-items: stretch;
+  padding: 10px 0 10px 10px;
+  overflow: hidden;
+  border-color: rgba(244, 244, 241, 0.14);
+  border-radius: 24px;
+  background: #171719;
+}
+
+.archiveSurface .gallery {
+  display: grid;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #0d0d0f;
+}
+
+.archiveSurface .desktopGallery {
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #0d0d0f;
+}
+
+.archiveSurface .desktopMedia {
+  max-height: calc(100dvh - 62px);
+  border-radius: 18px;
+}
+
+.archiveRail {
+  display: grid;
+  min-width: 0;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  align-items: center;
+  justify-items: center;
+  padding: 0 1px;
+}
+
+.archiveRail .close {
+  position: relative;
+  inset: auto;
+  border-color: rgba(244, 244, 241, 0.24);
+  border-radius: 999px;
+  color: rgba(244, 244, 241, 0.72);
+}
+
+.archiveRail .galleryTitle {
+  max-height: 100%;
+  overflow: hidden;
+  color: rgba(244, 244, 241, 0.78);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.archiveRail .galleryMeta {
+  display: grid;
+  justify-items: center;
+  gap: 0.625rem;
+}
+
+.archiveRail .galleryCounter {
+  color: rgba(244, 244, 241, 0.62);
+}
+
+.archiveRail .galleryControls {
+  gap: 6px;
+}
+
+.archiveSurface .galleryControl {
+  border-color: rgba(244, 244, 241, 0.24);
+  border-radius: 999px;
+  color: rgba(244, 244, 241, 0.58);
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.archiveSurface .galleryControl:hover:not(:disabled),
+.archiveSurface .galleryControl:focus-visible:not(:disabled) {
+  border-color: #f4f4f1;
+  background: #f4f4f1;
+  color: #0d0d0f;
+}
+
+.archiveSurface .galleryControl:focus-visible:not(:disabled) {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 3px;
+}
+
+.archiveSurface .galleryControl:disabled {
+  border-color: rgba(244, 244, 241, 0.14);
+  background: transparent;
+  color: rgba(244, 244, 241, 0.38);
+  opacity: 1;
+}
+
 @media (max-width: 47.99rem) {
   .backdrop {
     display: block;
@@ -238,6 +350,101 @@
     inset-inline-end: max(var(--space-2), env(safe-area-inset-right));
     z-index: 1;
     background: rgba(16, 17, 15, 0.94);
+  }
+
+  .archiveBackdrop {
+    padding: 0;
+    background: rgba(8, 8, 10, 0.94);
+  }
+
+  .archiveSurface {
+    width: calc(100% - 16px);
+    min-height: 100dvh;
+    margin-inline: 8px;
+    grid-template-areas:
+      "rail"
+      "gallery";
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 8px;
+    padding: 0 0 8px;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: #0d0d0f;
+  }
+
+  .archiveSurface .gallery {
+    grid-area: gallery;
+    overflow: visible;
+    border-radius: 20px;
+  }
+
+  .archiveRail {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 2;
+    display: grid;
+    min-height: calc(44px + max(8px, env(safe-area-inset-top)) + 8px);
+    grid-area: rail;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-rows: auto;
+    gap: 8px;
+    padding:
+      max(8px, env(safe-area-inset-top))
+      max(0px, env(safe-area-inset-right))
+      8px
+      max(0px, env(safe-area-inset-left));
+    border-bottom: 1px solid rgba(244, 244, 241, 0.14);
+    background: rgba(23, 23, 25, 0.94);
+    backdrop-filter: blur(18px);
+  }
+
+  .archiveRail .close {
+    position: relative;
+    inset: auto;
+    grid-column: 3;
+    grid-row: 1;
+    background: transparent;
+  }
+
+  .archiveRail .galleryTitle {
+    max-width: 100%;
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+    overflow: hidden;
+    color: #f4f4f1;
+    font-size: 0.75rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    writing-mode: initial;
+    transform: none;
+  }
+
+  .archiveRail .galleryMeta {
+    display: grid;
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .archiveSurface .galleryCounter {
+    display: inline;
+  }
+
+  .archiveSurface .galleryControls {
+    display: none;
+  }
+
+  .archiveSurface .mobileGallery {
+    gap: 8px;
+  }
+
+  .archiveSurface .mobileMedia,
+  .archiveSurface .mediaError {
+    max-width: 100%;
+    border-radius: 20px;
+    background: #171719;
   }
 }
 

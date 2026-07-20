@@ -1,5 +1,7 @@
 'use client';
 
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
 import { ArrowLeft, ArrowRight, Maximize2, X } from 'lucide-react';
 import {
   useCallback,
@@ -20,7 +22,10 @@ export interface LightboxMedia {
   readonly alt: string;
 }
 
+export type LightboxVariant = 'default' | 'archive';
+
 interface LightboxProps {
+  readonly variant?: LightboxVariant;
   readonly src: string;
   readonly width: number;
   readonly height: number;
@@ -37,6 +42,7 @@ interface LightboxProps {
 }
 
 const subscribeToHydration = () => () => {};
+const reducedMotionQuery = '(prefers-reduced-motion: reduce)';
 const focusableSelector = [
   'a[href]',
   'button:not([disabled])',
@@ -68,6 +74,7 @@ const isEditableTarget = (target: EventTarget | null) => {
 };
 
 export function Lightbox({
+  variant = 'default',
   src,
   width,
   height,
@@ -104,6 +111,11 @@ export function Lightbox({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const surfaceRef = useRef<HTMLDivElement>(null);
+  const railRef = useRef<HTMLElement>(null);
+  const openingTimelineRef = useRef<gsap.core.Timeline | null>(null);
+  const closingTimelineRef = useRef<gsap.core.Timeline | null>(null);
+  const closingRef = useRef(false);
   const previousOverflowRef = useRef('');
   const previousScrollPositionRef = useRef({ left: 0, top: 0 });
   const activeIndexRef = useRef(0);
@@ -119,11 +131,63 @@ export function Lightbox({
   const activeMedia = media[clampedActiveIndex];
   const position = `${String(clampedActiveIndex + 1).padStart(2, '0')} / ${String(media.length).padStart(2, '0')}`;
 
-  const closeDialog = useCallback(() => {
+  const finishClosing = useCallback(() => {
+    openingTimelineRef.current?.kill();
+    closingTimelineRef.current?.kill();
+    openingTimelineRef.current = null;
+    closingTimelineRef.current = null;
+    closingRef.current = false;
     activeIndexRef.current = 0;
     setActiveIndex(0);
     setOpen(false);
   }, []);
+
+  const closeDialog = useCallback(() => {
+    const reduceMotion =
+      typeof window.matchMedia !== 'function'
+      || window.matchMedia(reducedMotionQuery).matches;
+
+    if (variant !== 'archive') {
+      finishClosing();
+      return;
+    }
+
+    if (reduceMotion) {
+      finishClosing();
+      return;
+    }
+
+    if (closingRef.current) return;
+    closingRef.current = true;
+    openingTimelineRef.current?.kill();
+
+    const railChildren = railRef.current
+      ? Array.from(railRef.current.children)
+      : [];
+    const timeline = gsap.timeline({ onComplete: finishClosing });
+    closingTimelineRef.current = timeline;
+    if (railChildren.length) {
+      timeline.to(railChildren, {
+        opacity: 0,
+        y: 6,
+        duration: 0.1,
+        stagger: { each: 0.02, from: 'end' },
+      }, 0);
+    }
+    timeline
+      .to(surfaceRef.current, {
+        opacity: 0,
+        y: 12,
+        scale: 0.99,
+        duration: 0.18,
+        ease: 'power2.in',
+      }, 0)
+      .to(dialogRef.current, {
+        opacity: 0,
+        duration: 0.18,
+        ease: 'power1.in',
+      }, 0);
+  }, [finishClosing, variant]);
 
   const moveToIndex = useCallback((index: number) => {
     const nextIndex = Math.max(0, Math.min(index, media.length - 1));
@@ -161,7 +225,10 @@ export function Lightbox({
       returnFocusTo?.focus({ preventScroll: true });
       const { left, top } = previousScrollPositionRef.current;
       if (window.scrollX !== left || window.scrollY !== top) {
+        const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+        document.documentElement.style.scrollBehavior = 'auto';
         window.scrollTo(left, top);
+        document.documentElement.style.scrollBehavior = previousScrollBehavior;
       }
     };
   }, [open]);
@@ -242,6 +309,147 @@ export function Lightbox({
     };
   }, [closeDialog, isGallery, media.length, moveToIndex, open]);
 
+  useGSAP(
+    () => {
+      if (
+        !open
+        || variant !== 'archive'
+        || typeof window.matchMedia !== 'function'
+        || window.matchMedia(reducedMotionQuery).matches
+      ) {
+        return;
+      }
+
+      closingRef.current = false;
+      const railChildren = railRef.current
+        ? Array.from(railRef.current.children)
+        : [];
+      const timeline = gsap.timeline();
+      openingTimelineRef.current = timeline;
+      timeline
+        .from(dialogRef.current, {
+          opacity: 0,
+          duration: 0.22,
+          ease: 'power1.out',
+        })
+        .from(surfaceRef.current, {
+          opacity: 0,
+          y: 16,
+          scale: 0.985,
+          duration: 0.42,
+          ease: 'power3.out',
+        }, 0.04);
+      if (railChildren.length) {
+        timeline.from(railChildren, {
+          opacity: 0,
+          y: 8,
+          stagger: 0.04,
+          duration: 0.18,
+        }, 0.24);
+      }
+
+      return () => {
+        timeline.kill();
+        closingTimelineRef.current?.kill();
+        closingTimelineRef.current = null;
+        closingRef.current = false;
+        if (openingTimelineRef.current === timeline) {
+          openingTimelineRef.current = null;
+        }
+      };
+    },
+    { dependencies: [open, variant], revertOnUpdate: true },
+  );
+
+  const closeButton = (
+    <button
+      ref={closeRef}
+      className={styles.close}
+      type="button"
+      aria-label={closeLabel}
+      onClick={closeDialog}
+    >
+      <X aria-hidden="true" size={24} />
+    </button>
+  );
+  const galleryMeta = isGallery ? (
+    <div className={styles.galleryMeta}>
+      <span
+        className={styles.galleryCounter}
+        role="status"
+        aria-label={`${resolvedPositionLabel}: ${position}`}
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {position}
+      </span>
+      <div className={styles.galleryControls}>
+        <button
+          className={styles.galleryControl}
+          type="button"
+          aria-label={resolvedPreviousLabel}
+          disabled={clampedActiveIndex === 0}
+          onClick={() => moveToIndex(clampedActiveIndex - 1)}
+        >
+          <ArrowLeft aria-hidden="true" size={20} />
+        </button>
+        <button
+          className={styles.galleryControl}
+          type="button"
+          aria-label={resolvedNextLabel}
+          disabled={clampedActiveIndex === media.length - 1}
+          onClick={() => moveToIndex(clampedActiveIndex + 1)}
+        >
+          <ArrowRight aria-hidden="true" size={20} />
+        </button>
+      </div>
+    </div>
+  ) : null;
+  const galleryContent = (
+    <div className={styles.gallery} data-lightbox-gallery>
+      <div className={styles.desktopGallery} data-gallery-desktop>
+        {failedSources.has(activeMedia.src) ? (
+          <p className={styles.mediaError} role="status">
+            {resolvedErrorLabel}
+          </p>
+        ) : (
+          // Preserve the verified evidence file and its intrinsic dimensions.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            className={styles.desktopMedia}
+            src={activeMedia.src}
+            width={activeMedia.width}
+            height={activeMedia.height}
+            alt={activeMedia.alt}
+            onError={() => markSourceAsFailed(activeMedia.src)}
+          />
+        )}
+      </div>
+      <div className={styles.mobileGallery} data-gallery-mobile>
+        {media.map((item, index) =>
+          failedSources.has(item.src) ? (
+            <p className={styles.mediaError} role="status" key={item.src}>
+              {resolvedErrorLabel}
+            </p>
+          ) : (
+            // Preserve the verified evidence file and its intrinsic dimensions.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              className={styles.mobileMedia}
+              key={item.src}
+              src={item.src}
+              width={item.width}
+              height={item.height}
+              alt={item.alt}
+              loading={index === 0 ? undefined : 'lazy'}
+              onError={() => markSourceAsFailed(item.src)}
+            />
+          ),
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <>
       <button
@@ -268,10 +476,13 @@ export function Lightbox({
         ? createPortal(
             <div
               ref={dialogRef}
-              className={styles.backdrop}
+              className={`${styles.backdrop} ${
+                variant === 'archive' ? styles.archiveBackdrop : ''
+              }`}
               role="dialog"
               aria-modal="true"
               aria-labelledby={dialogTitleId}
+              data-lightbox-variant={variant}
               tabIndex={-1}
               onMouseDown={(event) => {
                 if (event.target === event.currentTarget) {
@@ -279,96 +490,41 @@ export function Lightbox({
                 }
               }}
             >
-              <div className={styles.surface}>
-                <button
-                  ref={closeRef}
-                  className={styles.close}
-                  type="button"
-                  aria-label={closeLabel}
-                  onClick={closeDialog}
-                >
-                  <X aria-hidden="true" size={24} />
-                </button>
-                <div className={styles.galleryHeader}>
-                  <h2 className={styles.galleryTitle} id={dialogTitleId}>
-                    {dialogLabel}
-                  </h2>
-                  {isGallery ? (
-                    <div className={styles.galleryMeta}>
-                      <span
-                        className={styles.galleryCounter}
-                        role="status"
-                        aria-label={`${resolvedPositionLabel}: ${position}`}
-                        aria-live="polite"
-                        aria-atomic="true"
-                      >
-                        {position}
-                      </span>
-                      <div className={styles.galleryControls}>
-                        <button
-                          className={styles.galleryControl}
-                          type="button"
-                          aria-label={resolvedPreviousLabel}
-                          disabled={clampedActiveIndex === 0}
-                          onClick={() => moveToIndex(clampedActiveIndex - 1)}
-                        >
-                          <ArrowLeft aria-hidden="true" size={20} />
-                        </button>
-                        <button
-                          className={styles.galleryControl}
-                          type="button"
-                          aria-label={resolvedNextLabel}
-                          disabled={clampedActiveIndex === media.length - 1}
-                          onClick={() => moveToIndex(clampedActiveIndex + 1)}
-                        >
-                          <ArrowRight aria-hidden="true" size={20} />
-                        </button>
-                      </div>
+              <div
+                ref={surfaceRef}
+                className={`${styles.surface} ${
+                  variant === 'archive' ? styles.archiveSurface : ''
+                }`}
+                data-gallery-stage={variant === 'archive' ? 'true' : undefined}
+              >
+                {variant === 'archive' ? (
+                  <>
+                    {galleryContent}
+                    <aside
+                      ref={railRef}
+                      className={styles.archiveRail}
+                      data-lightbox-rail
+                      aria-label={dialogLabel}
+                    >
+                      {closeButton}
+                      <h2 className={styles.galleryTitle} id={dialogTitleId}>
+                        {dialogLabel}
+                      </h2>
+                      {galleryMeta}
+                    </aside>
+                  </>
+                ) : (
+                  <>
+                    {closeButton}
+                    <div className={styles.galleryHeader}>
+                      <h2 className={styles.galleryTitle} id={dialogTitleId}>
+                        {dialogLabel}
+                      </h2>
+                      {galleryMeta}
                     </div>
-                  ) : null}
-                </div>
-                <div className={styles.gallery} data-lightbox-gallery>
-                  <div className={styles.desktopGallery} data-gallery-desktop>
-                    {failedSources.has(activeMedia.src) ? (
-                      <p className={styles.mediaError} role="status">
-                        {resolvedErrorLabel}
-                      </p>
-                    ) : (
-                      // Preserve the verified evidence file and its intrinsic dimensions.
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        className={styles.desktopMedia}
-                        src={activeMedia.src}
-                        width={activeMedia.width}
-                        height={activeMedia.height}
-                        alt={activeMedia.alt}
-                        onError={() => markSourceAsFailed(activeMedia.src)}
-                      />
-                    )}
-                  </div>
-                  <div className={styles.mobileGallery} data-gallery-mobile>
-                    {media.map((item, index) =>
-                      failedSources.has(item.src) ? (
-                        <p className={styles.mediaError} role="status" key={item.src}>
-                          {resolvedErrorLabel}
-                        </p>
-                      ) : (
-                        // Preserve the verified evidence file and its intrinsic dimensions.
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          className={styles.mobileMedia}
-                          key={item.src}
-                          src={item.src}
-                          width={item.width}
-                          height={item.height}
-                          alt={item.alt}
-                          loading={index === 0 ? undefined : 'lazy'}
-                          onError={() => markSourceAsFailed(item.src)}
-                        />
-                      ),
-                    )}
-                  </div>
-                </div>
+                    {galleryContent}
+                  </>
+                )}
               </div>
             </div>,
             document.body,
