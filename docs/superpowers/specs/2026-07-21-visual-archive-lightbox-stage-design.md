@@ -73,7 +73,7 @@ The modal must not contain the current 2px square frame language.
 - Rail width: clamp between 96px and 112px; default 104px.
 - Media uses `object-fit: contain`. No archive image may be cropped to fill the stage.
 - Close sits at the rail top. The localized title is restrained and vertical in the rail center. Counter and arrow controls sit at the bottom.
-- Rail controls stay visible at low contrast; hover and keyboard focus increase contrast.
+- Rail controls stay visible as low-contrast outlined circles. Hover and keyboard focus transition to a solid `#F4F4F1` fill with a `#0D0D0F` arrow and matching border over 180ms. Disabled controls remain low contrast and do not highlight.
 
 ## Mobile Composition
 
@@ -98,6 +98,7 @@ Closing reverses the visual hierarchy in 180ms before unmount. Image changes use
 
 - All icon controls retain localized accessible names and visible focus states.
 - Minimum target size is 44px.
+- Previous/next hover and focus states use the same solid light highlight; focus also retains a visible outer focus ring.
 - The dialog retains a semantic title even when the visible title is vertical.
 - Disabled arrow controls remain perceivable but cannot receive accidental pointer action.
 - Do not add hover-only information.
