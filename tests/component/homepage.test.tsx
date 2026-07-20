@@ -413,6 +413,48 @@ describe('VisualArchive', () => {
     ).toBeVisible();
     expect(screen.getAllByText('技能')).toHaveLength(4);
   });
+
+  it('opens the ordered Doudou Fox and MR CHONG galleries with English controls', () => {
+    const { baseElement } = render(<VisualArchive locale="en" />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open project image: Doudou Fox' }));
+
+    expect(screen.getByText('01 / 07')).toBeVisible();
+    expect(
+      screen.getByRole('button', { name: 'Previous gallery image' }),
+    ).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Next gallery image' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Close image' })).toBeVisible();
+    expect(baseElement.querySelectorAll('[data-gallery-mobile] img')).toHaveLength(7);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close image' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Open project image: MR CHONG' }));
+
+    expect(
+      screen.getByRole('status', { name: 'Gallery position: 01 / 04' }),
+    ).toHaveTextContent('01 / 04');
+    expect(baseElement.querySelectorAll('[data-gallery-mobile] img')).toHaveLength(4);
+  });
+
+  it('opens the ordered Doudou Fox and MR CHONG galleries with Chinese controls', () => {
+    const { baseElement } = render(<VisualArchive locale="zh" />);
+
+    fireEvent.click(screen.getByRole('button', { name: '打开项目图片: 豆豆狐' }));
+
+    expect(screen.getByText('01 / 07')).toBeVisible();
+    expect(screen.getByRole('button', { name: '上一张图片' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '下一张图片' })).toBeVisible();
+    expect(screen.getByRole('button', { name: '关闭图片' })).toBeVisible();
+    expect(baseElement.querySelectorAll('[data-gallery-mobile] img')).toHaveLength(7);
+
+    fireEvent.click(screen.getByRole('button', { name: '关闭图片' }));
+    fireEvent.click(screen.getByRole('button', { name: '打开项目图片: MR CHONG' }));
+
+    expect(screen.getByRole('status', { name: '画廊位置: 01 / 04' })).toHaveTextContent(
+      '01 / 04',
+    );
+    expect(baseElement.querySelectorAll('[data-gallery-mobile] img')).toHaveLength(4);
+  });
 });
 
 describe('AboutPreview', () => {

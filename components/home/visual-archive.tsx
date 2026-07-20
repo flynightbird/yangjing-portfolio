@@ -259,6 +259,12 @@ export function VisualArchive({
             const start = entry.period.start;
             const end = entry.period.end;
             const alt = entry.image.alt[locale];
+            const gallery = entry.gallery?.map((image) => ({
+              src: image.src,
+              width: image.width,
+              height: image.height,
+              alt: image.alt[locale],
+            }));
             return (
               <article
                 key={entry.key}
@@ -276,9 +282,14 @@ export function VisualArchive({
                     width={entry.image.width}
                     height={entry.image.height}
                     alt={alt}
+                    gallery={gallery}
                     triggerLabel={`${copy.openImage}: ${primaryTitle}`}
                     dialogLabel={`${copy.imageDialog}: ${primaryTitle}`}
                     closeLabel={copy.closeImage}
+                    previousLabel={copy.previousImage}
+                    nextLabel={copy.nextImage}
+                    positionLabel={copy.galleryPosition}
+                    errorLabel={copy.imageUnavailable}
                   />
                   <div className={styles.archiveCoverIndex}>
                     <span>{company}</span>
