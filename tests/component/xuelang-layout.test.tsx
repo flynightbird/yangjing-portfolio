@@ -93,8 +93,10 @@ describe('XuelangLayout', () => {
       'aria-current',
       'location',
     );
-    expect(container.querySelector('[data-chapter-variant="xuelang"]')).toBeInTheDocument();
-    expect(container.querySelector('[data-chapter-index="00"]')).toHaveTextContent('00');
+    expect(container.querySelector('[data-chapter-variant="default"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-chapter-index="01"]')).toHaveTextContent('01');
+    expect(container.querySelector('[data-chapter-variant="xuelang"]')).not.toBeInTheDocument();
+    expect(container.querySelector('[data-chapter-index="00"]')).not.toBeInTheDocument();
     expect(container.querySelectorAll('[data-chapter-index]')).toHaveLength(8);
     expect(screen.queryByRole('navigation', { name: projectNav })).not.toBeInTheDocument();
   });

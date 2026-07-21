@@ -92,8 +92,6 @@ export function XuelangLayout({
               chapters={meta.chapters ?? []}
               locale={locale}
               compactAt="wide"
-              indexStart={0}
-              variant="xuelang"
               surface="light"
             />
           </aside>
