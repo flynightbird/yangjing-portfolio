@@ -102,7 +102,19 @@ Created and verified at `/Users/admin/Documents/作品集-yangjing/.migration-ba
 
 ## Extracted Branches
 
-Not created yet.
+All project branches were created from shared integration commit `86f65b16620015635708cf96181253e80e0b6d54`.
+
+| Branch | Commit | Scope | Focused verification |
+| --- | --- | --- | --- |
+| `codex/shared/integration` | `86f65b16620015635708cf96181253e80e0b6d54` | Shared typography, header, chapter navigation, case-detail surfaces, and static shell assertions | 40/40 focused tests passed; ESLint completed with 0 errors and 3 existing `<img>` warnings |
+| `codex/case/call-agent-refresh` | `0125fba` | Dedicated bilingual Call Agent layout, image/video evidence, preparation and validation contracts | 110/110 component/unit tests and 24/24 E2E tests passed |
+| `codex/case/xuelang-refresh` | `9322917` | Removes case PDF entry and uses the shared light chapter treatment | 3/3 component tests and 9/9 applicable E2E tests passed; 6 viewport-inapplicable tests skipped |
+| `codex/case/meeting-assets` | `a0b27f5` | Shared light chapter treatment plus `focus-vs-pin` source/public evidence | 2/2 focused component tests passed |
+| `codex/case/convo-ai-build` | `93d173f` | Preserves the evidence-labelled Chinese case blueprint | Documentation only; publication gate remains open |
+
+The first parallel Vitest attempt produced only resource-contention timeouts. Serial reruns passed. Call Agent's initial Playwright server probe timed out before assertions because the first route compilation took 55.08 seconds in addition to server startup; the same server, once warmed, completed all 24 tests successfully.
+
+Excluded from product branches: Call Agent PDF generation, the Call Agent PDF, all user-facing Call Agent PDF actions, temporary captures, logs, caches, `.codex-analysis/`, `.codex/`, `.playwright-cli/`, `output/`, `tmp/`, and `tsconfig.tsbuildinfo`. These remain recoverable in the verified external backup.
 
 ## Unique-Commit Audit
 
@@ -110,7 +122,7 @@ Not started.
 
 ## Verification
 
-Baseline recorded above. Integration verification has not started.
+Baseline and focused extraction verification are recorded above. Canonical integration verification has not started.
 
 ## Cleanup
 
