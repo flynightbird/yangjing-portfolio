@@ -43,7 +43,7 @@ it('presents product proof, approved facts, and chapter navigation', () => {
   expect(screen.getByRole('navigation', { name: 'Case study chapters' })).toBeVisible();
 });
 
-it('prevents forced word breaks and gives chapter links explicit light-theme ink', () => {
+it('prevents forced word breaks and uses the shared chapter treatment', () => {
   const layoutStyles = readFileSync(
     'components/meeting/meeting-layout.module.css',
     'utf8',
@@ -56,6 +56,8 @@ it('prevents forced word breaks and gives chapter links explicit light-theme ink
   expect(layoutStyles).toMatch(/word-break:\s*normal/);
   expect(layoutStyles).toMatch(/overflow-wrap:\s*break-word/);
   expect(layoutStyles).toMatch(/text-wrap:\s*balance/);
-  expect(chapterStyles).toMatch(/--chapter-link-color:\s*#[0-9a-f]{6}/i);
-  expect(chapterStyles).toMatch(/color:\s*var\(--chapter-link-color\)/);
+  expect(chapterStyles).toMatch(
+    /--chapter-accent:\s*var\(--color-iris-deep\)/,
+  );
+  expect(chapterStyles).toMatch(/opacity:\s*0\.48/);
 });

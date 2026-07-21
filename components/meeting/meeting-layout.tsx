@@ -44,7 +44,7 @@ export function MeetingLayout({
     <div className={styles.root} data-meeting-case>
       <div className={styles.frame}>
         <aside className={styles.rail}>
-          <ChapterNav chapters={meta.chapters ?? []} locale={locale} compactAt="wide" />
+          <ChapterNav chapters={meta.chapters ?? []} locale={locale} compactAt="wide" surface="light" />
         </aside>
         <article className={styles.case} data-case-study>
           <header className={styles.hero}>
