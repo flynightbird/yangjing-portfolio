@@ -85,6 +85,8 @@ test.describe('homepage Footer reveal', () => {
           arrowHeight: arrow.getBoundingClientRect().height,
           copyIconWidth: copyIcon.getBoundingClientRect().width,
           arrowIconWidth: arrowIcon.getBoundingClientRect().width,
+          copyTranslate: getComputedStyle(copy).translate,
+          arrowTranslate: getComputedStyle(arrow).translate,
           footerCanvasCount: element.querySelectorAll('[data-liquid-field="footer"]').length,
         };
       });
@@ -105,6 +107,8 @@ test.describe('homepage Footer reveal', () => {
       );
       expect(visualContract.copyIconWidth).toBe(16);
       expect(visualContract.arrowIconWidth).toBe(16);
+      expect(visualContract.copyTranslate).toBe('0px 3px');
+      expect(visualContract.arrowTranslate).toBe('0px 3px');
 
       if (testInfo.project.name === 'desktop') {
         const spacing = await footer.evaluate((element) => {
