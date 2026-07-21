@@ -118,7 +118,32 @@ Excluded from product branches: Call Agent PDF generation, the Call Agent PDF, a
 
 ## Unique-Commit Audit
 
-Not started.
+Audit material is preserved at `/Users/admin/Documents/作品集-yangjing/.migration-backups/2026-07-21/audit/`. Counts matched the plan: old `main` 1, `codex/hero-redesign` 3, and `codex/meeting-product-showcase` 16.
+
+| Commit | Decision | Evidence |
+| --- | --- | --- |
+| `005bba3b3f70c6738c76fd871aa909648f4b8254` | `superseded` | `git cherry` marks the account-migration patch equivalent (`-`); both affected documents already reference `flynightbird`. |
+| `3af11ddde779a17a2c5f55cb2883530480f8beb9` | `superseded` | Interactive Hero behavior is present and further evolved by integrated commits `ac8d80f`, `ddc8feb`, and later Homepage refinements. |
+| `139aced6c14eb5d66da73c7376369acf69eabcc1` | `superseded` | The introduction components remain in the integrated Homepage and were further revised by `ac8d80f` and `ddc8feb`; the standalone old E2E file was intentionally folded into current Homepage coverage. |
+| `1143aa1e646bdb82e55d574284a11306db518aea` | `superseded` | Current `flagship-projects.tsx`, localized content, media stages, and CTA coverage contain later Homepage work including `ddc8feb`, `8393c1b`, `876d7ca`, `c54ce8c`, and `1000ec2`. |
+| `1973da4349f289ec1c5886c0bab5dc3e86066324` | `reject` | Defines the Meeting showcase redesign that the user explicitly instructed the migration to ignore. |
+| `a9cbea6af9a34a8451f3f3ecac822413728802b7` | `reject` | Plans the explicitly rejected Meeting showcase redesign rather than the retained `790fc8d` case. |
+| `5e5aa4e6087d3c7fdb79fe73da3945f685aadf5d` | `reject` | Tests the rejected showcase contract and would replace current Meeting expectations. |
+| `fa04d302564c9a4747b4068836440c452cacf42c` | `reject` | Extends the rejected showcase localization contract. |
+| `e20727a083ebf68245a121a8674c3c506a03ba09` | `reject` | Adds showcase-only components absent from the retained Meeting architecture. |
+| `24fc1a99d856bb752d2ad6557ae68cbcaa386358` | `reject` | Rewrites the retained bilingual Meeting narrative into the rejected showcase story. |
+| `c1621e6d19e0027046498d46ed3d3f40bc0627f8` | `reject` | Follow-up copy contract belongs to the rejected showcase narrative. |
+| `2bd76bb37b03472bf7520d67710af6e32e6b0e0d` | `reject` | Follow-up evidence wording belongs to the rejected showcase narrative. |
+| `f0eb34ec845ef34e67c667e7bdafe3b17b7549b4` | `reject` | Replaces the retained Meeting layout with the rejected product-led showcase layout. |
+| `fefd187cc75c34cc70855509ec2749cea4cbe385` | `reject` | Tunes viewport rhythm for the rejected showcase layout. |
+| `eb9a33133fa1384f5b2b0f05a5cc9804e5f8bae9` | `reject` | Constrains the rejected showcase Hero composition. |
+| `bdbbc7decdc6885c7c41ff608f539b8adeecb1de` | `reject` | Hardens edge viewports and print rules for the rejected showcase layout. |
+| `88b58c37ca41c4a6964a4e0596d81feff5e4628b` | `reject` | Restyles evidence and adds tests around the rejected showcase component family. |
+| `0faa8d188ddd7825d89e0e84397ac4fbda723dd1` | `reject` | Alters the rejected showcase matrix and its accessibility contract. |
+| `f49311c519e8f411216f051fcf81be4438a38767` | `reject` | Couples shared routing/presentation changes to the rejected showcase; current shared routing is handled by `86f65b1`. |
+| `4ed411122c8403c1d21febcde46d0582be0e757e` | `reject` | Adds geometry checks for the rejected showcase layout. |
+
+No historical commit was classified `migrate`, so no cherry-pick was applied. The retained Meeting implementation is the published `790fc8d` case plus focused branch `a0b27f5`; the rejected branch is preserved until final cleanup.
 
 ## Verification
 
