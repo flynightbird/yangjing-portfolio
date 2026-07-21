@@ -84,32 +84,79 @@
   line-height: 0.94;
 }
 
-.email {
-  display: inline-flex;
-  min-height: 3.5rem;
+.emailActions {
+  display: inline-grid;
+  max-width: 100%;
+  grid-template-columns: minmax(0, auto) 2.5rem 2.5rem;
   align-items: center;
-  gap: 0.75rem;
+  column-gap: 0.25rem;
   margin-top: clamp(2rem, 5vh, 4rem);
+}
+
+.email {
+  min-width: 0;
+  padding-block: 0.625rem;
   border-bottom: 1px solid rgba(244, 245, 242, 0.72);
   color: var(--color-paper);
   font-size: clamp(1.15rem, 2vw, 1.75rem);
+  overflow-wrap: anywhere;
   text-decoration: none;
+}
+
+.copyButton,
+.emailArrow {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--color-paper);
+  text-decoration: none;
+}
+
+.copyButton {
+  cursor: pointer;
+  transition: background-color 180ms var(--ease-out);
+}
+
+.copyButton:hover,
+.copyButton:focus-visible {
+  background: rgba(244, 245, 242, 0.12);
+}
+
+.copyButton:focus-visible,
+.emailArrow:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .emailIcon {
   display: block;
   width: 1.75rem;
   height: 1.75rem;
-  flex: 0 0 1.75rem;
-  align-self: center;
   background: currentColor;
   mask: url('/icons/remix/arrow-right-up-line.svg') center / contain no-repeat;
   transition: transform 350ms var(--ease-out);
 }
 
-.email:hover .emailIcon,
-.email:focus-visible .emailIcon {
+.emailArrow:hover .emailIcon,
+.emailArrow:focus-visible .emailIcon {
   transform: translate(0.2rem, -0.2rem);
+}
+
+.emailFeedback {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .meta {
@@ -131,6 +178,21 @@
     min-height: 42rem;
   }
 
+  .emailActions {
+    width: min(100%, 30rem);
+    grid-template-columns: minmax(0, 1fr) 2.25rem 2.25rem;
+    column-gap: 0.125rem;
+  }
+
+  .email {
+    font-size: 1rem;
+  }
+
+  .copyButton,
+  .emailArrow {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -138,6 +200,7 @@
     transform: none;
   }
 
+  .copyButton,
   .emailIcon {
     transition: none;
   }
