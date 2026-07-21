@@ -192,7 +192,19 @@ describe('Lightbox', () => {
     const dialog = screen.getByRole('dialog', { name: 'Archive stage' });
     expect(dialog).toHaveAttribute('data-lightbox-variant', 'archive');
     expect(dialog.querySelector('[data-gallery-stage="true"]')).toBeVisible();
-    expect(dialog.querySelector('[data-lightbox-rail]')).toBeVisible();
+    const rail = dialog.querySelector('[data-lightbox-rail]');
+    const canvasControls = dialog.querySelector('[data-lightbox-canvas-controls]');
+    const counter = dialog.querySelector('[data-lightbox-counter]');
+
+    expect(rail).toBeVisible();
+    expect(rail).toContainElement(counter as HTMLElement);
+    expect(rail).not.toContainElement(canvasControls as HTMLElement);
+    expect(dialog.querySelector('[data-gallery-desktop]')).toContainElement(
+      canvasControls as HTMLElement,
+    );
+    expect(
+      within(canvasControls as HTMLElement).getAllByRole('button'),
+    ).toHaveLength(2);
   });
 
   it('supports ordered gallery navigation with a localized position label', async () => {

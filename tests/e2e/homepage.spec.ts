@@ -727,8 +727,26 @@ test.describe('portfolio homepage framework', () => {
     await expect(desktopGallery).toBeVisible();
     await expect(mobileGallery).toBeHidden();
     await expect(desktopGallery.locator('img')).toHaveCount(1);
-    await expect(page.getByText('01 / 07', { exact: true })).toBeVisible();
+    const rail = dialog.locator('[data-lightbox-rail]');
+    const canvasControls = dialog.locator('[data-lightbox-canvas-controls]');
+    const counter = rail.locator('[data-lightbox-counter]');
+    const title = rail.getByRole('heading');
+    await expect(canvasControls).toBeVisible();
+    await expect(rail.locator('[data-lightbox-canvas-controls]')).toHaveCount(0);
+    await expect(title).toHaveCSS('writing-mode', 'vertical-rl');
+    await expect(title).toHaveCSS('transform', 'none');
+    await expect(counter).toHaveText('01 / 07');
     await expect(desktopGallery.locator('img')).toHaveCSS('border-radius', '18px');
+    const [controlsBox, counterBox] = await Promise.all([
+      canvasControls.boundingBox(),
+      counter.boundingBox(),
+    ]);
+    expect(controlsBox).not.toBeNull();
+    expect(counterBox).not.toBeNull();
+    expect(Math.abs(
+      (controlsBox?.y ?? 0) + (controlsBox?.height ?? 0) / 2
+      - ((counterBox?.y ?? 0) + (counterBox?.height ?? 0) / 2),
+    )).toBeLessThanOrEqual(2);
     const previous = page.getByRole('button', { name: 'Previous gallery image' });
     const next = page.getByRole('button', { name: 'Next gallery image' });
     await expect(previous).toBeVisible();
@@ -807,6 +825,10 @@ test.describe('portfolio homepage framework', () => {
       page.getByRole('button', { name: 'Previous gallery image' }),
     ).toBeHidden();
     await expect(page.getByRole('button', { name: 'Next gallery image' })).toBeHidden();
+    await expect(dialog.locator('[data-lightbox-canvas-controls]')).toBeHidden();
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollWidth))
+      .toBeLessThanOrEqual(390);
     const mobileImages = mobileGallery.locator('img');
     await expect(mobileImages).toHaveCount(4);
     for (let index = 0; index < 4; index += 1) {

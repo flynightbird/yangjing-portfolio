@@ -372,37 +372,49 @@ export function Lightbox({
       <X aria-hidden="true" size={24} />
     </button>
   );
+  const galleryCounter = isGallery ? (
+    <span
+      className={styles.galleryCounter}
+      data-lightbox-counter
+      role="status"
+      aria-label={`${resolvedPositionLabel}: ${position}`}
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {position}
+    </span>
+  ) : null;
+  const galleryControls = isGallery ? (
+    <div
+      className={`${styles.galleryControls} ${
+        variant === 'archive' ? styles.archiveCanvasControls : ''
+      }`}
+      data-lightbox-canvas-controls={variant === 'archive' ? '' : undefined}
+    >
+      <button
+        className={styles.galleryControl}
+        type="button"
+        aria-label={resolvedPreviousLabel}
+        disabled={clampedActiveIndex === 0}
+        onClick={() => moveToIndex(clampedActiveIndex - 1)}
+      >
+        <ArrowLeft aria-hidden="true" size={20} />
+      </button>
+      <button
+        className={styles.galleryControl}
+        type="button"
+        aria-label={resolvedNextLabel}
+        disabled={clampedActiveIndex === media.length - 1}
+        onClick={() => moveToIndex(clampedActiveIndex + 1)}
+      >
+        <ArrowRight aria-hidden="true" size={20} />
+      </button>
+    </div>
+  ) : null;
   const galleryMeta = isGallery ? (
     <div className={styles.galleryMeta}>
-      <span
-        className={styles.galleryCounter}
-        role="status"
-        aria-label={`${resolvedPositionLabel}: ${position}`}
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        {position}
-      </span>
-      <div className={styles.galleryControls}>
-        <button
-          className={styles.galleryControl}
-          type="button"
-          aria-label={resolvedPreviousLabel}
-          disabled={clampedActiveIndex === 0}
-          onClick={() => moveToIndex(clampedActiveIndex - 1)}
-        >
-          <ArrowLeft aria-hidden="true" size={20} />
-        </button>
-        <button
-          className={styles.galleryControl}
-          type="button"
-          aria-label={resolvedNextLabel}
-          disabled={clampedActiveIndex === media.length - 1}
-          onClick={() => moveToIndex(clampedActiveIndex + 1)}
-        >
-          <ArrowRight aria-hidden="true" size={20} />
-        </button>
-      </div>
+      {galleryCounter}
+      {galleryControls}
     </div>
   ) : null;
   const galleryContent = (
@@ -424,6 +436,7 @@ export function Lightbox({
             onError={() => markSourceAsFailed(activeMedia.src)}
           />
         )}
+        {variant === 'archive' ? galleryControls : null}
       </div>
       <div className={styles.mobileGallery} data-gallery-mobile>
         {media.map((item, index) =>
@@ -510,7 +523,7 @@ export function Lightbox({
                       <h2 className={styles.galleryTitle} id={dialogTitleId}>
                         {dialogLabel}
                       </h2>
-                      {galleryMeta}
+                      {galleryCounter}
                     </aside>
                   </>
                 ) : (

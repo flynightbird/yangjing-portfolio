@@ -227,6 +227,7 @@
 }
 
 .archiveSurface .desktopGallery {
+  position: relative;
   min-height: 0;
   overflow: hidden;
   border-radius: 18px;
@@ -241,10 +242,10 @@
 .archiveRail {
   display: grid;
   min-width: 0;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) 48px;
   align-items: center;
   justify-items: center;
-  padding: 0 1px;
+  padding: 0 1px 20px;
 }
 
 .archiveRail .close {
@@ -264,49 +265,55 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   writing-mode: vertical-rl;
-  transform: rotate(180deg);
-}
-
-.archiveRail .galleryMeta {
-  display: grid;
-  justify-items: center;
-  gap: 0.625rem;
+  text-orientation: mixed;
+  transform: none;
 }
 
 .archiveRail .galleryCounter {
+  align-self: center;
   color: rgba(244, 244, 241, 0.62);
 }
 
-.archiveRail .galleryControls {
-  gap: 6px;
+.archiveCanvasControls {
+  position: absolute;
+  z-index: 1;
+  inset-block-end: 20px;
+  inset-inline-end: 20px;
+  gap: 8px;
 }
 
 .archiveSurface .galleryControl {
-  border-color: rgba(244, 244, 241, 0.24);
+  width: 48px;
+  height: 48px;
+  border-color: rgba(244, 244, 241, 0.2);
   border-radius: 999px;
-  color: rgba(244, 244, 241, 0.58);
+  background: rgba(13, 13, 15, 0.72);
+  color: #f4f4f1;
+  backdrop-filter: blur(10px);
   transition:
     border-color 180ms ease,
     background-color 180ms ease,
     color 180ms ease;
 }
 
-.archiveSurface .galleryControl:hover:not(:disabled),
-.archiveSurface .galleryControl:focus-visible:not(:disabled) {
+.archiveSurface .galleryControl:hover:not(:disabled) {
   border-color: #f4f4f1;
   background: #f4f4f1;
   color: #0d0d0f;
 }
 
 .archiveSurface .galleryControl:focus-visible:not(:disabled) {
+  border-color: #f4f4f1;
+  background: #f4f4f1;
+  color: #0d0d0f;
   outline: 2px solid var(--color-signal);
   outline-offset: 3px;
 }
 
 .archiveSurface .galleryControl:disabled {
-  border-color: rgba(244, 244, 241, 0.14);
-  background: transparent;
-  color: rgba(244, 244, 241, 0.38);
+  border-color: rgba(244, 244, 241, 0.12);
+  background: rgba(13, 13, 15, 0.52);
+  color: rgba(244, 244, 241, 0.34);
   opacity: 1;
 }
 
@@ -422,8 +429,7 @@
     transform: none;
   }
 
-  .archiveRail .galleryMeta {
-    display: grid;
+  .archiveRail .galleryCounter {
     grid-column: 2;
     grid-row: 1;
   }
