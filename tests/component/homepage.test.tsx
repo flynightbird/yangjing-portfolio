@@ -72,7 +72,9 @@ describe('IntroStory', () => {
       '嗨，我是杨静，一名拥有十多年经验的 UX/UI 设计师。',
     );
     expect(scenes[1]).toHaveTextContent(/将复杂状态转化为清晰、可控的产品体验/);
-    expect(scenes[2]).toHaveTextContent(/从概念、原型走向真实体验/);
+    expect(scenes[2]).toHaveTextContent(
+      '现在，我也使用 AI 将设计判断转化为可运行的产品，从概念、原型走向真实体验。',
+    );
     expect(scenes[0]).toHaveTextContent(
       '欢迎来到这个由我亲手设计，并通过 Vibe Coding 构建的作品集。',
     );
@@ -153,6 +155,29 @@ describe('FeaturedWork', () => {
       expect(link.getAttribute('rel')).toContain('noreferrer');
     }
   });
+
+  it.each([
+    {
+      locale: 'zh' as const,
+      convoAction: '查看案例 ConvoAI',
+      sttProposition: '让双语对话在实时转写与翻译中清晰呈现。',
+    },
+    {
+      locale: 'en' as const,
+      convoAction: 'View case study ConvoAI',
+      sttProposition:
+        'Keep bilingual conversation clear through real-time transcription and translation.',
+    },
+  ])(
+    'renders the approved $locale project copy',
+    ({ locale, convoAction, sttProposition }) => {
+      const { container } = render(<FeaturedWork locale={locale} />);
+      const stt = container.querySelector<HTMLElement>('[data-project-id="stt-demo"]');
+
+      expect(screen.getByRole('link', { name: convoAction })).toBeVisible();
+      expect(within(stt as HTMLElement).getByText(sttProposition)).toBeVisible();
+    },
+  );
 
   it('defaults to Call Agent focus and marks ConvoAI media as temporary', () => {
     const { container } = render(<FeaturedWork locale="en" />);
@@ -382,6 +407,11 @@ describe('VisualArchive', () => {
     expect(
       screen.getByRole('heading', { name: 'More Consumer Product Work' }),
     ).toBeVisible();
+    expect(
+      screen.getByText(
+        'More design work, presented through a lightweight, image-led selection of product, brand, and character projects.',
+      ),
+    ).toBeVisible();
     expect(screen.getByText('Alibaba')).toBeVisible();
     expect(screen.getAllByText('ByteDance')).toHaveLength(2);
     expect(screen.getByText('Tongcheng Travel')).toBeVisible();
@@ -411,6 +441,11 @@ describe('VisualArchive', () => {
 
     expect(
       screen.getByRole('heading', { name: 'More C端用户设计作品' }),
+    ).toBeVisible();
+    expect(
+      screen.getByText(
+        '更多设计作品，将以图片为主，轻量呈现产品、品牌与角色设计作品。',
+      ),
     ).toBeVisible();
     expect(screen.getByRole('button', { name: '上一个视觉项目' })).toBeVisible();
     expect(screen.getByRole('button', { name: '下一个视觉项目' })).toBeVisible();

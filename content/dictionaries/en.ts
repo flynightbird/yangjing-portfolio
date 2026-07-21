@@ -226,7 +226,7 @@ export const enDictionary = {
         role: 'Product Designer',
         status: 'Public product, media replacement pending',
         mediaLabel: 'Temporary web and app media',
-        action: 'View live product',
+        action: 'View case study',
         temporaryNotice:
           'Temporary third-party imagery. Replace with owned project assets before publishing.',
       },
@@ -263,7 +263,7 @@ export const enDictionary = {
         kind: 'Singapore AI company',
         title: 'AIDX',
         proposition:
-          'A live website for AIDX, a Singapore AI safety company, shaped through interface, information structure, and motion.',
+          'A new website for AIDX, a Singapore AI safety company, shaped through interface, information structure, and motion.',
         role: 'UI/UX design, information architecture, and motion',
         status: 'Live website',
         mediaLabel: 'Public website capture',
@@ -276,7 +276,7 @@ export const enDictionary = {
         kind: 'Build Lab',
         title: 'STT Demo',
         proposition:
-          'Make bilingual conversation legible while it is happening.',
+          'Keep bilingual conversation clear through real-time transcription and translation.',
         role: 'Product design and AI-assisted prototyping',
         status: 'Pinned static prototype',
         mediaLabel: 'Interactive static prototype',
@@ -286,7 +286,7 @@ export const enDictionary = {
     archive: {
       title: 'More Consumer Product Work',
       description:
-        'A lighter image-led view of selected product, brand, and character work.',
+        'More design work, presented through a lightweight, image-led selection of product, brand, and character projects.',
       draftSlot: 'Draft media slot',
       placeholderLabel: 'Visual placeholder',
       carouselLabel: 'Visual Archive projects',
