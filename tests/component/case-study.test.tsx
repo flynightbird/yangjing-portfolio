@@ -101,6 +101,19 @@ describe('ChapterNav', () => {
       screen.getByRole('navigation', { name: 'Case study chapters' }).parentElement,
     ).toHaveAttribute('data-compact-at', 'default');
   });
+
+  it('defaults to dark and accepts an explicit light surface', () => {
+    const dark = render(<ChapterNav chapters={chapters} locale="en" />);
+    expect(
+      screen.getByRole('navigation', { name: 'Case study chapters' }).parentElement,
+    ).toHaveAttribute('data-surface', 'dark');
+    dark.unmount();
+
+    render(<ChapterNav chapters={chapters} locale="en" surface="light" />);
+    expect(
+      screen.getByRole('navigation', { name: 'Case study chapters' }).parentElement,
+    ).toHaveAttribute('data-surface', 'light');
+  });
 });
 
 describe('CaseLayout', () => {

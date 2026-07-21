@@ -1,4 +1,5 @@
 .root {
+  --case-portfolio-accent: var(--color-iris-luminous);
   border-block-end: 1px solid var(--color-border);
 }
 
@@ -28,7 +29,7 @@
   gap: var(--space-4);
   padding-block-end: var(--space-4);
   border-block-end: 1px solid var(--color-border);
-  color: var(--color-cobalt);
+  color: var(--case-portfolio-accent);
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 500;
@@ -40,9 +41,9 @@
   max-width: 15ch;
   margin-block: var(--space-7) var(--space-5);
   font-family: var(--font-display);
-  font-size: var(--font-size-title);
-  font-weight: 400;
-  line-height: var(--line-height-title);
+  font-size: var(--case-h1-size);
+  font-weight: var(--case-h1-weight);
+  line-height: var(--case-h1-leading);
 }
 
 .proposition {
@@ -78,7 +79,7 @@
 
 .facts dt,
 .disclosure > span {
-  color: var(--color-cobalt);
+  color: var(--case-portfolio-accent);
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   line-height: var(--line-height-label);
@@ -129,7 +130,7 @@
 .case :global(.evidence-label),
 .case :global(.map-label),
 .case :global(.ledger-title) {
-  color: var(--color-cobalt);
+  color: var(--case-portfolio-accent);
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 500;
@@ -140,12 +141,13 @@
 .case :global(.section-heading h2) {
   max-width: 22ch;
   margin: 0;
-  font-size: var(--font-size-heading);
-  line-height: var(--line-height-heading);
+  font-size: var(--case-h2-size);
+  font-weight: var(--case-h2-weight);
+  line-height: var(--case-h2-leading);
 }
 
 .case :global(.lead) {
-  color: var(--color-carbon);
+  color: var(--theme-dark-ink);
   font-size: 1.1875rem;
   line-height: 1.6;
 }
@@ -240,7 +242,7 @@
 .case :global(.journey-step span),
 .case :global(.feedback-loop article > span),
 .case :global(.delivery-flow span) {
-  color: var(--color-cobalt);
+  color: var(--case-portfolio-accent);
   font-family: var(--font-mono);
   font-size: 0.6875rem;
 }
@@ -283,6 +285,9 @@
 .case :global(.reflection-grid h3),
 .case :global(.evidence-levels h3) {
   margin-block: var(--space-5) var(--space-2);
+  font-size: var(--case-h3-size);
+  font-weight: var(--case-h3-weight);
+  line-height: var(--case-h3-leading);
 }
 
 .case :global(.comparison),
@@ -306,7 +311,7 @@
 .case :global(.band--dark .section-index),
 .case :global(.band--dark em),
 .case :global(.band--dark .feedback-loop article > span) {
-  color: var(--color-signal);
+  color: var(--color-iris-luminous);
 }
 
 .case :global(.signal-legend),
@@ -336,7 +341,7 @@
 }
 
 .case :global(.token-row span) {
-  color: var(--color-signal);
+  color: var(--color-iris-luminous);
   font-family: var(--font-mono);
   font-size: 0.6875rem;
 }
@@ -353,8 +358,8 @@
 }
 
 .case :global(.component-states .is-active) {
-  border-color: var(--color-signal);
-  background: var(--color-signal);
+  border-color: var(--color-iris-luminous);
+  background: var(--color-iris-luminous);
   color: var(--color-carbon);
 }
 
@@ -403,7 +408,7 @@
 }
 
 .projectNavigation span {
-  color: var(--color-cobalt);
+  color: var(--case-portfolio-accent);
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   text-transform: uppercase;
@@ -414,7 +419,7 @@
 }
 
 .projectNavigation a:hover {
-  background: var(--color-signal);
+  background: var(--color-iris-luminous);
   color: var(--color-carbon);
 }
 
@@ -526,6 +531,7 @@
   .rail {
     position: relative;
     z-index: 10;
+    padding-block-start: var(--header-height);
   }
 
   .case :global(.band--dark) {

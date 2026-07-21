@@ -8,6 +8,15 @@
 }
 
 .root {
+  --header-fg: var(--color-paper);
+  --header-hover: var(--color-iris-luminous);
+  --header-hover-bg: rgba(200, 185, 255, 0.12);
+  --header-separator: rgba(244, 245, 242, 0.2);
+  --header-capsule-bg: rgba(14, 16, 15, 0.78);
+  --header-capsule-border: rgba(244, 245, 242, 0.16);
+  --header-capsule-shadow: 0 0.75rem 2.75rem rgba(0, 0, 0, 0.2);
+  --header-menu-bg: rgba(14, 16, 15, 0.94);
+  --header-menu-border: rgba(244, 245, 242, 0.16);
   position: fixed;
   z-index: var(--z-sticky);
   inset: 0 0 auto;
@@ -17,6 +26,18 @@
   padding: 0 var(--content-gutter);
   pointer-events: none;
   transition: padding 520ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.root[data-surface='light'] {
+  --header-fg: var(--theme-light-ink);
+  --header-hover: var(--color-iris-deep);
+  --header-hover-bg: rgba(95, 75, 134, 0.1);
+  --header-separator: rgba(16, 17, 15, 0.2);
+  --header-capsule-bg: rgba(255, 255, 255, 0.84);
+  --header-capsule-border: rgba(16, 17, 15, 0.12);
+  --header-capsule-shadow: 0 0.75rem 2.75rem rgba(16, 17, 15, 0.12);
+  --header-menu-bg: rgba(255, 255, 255, 0.96);
+  --header-menu-border: rgba(16, 17, 15, 0.12);
 }
 
 .capsule {
@@ -30,7 +51,7 @@
   border: 1px solid transparent;
   border-radius: 0;
   background: transparent;
-  color: var(--color-paper);
+  color: var(--header-fg);
   pointer-events: auto;
   transition:
     width 520ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -51,19 +72,11 @@
   width: min(100%, 40rem);
   min-height: 3.25rem;
   padding: 0.25rem 0.375rem 0.25rem 0.625rem;
-  border-color: rgba(244, 245, 242, 0.16);
+  border-color: var(--header-capsule-border);
   border-radius: 999px;
-  background: rgba(14, 16, 15, 0.78);
-  box-shadow: 0 0.75rem 2.75rem rgba(0, 0, 0, 0.2);
+  background: var(--header-capsule-bg);
+  box-shadow: var(--header-capsule-shadow);
   backdrop-filter: blur(22px) saturate(140%);
-}
-
-.root[data-surface='light'][data-scrolled='false'] .capsule {
-  color: var(--color-ink, #171917);
-}
-
-.root[data-surface='light'][data-scrolled='false'] .separator {
-  background: rgba(23, 25, 23, 0.2);
 }
 
 .home,
@@ -116,15 +129,15 @@
 .desktopNav a:hover,
 .mobileMenu a:hover,
 .capsule button:hover {
-  background: rgba(200, 185, 255, 0.12);
-  color: var(--color-iris-luminous);
+  background: var(--header-hover-bg);
+  color: var(--header-hover);
 }
 
 .separator {
   width: 1px;
   height: 1.25rem;
   margin-inline: 0.25rem;
-  background: rgba(244, 245, 242, 0.2);
+  background: var(--header-separator);
 }
 
 .capsule button {
@@ -152,9 +165,9 @@
   display: grid;
   min-width: 10rem;
   padding: 0.5rem;
-  border: 1px solid rgba(244, 245, 242, 0.16);
+  border: 1px solid var(--header-menu-border);
   border-radius: 16px;
-  background: rgba(14, 16, 15, 0.94);
+  background: var(--header-menu-bg);
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(20px);
 }

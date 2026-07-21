@@ -10,6 +10,9 @@
 @import '@fontsource/geist-mono/400.css';
 @import '@fontsource/geist-mono/500.css';
 @import '@fontsource/geist-mono/600.css';
+@import '@fontsource/geist/400.css';
+@import '@fontsource/geist/500.css';
+@import '@fontsource/geist/600.css';
 
 @font-face {
   font-family: 'MiSans';
@@ -87,6 +90,15 @@
   --line-height-heading: 1.2;
   --line-height-body: 1.65;
   --line-height-label: 1.4;
+  --case-h1-size: clamp(3.25rem, 5vw, 5.5rem);
+  --case-h1-weight: 600;
+  --case-h1-leading: 1.06;
+  --case-h2-size: clamp(2.2rem, 4vw, 4.5rem);
+  --case-h2-weight: 600;
+  --case-h2-leading: 1.16;
+  --case-h3-size: clamp(1.25rem, 2vw, 1.75rem);
+  --case-h3-weight: 600;
+  --case-h3-leading: 1.28;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;

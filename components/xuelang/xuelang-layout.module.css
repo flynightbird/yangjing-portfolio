@@ -7,7 +7,7 @@
   --xuelang-paper: #f5f7f5;
   --xuelang-ink: #111512;
   --xuelang-muted: #5f6862;
-  --xuelang-green: #466b52;
+  --xuelang-portfolio-accent: var(--color-iris-deep);
   --xuelang-line: #d8ded9;
   --xuelang-dark: #121614;
   position: relative;
@@ -69,7 +69,7 @@
 
 .eyebrow,
 .facts dt {
-  color: var(--xuelang-green);
+  color: var(--xuelang-portfolio-accent);
   font-family: var(--xuelang-font-mono);
   font-size: 0.6875rem;
   font-weight: 600;
@@ -85,9 +85,9 @@
   max-width: 12ch;
   margin: 0;
   font-family: var(--xuelang-font-body);
-  font-size: clamp(3.5rem, 6.2vw, 6.8rem);
-  font-weight: 700;
-  line-height: 0.98;
+  font-size: var(--case-h1-size);
+  font-weight: var(--case-h1-weight);
+  line-height: var(--case-h1-leading);
   letter-spacing: 0;
 }
 
@@ -123,37 +123,6 @@
 
 .heroProof {
   color: var(--xuelang-ink);
-}
-
-.pdfAction {
-  display: inline-flex;
-  min-height: 44px;
-  align-items: center;
-  gap: 0.65rem;
-  margin-block-start: 1.5rem;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--xuelang-ink);
-  border-radius: 4px;
-  color: var(--xuelang-ink);
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background-color 180ms ease, color 180ms ease;
-}
-
-.pdfAction small {
-  padding-inline-start: 0.65rem;
-  border-inline-start: 1px solid currentColor;
-  font-family: var(--xuelang-font-mono);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  opacity: 0.7;
-}
-
-.pdfAction:hover,
-.pdfAction:focus-visible {
-  background: var(--xuelang-ink);
-  color: var(--xuelang-paper);
 }
 
 .panorama {
@@ -293,13 +262,14 @@
 .content > :global(section > h2) {
   max-width: 18ch;
   margin: 0;
-  font-size: clamp(2rem, 3.5vw, 4rem);
-  line-height: 1.08;
+  font-size: var(--case-h2-size);
+  font-weight: var(--case-h2-weight);
+  line-height: var(--case-h2-leading);
   letter-spacing: 0;
 }
 
 .content :global(.section-index) {
-  color: var(--xuelang-green);
+  color: var(--xuelang-portfolio-accent);
   font-family: var(--xuelang-font-mono);
   font-size: 0.6875rem;
   font-weight: 600;
@@ -359,7 +329,7 @@
 .content :global(.xuelang-journey li::before) {
   display: block;
   margin-block-end: 1.5rem;
-  color: var(--xuelang-green);
+  color: var(--xuelang-portfolio-accent);
   content: counter(journey, decimal-leading-zero);
   font-family: var(--xuelang-font-mono);
   font-size: 0.6875rem;
@@ -380,7 +350,7 @@
 }
 
 .content :global(.xuelang-context-facts dt) {
-  color: var(--xuelang-green);
+  color: var(--xuelang-portfolio-accent);
   font-family: var(--xuelang-font-mono);
   font-size: 0.6875rem;
 }
@@ -403,14 +373,16 @@
 }
 
 .content :global(.xuelang-problem-list span) {
-  color: var(--xuelang-green);
+  color: var(--xuelang-portfolio-accent);
   font-family: var(--xuelang-font-mono);
   font-size: 0.6875rem;
 }
 
 .content :global(.xuelang-problem-list h3) {
   margin: 2rem 0 0;
-  font-size: 1.5rem;
+  font-size: var(--case-h3-size);
+  font-weight: var(--case-h3-weight);
+  line-height: var(--case-h3-leading);
 }
 
 .content :global(.xuelang-problem-list p) {
@@ -459,7 +431,7 @@
 }
 
 .content :global(.xuelang-formula span) {
-  color: var(--xuelang-green);
+  color: var(--xuelang-portfolio-accent);
   font-family: var(--xuelang-font-mono);
 }
 
@@ -477,7 +449,7 @@
   grid-column: 4 / span 7;
   margin-block-start: 7rem;
   padding-block-start: 2rem;
-  border-block-start: 2px solid var(--xuelang-green);
+  border-block-start: 2px solid var(--xuelang-portfolio-accent);
 }
 
 .content :global(.xuelang-reflection h3) {
@@ -514,10 +486,6 @@
   .heroSupport {
     grid-column: 7 / -1;
     padding-block-start: 0.5rem;
-  }
-
-  .hero h1 {
-    font-size: clamp(4.25rem, 5.8vw, 6.25rem);
   }
 
   .heroSupport .proposition {
@@ -581,10 +549,6 @@
 
   .heroCopy {
     width: 100%;
-  }
-
-  .hero h1 {
-    font-size: clamp(2.7rem, 8vw, 4.75rem);
   }
 
   .facts {
@@ -652,10 +616,6 @@
     grid-column: 7 / -1;
   }
 
-  .hero h1 {
-    font-size: clamp(3.25rem, 6vw, 4rem);
-  }
-
   .heroSupport .proposition,
   .heroSupport .facts {
     margin-block-start: 0;
@@ -675,10 +635,6 @@
     padding-block: 0.55rem 0.65rem;
   }
 
-  .pdfAction {
-    margin-block-start: 1rem;
-  }
-
   .panorama {
     margin-block-start: 1.75rem;
   }
@@ -691,10 +647,6 @@
 
   .eyebrow {
     margin-block-end: 1.25rem;
-  }
-
-  .hero h1 {
-    font-size: clamp(2.5rem, 11vw, 3rem);
   }
 
   .proposition {
@@ -714,10 +666,6 @@
 
   .facts div:last-child {
     grid-column: 1 / -1;
-  }
-
-  .pdfAction {
-    margin-block-start: 1rem;
   }
 
   .panorama {
@@ -751,7 +699,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pdfAction,
   .productState img {
     transition: none;
   }

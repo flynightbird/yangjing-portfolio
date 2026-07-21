@@ -45,6 +45,7 @@
   "dependencies": {
     "@fontsource/archivo-black": "5.2.8",
     "@fontsource/dm-mono": "5.2.7",
+    "@fontsource/geist": "5.2.8",
     "@fontsource/geist-mono": "^5.2.8",
     "@fontsource/libre-franklin": "5.2.8",
     "@fontsource/noto-sans-sc": "5.2.9",
