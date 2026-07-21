@@ -1,4 +1,3 @@
-import { LiquidField } from '@/components/ui/liquid-field';
 import type { Locale } from '@/content/types';
 
 import { FooterEmailActions } from './footer-email-actions';
@@ -23,7 +22,6 @@ export function SiteFooter({ locale }: SiteFooterProps) {
   return (
     <footer className={styles.root} data-site-footer>
       <div className={styles.revealLayer} data-footer-reveal-layer>
-        <LiquidField variant="footer" interactive className={styles.liquid} />
         <div className={styles.inner}>
           <div className={styles.cta} data-footer-cta>
             <p>{copy.eyebrow}</p>

@@ -12,6 +12,12 @@
 .revealLayer {
   position: relative;
   min-height: inherit;
+  background:
+    radial-gradient(120% 105% at -18% 116%, rgba(47, 34, 62, 0.98) 0 36%, transparent 69%),
+    radial-gradient(105% 92% at 112% -8%, rgba(184, 177, 193, 0.9) 0 31%, transparent 68%),
+    radial-gradient(92% 88% at 72% 92%, rgba(119, 103, 139, 0.82) 0 30%, transparent 70%),
+    radial-gradient(105% 92% at 38% 34%, rgba(82, 67, 102, 0.88) 0 32%, transparent 72%),
+    #211a26;
   isolation: isolate;
 }
 
@@ -40,19 +46,6 @@
   will-change: transform;
 }
 
-.liquid {
-  z-index: -1;
-}
-
-.root::after {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: rgba(14, 16, 15, 0.24);
-  content: '';
-  pointer-events: none;
-}
-
 .inner {
   display: grid;
   width: min(100%, var(--content-max));
@@ -79,9 +72,10 @@
   max-width: 15ch;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(3rem, 7vw, 6.75rem);
+  font-size: clamp(2.25rem, 5vw, 4.75rem);
   font-weight: 700;
-  line-height: 0.94;
+  line-height: 1.08;
+  letter-spacing: 0;
 }
 
 .emailActions {
