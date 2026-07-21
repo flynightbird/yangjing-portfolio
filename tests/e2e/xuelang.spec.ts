@@ -39,13 +39,7 @@ test.describe('Xuelang case study', () => {
       const heroPanorama = page.locator('[data-hero-panorama]');
       await expect(heroPanorama).toBeInViewport();
       await expect(heroPanorama.locator('[data-hero-product-state]')).toHaveCount(4);
-      const pdfLink = page.getByRole('link', { name: /PDF/ });
-      await expect(pdfLink).toBeInViewport();
-      await expect(pdfLink).toHaveAttribute(
-        'href',
-        `/files/xuelang-case-study-${locale}.pdf`,
-      );
-      await expect(pdfLink).toHaveAttribute('download', '');
+      await expect(page.locator('a[href$=".pdf"]')).toHaveCount(0);
 
       for (const metric of ['+11.75%', '+1.36%', '+6.5%']) {
         await expect(page.getByText(metric, { exact: true }).last()).not.toBeInViewport();
