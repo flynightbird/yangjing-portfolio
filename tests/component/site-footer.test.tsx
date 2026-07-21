@@ -23,7 +23,7 @@ describe('SiteFooter', () => {
 
     expect(container.firstElementChild).toHaveAttribute('data-site-footer');
     expect(container.querySelector('[data-footer-reveal-layer]')).toBeInTheDocument();
-    expect(container.querySelector('[data-liquid-field="footer"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-liquid-field="footer"]')).not.toBeInTheDocument();
     const actions = container.querySelector('[data-footer-email-actions]');
     expect(actions).toBeInTheDocument();
     expect(
@@ -36,6 +36,10 @@ describe('SiteFooter', () => {
         name: locale === 'zh' ? '复制邮箱' : 'Copy email address',
       }),
     ).toBeVisible();
+    expect(container.querySelector('[data-footer-email-icon="copy"]')).toHaveAttribute(
+      'width',
+      '16',
+    );
     expect(
       within(actions as HTMLElement).getByRole('link', {
         name: locale === 'zh'
@@ -43,6 +47,10 @@ describe('SiteFooter', () => {
           : 'Send email to amanda.yangj@gmail.com',
       }),
     ).toHaveAttribute('href', 'mailto:amanda.yangj@gmail.com');
+    expect(container.querySelector('[data-footer-email-icon="arrow"]')).toHaveAttribute(
+      'width',
+      '16',
+    );
     expect(
       Array.from(actions?.children ?? []).slice(0, 3).map((element) =>
         element.getAttribute('data-footer-email-control'),
@@ -74,6 +82,10 @@ describe('SiteFooter', () => {
     expect(screen.getByRole('button', { name: 'Email copied' })).toHaveAttribute(
       'data-copy-state',
       'copied',
+    );
+    expect(document.querySelector('[data-footer-email-icon="check"]')).toHaveAttribute(
+      'width',
+      '16',
     );
     expect(screen.getByRole('status')).toHaveTextContent('Email copied');
 

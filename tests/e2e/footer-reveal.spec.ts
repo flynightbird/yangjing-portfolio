@@ -52,6 +52,60 @@ test.describe('homepage Footer reveal', () => {
       ).toBeVisible();
       await expect(footer.getByText('© 2026 Yang Jing')).toBeVisible();
 
+      const visualContract = await footer.evaluate((element) => {
+        const title = element.querySelector('h2');
+        const layer = element.querySelector<HTMLElement>('[data-footer-reveal-layer]');
+        const address = element.querySelector<HTMLElement>(
+          '[data-footer-email-control="address"]',
+        );
+        const copy = element.querySelector<HTMLElement>(
+          '[data-footer-email-control="copy"]',
+        );
+        const arrow = element.querySelector<HTMLElement>(
+          '[data-footer-email-control="arrow"]',
+        );
+        const copyIcon = element.querySelector<SVGElement>(
+          '[data-footer-email-icon="copy"]',
+        );
+        const arrowIcon = element.querySelector<SVGElement>(
+          '[data-footer-email-icon="arrow"]',
+        );
+        if (!title || !layer || !address || !copy || !arrow || !copyIcon || !arrowIcon) {
+          return null;
+        }
+
+        const titleStyle = getComputedStyle(title);
+        const addressStyle = getComputedStyle(address);
+        return {
+          titleSize: Number.parseFloat(titleStyle.fontSize),
+          titleLineHeight: Number.parseFloat(titleStyle.lineHeight),
+          backgroundImage: getComputedStyle(layer).backgroundImage,
+          addressLineHeight: Number.parseFloat(addressStyle.lineHeight),
+          copyHeight: copy.getBoundingClientRect().height,
+          arrowHeight: arrow.getBoundingClientRect().height,
+          copyIconWidth: copyIcon.getBoundingClientRect().width,
+          arrowIconWidth: arrowIcon.getBoundingClientRect().width,
+          footerCanvasCount: element.querySelectorAll('[data-liquid-field="footer"]').length,
+        };
+      });
+
+      expect(visualContract).not.toBeNull();
+      if (!visualContract) throw new Error('Missing Footer visual contract');
+      expect(visualContract.footerCanvasCount).toBe(0);
+      expect(visualContract.backgroundImage.match(/radial-gradient/g)).toHaveLength(4);
+      expect(visualContract.titleLineHeight / visualContract.titleSize).toBeCloseTo(1.08, 2);
+      expect(visualContract.titleSize).toBeLessThanOrEqual(
+        testInfo.project.name === 'mobile' ? 36 : 76,
+      );
+      expect(visualContract.copyHeight).toBeLessThanOrEqual(
+        visualContract.addressLineHeight,
+      );
+      expect(visualContract.arrowHeight).toBeLessThanOrEqual(
+        visualContract.addressLineHeight,
+      );
+      expect(visualContract.copyIconWidth).toBe(16);
+      expect(visualContract.arrowIconWidth).toBe(16);
+
       if (testInfo.project.name === 'desktop') {
         const spacing = await footer.evaluate((element) => {
           const layer = element.querySelector('[data-footer-reveal-layer]');
