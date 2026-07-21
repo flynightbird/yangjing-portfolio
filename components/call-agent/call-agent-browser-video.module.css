@@ -1,0 +1,88 @@
+.root {
+  margin: 0;
+  min-width: 0;
+}
+
+.browser {
+  overflow: hidden;
+  border: 1px solid #d9dde3;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(10, 10, 10, 0.12), 0 2px 8px rgba(10, 10, 10, 0.06);
+}
+
+[data-media-kind='image'] .browser {
+  aspect-ratio: 16 / 10;
+}
+
+.chrome {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f7f7f8;
+}
+
+.chrome span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #c5c7cc;
+}
+
+.chrome b {
+  overflow: hidden;
+  margin-left: 8px;
+  color: #777b84;
+  font: 500 10px/1 'Geist Mono', monospace;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.viewport {
+  position: relative;
+  background: #f5f7fa;
+}
+
+[data-media-kind='image'] .viewport {
+  height: calc(100% - 32px);
+}
+
+.viewport img {
+  display: block;
+  width: 100%;
+}
+
+[data-media-kind='image'] .viewport img {
+  height: 100%;
+  object-fit: contain;
+}
+
+[data-media-kind='video'] .viewport img {
+  height: auto;
+}
+
+.viewport video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+.root figcaption {
+  max-width: 68ch;
+  margin-top: 12px;
+  color: #666b74;
+  font-size: 0.75rem;
+  line-height: 1.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .browser {
+    box-shadow: 0 12px 30px rgba(10, 10, 10, 0.08);
+  }
+}

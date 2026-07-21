@@ -15,6 +15,7 @@
     "test:visual": "playwright test tests/visual",
     "validate:content": "node scripts/validate-content.mjs",
     "prepare:assets": "node scripts/prepare-call-agent-assets.mjs",
+    "prepare:call-agent:video": "node scripts/prepare-call-agent-videos.mjs",
     "prepare:xuelang": "node scripts/prepare-xuelang-assets.mjs",
     "generate:meeting-evidence": "node scripts/generate-meeting-static-evidence.mjs",
     "prepare:meeting:static": "npm run generate:meeting-evidence && node scripts/prepare-meeting-assets.mjs --static-only",

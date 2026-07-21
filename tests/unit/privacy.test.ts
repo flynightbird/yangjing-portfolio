@@ -44,16 +44,11 @@ const manifestPath = path.join(
   'evidence/call-agent/manifest.json',
 );
 const temporaryRoots: string[] = [];
-const approvedFiles = [
-  ['public/files/call-agent-case-study-zh.pdf', 'a46c9fb22780c5241e9edd1cd3c74b30f797b84a72700619214094a98b1f8aeb', 'pdf'],
-  ['public/images/call-agent/after-call-history-filters.png', '7925ccd1dcb95645f1164d875700798b0d4021b6d1544bc3e8f15b87fdd11466', 'image'],
-  ['public/images/call-agent/after-resource-management.png', '8ebd00de296362f0c48b3bd47ae1245bb5f20f7c8808a270b2d9397e6e02b85f', 'image'],
-  ['public/images/call-agent/ai-preview-live.png', 'ab1676c09e8ae997c9b9963c17b65d86ed850e6944b42d7b1513a69e6f7d78fc', 'image'],
-  ['public/images/call-agent/before-call-history.png', 'cfd882f8b268b9c9b3ed09936a7215318d000a4c1ecca8f8472c2a7a65f5e285', 'image'],
-  ['public/images/call-agent/before-resource-management.jpg', 'b08a0f770d1272b776e84b0580489b067d6a381d4dcf6b5ae039b402ff6879b1', 'image'],
-  ['public/images/call-agent/outbound-task-creation.png', 'ad2460f796027c168635cbd9bc095b535ba01e0dab573ff5125748befb356c8d', 'image'],
-  ['public/images/call-agent/product-switcher.png', 'fbad19d8fb06a40de9e5ebadeb1ac672ef6cb87896bf36dd9ce98f18cddbe92a', 'image'],
-] as const;
+const approvedFiles = (
+  JSON.parse(readFileSync(path.join(repositoryRoot, 'evidence/call-agent/checksums.json'), 'utf8')) as {
+    files: Array<{ path: string; sha256: string; kind: string }>;
+  }
+).files.map(({ path: file, sha256, kind }) => [file, sha256, kind] as const);
 
 function createTemporaryRoot(prefix: string): string {
   const temporaryRoot = mkdtempSync(path.join(tmpdir(), prefix));
@@ -68,9 +63,16 @@ function createValidationFixture() {
   mkdirSync(path.join(fixtureRoot, 'public/images/call-agent'), {
     recursive: true,
   });
+  mkdirSync(path.join(fixtureRoot, 'public/videos/call-agent'), {
+    recursive: true,
+  });
   cpSync(
     path.join(repositoryRoot, 'evidence/call-agent/manifest.json'),
     path.join(fixtureRoot, 'evidence/call-agent/manifest.json'),
+  );
+  cpSync(
+    path.join(repositoryRoot, 'evidence/call-agent/video-manifest.json'),
+    path.join(fixtureRoot, 'evidence/call-agent/video-manifest.json'),
   );
   for (const [relativePath] of approvedFiles) {
     cpSync(
@@ -315,48 +317,6 @@ describe('Call Agent privacy controls', () => {
     expect(await validateFixture(fixtureRoot)).toEqual(
       expect.arrayContaining([
         expect.stringMatching(/duplicate output.*ai-preview-live\.png/i),
-      ]),
-    );
-  });
-
-  it('requires an approved checksum for the public PDF', async () => {
-    const fixtureRoot = createValidationFixture();
-    const checksumPath = path.join(
-      fixtureRoot,
-      'evidence/call-agent/checksums.json',
-    );
-    const contract = JSON.parse(readFileSync(checksumPath, 'utf8'));
-    contract.files = contract.files.filter(
-      ({ kind }: { kind: string }) => kind !== 'pdf',
-    );
-    writeFileSync(checksumPath, JSON.stringify(contract));
-
-    expect(await validateFixture(fixtureRoot)).toEqual(
-      expect.arrayContaining([
-        expect.stringMatching(/missing approved checksum.*\.pdf/i),
-      ]),
-    );
-  });
-
-  it('rejects non-PDF bytes even when their checksum is approved', async () => {
-    const fixtureRoot = createValidationFixture();
-    const pdfRelativePath = 'public/files/call-agent-case-study-zh.pdf';
-    const replacement = Buffer.from('not actually a PDF');
-    writeFileSync(path.join(fixtureRoot, pdfRelativePath), replacement);
-    const checksumPath = path.join(
-      fixtureRoot,
-      'evidence/call-agent/checksums.json',
-    );
-    const contract = JSON.parse(readFileSync(checksumPath, 'utf8'));
-    const pdfEntry = contract.files.find(
-      ({ path: candidate }: { path: string }) => candidate === pdfRelativePath,
-    );
-    pdfEntry.sha256 = createHash('sha256').update(replacement).digest('hex');
-    writeFileSync(checksumPath, JSON.stringify(contract));
-
-    expect(await validateFixture(fixtureRoot)).toEqual(
-      expect.arrayContaining([
-        expect.stringMatching(/invalid PDF signature.*call-agent-case-study-zh\.pdf/i),
       ]),
     );
   });

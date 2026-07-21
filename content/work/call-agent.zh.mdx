@@ -1,284 +1,69 @@
-import { EvidenceFigure } from '@/components/case-study/evidence-figure'
+import { CallAgentBrowserVideo } from '@/components/call-agent/call-agent-browser-video'
+import { ProductBoundaryDiagram, ProductizationGrid } from '@/components/call-agent/call-agent-diagrams'
+import { CallAgentSystemStage } from '@/components/call-agent/call-agent-system-stage'
 
 export const metadata = {
-  type: 'work',
-  slug: 'call-agent',
-  locale: 'zh',
-  translationKey: 'work.call-agent',
-  title: 'Call Agent：让 AI 在发布前可见、可测、可控',
-  proposition: '把需要工程协作的 AI 呼叫能力，变成企业可自主配置、验证与运营的产品。',
-  role: '唯一产品设计师',
-  duration: '9 个月',
-  status: '少量企业客户有限灰度',
-  disclosure: '公开案例仅使用已脱敏的产品界面与可确认的过程事实；未披露客户身份或敏感配置。',
-  heroMedia: '/images/call-agent/ai-preview-live.png',
-  evidenceLevel: 'observed',
-  featuredOrder: 2,
-  previousSlug: 'xuelang',
-  nextSlug: 'meeting',
-  caseLabel: 'CALL AGENT / 0→1 AI PRODUCT',
-  facts: [
-    { label: '迭代', value: '约 8 次迭代' },
-  ],
+  type: 'work', slug: 'call-agent', locale: 'zh', translationKey: 'work.call-agent',
+  title: 'Call Agent：把对话式 AI 能力变成企业可自主运营的产品',
+  proposition: '从没有完整配置入口，到创建、编排、验证、发布与呼叫运营的一体化工作台。',
+  role: '独立负责从 0 到 1 的产品设计', duration: '9 个月', status: '正式上线',
+  disclosure: '公开案例仅使用已脱敏产品界面，不包含客户身份、号码或敏感配置。',
+  heroMedia: '/images/call-agent/agent-preview-poster.webp', evidenceLevel: 'observed', featuredOrder: 2,
+  previousSlug: 'xuelang', nextSlug: 'meeting', caseLabel: 'CALL AGENT / 0→1 AI PRODUCT',
   chapters: [
-    { id: 'overview', label: '项目概览' },
-    { id: 'context-role', label: '背景与角色' },
-    { id: 'design-thesis', label: '设计命题' },
-    { id: 'decision-path', label: '产品边界' },
-    { id: 'decision-preview', label: '实时 Preview' },
-    { id: 'decision-operate', label: '运营闭环' },
-    { id: 'system-delivery', label: '系统与交付' },
-    { id: 'outcome-learnings', label: '结果与反思' },
+    { id: 'product-boundary', label: '产品边界' }, { id: 'product-system', label: '产品系统' },
+    { id: 'start', label: '创建起点' }, { id: 'orchestrate', label: '分层编排' },
+    { id: 'validate-release', label: '验证与发布' }, { id: 'operationalize', label: '进入运营' },
+    { id: 'scope-reflection', label: '职责与反思' },
   ],
 }
 
-<section id="overview">
-  <header className="section-heading">
-    <p className="section-index">01 / OVERVIEW</p>
-    <h2>从 AI 能力到可发布、可诊断、可运营的企业工作流</h2>
-  </header>
-  <div className="reading">
-    <p className="lead">让 AI 在发布前可被看见、测试与控制，并把智能体从一次 Demo 延伸为可发布、可诊断、可运营的企业工作流。</p>
-    <p>我在 9 个月内以唯一产品设计师身份推进约 8 次迭代，覆盖产品架构、智能体配置、实时 Preview、呼叫运营、Design System 与工程交付。</p>
-  </div>
-  <EvidenceFigure
-    src="/images/call-agent/ai-preview-live.png"
-    width={2934}
-    height={1466}
-    alt="智能体配置页面与实时通话预览并列显示，右侧呈现连接状态和对话内容"
-    label="LIVE PREVIEW / 00:33"
-    caption="AI 配置与实时 Preview 形成反馈闭环：配置与运行反馈在同一视图中。"
-    locale="zh"
-    className="wide-evidence"
-  />
+<section id="product-boundary">
+  <h2>不是另一个 AI Demo，而是客户可自主配置的产品</h2>
+  <div className="call-reading call-reading--lead"><p>Convo AI 是用户端的对话体验；Call Agent 解决的是另一个问题：企业客户如何配置、验证、发布并运营这些对话能力。</p></div>
+  <div className="call-reading"><p>项目之前，能力已经存在，但客户没有一个完整的配置入口。我独立负责从 0 到 1 的产品设计，将模型、声音、Prompt、号码、发布状态和运营规则组织为一条工作流。</p></div>
+  <ProductBoundaryDiagram locale="zh" />
+  <ProductizationGrid locale="zh" />
 </section>
 
-<section id="context-role">
-  <header className="section-heading">
-    <p className="section-index">02 / CONTEXT &amp; ROLE</p>
-    <h2>从技术能力集合，到呼叫场景产品</h2>
-  </header>
-  <div className="context-grid">
-    <div className="reading">
-      <p className="lead">企业要完成一次 AI 呼叫，必须跨越文档、API、模型与声音供应商、号码配置和任务系统。能力存在，但客户难以独立完成接入，更难在发布前判断 AI 是否真的可用。</p>
-      <p>呼叫场景成为团队核心主推方向后，原有对话式 AI 引擎演进为 AI Studio；与呼叫相关的能力被抽离为独立的智能呼叫中心，通过左侧产品切换器进入。这不是功能合并，而是依据任务闭环重新划分产品边界。</p>
-    </div>
-    <aside className="role-ledger" aria-label="我的职责与协作范围">
-      <p className="ledger-title">MY OWNERSHIP</p>
-      <ul>
-        <li><span>01</span>产品架构与核心任务路径</li>
-        <li><span>02</span>AI 配置、Preview 与异常状态</li>
-        <li><span>03</span>呼叫运营、历史与数据分析</li>
-        <li><span>04</span>Design System 与工程交付</li>
-      </ul>
-      <p className="collaboration">协作：产品经理、前后端工程师、AI/算法与音视频工程师、QA</p>
-    </aside>
-  </div>
-  <div className="boundary-map" aria-label="产品边界">
-    <div><p className="map-label">AI STUDIO</p><h3>创建与配置通用智能体</h3><p>模型、语音、Prompt 与通用能力</p></div>
-    <div><span>PRODUCT SWITCHER</span></div>
-    <div><p className="map-label">CALL CENTER</p><h3>完成真实呼叫运营</h3><p>号码、外呼任务、结果诊断与分析</p></div>
-  </div>
+<section id="product-system">
+  <h2>用六个阶段定义产品，而不是用技术资源分类</h2>
+  <div className="call-reading"><p>呼叫运营人员不需要先理解底层能力树。产品围绕 Create → Orchestrate → Preview → Publish → Connect → Operate 展开，每一步都为下一步建立可确认的状态。</p></div>
+  <CallAgentSystemStage locale="zh" />
 </section>
 
-<section id="design-thesis">
-  <header className="section-heading">
-    <p className="section-index">03 / DESIGN THESIS</p>
-    <h2>设计的不是一个表单，而是一条可验证的 AI 工作流</h2>
-  </header>
-  <div className="journey" aria-label="核心工作流：配置、预览、发布、运营">
-    <div className="journey-step"><span>01</span><b>Configure</b><small>组织模型、语音与 Prompt</small></div>
-    <div className="journey-step journey-step--core"><span>02</span><b>Preview</b><small>观察行为、状态与错误</small></div>
-    <div className="journey-step"><span>03</span><b>Publish</b><small>确认资源与发布条件</small></div>
-    <div className="journey-step"><span>04</span><b>Operate</b><small>执行呼叫并诊断结果</small></div>
-  </div>
-  <div className="principles">
-    <article><span>01</span><h3>降低门槛，不移除控制</h3><p>用渐进式配置承接不同技术熟练度，同时保留模型、语音和高级参数。</p></article>
-    <article><span>02</span><h3>先验证，再发布</h3><p>让配置变化立即映射到实时通话、转写、连接状态与异常反馈。</p></article>
-    <article><span>03</span><h3>从创建延伸到运营</h3><p>把号码、任务、历史、失败原因和数据看板连接到同一条业务链路。</p></article>
-  </div>
+<section id="start">
+  <h2>先给出一个可继续的起点</h2>
+  <div className="call-reading call-reading--lead"><p>空白创建保留自由度，客服模板则预填名称和描述，帮助运营人员先看到一个具体对象。</p></div>
+  <div className="call-reading"><p><strong>取舍：</strong>默认值不代替专业配置。模板只负责让用户开始，后续每一项仍可编辑。</p></div>
+  <CallAgentBrowserVideo src="/videos/call-agent/agent-create.mp4" poster="/images/call-agent/agent-create-poster.webp" playbackRate={1.45} title="从模板创建智能体" description="选中客服模板后，系统填入可继续编辑的默认项。" />
 </section>
 
-<section id="decision-path">
-  <header className="section-heading">
-    <p className="section-index">04 / DESIGN DECISION 01</p>
-    <h2>重构产品边界与任务路径</h2>
-    <p>从“先理解资源结构”转向“先完成一个呼叫任务”</p>
-  </header>
-  <div className="decision-intro">
-    <p className="lead">早期版本把模型、ASR、TTS、MCP 等资源直接暴露为主要入口。对熟悉底层能力的内部团队有效，却要求企业客户先理解系统结构，才能开始创建智能体。</p>
-    <p>我将呼叫能力单独成产品，以智能体、号码、外呼任务、历史记录为主导航；公共资源下沉为支撑能力，并通过产品切换器保留与 AI Studio 的关系。</p>
-  </div>
-  <div className="comparison comparison--asymmetric">
-    <EvidenceFigure
-      src="/images/call-agent/before-resource-management.jpg"
-      width={1360}
-      height={700}
-      alt="旧版资源管理页面以多层资源类型与列表为主要结构"
-      label="BEFORE / 资源即入口"
-      caption="多层资源类型与长列表占据主路径，用户需要先理解系统构成。"
-      locale="zh"
-    />
-    <div className="decision-card">
-      <p className="evidence-label">DECISION / 以任务组织能力</p>
-      <ol>
-        <li><b>先选产品</b><span>通用智能体与呼叫运营分开</span></li>
-        <li><b>再建智能体</b><span>模板、基础配置与高级配置逐层展开</span></li>
-        <li><b>资源按需出现</b><span>在任务中引用，而不是要求用户先配置全部资源</span></li>
-      </ol>
-    </div>
-    <EvidenceFigure
-      src="/images/call-agent/product-switcher.png"
-      width={560}
-      height={420}
-      alt="左侧产品切换器中并列显示呼叫智能体与 AI Studio"
-      label="AFTER / 清晰的产品入口"
-      caption="在同一平台中保持能力关联，同时让呼叫任务获得独立、简洁的路径。"
-      locale="zh"
-    />
-  </div>
-  <EvidenceFigure
-    src="/images/call-agent/after-resource-management.png"
-    width={2934}
-    height={1468}
-    alt="新版资源页面统一呈现模型、语音与工具资源"
-    label="AFTER / SHARED RESOURCE LAYER"
-    caption="模型、语音和工具被统一为可复用支撑层。"
-    locale="zh"
-    className="wide-evidence"
-  />
+<section id="orchestrate">
+  <h2>复杂度应该逐层出现，而不是被删掉</h2>
+  <div className="call-reading call-reading--lead"><p>基础设置、模型与声音、呼叫调优和高级设置形成四个层级。高频决策在前，超时、兜底提示和自定义参数仍可达。</p></div>
+  <div className="call-reading"><p><strong>取舍：</strong>过度简化会让专业用户失去控制；一次展开全部字段又会让新用户失去主线。分层保留了两者。</p></div>
+  <CallAgentBrowserVideo src="/videos/call-agent/agent-orchestrate.mp4" poster="/images/call-agent/agent-orchestrate-poster.webp" playbackRate={1.25} title="智能体编排层级" description="基础、模型与声音、呼叫调优与高级配置按任务分组。" />
 </section>
 
-<section id="decision-preview" className="band--dark">
-  <header className="section-heading">
-    <p className="section-index">05 / DESIGN DECISION 02 · CORE</p>
-    <h2>让 AI 在发布前可见、可测、可控</h2>
-  </header>
-  <div className="preview-thesis">
-    <p className="lead">AI 配置的难点不是字段多，而是输入与行为之间缺少确定反馈。用户不知道 Prompt、声音或模型调整后会发生什么，也无法区分配置错误、连接问题与模型表现。</p>
-    <div className="signal-legend" aria-label="实时状态示例">
-      <span className="state">已连接</span><span className="state">实时转写</span><span className="state">待调整</span>
-    </div>
-  </div>
-  <EvidenceFigure
-    src="/images/call-agent/ai-preview-live.png"
-    width={2934}
-    height={1466}
-    alt="智能体配置页面与实时通话预览并列显示，右侧呈现连接状态和对话内容"
-    label="CONFIGURATION ↔ RUNTIME"
-    caption="同一视图中修改、发起测试、观察状态并继续调整。"
-    locale="zh"
-    className="preview-stage"
-  />
-  <div className="feedback-loop">
-    <article><span>INPUT</span><h3>调整配置</h3><p>Prompt、开场白、模型、语音与通话参数。</p></article>
-    <article><span>RUN</span><h3>发起 Preview</h3><p>在真实通话形态下验证，而不是只看静态表单。</p></article>
-    <article><span>OBSERVE</span><h3>观察运行状态</h3><p>连接、时长、转写、AI 回复与异常信息同步出现。</p></article>
-    <article><span>ITERATE</span><h3>定位并调整</h3><p>把模糊的“效果不好”转成可判断的修改依据。</p></article>
-  </div>
+<section id="validate-release" className="call-dark-band">
+  <h2>让 AI 行为可观测，让发布状态可控制</h2>
+  <div className="call-reading call-reading--lead"><p>Preview 始终位于配置旁，展示连接、通话控制和智能体输出。未发布草稿、已发布版本和恢复入口则把验证延伸到发布管理。</p></div>
+  <div className="call-reading"><p><strong>关键判断：</strong>Preview 不是一个 Demo 入口，而是配置与运行结果之间的反馈回路；版本管理则使修改可追溯、可恢复。</p></div>
+  <CallAgentBrowserVideo src="/videos/call-agent/agent-preview.mp4" poster="/images/call-agent/agent-preview-poster.webp" playbackRate={1.25} title="配置与实时 Preview" description="Preview 从待开始进入连接状态，并显示智能体输出。" />
+  <CallAgentBrowserVideo src="/videos/call-agent/agent-publish.mp4" poster="/images/call-agent/agent-publish-poster.webp" playbackRate={1.35} title="草稿与发布版本" description="侧栏明确区分未发布草稿、已发布版本和恢复操作。" />
 </section>
 
-<section id="decision-operate">
-  <header className="section-heading">
-    <p className="section-index">06 / DESIGN DECISION 03</p>
-    <h2>从 AI Demo 到呼叫运营闭环</h2>
-    <p>发布不是终点，结果可诊断才是产品化</p>
-  </header>
-  <div className="decision-intro">
-    <p className="lead">智能体可以说话，并不等于企业可以运营它。真实呼叫还需要号码、批量任务、发布检查、失败原因、历史筛选、信息提取与数据分析。</p>
-    <p>我把发布后的工作纳入同一任务链，让运营人员能够从任务创建进入执行，再从结果回到诊断，而不是在多个系统之间寻找答案。</p>
-  </div>
-  <EvidenceFigure
-    src="/images/call-agent/outbound-task-creation.png"
-    width={2938}
-    height={1474}
-    alt="外呼任务创建页面并列呈现任务配置和客户号码文件上传"
-    label="PUBLISH → OPERATE"
-    caption="号码、智能体、启动时间与客户文件在一个任务中完成。"
-    locale="zh"
-    className="wide-evidence"
-  />
-  <div className="comparison comparison--history">
-    <EvidenceFigure
-      src="/images/call-agent/before-call-history.png"
-      width={1480}
-      height={430}
-      alt="旧版呼叫历史页面包含密集筛选条件和结果表格"
-      label="BEFORE / 条件平铺"
-      caption="大量筛选条件同时出现，查找与复盘缺少主次。"
-      locale="zh"
-    />
-    <div className="decision-card">
-      <p className="evidence-label">DECISION / 按诊断频率分层</p>
-      <p>保留时间、呼叫类型和搜索作为高频入口；把长尾条件收进“更多设置”，并让已选条件以可撤销标签持续可见。</p>
-    </div>
-    <EvidenceFigure
-      src="/images/call-agent/after-call-history-filters.png"
-      width={2398}
-      height={560}
-      alt="新版呼叫历史顶部按时间、类型和更多设置组织筛选条件"
-      label="AFTER / 结果导向筛选"
-      caption="高频条件优先，长尾条件收纳，当前筛选状态持续可见。"
-      locale="zh"
-    />
-  </div>
-  <div className="operate-strip" aria-label="运营闭环能力">
-    <span>发布检查</span><span>号码管理</span><span>外呼任务</span><span>失败原因</span><span>信息提取</span><span>数据分析</span>
-  </div>
+<section id="operationalize">
+  <h2>发布后，智能体才开始成为真实呼叫工作流</h2>
+  <div className="call-reading call-reading--lead"><p>号码绑定把智能体与录音、转写、信息提取、挂断和人工转接策略连接；外呼任务再组装号码、客户文件、时间与执行规则。</p></div>
+  <div className="call-reading"><p>这两个界面不是功能附录，而是证明产品边界从“配好一个 AI”延伸到“执行一次企业呼叫”。</p></div>
+  <CallAgentBrowserVideo src="/videos/call-agent/agent-connect.mp4" poster="/images/call-agent/agent-connect-poster.webp" playbackRate={1.35} title="内呼连接" description="从号码列表进入绑定弹窗，启用入呼智能体与通话策略。" />
+  <CallAgentBrowserVideo src="/videos/call-agent/agent-operate.mp4" poster="/images/call-agent/agent-operate-poster.webp" playbackRate={1.35} title="外呼运营" description="从任务列表进入创建页，填写基础信息并继续配置外呼任务。" />
 </section>
 
-<section id="system-delivery">
-  <header className="section-heading">
-    <p className="section-index">07 / SYSTEM &amp; DELIVERY</p>
-    <h2>从 Design System 到可执行的工程交付</h2>
-  </header>
-  <div className="system-grid">
-    <div className="token-board" aria-label="设计系统结构示意">
-      <div className="token-row"><span>FOUNDATION</span><b>Color · Type · Spacing · Radius</b></div>
-      <div className="token-row"><span>SEMANTIC</span><b>Surface · Content · Border · Status</b></div>
-      <div className="token-row"><span>COMPONENT</span><b>Input · Select · Table · Navigation</b></div>
-      <div className="component-states" aria-label="组件状态">
-        <button type="button">Default</button><button type="button" className="is-active">Active</button><button type="button" disabled>Disabled</button>
-        <span className="mini-status">Connected</span><span className="mini-status">Failed</span>
-      </div>
-    </div>
-    <div className="reading">
-      <p className="lead">我从 0 到 1 搭建设计系统，将组件、状态与各类 Token 沉淀到产品仓库。随后拉取真实前端代码，复用仓库内的 Design System，通过 AI 辅助编码完成独立高保真前端原型。</p>
-      <p>它不是生产代码，而是一份可运行的交付资料：前端工程师可以直接核对组件、状态和响应式规则，减少从设计稿反推实现细节的成本。</p>
-    </div>
-  </div>
-  <div className="delivery-flow" aria-label="设计到生产页面的交付链路">
-    <div><span>01</span><b>设计规格</b><small>布局、状态与响应式规则</small></div>
-    <div><span>02</span><b>AI 辅助原型</b><small>基于真实仓库验证实现</small></div>
-    <div><span>03</span><b>工程生产页面</b><small>由前端工程师完成正式代码</small></div>
-  </div>
-  <div className="ownership-note">
-    <p><b>责任边界</b> 该高保真前端原型用于验证设计方案并辅助工程交付，未合入生产环境；正式生产代码由前端工程师完成。</p>
-    <p><b>公开证据边界</b> 本案例仅使用已脱敏的产品界面与可确认的过程事实；AI 辅助原型未合入生产，因此不以工程效率或还原度数据作为结果结论。</p>
-  </div>
-</section>
-
-<section id="outcome-learnings">
-  <header className="section-heading">
-    <p className="section-index">08 / OUTCOME &amp; LEARNINGS</p>
-    <h2>阶段结果、证据与反思</h2>
-  </header>
-  <p className="outcome-statement">V1.0 已完成交付并进入有限客户灰度阶段，已向少量企业客户开放，但尚未规模化推广。因此本案例不将灰度状态解释为业务增长结果，而聚焦已建立的产品闭环、设计决策与下一阶段验证基础。</p>
-  <div className="evidence-levels">
-    <article><p className="evidence-label">DELIVERED / 已交付</p><h3>完整产品闭环</h3><p>独立产品边界、配置与 Preview、发布与呼叫运营、Design System 和工程交付资料。</p></article>
-    <article><p className="evidence-label">OBSERVED / 已观察</p><h3>有限范围验证</h3><p>产品、研发、算法、音视频与 QA 内部评审，以及少量客户灰度开放。</p></article>
-    <article><p className="evidence-label">NOT YET VALIDATED</p><h3>尚未规模验证</h3><p>客户任务完成率、Preview 到发布转化、留存与业务增长均没有足够样本。</p></article>
-  </div>
-  <div className="reflection-grid">
-    <div>
-      <p className="section-index">WHAT I LEARNED</p>
-      <h3>AI 产品的确定性，来自可观察的反馈</h3>
-      <p>配置项越专业，越需要把系统状态、运行结果与错误原因前置。Preview 不是附加功能，而是用户建立控制感的核心基础设施。</p>
-    </div>
-    <div>
-      <p className="section-index">NEXT MEASURES</p>
-      <ul><li>首次成功完成智能体配置的时间</li><li>配置错误与自主恢复率</li><li>Preview 到发布的转化</li><li>发布成功率与失败诊断耗时</li></ul>
-    </div>
-  </div>
-  <footer className="case-footer"><p>CALL AGENT · 2026</p><p>AI PRODUCT DESIGN / UX / SYSTEM DELIVERY</p></footer>
+<section id="scope-reflection">
+  <h2>我负责的是把复杂能力变成可理解的产品系统</h2>
+  <div className="call-reading call-reading--lead"><p>我独立负责产品架构、智能体创建与编排、Preview、号码与外呼运营体验；与产品、前后端、AI/算法、音视频工程和 QA 协作。</p></div>
+  <div className="call-reading"><p>Design System 和 AI 辅助原型交付用于统一规则、补齐状态并缩短对齐路径；生产代码、AI/算法实现和通信基础设施不在我的设计职责中。</p><p><strong>反思：</strong>企业 AI 的产品化，不是把所有参数放进后台，而是让复杂度渐进出现、让行为可观测、让发布状态可控制。</p></div>
 </section>

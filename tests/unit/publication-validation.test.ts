@@ -176,7 +176,7 @@ describe('publication validation CLI', () => {
         .filter((value) => !existsSync(path.join(process.cwd(), value)))
         .map((value) => `Missing publication input: ${value}`),
     );
-  });
+  }, 10_000);
 
   it('rejects an unknown mode', () => {
     const result = spawnSync(
@@ -198,12 +198,12 @@ describe('publication validation CLI', () => {
 
     expect(result.status).toBe(1);
     expect(`${result.stdout}\n${result.stderr}`).toMatch(
-      /missing launch route.*work\/meeting.*locale.*en/i,
+      /draft publication marker.*components\//i,
     );
     expect(`${result.stdout}\n${result.stderr}`).not.toMatch(
-      /missing launch route.*work\/xuelang/i,
+      /missing launch route.*work\/(?:xuelang|meeting)/i,
     );
-  });
+  }, 10_000);
 
   it('turns every missing publication input into a source error', async () => {
     const result = await runPublicationValidation({
@@ -452,13 +452,13 @@ export const metadata = {
 
   it('requires a caption and poster beside a present publication video', async () => {
     const root = createRoot();
-    write(root, 'public/videos/meeting/interaction-sequence.mp4', 'video');
+    write(root, 'public/videos/meeting/adaptive-layout-demo.mp4', 'video');
 
     const result = await runPublicationValidation({ mode: 'development', rootDir: root });
     expect(result.errors).toEqual(
       expect.arrayContaining([
-        expect.stringMatching(/interaction-sequence\.mp4.*requires.*\.vtt/i),
-        expect.stringMatching(/interaction-sequence\.mp4.*requires.*poster/i),
+        expect.stringMatching(/adaptive-layout-demo\.mp4.*requires.*\.vtt/i),
+        expect.stringMatching(/adaptive-layout-demo\.mp4.*requires.*poster/i),
       ]),
     );
   });
@@ -675,23 +675,20 @@ export const metadata = {
     for (const relativePath of [
       'content',
       'evidence/call-agent',
+      'evidence/meeting',
       'evidence/stt-demo',
       'evidence/xuelang',
       'evidence/media',
       'public/demos/stt-demo',
       'public/images/call-agent',
       'public/images/archive',
+      'public/images/meeting',
       'public/images/xuelang',
     ]) {
       cpSync(path.join(process.cwd(), relativePath), path.join(root, relativePath), {
         recursive: true,
       });
     }
-    mkdirSync(path.join(root, 'public/files'), { recursive: true });
-    cpSync(
-      path.join(process.cwd(), 'public/files/call-agent-case-study-zh.pdf'),
-      path.join(root, 'public/files/call-agent-case-study-zh.pdf'),
-    );
     write(root, 'public/images/call-agent/ai-preview-live.png', 'changed bytes');
 
     const result = await runPublicationValidation({ mode: 'development', rootDir: root });

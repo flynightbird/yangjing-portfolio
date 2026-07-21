@@ -104,6 +104,7 @@ export async function prepareCallAgentAssets(options = {}) {
   const outputs = new Set();
   const preparedAssets = [];
   for (const [index, asset] of manifest.assets.entries()) {
+    if (asset?.generator === 'prepare-call-agent-videos') continue;
     if (!asset || typeof asset.source !== 'string' || !asset.source) {
       throw new Error(`Manifest asset ${index} must have a source.`);
     }

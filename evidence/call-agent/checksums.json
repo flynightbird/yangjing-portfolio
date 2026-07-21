@@ -2,44 +2,104 @@
   "version": 1,
   "files": [
     {
-      "path": "public/files/call-agent-case-study-zh.pdf",
-      "sha256": "a46c9fb22780c5241e9edd1cd3c74b30f797b84a72700619214094a98b1f8aeb",
-      "kind": "pdf"
-    },
-    {
       "path": "public/images/call-agent/after-call-history-filters.png",
-      "sha256": "7925ccd1dcb95645f1164d875700798b0d4021b6d1544bc3e8f15b87fdd11466",
-      "kind": "image"
+      "kind": "image",
+      "sha256": "7925ccd1dcb95645f1164d875700798b0d4021b6d1544bc3e8f15b87fdd11466"
     },
     {
       "path": "public/images/call-agent/after-resource-management.png",
-      "sha256": "8ebd00de296362f0c48b3bd47ae1245bb5f20f7c8808a270b2d9397e6e02b85f",
-      "kind": "image"
+      "kind": "image",
+      "sha256": "8ebd00de296362f0c48b3bd47ae1245bb5f20f7c8808a270b2d9397e6e02b85f"
+    },
+    {
+      "path": "public/images/call-agent/agent-connect-poster.webp",
+      "kind": "image",
+      "sha256": "4ad0f218e1f6bb2f2259dd33967b61156e46e113d13c7cdf2520f81e5f99ab39"
+    },
+    {
+      "path": "public/images/call-agent/agent-create-poster.webp",
+      "kind": "image",
+      "sha256": "9e0f79bf3a4deba9f7b2880a115f90e816f35c76a7461c98216c528d11259e3f"
+    },
+    {
+      "path": "public/images/call-agent/agent-operate-poster.webp",
+      "kind": "image",
+      "sha256": "b2b4f8ca6462b53c75a9c8367a2cdd5f41c025ee31496f379407dc9653a7ea85"
+    },
+    {
+      "path": "public/images/call-agent/agent-orchestrate-poster.webp",
+      "kind": "image",
+      "sha256": "043f5ce444746e4b52d801327e79fd305b830b1d9ae8a05ca7e83523f3adaf90"
+    },
+    {
+      "path": "public/images/call-agent/agent-preview-poster.webp",
+      "kind": "image",
+      "sha256": "c560d663034eb94e61a6c1bd03e5d6d388e98128fb1b51cb6b00fb512358af00"
+    },
+    {
+      "path": "public/images/call-agent/agent-publish-poster.webp",
+      "kind": "image",
+      "sha256": "f540b74342fc41004c0d616f0f93d3f86bb6dfaf01a18bde6e112583095b8246"
     },
     {
       "path": "public/images/call-agent/ai-preview-live.png",
-      "sha256": "ab1676c09e8ae997c9b9963c17b65d86ed850e6944b42d7b1513a69e6f7d78fc",
-      "kind": "image"
+      "kind": "image",
+      "sha256": "ab1676c09e8ae997c9b9963c17b65d86ed850e6944b42d7b1513a69e6f7d78fc"
     },
     {
       "path": "public/images/call-agent/before-call-history.png",
-      "sha256": "cfd882f8b268b9c9b3ed09936a7215318d000a4c1ecca8f8472c2a7a65f5e285",
-      "kind": "image"
+      "kind": "image",
+      "sha256": "cfd882f8b268b9c9b3ed09936a7215318d000a4c1ecca8f8472c2a7a65f5e285"
     },
     {
       "path": "public/images/call-agent/before-resource-management.jpg",
-      "sha256": "b08a0f770d1272b776e84b0580489b067d6a381d4dcf6b5ae039b402ff6879b1",
-      "kind": "image"
+      "kind": "image",
+      "sha256": "b08a0f770d1272b776e84b0580489b067d6a381d4dcf6b5ae039b402ff6879b1"
+    },
+    {
+      "path": "public/images/call-agent/number-connect.webp",
+      "kind": "image",
+      "sha256": "5203c5514b4d6db06c1889bf9a36e1a4d5f4f36fb8fcb10fdadb612d4b0bc23e"
     },
     {
       "path": "public/images/call-agent/outbound-task-creation.png",
-      "sha256": "ad2460f796027c168635cbd9bc095b535ba01e0dab573ff5125748befb356c8d",
-      "kind": "image"
+      "kind": "image",
+      "sha256": "ad2460f796027c168635cbd9bc095b535ba01e0dab573ff5125748befb356c8d"
     },
     {
       "path": "public/images/call-agent/product-switcher.png",
-      "sha256": "fbad19d8fb06a40de9e5ebadeb1ac672ef6cb87896bf36dd9ce98f18cddbe92a",
-      "kind": "image"
+      "kind": "image",
+      "sha256": "fbad19d8fb06a40de9e5ebadeb1ac672ef6cb87896bf36dd9ce98f18cddbe92a"
+    },
+    {
+      "path": "public/videos/call-agent/agent-connect.mp4",
+      "kind": "video",
+      "sha256": "6226e4db881c3564ff1634b1c8aaed39b635be9174d00bc00479bc30dafbc75b"
+    },
+    {
+      "path": "public/videos/call-agent/agent-create.mp4",
+      "kind": "video",
+      "sha256": "0eee5655ca9e43da60cf8017cb2d8b847c01eaf8b4883992d429a95f0d6e73d9"
+    },
+    {
+      "path": "public/videos/call-agent/agent-operate.mp4",
+      "kind": "video",
+      "sha256": "a7a65bc660fa1f1e05d87e327d062cabfa2098938f74ab829de54055e94064dd"
+    },
+    {
+      "path": "public/videos/call-agent/agent-orchestrate.mp4",
+      "kind": "video",
+      "sha256": "7baf94a6ff3ab5b02aea88cd26232603de038ba4c2a42830b79f7cff02bb76e7"
+    },
+    {
+      "path": "public/videos/call-agent/agent-preview.mp4",
+      "kind": "video",
+      "sha256": "ef004db6b7d02fabfc977e813576adcbb04ae5e3f37bb2a3aa58d182f92780ad"
+    },
+    {
+      "path": "public/videos/call-agent/agent-publish.mp4",
+      "kind": "video",
+      "sha256": "6626167c82657e8a76bdfc8bd80f13a40db74665728a60ee98815f60b3fe99c2"
     }
   ]
 }
