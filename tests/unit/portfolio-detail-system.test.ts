@@ -58,6 +58,7 @@ describe('portfolio detail visual system', () => {
 
   it.each([
     'components/case-study/case-layout.module.css',
+    'components/call-agent/call-agent-layout.module.css',
     'components/meeting/meeting-layout.module.css',
     'components/xuelang/xuelang-layout.module.css',
   ])('%s consumes shared editorial heading tokens', (path) => {
@@ -74,6 +75,8 @@ describe('portfolio detail visual system', () => {
   it.each([
     'components/case-study/case-layout.module.css',
     'components/case-study/evidence-figure.module.css',
+    'components/call-agent/call-agent-layout.module.css',
+    'components/call-agent/call-agent-system-stage.module.css',
     'components/meeting/meeting-layout.module.css',
     'components/meeting/meeting-evidence.module.css',
     'components/meeting/meeting-models.module.css',

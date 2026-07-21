@@ -1,0 +1,32 @@
+.root { margin-top: 56px; }
+.desktopStage { display: grid; grid-template-columns: minmax(280px, .72fr) minmax(0, 1.45fr); gap: clamp(40px, 6vw, 96px); align-items: start; }
+.steps { margin: 0; padding: 0 0 45vh; list-style: none; }
+.steps li { min-height: 33vh; border-top: 1px solid var(--call-line); }
+.steps li:nth-last-child(-n + 2) { min-height: 40vh; }
+.steps li:last-child { border-bottom: 1px solid var(--call-line); }
+.steps button { width: 100%; padding: 28px 0; border: 0; background: transparent; color: var(--call-ink); text-align: left; cursor: pointer; }
+.steps button span { display: block; color: #858991; font: 500 11px/1 var(--call-mono); }
+.steps button strong { display: block; margin-top: 10px; font-size: clamp(1.45rem, 2.3vw, 2.25rem); font-weight: 550; }
+.steps button p { max-width: 36ch; margin: 10px 0 0; color: #737780; line-height: 1.6; }
+.steps li[data-active='true'] button strong { color: var(--call-accent); }
+.mediaStage { position: sticky; top: 13vh; min-height: min(64vw, 700px); }
+.mediaLayer { position: absolute; inset: 0; opacity: 0; visibility: hidden; transform: scale(.985); transition: opacity .42s ease, transform .55s ease, visibility .42s; pointer-events: none; }
+.mediaLayer[data-active='true'] { opacity: 1; visibility: visible; transform: scale(1); pointer-events: auto; }
+.staticSequence { display: none; }
+
+@media (max-width: 1199px) {
+  .desktopStage { grid-template-columns: minmax(230px, .65fr) minmax(0, 1.35fr); gap: 32px; }
+  .steps { padding-bottom: 0; }
+  .steps li { min-height: auto; }
+  .steps li:nth-last-child(-n + 2) { min-height: auto; }
+  .steps button p { display: none; }
+  .mediaStage { top: 100px; min-height: 52vw; }
+}
+
+@media (max-width: 767px), (prefers-reduced-motion: reduce) {
+  .desktopStage { display: none; }
+  .staticSequence { display: grid; gap: 72px; }
+  .staticSequence article > span { color: #858991; font: 500 11px/1 var(--call-mono); }
+  .staticSequence h3 { margin: 10px 0 0; font-size: 1.7rem; }
+  .staticSequence article > p { margin: 10px 0 24px; color: #737780; line-height: 1.65; }
+}

@@ -1,284 +1,69 @@
-import { EvidenceFigure } from '@/components/case-study/evidence-figure'
+import { CallAgentBrowserVideo } from '@/components/call-agent/call-agent-browser-video'
+import { ProductBoundaryDiagram, ProductizationGrid } from '@/components/call-agent/call-agent-diagrams'
+import { CallAgentSystemStage } from '@/components/call-agent/call-agent-system-stage'
 
 export const metadata = {
-  type: 'work',
-  slug: 'call-agent',
-  locale: 'en',
-  translationKey: 'work.call-agent',
-  title: 'Call Agent: make AI visible, testable, and controllable before release',
-  proposition: 'Turn AI calling capabilities that depended on engineering support into a product enterprises can configure, validate, and operate themselves.',
-  role: 'Sole product designer',
-  duration: '9 months',
-  status: 'Limited beta with only a small number of enterprise customers',
-  disclosure: 'This public case uses only redacted product interfaces and confirmed process facts. Customer identities and sensitive configurations are not disclosed.',
-  heroMedia: '/images/call-agent/ai-preview-live.png',
-  evidenceLevel: 'observed',
-  featuredOrder: 2,
-  previousSlug: 'xuelang',
-  nextSlug: 'meeting',
-  caseLabel: 'CALL AGENT / 0→1 AI PRODUCT',
-  facts: [
-    { label: 'Iterations', value: 'Approximately 8 iterations' },
-  ],
+  type: 'work', slug: 'call-agent', locale: 'en', translationKey: 'work.call-agent',
+  title: 'Call Agent: turn conversational AI into an enterprise-operated product',
+  proposition: 'From no complete configuration entry to one workspace for creating, orchestrating, validating, publishing, and operating AI calls.',
+  role: 'Independent 0-to-1 product design owner', duration: '9 months', status: 'Formally launched',
+  disclosure: 'This public case uses redacted product interfaces only. Customer identities, phone numbers, and sensitive configurations are excluded.',
+  heroMedia: '/images/call-agent/agent-preview-poster.webp', evidenceLevel: 'observed', featuredOrder: 2,
+  previousSlug: 'xuelang', nextSlug: 'meeting', caseLabel: 'CALL AGENT / 0→1 AI PRODUCT',
   chapters: [
-    { id: 'overview', label: 'Overview' },
-    { id: 'context-role', label: 'Context & role' },
-    { id: 'design-thesis', label: 'Design thesis' },
-    { id: 'decision-path', label: 'Product boundary' },
-    { id: 'decision-preview', label: 'Live Preview' },
-    { id: 'decision-operate', label: 'Operations loop' },
-    { id: 'system-delivery', label: 'System & delivery' },
-    { id: 'outcome-learnings', label: 'Outcomes & learnings' },
+    { id: 'product-boundary', label: 'Product boundary' }, { id: 'product-system', label: 'Product system' },
+    { id: 'start', label: 'Starting point' }, { id: 'orchestrate', label: 'Layered orchestration' },
+    { id: 'validate-release', label: 'Validate & release' }, { id: 'operationalize', label: 'Operationalize' },
+    { id: 'scope-reflection', label: 'Scope & reflection' },
   ],
 }
 
-<section id="overview">
-  <header className="section-heading">
-    <p className="section-index">01 / OVERVIEW</p>
-    <h2>From AI capability to a workflow that can be released, diagnosed, and operated</h2>
-  </header>
-  <div className="reading">
-    <p className="lead">Make AI visible, testable, and controllable before release, then extend an agent beyond a one-off demo into an enterprise workflow that can be released, diagnosed, and operated.</p>
-    <p>Over 9 months, I worked as the sole product designer across approximately 8 iterations, covering product architecture, agent configuration, live Preview, call operations, the design system, and engineering handoff.</p>
-  </div>
-  <EvidenceFigure
-    src="/images/call-agent/ai-preview-live.png"
-    width={2934}
-    height={1466}
-    alt="Agent configuration and a live call preview shown side by side, with connection status and conversation content on the right"
-    label="LIVE PREVIEW / 00:33"
-    caption="AI configuration and live Preview form a feedback loop: configuration and runtime feedback share one view."
-    locale="en"
-    className="wide-evidence"
-  />
+<section id="product-boundary">
+  <h2>Not another AI demo, but a product customers can configure themselves</h2>
+  <div className="call-reading call-reading--lead"><p>Convo AI is the end-user conversation experience. Call Agent solves a different problem: how enterprise customers configure, validate, publish, and operate those conversational capabilities.</p></div>
+  <div className="call-reading"><p>The capabilities already existed, but customers had no complete configuration entry. I independently owned the 0-to-1 product design, organizing models, voice, prompts, numbers, release state, and operating rules into one workflow.</p></div>
+  <ProductBoundaryDiagram locale="en" />
+  <ProductizationGrid locale="en" />
 </section>
 
-<section id="context-role">
-  <header className="section-heading">
-    <p className="section-index">02 / CONTEXT &amp; ROLE</p>
-    <h2>From a collection of technical capabilities to a calling product</h2>
-  </header>
-  <div className="context-grid">
-    <div className="reading">
-      <p className="lead">To complete one AI call, an enterprise had to cross documentation, APIs, model and voice providers, number configuration, and task systems. The capabilities existed, but customers struggled to integrate them independently or judge whether the AI was actually ready before release.</p>
-      <p>When calling became a core product direction, the existing conversational AI engine evolved into AI Studio. Calling capabilities were separated into an independent intelligent call center entered through the left-side product switcher. This was not a feature merger; it redrew the product boundary around a complete task loop.</p>
-    </div>
-    <aside className="role-ledger" aria-label="My ownership and collaboration scope">
-      <p className="ledger-title">MY OWNERSHIP</p>
-      <ul>
-        <li><span>01</span>Product architecture and core task paths</li>
-        <li><span>02</span>AI configuration, Preview, and exception states</li>
-        <li><span>03</span>Call operations, history, and data analysis</li>
-        <li><span>04</span>Design system and engineering delivery</li>
-      </ul>
-      <p className="collaboration">Partners: product manager, front-end and back-end engineers, AI/algorithm and audio/video engineers, and QA</p>
-    </aside>
-  </div>
-  <div className="boundary-map" aria-label="Product boundary">
-    <div><p className="map-label">AI STUDIO</p><h3>Create and configure general-purpose agents</h3><p>Models, voice, prompts, and shared capabilities</p></div>
-    <div><span>PRODUCT SWITCHER</span></div>
-    <div><p className="map-label">CALL CENTER</p><h3>Operate real calling workflows</h3><p>Numbers, outbound tasks, result diagnosis, and analytics</p></div>
-  </div>
+<section id="product-system">
+  <h2>Define the product through six stages, not technical resource categories</h2>
+  <div className="call-reading"><p>Call operators should not have to learn the underlying capability tree first. The product follows Create → Orchestrate → Preview → Publish → Connect → Operate, with each stage establishing a legible state for the next.</p></div>
+  <CallAgentSystemStage locale="en" />
 </section>
 
-<section id="design-thesis">
-  <header className="section-heading">
-    <p className="section-index">03 / DESIGN THESIS</p>
-    <h2>Not a form, but a verifiable AI workflow</h2>
-  </header>
-  <div className="journey" aria-label="Core workflow: configure, preview, publish, and operate">
-    <div className="journey-step"><span>01</span><b>Configure</b><small>Organize models, voice, and prompts</small></div>
-    <div className="journey-step journey-step--core"><span>02</span><b>Preview</b><small>Observe behavior, state, and errors</small></div>
-    <div className="journey-step"><span>03</span><b>Publish</b><small>Confirm resources and release conditions</small></div>
-    <div className="journey-step"><span>04</span><b>Operate</b><small>Run calls and diagnose outcomes</small></div>
-  </div>
-  <div className="principles">
-    <article><span>01</span><h3>Lower the barrier without removing control</h3><p>Use progressive configuration for different levels of technical fluency while preserving model, voice, and advanced parameters.</p></article>
-    <article><span>02</span><h3>Validate before publishing</h3><p>Map configuration changes immediately to live calls, transcription, connection state, and exception feedback.</p></article>
-    <article><span>03</span><h3>Extend creation into operations</h3><p>Connect numbers, tasks, history, failure causes, and dashboards within one business workflow.</p></article>
-  </div>
+<section id="start">
+  <h2>Give operators a concrete place to begin</h2>
+  <div className="call-reading call-reading--lead"><p>Blank creation preserves freedom. The service template pre-fills a name and description so an operator first encounters a concrete object rather than an empty system.</p></div>
+  <div className="call-reading"><p><strong>Trade-off:</strong> defaults do not replace expert configuration. The template gets someone started while every field remains editable.</p></div>
+  <CallAgentBrowserVideo src="/videos/call-agent/agent-create.mp4" poster="/images/call-agent/agent-create-poster.webp" playbackRate={1.45} title="Create from a template" description="Selecting the service template adds editable defaults and a clear continuation path." />
 </section>
 
-<section id="decision-path">
-  <header className="section-heading">
-    <p className="section-index">04 / DESIGN DECISION 01</p>
-    <h2>Reframe product boundaries and task paths</h2>
-    <p>Shift from “understand the resource structure first” to “complete a calling task first.”</p>
-  </header>
-  <div className="decision-intro">
-    <p className="lead">The early version exposed models, ASR, TTS, MCP, and other resources as primary entry points. That worked for internal teams familiar with the underlying capabilities, but required enterprise customers to understand the system before they could create an agent.</p>
-    <p>I separated calling into its own product, with agents, numbers, outbound tasks, and history as primary navigation. Shared resources became a supporting layer, while the product switcher preserved the relationship with AI Studio.</p>
-  </div>
-  <div className="comparison comparison--asymmetric">
-    <EvidenceFigure
-      src="/images/call-agent/before-resource-management.jpg"
-      width={1360}
-      height={700}
-      alt="The previous resource management page organized the product around multiple resource types and lists"
-      label="BEFORE / Resources as entry points"
-      caption="Layered resource types and long lists dominated the primary path, so users first had to understand the system structure."
-      locale="en"
-    />
-    <div className="decision-card">
-      <p className="evidence-label">DECISION / Organize capabilities around tasks</p>
-      <ol>
-        <li><b>Choose the product first</b><span>Separate general agents from call operations</span></li>
-        <li><b>Then create an agent</b><span>Reveal templates, basic settings, and advanced settings progressively</span></li>
-        <li><b>Show resources when needed</b><span>Reference them in the task instead of requiring every resource up front</span></li>
-      </ol>
-    </div>
-    <EvidenceFigure
-      src="/images/call-agent/product-switcher.png"
-      width={560}
-      height={420}
-      alt="The left product switcher lists Call Agent and AI Studio side by side"
-      label="AFTER / A clear product entry"
-      caption="Capabilities remain connected on one platform while calling gains an independent, focused path."
-      locale="en"
-    />
-  </div>
-  <EvidenceFigure
-    src="/images/call-agent/after-resource-management.png"
-    width={2934}
-    height={1468}
-    alt="The redesigned resources page presents model, voice, and tool resources in one layer"
-    label="AFTER / SHARED RESOURCE LAYER"
-    caption="Models, voice, and tools become a reusable supporting layer."
-    locale="en"
-    className="wide-evidence"
-  />
+<section id="orchestrate">
+  <h2>Reveal complexity progressively instead of removing it</h2>
+  <div className="call-reading call-reading--lead"><p>Basic settings, model and voice, call tuning, and advanced settings form four layers. Frequent decisions come first, while timeout, fallback prompts, and custom parameters remain reachable.</p></div>
+  <div className="call-reading"><p><strong>Trade-off:</strong> over-simplification removes expert control; exposing every field at once obscures the main path. Layering preserves both.</p></div>
+  <CallAgentBrowserVideo src="/videos/call-agent/agent-orchestrate.mp4" poster="/images/call-agent/agent-orchestrate-poster.webp" playbackRate={1.25} title="Agent orchestration layers" description="Basic, model and voice, call tuning, and advanced controls are grouped by task." />
 </section>
 
-<section id="decision-preview" className="band--dark">
-  <header className="section-heading">
-    <p className="section-index">05 / DESIGN DECISION 02 · CORE</p>
-    <h2>Make AI visible, testable, and controllable before release</h2>
-  </header>
-  <div className="preview-thesis">
-    <p className="lead">The hard part of AI configuration was not the number of fields, but the lack of reliable feedback between inputs and behavior. Users could not tell what a prompt, voice, or model change would do, or distinguish a configuration error from a connection issue or model behavior.</p>
-    <div className="signal-legend" aria-label="Live status examples">
-      <span className="state">Connected</span><span className="state">Live transcription</span><span className="state">Needs adjustment</span>
-    </div>
-  </div>
-  <EvidenceFigure
-    src="/images/call-agent/ai-preview-live.png"
-    width={2934}
-    height={1466}
-    alt="Agent configuration and a live call preview shown side by side, with connection status and conversation content on the right"
-    label="CONFIGURATION ↔ RUNTIME"
-    caption="Edit, start a test, observe state, and continue adjusting within the same view."
-    locale="en"
-    className="preview-stage"
-  />
-  <div className="feedback-loop">
-    <article><span>INPUT</span><h3>Adjust configuration</h3><p>Prompt, opening line, model, voice, and call parameters.</p></article>
-    <article><span>RUN</span><h3>Start Preview</h3><p>Validate in a real call format rather than only reading a static form.</p></article>
-    <article><span>OBSERVE</span><h3>Observe runtime state</h3><p>Connection, duration, transcription, AI responses, and exceptions appear together.</p></article>
-    <article><span>ITERATE</span><h3>Diagnose and adjust</h3><p>Turn a vague “it does not work well” into a specific basis for change.</p></article>
-  </div>
+<section id="validate-release" className="call-dark-band">
+  <h2>Make AI behavior observable and release state controllable</h2>
+  <div className="call-reading call-reading--lead"><p>Preview stays beside configuration and exposes connection, call controls, and agent output. Unpublished drafts, released versions, and recovery extend validation into release management.</p></div>
+  <div className="call-reading"><p><strong>Key judgment:</strong> Preview is not a demo entry; it is the feedback loop between configuration and runtime behavior. Version control makes changes traceable and reversible.</p></div>
+  <CallAgentBrowserVideo src="/videos/call-agent/agent-preview.mp4" poster="/images/call-agent/agent-preview-poster.webp" playbackRate={1.25} title="Configuration with live Preview" description="Preview moves from idle to connected and exposes agent output beside configuration." />
+  <CallAgentBrowserVideo src="/videos/call-agent/agent-publish.mp4" poster="/images/call-agent/agent-publish-poster.webp" playbackRate={1.35} title="Draft and released versions" description="The version rail separates an unpublished draft, released versions, and recovery actions." />
 </section>
 
-<section id="decision-operate">
-  <header className="section-heading">
-    <p className="section-index">06 / DESIGN DECISION 03</p>
-    <h2>From an AI demo to a call operations loop</h2>
-    <p>Publishing is not the endpoint; diagnosable outcomes make the capability a product.</p>
-  </header>
-  <div className="decision-intro">
-    <p className="lead">An agent being able to speak does not mean an enterprise can operate it. Real calling also requires numbers, batch tasks, release checks, failure reasons, history filters, information extraction, and data analysis.</p>
-    <p>I brought post-release work into the same task chain so operators could move from task creation into execution, then from results back into diagnosis, instead of searching across multiple systems.</p>
-  </div>
-  <EvidenceFigure
-    src="/images/call-agent/outbound-task-creation.png"
-    width={2938}
-    height={1474}
-    alt="The outbound task creation page shows task configuration next to a customer number file upload"
-    label="PUBLISH → OPERATE"
-    caption="Number, agent, start time, and customer file are completed within one task."
-    locale="en"
-    className="wide-evidence"
-  />
-  <div className="comparison comparison--history">
-    <EvidenceFigure
-      src="/images/call-agent/before-call-history.png"
-      width={1480}
-      height={430}
-      alt="The previous call history page contains dense filter controls and a results table"
-      label="BEFORE / Flat conditions"
-      caption="Many filters appeared at once, leaving search and review without a clear hierarchy."
-      locale="en"
-    />
-    <div className="decision-card">
-      <p className="evidence-label">DECISION / Layer by diagnostic frequency</p>
-      <p>Keep time, call type, and search as frequent entry points; move long-tail conditions into More settings, and keep selected conditions visible as removable tags.</p>
-    </div>
-    <EvidenceFigure
-      src="/images/call-agent/after-call-history-filters.png"
-      width={2398}
-      height={560}
-      alt="The redesigned call history organizes filters by time, call type, and additional settings"
-      label="AFTER / Outcome-oriented filtering"
-      caption="Frequent conditions come first, long-tail conditions are contained, and active filters stay visible."
-      locale="en"
-    />
-  </div>
-  <div className="operate-strip" aria-label="Call operations capabilities">
-    <span>Release checks</span><span>Number management</span><span>Outbound tasks</span><span>Failure reasons</span><span>Information extraction</span><span>Data analysis</span>
-  </div>
+<section id="operationalize">
+  <h2>After publication, an agent becomes part of a real calling workflow</h2>
+  <div className="call-reading call-reading--lead"><p>Number binding connects an agent to recording, transcription, extraction, hang-up, and human-transfer rules. An outbound task then assembles number, agent, customer file, schedule, and execution rules.</p></div>
+  <div className="call-reading"><p>These screens are not a feature appendix. They prove that the product boundary extends from “configure an AI” to “execute an enterprise call.”</p></div>
+  <CallAgentBrowserVideo src="/videos/call-agent/agent-connect.mp4" poster="/images/call-agent/agent-connect-poster.webp" playbackRate={1.35} title="Inbound connection" description="Open number settings and bind the inbound agent with call controls." />
+  <CallAgentBrowserVideo src="/videos/call-agent/agent-operate.mp4" poster="/images/call-agent/agent-operate-poster.webp" playbackRate={1.35} title="Outbound operations" description="Move from the task list into creation and enter the outbound task basics." />
 </section>
 
-<section id="system-delivery">
-  <header className="section-heading">
-    <p className="section-index">07 / SYSTEM &amp; DELIVERY</p>
-    <h2>From design system to executable engineering delivery</h2>
-  </header>
-  <div className="system-grid">
-    <div className="token-board" aria-label="Design system structure">
-      <div className="token-row"><span>FOUNDATION</span><b>Color · Type · Spacing · Radius</b></div>
-      <div className="token-row"><span>SEMANTIC</span><b>Surface · Content · Border · Status</b></div>
-      <div className="token-row"><span>COMPONENT</span><b>Input · Select · Table · Navigation</b></div>
-      <div className="component-states" aria-label="Component states">
-        <button type="button">Default</button><button type="button" className="is-active">Active</button><button type="button" disabled>Disabled</button>
-        <span className="mini-status">Connected</span><span className="mini-status">Failed</span>
-      </div>
-    </div>
-    <div className="reading">
-      <p className="lead">I built the design system from zero to one and established components, states, and token layers in the product repository. I then pulled the real front-end code, reused the repository’s design system, and independently built a high-fidelity front-end prototype with AI-assisted coding.</p>
-      <p>It was not production code. It was executable delivery material that let front-end engineers inspect components, states, and responsive rules directly instead of reverse-engineering implementation details from static design files.</p>
-    </div>
-  </div>
-  <div className="delivery-flow" aria-label="Delivery path from design to production page">
-    <div><span>01</span><b>Design specification</b><small>Layout, states, and responsive rules</small></div>
-    <div><span>02</span><b>AI-assisted prototype</b><small>Validate implementation against the real repository</small></div>
-    <div><span>03</span><b>Production page</b><small>Formal code completed by front-end engineers</small></div>
-  </div>
-  <div className="ownership-note">
-    <p><b>Ownership boundary</b> The high-fidelity front-end prototype was used to validate the design and support engineering delivery. It was not merged into production; front-end engineers completed the formal production code.</p>
-    <p><b>Public evidence boundary</b> This case uses only redacted product interfaces and confirmed process facts. Because the AI-assisted prototype was not merged into production, no engineering-efficiency or production-fidelity metric is presented as an outcome.</p>
-  </div>
-</section>
-
-<section id="outcome-learnings">
-  <header className="section-heading">
-    <p className="section-index">08 / OUTCOME &amp; LEARNINGS</p>
-    <h2>Stage outcomes, evidence, and reflection</h2>
-  </header>
-  <p className="outcome-statement">V1.0 was delivered and entered a limited customer beta. It was opened to only a small number of enterprise customers and has not been promoted at scale. This case therefore does not interpret beta status as a business-growth result; it focuses on the product loop established, the design decisions made, and the foundation for the next stage of validation.</p>
-  <div className="evidence-levels">
-    <article><p className="evidence-label">DELIVERED</p><h3>A complete product loop</h3><p>Independent product boundaries, configuration and Preview, release and call operations, the design system, and engineering delivery material.</p></article>
-    <article><p className="evidence-label">OBSERVED</p><h3>Validation within a limited scope</h3><p>Internal reviews across product, engineering, algorithm, audio/video, and QA, plus access for a small number of beta customers.</p></article>
-    <article><p className="evidence-label">NOT YET VALIDATED</p><h3>Not yet validated at scale</h3><p>Customer task completion, Preview-to-publish conversion, retention, and business growth do not yet have sufficient samples.</p></article>
-  </div>
-  <div className="reflection-grid">
-    <div>
-      <p className="section-index">WHAT I LEARNED</p>
-      <h3>Certainty in an AI product comes from observable feedback</h3>
-      <p>The more specialized the configuration, the more important it is to expose system state, runtime outcomes, and error causes early. Preview is not an add-on; it is the core infrastructure that gives users a sense of control.</p>
-    </div>
-    <div>
-      <p className="section-index">NEXT MEASURES</p>
-      <ul><li>Time to the first successful agent configuration</li><li>Configuration error and self-recovery rate</li><li>Preview-to-publish conversion</li><li>Publish success and time to diagnose failures</li></ul>
-    </div>
-  </div>
-  <footer className="case-footer"><p>CALL AGENT · 2026</p><p>AI PRODUCT DESIGN / UX / SYSTEM DELIVERY</p></footer>
+<section id="scope-reflection">
+  <h2>My role was to turn complex capabilities into an understandable product system</h2>
+  <div className="call-reading call-reading--lead"><p>I independently owned product architecture, agent creation and orchestration, Preview, numbers, and outbound operations, partnering with product, frontend and backend, AI and algorithm, audio/video engineering, and QA.</p></div>
+  <div className="call-reading"><p>The design system and AI-assisted prototype delivery helped align rules, complete states, and shorten handoff loops. Production code, AI implementation, and telephony infrastructure remained outside my design ownership.</p><p><strong>Reflection:</strong> enterprise AI becomes usable when complexity is progressive, behavior is observable, and release state is controllable.</p></div>
 </section>

@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "clips": [
+    {
+      "id": "create",
+      "source": "call agent/创建智能体，预设了默认项.mov",
+      "output": "agent-create.mp4",
+      "start": 3.9,
+      "duration": 7.8,
+      "playbackRate": 1.45,
+      "posterSource": "agent-create-defaults-06-006.24.jpg",
+      "poster": "agent-create-poster.webp",
+      "description": "选择客服模板后，系统预填智能体名称与描述，并保留项目关联和继续编辑入口。"
+    },
+    {
+      "id": "orchestrate",
+      "source": "call agent/智能体编排和预览.mov",
+      "output": "agent-orchestrate.mp4",
+      "start": 0,
+      "duration": 2.85,
+      "playbackRate": 1.25,
+      "posterSource": "replacement-2026-07-21/frame-001.8.jpg",
+      "poster": "agent-orchestrate-poster.webp",
+      "description": "编排页在基础设置、模型与声音、呼叫调优和高级设置之间切换。"
+    },
+    {
+      "id": "preview",
+      "source": "call agent/智能体编排和预览.mov",
+      "output": "agent-preview.mp4",
+      "start": 17.5,
+      "duration": 8,
+      "playbackRate": 1.25,
+      "posterSource": "replacement-2026-07-21/frame-020.0.jpg",
+      "poster": "agent-preview-poster.webp",
+      "description": "配置旁的 Preview 从待开始进入实时连接状态，并显示通话控制和智能体输出。"
+    },
+    {
+      "id": "publish",
+      "source": "call agent/智能体编排页面2.mov",
+      "output": "agent-publish.mp4",
+      "start": 8.2,
+      "duration": 4.4,
+      "playbackRate": 1.35,
+      "posterSource": "agent-orchestration-page-10-010.43.jpg",
+      "poster": "agent-publish-poster.webp",
+      "description": "版本侧栏呈现未发布草稿、已发布版本和版本恢复入口。"
+    },
+    {
+      "id": "connect",
+      "source": "call agent/我的号码.mov",
+      "output": "agent-connect.mp4",
+      "start": 7.5,
+      "duration": 8,
+      "playbackRate": 1.35,
+      "posterSource": "agent-connect-012.0.jpg",
+      "poster": "agent-connect-poster.webp",
+      "description": "从号码列表进入绑定弹窗，启用入呼智能体与通话策略。"
+    },
+    {
+      "id": "operate",
+      "source": "call agent/添加外呼框架.mov",
+      "output": "agent-operate.mp4",
+      "start": 2.8,
+      "duration": 7.2,
+      "playbackRate": 1.35,
+      "posterSource": "agent-operate-009.0.jpg",
+      "poster": "agent-operate-poster.webp",
+      "description": "从外呼任务列表进入创建页，填写任务名称并选择外呼号码。"
+    }
+  ],
+  "images": [
+    {
+      "source": "my-number-06-029.93.jpg",
+      "output": "number-connect.webp",
+      "extract": { "left": 376, "top": 25, "width": 674, "height": 640 },
+      "redactions": [],
+      "description": "号码绑定入呼智能体的配置弹窗，包含信息提取和挂断策略。"
+    }
+  ]
+}

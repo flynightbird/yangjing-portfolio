@@ -7,41 +7,44 @@ import {
 import { getEntry } from '@/content/registry';
 
 const chapterIds = [
-  'overview',
-  'context-role',
-  'design-thesis',
-  'decision-path',
-  'decision-preview',
-  'decision-operate',
-  'system-delivery',
-  'outcome-learnings',
+  'product-boundary',
+  'product-system',
+  'start',
+  'orchestrate',
+  'validate-release',
+  'operationalize',
+  'scope-reflection',
 ] as const;
 
 describe('Call Agent native content registry', () => {
   it.each(['en', 'zh'] as const)(
     'registers the complete %s case-study metadata',
     (locale) => {
-      const { Actions, meta } = getEntry('work', 'call-agent', locale);
+      const { Layout, meta } = getEntry('work', 'call-agent', locale);
 
       expect(meta).toMatchObject({
         type: 'work',
         slug: 'call-agent',
         locale,
         translationKey: 'work.call-agent',
-        heroMedia: '/images/call-agent/ai-preview-live.png',
+        title:
+          locale === 'zh'
+            ? 'Call Agent：把对话式 AI 能力变成企业可自主运营的产品'
+            : 'Call Agent: turn conversational AI into an enterprise-operated product',
+        role:
+          locale === 'zh'
+            ? '独立负责从 0 到 1 的产品设计'
+            : 'Independent 0-to-1 product design owner',
+        status: locale === 'zh' ? '正式上线' : 'Formally launched',
+        heroMedia: '/images/call-agent/agent-preview-poster.webp',
         evidenceLevel: 'observed',
         featuredOrder: 2,
         previousSlug: 'xuelang',
         nextSlug: 'meeting',
         caseLabel: 'CALL AGENT / 0→1 AI PRODUCT',
       });
-      expect(meta.facts).toEqual([
-        {
-          label: locale === 'zh' ? '迭代' : 'Iterations',
-          value: locale === 'zh' ? '约 8 次迭代' : 'Approximately 8 iterations',
-        },
-      ]);
-      expect(Actions).toBeTypeOf('function');
+      expect(meta.facts).toBeUndefined();
+      expect(Layout).toBeTypeOf('function');
       expect(meta.chapters?.map(({ id }) => id)).toEqual(chapterIds);
     },
   );
