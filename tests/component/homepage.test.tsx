@@ -330,6 +330,19 @@ describe('FeaturedWork', () => {
     }
   });
 
+  it.each([
+    { locale: 'en' as const, status: 'Pinned static prototype' },
+    { locale: 'zh' as const, status: '固定版本的静态原型' },
+  ])('removes the homepage STT status row in $locale', ({ locale, status }) => {
+    const { container } = render(<FeaturedWork locale={locale} />);
+    const stt = container.querySelector<HTMLElement>('[data-project-id="stt-demo"]');
+    const sttScope = within(stt as HTMLElement);
+
+    expect(sttScope.getByText('Role')).toBeVisible();
+    expect(sttScope.queryByText('Status')).not.toBeInTheDocument();
+    expect(sttScope.queryByText(status)).not.toBeInTheDocument();
+  });
+
   it('labels both ConvoAI images as temporary placeholders', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const convoAi = container.querySelector<HTMLElement>('[data-project-id="convo-ai"]');
