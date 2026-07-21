@@ -86,7 +86,19 @@ The repeated jsdom `HTMLCanvasElement.getContext()` messages are warnings, not a
 
 ## Dirty-Work Backup
 
-Not created yet.
+Created and verified at `/Users/admin/Documents/作品集-yangjing/.migration-backups/2026-07-21/`.
+
+- Base commit: `a82387fe3129cf9ddba5143318118861c969d805`
+- Source status entries: 67
+- Untracked paths: 340
+- `tracked.patch`: 7.5 MB
+- `untracked.tar.gz`: 87 MB
+- Tracked patch SHA-256: `79680f60bb2690996c48cab9edd921c2c0bc3f5a3968a9318d01b09805a9b4c4`
+- Untracked archive SHA-256: `3f3c2f3da6176ce4873218d99c056262b232415a1a2799c5454c0b521536d483`
+- `tar -tzf` completed successfully.
+- `shasum -a 256 -c SHA256SUMS` reported `OK` for both files.
+- `tracked.patch` passed `git apply --check` in a detached clean worktree at the recorded base.
+- The temporary verification worktree was removed after the check.
 
 ## Extracted Branches
 
