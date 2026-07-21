@@ -40,7 +40,9 @@ test.describe('homepage Footer reveal', () => {
         )
         .toBeCloseTo(1, 1);
       await expect(layer).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
-      await expect(footer.getByRole('link', { name: /yangux@qq\.com/i })).toBeVisible();
+      await expect(
+        footer.getByRole('link', { name: 'amanda.yangj@gmail.com' }),
+      ).toBeVisible();
       await expect(footer.getByText('© 2026 Yang Jing')).toBeVisible();
 
       if (testInfo.project.name === 'desktop') {

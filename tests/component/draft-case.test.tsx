@@ -22,7 +22,7 @@ describe('About framework', () => {
       ),
     ).toBeVisible();
     expect(container.querySelector('[data-publication-state="draft"]')).not.toBeInTheDocument();
-    expect(container.querySelector('a[href="mailto:yangux@qq.com"]')).toBeNull();
+    expect(container.querySelector('a[href="mailto:amanda.yangj@gmail.com"]')).toBeNull();
     expect(container.querySelector('a[href*="linkedin.com"]')).toBeNull();
     expect(container.querySelector('a[href$=".pdf"]')).toBeNull();
     expect(container.querySelector('img')).toBeNull();

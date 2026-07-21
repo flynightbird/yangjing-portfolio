@@ -120,7 +120,9 @@ test.describe('portfolio homepage framework', () => {
           name: locale === 'zh' ? 'More C端用户设计作品' : 'More Consumer Product Work',
         }),
       ).toBeVisible();
-      await expect(page.locator('footer a[href="mailto:yangux@qq.com"]')).toHaveCount(1);
+      await expect(
+        page.locator('footer a[href="mailto:amanda.yangj@gmail.com"]'),
+      ).toHaveCount(2);
 
       await expect(page.locator('[data-project-kind="build-lab"]')).toHaveCount(1);
       await expect(page.locator('[data-archive-card]')).toHaveCount(4);
