@@ -80,6 +80,36 @@ describe('homepage project contract', () => {
 });
 
 describe('Visual Archive contract', () => {
+  it('publishes the approved ordered galleries for Doudou Fox and MR CHONG', () => {
+    const doudou = archiveProjects.find(
+      (project) => project.key === 'bytedance-doudou-fox',
+    );
+    const mrChong = archiveProjects.find(
+      (project) => project.key === 'tongcheng-mr-chong',
+    );
+
+    expect(doudou?.gallery?.map((image) => image.src)).toEqual([
+      '/images/archive/details/doudou-fox/01-goal.webp',
+      '/images/archive/details/doudou-fox/02-framework.webp',
+      '/images/archive/details/doudou-fox/03-task-system.webp',
+      '/images/archive/details/doudou-fox/04-reward-spectrum.webp',
+      '/images/archive/details/doudou-fox/05-world-progression.webp',
+      '/images/archive/details/doudou-fox/06-entry-and-stop.webp',
+      '/images/archive/details/doudou-fox/07-end-to-end.webp',
+    ]);
+    expect(mrChong?.gallery?.map((image) => image.src)).toEqual([
+      '/images/archive/details/mr-chong/01-character-direction.webp',
+      '/images/archive/details/mr-chong/02-posture-exploration.webp',
+      '/images/archive/details/mr-chong/03-travel-scene.webp',
+      '/images/archive/details/mr-chong/04-final-render.webp',
+    ]);
+
+    for (const project of [doudou, mrChong]) {
+      expect(project?.gallery?.every((image) => image.alt.en && image.alt.zh)).toBe(true);
+      expect(project?.gallery?.every((image) => image.src.startsWith('/images/archive/'))).toBe(true);
+    }
+  });
+
   it('publishes the four approved archive projects in order', () => {
     expect(archiveProjects.map((project) => project.key)).toEqual([
       'alibaba-meipingmeiwu',
@@ -94,14 +124,14 @@ describe('Visual Archive contract', () => {
       'mr-chong',
     ]);
 
-    expect(archiveProjects[0]).toMatchObject({
-      destination: 'internal-case',
-      href: 'work/tangping/',
-      title: { primary: { en: 'Tangping', zh: '躺平' } },
-    });
-    expect(archiveProjects.slice(1).every(({ destination }) => destination === 'lightbox-only')).toBe(
+    expect(archiveProjects).toHaveLength(4);
+    expect(archiveProjects.every(({ destination }) => destination === 'lightbox-only')).toBe(
       true,
     );
+    expect(archiveProjects.some((project) => 'href' in project)).toBe(false);
+    expect(archiveProjects[0]).toMatchObject({
+      title: { primary: { en: 'Tangping', zh: '躺平' } },
+    });
 
     for (const project of archiveProjects) {
       expect(project.kind).toBe('real-entry');

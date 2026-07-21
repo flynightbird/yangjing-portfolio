@@ -1,5 +1,5 @@
-import { cleanup, render, screen, within } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AboutPreview } from '@/components/home/about-preview';
 import { DualIdentityHero } from '@/components/home/dual-identity-hero';
@@ -72,7 +72,9 @@ describe('IntroStory', () => {
       '嗨，我是杨静，一名拥有十多年经验的 UX/UI 设计师。',
     );
     expect(scenes[1]).toHaveTextContent(/将复杂状态转化为清晰、可控的产品体验/);
-    expect(scenes[2]).toHaveTextContent(/从概念、原型走向真实体验/);
+    expect(scenes[2]).toHaveTextContent(
+      '现在，我也使用 AI 将设计判断转化为可运行的产品，从概念、原型走向真实体验。',
+    );
     expect(scenes[0]).toHaveTextContent(
       '欢迎来到这个由我亲手设计，并通过 Vibe Coding 构建的作品集。',
     );
@@ -132,6 +134,32 @@ describe('FeaturedWork', () => {
     ).toEqual(['call-agent', 'convo-ai', 'meeting']);
   });
 
+  it('uses one homepage CTA size hook and destination-aware external icons', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+    const ctas = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-home-project-cta]'),
+    );
+
+    expect(ctas).toHaveLength(6);
+    expect(
+      screen
+        .getByRole('link', { name: 'View case study ConvoAI' })
+        .querySelector('[data-remix-icon="arrow-right-up-line"]'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen
+        .getByRole('link', { name: /Visit live site AIDX/ })
+        .querySelector('[data-remix-icon="arrow-right-up-line"]'),
+    ).toBeInTheDocument();
+
+    const stt = container.querySelector<HTMLElement>('[data-project-id="stt-demo"]');
+    expect(
+      within(stt as HTMLElement)
+        .getByRole('link', { name: /Explore Build Lab/ })
+        .querySelector('[data-remix-icon="arrow-right-up-line"]'),
+    ).toBeInTheDocument();
+  });
+
   it('uses dark same-tab transitions for Call Agent and secure external links for ConvoAI', () => {
     const { container } = render(<FeaturedWork locale="en" />);
 
@@ -153,6 +181,29 @@ describe('FeaturedWork', () => {
       expect(link.getAttribute('rel')).toContain('noreferrer');
     }
   });
+
+  it.each([
+    {
+      locale: 'zh' as const,
+      convoAction: '查看案例 ConvoAI',
+      sttProposition: '让双语对话在实时转写与翻译中清晰呈现。',
+    },
+    {
+      locale: 'en' as const,
+      convoAction: 'View case study ConvoAI',
+      sttProposition:
+        'Keep bilingual conversation clear through real-time transcription and translation.',
+    },
+  ])(
+    'renders the approved $locale project copy',
+    ({ locale, convoAction, sttProposition }) => {
+      const { container } = render(<FeaturedWork locale={locale} />);
+      const stt = container.querySelector<HTMLElement>('[data-project-id="stt-demo"]');
+
+      expect(screen.getByRole('link', { name: convoAction })).toBeVisible();
+      expect(within(stt as HTMLElement).getByText(sttProposition)).toBeVisible();
+    },
+  );
 
   it('defaults to Call Agent focus and marks ConvoAI media as temporary', () => {
     const { container } = render(<FeaturedWork locale="en" />);
@@ -246,10 +297,19 @@ describe('FeaturedWork', () => {
       'src',
       '/images/xuelang/hero-panorama.webp',
     );
-    expect(screen.getByRole('img', { name: /Call Agent configuration/i })).toHaveAttribute(
-      'src',
-      '/images/call-agent/ai-preview-live.png',
+    const callAgent = container.querySelector<HTMLElement>('[data-project-id="call-agent"]');
+    const studioFrame = callAgent?.querySelector<HTMLIFrameElement>('[data-convo-studio-frame]');
+    expect(callAgent?.querySelector('[data-convo-studio-window]')).toHaveAttribute(
+      'data-locale',
+      'en',
     );
+    expect(studioFrame).toHaveAttribute('src', '/demos/convo-ai-studio/en/index.html');
+    expect(studioFrame).toHaveAttribute('tabindex', '-1');
+    expect(studioFrame).toHaveAttribute('aria-hidden', 'true');
+    expect(studioFrame).toHaveAttribute('sandbox', 'allow-scripts');
+    expect(
+      callAgent?.querySelectorAll('[data-media-radius="20"] a'),
+    ).toHaveLength(1);
     expect(screen.getByRole('img', { name: /AIDX public website homepage/i })).toHaveAttribute(
       'width',
       '1440',
@@ -272,6 +332,16 @@ describe('FeaturedWork', () => {
     expect(sttDemo?.querySelector('[data-stt-browser-window]')).toBeInTheDocument();
   });
 
+  it('uses the localized Chinese Convo AI Studio document inside Call Agent', () => {
+    const { container } = render(<FeaturedWork locale="zh" />);
+    const frame = container.querySelector<HTMLIFrameElement>(
+      '[data-project-id="call-agent"] [data-convo-studio-frame]',
+    );
+
+    expect(frame).toHaveAttribute('src', '/demos/convo-ai-studio/zh/index.html');
+    expect(frame).toHaveAttribute('title', '声网 Convo AI Studio 控制台预览');
+  });
+
   it('opens the complete STT Demo directly from both homepage actions', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const sttDemo = container.querySelector<HTMLElement>('[data-project-id="stt-demo"]');
@@ -284,6 +354,19 @@ describe('FeaturedWork', () => {
       expect(link.getAttribute('rel')).toContain('noopener');
       expect(link.getAttribute('rel')).toContain('noreferrer');
     }
+  });
+
+  it.each([
+    { locale: 'en' as const, status: 'Pinned static prototype' },
+    { locale: 'zh' as const, status: '固定版本的静态原型' },
+  ])('removes the homepage STT status row in $locale', ({ locale, status }) => {
+    const { container } = render(<FeaturedWork locale={locale} />);
+    const stt = container.querySelector<HTMLElement>('[data-project-id="stt-demo"]');
+    const sttScope = within(stt as HTMLElement);
+
+    expect(sttScope.getByText('Role')).toBeVisible();
+    expect(sttScope.queryByText('Status')).not.toBeInTheDocument();
+    expect(sttScope.queryByText(status)).not.toBeInTheDocument();
   });
 
   it('labels both ConvoAI images as temporary placeholders', () => {
@@ -303,6 +386,37 @@ describe('FeaturedWork', () => {
 });
 
 describe('VisualArchive', () => {
+  it('forwards vertical wheel movement once per animation frame without cancelling it', () => {
+    const scrollBy = vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);
+    const frames: FrameRequestCallback[] = [];
+    const requestFrame = vi
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => {
+        frames.push(callback);
+        return frames.length;
+      });
+    const { container } = render(<VisualArchive locale="en" />);
+    const scroller = container.querySelector('[data-archive-scroller]');
+    if (!(scroller instanceof HTMLElement)) throw new Error('Missing archive scroller');
+
+    const wheels = [200, 180, 120].map((deltaY) => new WheelEvent('wheel', {
+        bubbles: true,
+        cancelable: true,
+        deltaY,
+      }));
+    wheels.forEach((wheel) => fireEvent(scroller, wheel));
+
+    expect(wheels.every((wheel) => !wheel.defaultPrevented)).toBe(true);
+    expect(frames).toHaveLength(1);
+    expect(scrollBy).not.toHaveBeenCalled();
+    frames[0]?.(0);
+    expect(scrollBy).toHaveBeenCalledOnce();
+    expect(scrollBy).toHaveBeenCalledWith({ top: 500, behavior: 'auto' });
+
+    requestFrame.mockRestore();
+    scrollBy.mockRestore();
+  });
+
   it('renders four real projects with distinct cover treatments', () => {
     const { container } = render(<VisualArchive locale="en" />);
 
@@ -332,6 +446,11 @@ describe('VisualArchive', () => {
     expect(
       screen.getByRole('heading', { name: 'More Consumer Product Work' }),
     ).toBeVisible();
+    expect(
+      screen.getByText(
+        'More design work, presented through a lightweight, image-led selection of product, brand, and character projects.',
+      ),
+    ).toBeVisible();
     expect(screen.getByText('Alibaba')).toBeVisible();
     expect(screen.getAllByText('ByteDance')).toHaveLength(2);
     expect(screen.getByText('Tongcheng Travel')).toBeVisible();
@@ -339,10 +458,11 @@ describe('VisualArchive', () => {
     expect(container.querySelector('[data-cover-variant="doudou-fox"] [data-archive-period]')).toHaveTextContent('2021.09–10');
     expect(screen.getByText('Tangping')).toBeVisible();
     expect(screen.queryByText('Mei Ping Mei Wu')).not.toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'View project: Tangping' })).toHaveAttribute(
-      'href',
-      '/en/work/tangping/',
-    );
+    const archive = screen.getByRole('region', { name: 'Visual Archive projects' });
+    expect(
+      within(archive).getAllByRole('button', { name: /^Open project image:/ }),
+    ).toHaveLength(4);
+    expect(within(archive).queryByRole('link', { name: /Tangping/ })).not.toBeInTheDocument();
     expect(screen.getByText('Design Principles')).toBeVisible();
     expect(screen.getByText('Doudou Fox')).toBeVisible();
     expect(screen.getByText('MR CHONG')).toBeVisible();
@@ -361,20 +481,72 @@ describe('VisualArchive', () => {
     expect(
       screen.getByRole('heading', { name: 'More C端用户设计作品' }),
     ).toBeVisible();
+    expect(
+      screen.getByText(
+        '更多设计作品，将以图片为主，轻量呈现产品、品牌与角色设计作品。',
+      ),
+    ).toBeVisible();
     expect(screen.getByRole('button', { name: '上一个视觉项目' })).toBeVisible();
     expect(screen.getByRole('button', { name: '下一个视觉项目' })).toBeVisible();
     expect(screen.getByText('躺平')).toBeVisible();
     expect(screen.queryByText('每平每屋')).not.toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '查看项目：躺平' })).toHaveAttribute(
-      'href',
-      '/zh/work/tangping/',
-    );
+    const archive = screen.getByRole('region', { name: '视觉作品集项目' });
+    expect(
+      within(archive).getAllByRole('button', { name: /^打开项目图片:/ }),
+    ).toHaveLength(4);
+    expect(within(archive).queryByRole('link', { name: /躺平/ })).not.toBeInTheDocument();
     expect(screen.getByText('开言设计原则')).toBeVisible();
     expect(screen.getByText('豆豆狐')).toBeVisible();
     expect(
       screen.getByText(/阿里巴巴旗下的家居装修设计师工具和平台/),
     ).toBeVisible();
     expect(screen.getAllByText('技能')).toHaveLength(4);
+  });
+
+  it('opens the ordered Doudou Fox and MR CHONG galleries with English controls', () => {
+    const { baseElement } = render(<VisualArchive locale="en" />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open project image: Doudou Fox' }));
+
+    expect(screen.getByRole('dialog', { name: /Doudou Fox/ })).toHaveAttribute(
+      'data-lightbox-variant',
+      'archive',
+    );
+    expect(screen.getByText('01 / 07')).toBeVisible();
+    expect(
+      screen.getByRole('button', { name: 'Previous gallery image' }),
+    ).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Next gallery image' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Close image' })).toBeVisible();
+    expect(baseElement.querySelectorAll('[data-gallery-mobile] img')).toHaveLength(7);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close image' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Open project image: MR CHONG' }));
+
+    expect(
+      screen.getByRole('status', { name: 'Gallery position: 01 / 04' }),
+    ).toHaveTextContent('01 / 04');
+    expect(baseElement.querySelectorAll('[data-gallery-mobile] img')).toHaveLength(4);
+  });
+
+  it('opens the ordered Doudou Fox and MR CHONG galleries with Chinese controls', () => {
+    const { baseElement } = render(<VisualArchive locale="zh" />);
+
+    fireEvent.click(screen.getByRole('button', { name: '打开项目图片: 豆豆狐' }));
+
+    expect(screen.getByText('01 / 07')).toBeVisible();
+    expect(screen.getByRole('button', { name: '上一张图片' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '下一张图片' })).toBeVisible();
+    expect(screen.getByRole('button', { name: '关闭图片' })).toBeVisible();
+    expect(baseElement.querySelectorAll('[data-gallery-mobile] img')).toHaveLength(7);
+
+    fireEvent.click(screen.getByRole('button', { name: '关闭图片' }));
+    fireEvent.click(screen.getByRole('button', { name: '打开项目图片: MR CHONG' }));
+
+    expect(screen.getByRole('status', { name: '画廊位置: 01 / 04' })).toHaveTextContent(
+      '01 / 04',
+    );
+    expect(baseElement.querySelectorAll('[data-gallery-mobile] img')).toHaveLength(4);
   });
 });
 

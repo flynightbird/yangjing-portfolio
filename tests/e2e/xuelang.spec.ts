@@ -60,7 +60,12 @@ test.describe('Xuelang case study', () => {
       await expect(page.locator('[data-testid="learning-state"]')).toHaveCount(5);
       await expect(page.getByRole('navigation', { name: locale === 'zh' ? '项目导航' : 'Project navigation' })).toHaveCount(0);
 
-      const evidence = page.locator('[data-evidence] img, [data-wipe-interactive] img');
+      const evidence = page.locator([
+        '[data-evidence] img',
+        '[data-wipe-interactive] img',
+        '[data-course-entry-interactive] img',
+        '[data-interaction-board] img',
+      ].join(', '));
       expect(await evidence.count()).toBeGreaterThanOrEqual(12);
       for (let index = 0; index < await evidence.count(); index += 1) {
         const image = evidence.nth(index);
@@ -81,7 +86,7 @@ test.describe('Xuelang case study', () => {
       await expect(page.locator('main')).not.toContainText(/灰度|gray release|long-term validated/i);
 
       const email = locale === 'zh' ? 'yangux@qq.com' : 'amanda.yangj@gmail.com';
-      await expect(page.getByRole('link', { name: email })).toHaveAttribute(
+      await expect(page.locator('#results').getByRole('link', { name: email })).toHaveAttribute(
         'href',
         `mailto:${email}`,
       );

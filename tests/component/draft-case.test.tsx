@@ -10,14 +10,19 @@ describe('About framework', () => {
     const page = await AboutPage({ params: Promise.resolve({ locale: 'en' }) });
     const { container } = render(page);
 
-    expect(screen.getByRole('heading', { level: 1, name: 'About Yang Jing' })).toBeVisible();
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'AI-native product designer. Product judgment, made tangible.',
+      }),
+    ).toBeVisible();
     expect(
       screen.getByText(
-        'From large-scale consumer product design, into complex B2B and AI systems, then into AI-assisted product building.',
+        'I use strong UI and UX craft to untangle complex product problems, then turn ideas into interactive, testable experiences.',
       ),
     ).toBeVisible();
     expect(container.querySelector('[data-publication-state="draft"]')).not.toBeInTheDocument();
-    expect(container.querySelector('a[href="mailto:yangux@qq.com"]')).toBeInTheDocument();
+    expect(container.querySelector('a[href="mailto:yangux@qq.com"]')).toBeNull();
     expect(container.querySelector('a[href*="linkedin.com"]')).toBeNull();
     expect(container.querySelector('a[href$=".pdf"]')).toBeNull();
     expect(container.querySelector('img')).toBeNull();

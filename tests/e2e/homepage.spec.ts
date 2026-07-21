@@ -1,6 +1,21 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('portfolio homepage framework', () => {
+  test('does not show field labels in the hero corners', async ({ page }) => {
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const fieldLabels = await page.evaluate(() => {
+      const builder = document.querySelector('[data-hero-code-canvas]')?.parentElement;
+      const designer = document.querySelector('[data-designer-art="material-blueprint"]')?.parentElement;
+
+      return [builder, designer].map((field) =>
+        field ? getComputedStyle(field, '::after').content : null,
+      );
+    });
+
+    expect(fieldLabels).toEqual(['none', 'none']);
+  });
+
   test('uses the dark theme by default without exposing a theme switcher', async ({
     page,
   }) => {
@@ -65,6 +80,29 @@ test.describe('portfolio homepage framework', () => {
       await expect(page.locator('[data-company-mark]')).toHaveCount(6);
       await expect(page.locator('[data-project-meta]')).toHaveCount(6);
       await expect(page.locator('[data-cta-treatment="white"]')).toHaveCount(3);
+      const projectCtas = page.locator('[data-home-project-cta]');
+      await expect(projectCtas).toHaveCount(6);
+      expect(await projectCtas.evaluateAll((ctas) => ctas.map((cta) => {
+        const style = getComputedStyle(cta);
+        return {
+          height: style.height,
+          fontSize: style.fontSize,
+          fontWeight: style.fontWeight,
+        };
+      }))).toEqual(Array.from({ length: 6 }, () => ({
+        height: '48px',
+        fontSize: '14px',
+        fontWeight: '500',
+      })));
+      await expect(
+        page.locator('[data-project-id="convo-ai"] [data-home-project-cta] [data-remix-icon]'),
+      ).toHaveCount(0);
+      await expect(
+        page.locator('[data-project-id="aidx"] [data-home-project-cta] [data-remix-icon]'),
+      ).toHaveCount(1);
+      await expect(
+        page.locator('[data-project-id="stt-demo"] [data-home-project-cta] [data-remix-icon]'),
+      ).toHaveCount(1);
       await expect(page.locator('[data-project-chapter]')).toHaveCount(4);
       await expect(page.locator('[data-aidx-showcase]')).toHaveCount(1);
       await expect(page.locator('[data-aidx-browser]')).toHaveAttribute(
@@ -89,8 +127,10 @@ test.describe('portfolio homepage framework', () => {
       await expect(page.locator('[data-archive-slot]')).toHaveCount(0);
       await expect(page.locator('[data-cover-variant]')).toHaveCount(4);
       await expect(
-        page.locator('[data-archive-card]').first().getByRole('link'),
-      ).toHaveAttribute('href', `/${locale}/work/tangping/`);
+        page.locator('[data-archive-card]').first().getByRole('button', {
+          name: locale === 'zh' ? /打开项目图片: 躺平/ : /Open project image: Tangping/,
+        }),
+      ).toBeVisible();
       await expect(page.locator('[data-project-id="xuelang"] a')).toHaveAttribute(
         'href',
         `/${locale}/work/xuelang/`,
@@ -175,6 +215,24 @@ test.describe('portfolio homepage framework', () => {
       'dark',
     );
     await page.waitForURL('**/en/work/call-agent/');
+  });
+
+  test('opens the latest Xuelang evidence case from the homepage', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'One canonical entry path is sufficient.');
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    await page
+      .getByRole('link', {
+        name: 'View case study Xuelang Commercial Experience Upgrade',
+      })
+      .click();
+    await page.waitForURL('**/en/work/xuelang/');
+
+    await expect(page.locator('[data-hero-product-state]')).toHaveCount(4);
+    await expect(page.locator('[data-course-entry-interactive]')).toHaveCount(1);
+    await expect(page.locator('[data-interaction-board]')).toHaveCount(1);
   });
 
   test('has no page-level horizontal overflow', async ({ page }) => {
@@ -290,10 +348,54 @@ test.describe('portfolio homepage framework', () => {
     await expect(stage).toHaveAttribute('data-flagship-focus', 'call-agent');
     await expect(callMedia).toHaveCSS('border-radius', '20px');
     await expect(convoMedia).toHaveCSS('border-radius', '20px');
-    await expect(callMedia).toHaveCSS('background-color', 'rgb(86, 91, 85)');
-    await expect(convoMedia).toHaveCSS('background-color', 'rgb(73, 79, 88)');
+    await expect(callMedia).toHaveCSS('background-color', 'rgb(232, 221, 187)');
+    await expect(convoMedia).toHaveCSS('background-color', 'rgb(220, 233, 239)');
     await expect(callMedia).toHaveCSS('background-image', 'none');
     await expect(convoMedia).toHaveCSS('background-image', 'none');
+
+    const studioFrame = callMedia.locator('[data-convo-studio-frame]');
+    await expect(studioFrame).toHaveAttribute(
+      'src',
+      '/demos/convo-ai-studio/en/index.html',
+    );
+    await expect(studioFrame).toHaveAttribute('tabindex', '-1');
+    await expect(studioFrame).toHaveCSS('pointer-events', 'none');
+    await expect(callMedia.locator('a')).toHaveCount(1);
+
+    const callBox = await callMedia.boundingBox();
+    expect(callBox).not.toBeNull();
+    await page.mouse.move(
+      (callBox?.x ?? 0) + (callBox?.width ?? 0) * 0.8,
+      (callBox?.y ?? 0) + (callBox?.height ?? 0) * 0.3,
+    );
+    await expect
+      .poll(() =>
+        callMedia.evaluate((element) =>
+          getComputedStyle(element).getPropertyValue('--studio-drift-x').trim(),
+        ),
+      )
+      .not.toBe('0px');
+
+    const studioDocument = studioFrame.contentFrame();
+    const studioSidebar = studioDocument.locator('[data-studio-sidebar]');
+    const studioScrollPanel = studioDocument.locator('[data-studio-scroll-panel]');
+    const sidebarStart = await studioSidebar.evaluate(
+      (element) => element.getBoundingClientRect().y,
+    );
+    const panelTransformStart = await studioScrollPanel.evaluate(
+      (element) => getComputedStyle(element).transform,
+    );
+
+    await page.waitForTimeout(2400);
+
+    const sidebarEnd = await studioSidebar.evaluate(
+      (element) => element.getBoundingClientRect().y,
+    );
+    const panelTransformEnd = await studioScrollPanel.evaluate(
+      (element) => getComputedStyle(element).transform,
+    );
+    expect(sidebarEnd).toBeCloseTo(sidebarStart, 4);
+    expect(panelTransformEnd).not.toBe(panelTransformStart);
 
     await convoMedia.hover();
     await expect(stage).toHaveAttribute('data-flagship-focus', 'convo-ai');
@@ -319,6 +421,19 @@ test.describe('portfolio homepage framework', () => {
     expect(convoBox?.y ?? 0).toBeGreaterThan((callBox?.y ?? 0) + (callBox?.height ?? 0));
     await expect(callMedia).toHaveCSS('transform', 'none');
     await expect(convoMedia).toHaveCSS('transform', 'none');
+    await expect(callMedia.locator('[data-convo-studio-window]')).toHaveCSS(
+      'transform',
+      'none',
+    );
+    const studioFrame = callMedia.locator('[data-convo-studio-frame]');
+    const scrollPanel = studioFrame.contentFrame().locator('[data-studio-scroll-panel]');
+    const transformStart = await scrollPanel.evaluate(
+      (element) => getComputedStyle(element).transform,
+    );
+    await page.waitForTimeout(1200);
+    await expect
+      .poll(() => scrollPanel.evaluate((element) => getComputedStyle(element).transform))
+      .toBe(transformStart);
   });
 
   test('uses a media-dominant STT stage with direct prototype actions', async ({
@@ -456,6 +571,39 @@ test.describe('portfolio homepage framework', () => {
     expect(
       await scroller.evaluate((element) => getComputedStyle(element).scrollSnapType),
     ).toContain('x');
+    await expect(archive).toHaveCSS('border-bottom-width', '0px');
+  });
+
+  test('keeps AIDX navigation visible and centers the Xuelang media', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'Desktop project geometry contract.');
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const aidx = page.locator('[data-aidx-showcase]');
+    await aidx.scrollIntoViewIfNeeded();
+    const frame = aidx.locator('iframe');
+    await expect(frame).toBeAttached();
+    await expect
+      .poll(() =>
+        frame.evaluate((element: HTMLIFrameElement) => {
+          const video = element.contentDocument?.querySelector('video');
+          return video ? getComputedStyle(video).objectPosition : null;
+        }),
+      )
+      .toBe('50% 0%');
+
+    const xuelang = page.locator('[data-project-id="xuelang"]');
+    const inner = xuelang.locator('> div');
+    const media = xuelang.locator('[data-project-media-frame]');
+    const [innerBox, mediaBox] = await Promise.all([
+      inner.boundingBox(),
+      media.boundingBox(),
+    ]);
+    if (!innerBox || !mediaBox) throw new Error('Missing Xuelang project geometry');
+    const topSpace = mediaBox.y - innerBox.y;
+    const bottomSpace = innerBox.y + innerBox.height - mediaBox.y - mediaBox.height;
+    expect(Math.abs(topSpace - bottomSpace)).toBeLessThanOrEqual(4);
   });
 
   test('keeps vertical page scrolling active over the Visual Archive', async ({ page }, testInfo) => {
@@ -539,6 +687,260 @@ test.describe('portfolio homepage framework', () => {
       'true',
     );
     await expect(next).toBeDisabled();
+  });
+
+  test('archive gallery restores desktop position and focus after keyboard navigation', async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      testInfo.project.name === 'mobile',
+      'Desktop gallery behavior is hidden below the desktop gallery breakpoint.',
+    );
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const archive = page.locator('[data-archive-carousel]');
+    const alibabaTrigger = archive.getByRole('button', {
+      name: 'Open project image: Tangping',
+    });
+    const pathnameBeforeOpen = new URL(page.url()).pathname;
+    await alibabaTrigger.scrollIntoViewIfNeeded();
+    await alibabaTrigger.click();
+    const alibabaDialog = page.getByRole('dialog', { name: /Tangping/ });
+    await expect(alibabaDialog).toBeVisible();
+    await expect(alibabaDialog).toHaveAttribute('data-lightbox-variant', 'archive');
+    expect(new URL(page.url()).pathname).toBe(pathnameBeforeOpen);
+    await page.getByRole('button', { name: 'Close image' }).click();
+    await expect(alibabaDialog).toHaveCount(0);
+
+    const trigger = archive.getByRole('button', {
+      name: 'Open project image: Doudou Fox',
+    });
+    await trigger.evaluate((element) => {
+      element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+    });
+    await expect(trigger).toBeVisible();
+    await page.evaluate(async () => {
+      const nextFrame = () => new Promise<void>((resolve) => {
+        requestAnimationFrame(() => resolve());
+      });
+      let previous = window.scrollY;
+
+      for (let attempt = 0; attempt < 10; attempt += 1) {
+        await nextFrame();
+        const current = window.scrollY;
+        await nextFrame();
+        if (current === previous && window.scrollY === current) return;
+        previous = window.scrollY;
+      }
+
+      throw new Error('Page scroll did not settle before opening the archive gallery');
+    });
+
+    const scrollBeforeOpen = await page.evaluate(() => window.scrollY);
+
+    await trigger.click();
+    const dialog = page.getByRole('dialog', { name: /Doudou Fox/ });
+    const desktopGallery = page.locator('[data-gallery-desktop]');
+    const mobileGallery = page.locator('[data-gallery-mobile]');
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAttribute('data-lightbox-variant', 'archive');
+    await expect(dialog.locator('[data-gallery-stage="true"]')).toHaveCSS(
+      'border-radius',
+      '24px',
+    );
+    await expect(dialog.locator('[data-lightbox-rail]')).toBeVisible();
+    await expect(desktopGallery).toBeVisible();
+    await expect(mobileGallery).toBeHidden();
+    await expect(desktopGallery.locator('img')).toHaveCount(1);
+    const rail = dialog.locator('[data-lightbox-rail]');
+    const canvasControls = dialog.locator('[data-lightbox-canvas-controls]');
+    const counter = rail.locator('[data-lightbox-counter]');
+    const title = rail.getByRole('heading');
+    await expect(canvasControls).toBeVisible();
+    await expect(rail.locator('[data-lightbox-canvas-controls]')).toHaveCount(0);
+    await expect(title).toHaveCSS('writing-mode', 'vertical-rl');
+    expect(await title.evaluate((element) => {
+      const matrix = new DOMMatrixReadOnly(getComputedStyle(element).transform);
+      return { a: matrix.a, b: matrix.b, c: matrix.c, d: matrix.d };
+    })).toEqual({ a: 1, b: 0, c: 0, d: 1 });
+    await expect(counter).toHaveText('01 / 07');
+    await expect(desktopGallery.locator('img')).toHaveCSS('border-radius', '18px');
+    const [controlsBox, counterBox] = await Promise.all([
+      canvasControls.boundingBox(),
+      counter.boundingBox(),
+    ]);
+    expect(controlsBox).not.toBeNull();
+    expect(counterBox).not.toBeNull();
+    expect(Math.abs(
+      (controlsBox?.y ?? 0) + (controlsBox?.height ?? 0) / 2
+      - ((counterBox?.y ?? 0) + (counterBox?.height ?? 0) / 2),
+    )).toBeLessThanOrEqual(2);
+    const previous = page.getByRole('button', { name: 'Previous gallery image' });
+    const next = page.getByRole('button', { name: 'Next gallery image' });
+    await expect(previous).toBeVisible();
+    await expect(next).toBeVisible();
+    await expect(next).toHaveCSS('border-radius', '999px');
+    await expect(next).toHaveCSS('outline-style', 'none');
+    await next.hover();
+    await expect(next).toHaveCSS('background-color', 'rgb(244, 244, 241)');
+    await expect(next).toHaveCSS('color', 'rgb(13, 13, 15)');
+    await expect(next).toHaveCSS('outline-style', 'none');
+    await page.mouse.move(0, 0);
+    await page.keyboard.press('Tab');
+    await expect(next).toBeFocused();
+    await expect(next).toHaveCSS('background-color', 'rgb(244, 244, 241)');
+    await expect(next).toHaveCSS('color', 'rgb(13, 13, 15)');
+    await expect(next).toHaveCSS('outline-style', 'solid');
+    await expect(next).toHaveCSS('outline-width', '2px');
+
+    if (testInfo.project.name === 'tablet') {
+      const viewport = page.viewportSize();
+      if (!viewport) throw new Error('Missing tablet viewport');
+      const [surfaceBox, mediaBox] = await Promise.all([
+        dialog.locator(':scope > div').boundingBox(),
+        desktopGallery.locator('img').boundingBox(),
+      ]);
+      expect(surfaceBox).not.toBeNull();
+      expect(mediaBox).not.toBeNull();
+      for (const box of [surfaceBox, mediaBox]) {
+        expect(box?.x ?? Number.NEGATIVE_INFINITY).toBeGreaterThanOrEqual(-1);
+        expect(box?.y ?? Number.NEGATIVE_INFINITY).toBeGreaterThanOrEqual(-1);
+        expect((box?.x ?? Number.POSITIVE_INFINITY) + (box?.width ?? 0)).toBeLessThanOrEqual(
+          viewport.width + 1,
+        );
+        expect((box?.y ?? Number.POSITIVE_INFINITY) + (box?.height ?? 0)).toBeLessThanOrEqual(
+          viewport.height + 1,
+        );
+      }
+    }
+
+    await page.keyboard.press('ArrowRight');
+    await expect(page.getByText('02 / 07', { exact: true })).toBeVisible();
+
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+
+    const scrollAfterClose = await page.evaluate(() => window.scrollY);
+    expect(Math.abs(scrollAfterClose - scrollBeforeOpen)).toBeLessThanOrEqual(2);
+    await expect(trigger).toBeFocused();
+  });
+
+  test('archive gallery stacks MR CHONG media in its mobile backdrop without overflow', async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== 'mobile',
+      'The vertical gallery stack needs the canonical mobile viewport.',
+    );
+    expect(page.viewportSize()).toEqual({ width: 390, height: 844 });
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const archive = page.locator('[data-archive-carousel]');
+    await expect(
+      archive.getByRole('button', { name: /^Open project image:/ }),
+    ).toHaveCount(4);
+    const trigger = archive.getByRole('button', {
+      name: 'Open project image: MR CHONG',
+    });
+    await archive.scrollIntoViewIfNeeded();
+    await trigger.scrollIntoViewIfNeeded();
+    await trigger.click();
+
+    const dialog = page.getByRole('dialog', { name: /MR CHONG/ });
+    const mobileGallery = page.locator('[data-gallery-mobile]');
+    const close = page.getByRole('button', { name: 'Close image' });
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAttribute('data-lightbox-variant', 'archive');
+    await expect(mobileGallery).toBeVisible();
+    await expect(page.locator('[data-gallery-desktop]')).toBeHidden();
+    await expect(
+      page.getByRole('button', { name: 'Previous gallery image' }),
+    ).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Next gallery image' })).toBeHidden();
+    await expect(dialog.locator('[data-lightbox-canvas-controls]')).toBeHidden();
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollWidth))
+      .toBeLessThanOrEqual(390);
+    const mobileImages = mobileGallery.locator('img');
+    await expect(mobileImages).toHaveCount(4);
+    for (let index = 0; index < 4; index += 1) {
+      await expect(mobileImages.nth(index)).toHaveCSS('border-radius', '20px');
+    }
+    await expect
+      .poll(() => page.evaluate(() => {
+        const images = Array.from(
+          document.querySelectorAll<HTMLImageElement>('[data-gallery-mobile] img'),
+        );
+        return images.length === 4 && images.every(
+          (image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0,
+        );
+      }))
+      .toBe(true);
+    await expect
+      .poll(() => mobileImages.evaluateAll((images) => (
+        images.every((image) => image.getBoundingClientRect().height > 0)
+      )))
+      .toBe(true);
+
+    const imageBoxes = await mobileImages.evaluateAll((images) => (
+      images.map((image) => {
+        const { top, bottom, left, right } = image.getBoundingClientRect();
+        return { top, bottom, left, right };
+      })
+    ));
+    for (let index = 1; index < imageBoxes.length; index += 1) {
+      expect(imageBoxes[index].top).toBeGreaterThanOrEqual(imageBoxes[index - 1].bottom - 1);
+    }
+
+    const horizontalState = await dialog.evaluate((element) => {
+      const gallery = element.querySelector<HTMLElement>('[data-gallery-mobile]');
+      if (!gallery) throw new Error('Missing mobile gallery');
+
+      gallery.scrollLeft = 100;
+      element.scrollLeft = 100;
+      return {
+        dialog: {
+          scrollWidth: element.scrollWidth,
+          clientWidth: element.clientWidth,
+          scrollLeft: element.scrollLeft,
+        },
+        gallery: {
+          scrollWidth: gallery.scrollWidth,
+          clientWidth: gallery.clientWidth,
+          scrollLeft: gallery.scrollLeft,
+        },
+      };
+    });
+    expect(horizontalState.dialog.scrollWidth).toBeLessThanOrEqual(
+      horizontalState.dialog.clientWidth,
+    );
+    expect(horizontalState.gallery.scrollWidth).toBeLessThanOrEqual(
+      horizontalState.gallery.clientWidth,
+    );
+    expect(horizontalState.dialog.scrollLeft).toBe(0);
+    expect(horizontalState.gallery.scrollLeft).toBe(0);
+
+    await dialog.evaluate((element) => {
+      element.scrollTo({ top: element.scrollHeight, behavior: 'auto' });
+    });
+    await expect.poll(() => dialog.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+    await expect(mobileGallery.locator('img').last()).toBeInViewport();
+    await expect(close).toBeVisible();
+    await expect(close).toBeInViewport();
+
+    const openDimensions = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+    }));
+    expect(openDimensions.scrollWidth).toBeLessThanOrEqual(openDimensions.clientWidth);
+
+    await close.click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    const closedDimensions = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+    }));
+    expect(closedDimensions.scrollWidth).toBeLessThanOrEqual(closedDimensions.clientWidth);
   });
 
   test('keeps reduced-motion output static and readable', async ({ page }) => {

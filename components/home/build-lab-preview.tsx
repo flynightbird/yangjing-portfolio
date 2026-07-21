@@ -34,12 +34,14 @@ export function BuildLabPreview({ copy, href }: BuildLabPreviewProps) {
               <dt>Role</dt>
               <dd>{copy.role}</dd>
             </div>
-            <div>
-              <dt>Status</dt>
-              <dd>{copy.status}</dd>
-            </div>
           </dl>
-          <ActionLink href={href} target="_blank" variant="signal">
+          <ActionLink
+            className={styles.homeProjectCta}
+            href={href}
+            target="_blank"
+            variant="signal"
+            data-home-project-cta
+          >
             {copy.action}
           </ActionLink>
         </div>

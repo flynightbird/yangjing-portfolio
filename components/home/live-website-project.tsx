@@ -37,11 +37,13 @@ export function LiveWebsiteProject({ copy, href }: LiveWebsiteProjectProps) {
             ))}
           </ul>
           <ActionLink
+            className={styles.homeProjectCta}
             href={href}
             external
             externalLabel="(opens in a new tab)"
             variant="signal"
             aria-label={`${copy.action} ${copy.title} (opens in a new tab)`}
+            data-home-project-cta
           >
             {copy.action}
           </ActionLink>
