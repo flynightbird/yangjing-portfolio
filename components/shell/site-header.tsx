@@ -11,6 +11,12 @@ import type { Locale } from '@/content/types';
 
 import styles from './site-header.module.css';
 
+function resolveHeaderSurface(pathname: string): 'light' | 'dark' {
+  return /^\/(?:en|zh)\/work\/(?:call-agent|meeting|xuelang)\/?$/.test(pathname)
+    ? 'light'
+    : 'dark';
+}
+
 export function SiteHeader({ locale }: { readonly locale: Locale }) {
   const dictionary = locale === 'zh' ? zhDictionary : enDictionary;
   const localeRoot = `/${locale}/`;
@@ -48,7 +54,7 @@ export function SiteHeader({ locale }: { readonly locale: Locale }) {
       <header
         className={styles.root}
         data-scrolled={scrolled ? 'true' : 'false'}
-        data-surface={pathname.includes('/work/meeting') ? 'light' : 'dark'}
+        data-surface={resolveHeaderSurface(pathname)}
       >
         <div className={styles.capsule}>
           <a

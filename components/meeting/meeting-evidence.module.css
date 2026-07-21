@@ -46,7 +46,7 @@
 
 .decisionHeader span,
 .decisionRules dt {
-  color: var(--meeting-accent, #e4583e);
+  color: var(--meeting-portfolio-accent, var(--color-iris-deep));
   font-family: var(--font-mono), monospace;
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -79,7 +79,7 @@
 }
 
 .decisionHeader a:focus-visible {
-  outline: 2px solid var(--meeting-accent, #e4583e);
+  outline: 2px solid var(--meeting-portfolio-accent, var(--color-iris-deep));
   outline-offset: 4px;
 }
 

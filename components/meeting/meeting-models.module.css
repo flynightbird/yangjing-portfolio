@@ -23,7 +23,7 @@
 
 .contextStep > span,
 .capabilities article > span {
-  color: var(--meeting-accent, #e4583e);
+  color: var(--meeting-portfolio-accent, var(--color-iris-deep));
   font-family: var(--font-mono), monospace;
   font-size: 0.75rem;
 }
@@ -121,7 +121,7 @@
 }
 
 .priority li span {
-  color: var(--meeting-accent, #e4583e);
+  color: var(--meeting-portfolio-accent, var(--color-iris-deep));
   font-family: var(--font-mono), monospace;
   font-size: 0.75rem;
 }
@@ -139,7 +139,7 @@
 
 .languagePaths strong {
   margin-bottom: 1.5rem;
-  color: var(--meeting-accent, #e4583e);
+  color: var(--meeting-portfolio-accent, var(--color-iris-deep));
   font-family: var(--font-mono), monospace;
   font-size: 0.75rem;
   text-transform: uppercase;

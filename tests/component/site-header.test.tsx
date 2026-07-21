@@ -84,11 +84,31 @@ describe('SiteHeader', () => {
     expect(screen.getByRole('banner')).toHaveAttribute('data-scrolled', 'true');
   });
 
-  it('marks light case-study routes for a readable initial header', () => {
-    navigationMocks.pathname = '/en/work/meeting/';
-
-    render(<SiteHeader locale="en" />);
+  it.each([
+    '/en/work/meeting/',
+    '/zh/work/call-agent/',
+    '/en/work/xuelang/',
+  ])('marks detail route %s as light', (pathname) => {
+    navigationMocks.pathname = pathname;
+    render(<SiteHeader locale={pathname.startsWith('/zh/') ? 'zh' : 'en'} />);
 
     expect(screen.getByRole('banner')).toHaveAttribute('data-surface', 'light');
+  });
+
+  it.each(['/zh/build/stt-demo/', '/en/work/tangping/'])(
+    'keeps dark detail route %s dark',
+    (pathname) => {
+      navigationMocks.pathname = pathname;
+      render(<SiteHeader locale={pathname.startsWith('/zh/') ? 'zh' : 'en'} />);
+
+      expect(screen.getByRole('banner')).toHaveAttribute('data-surface', 'dark');
+    },
+  );
+
+  it.each(['/en/', '/zh/'])('keeps home route %s dark', (pathname) => {
+    navigationMocks.pathname = pathname;
+    render(<SiteHeader locale={pathname.startsWith('/zh/') ? 'zh' : 'en'} />);
+
+    expect(screen.getByRole('banner')).toHaveAttribute('data-surface', 'dark');
   });
 });
