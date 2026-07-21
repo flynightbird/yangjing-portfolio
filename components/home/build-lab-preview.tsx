@@ -35,7 +35,13 @@ export function BuildLabPreview({ copy, href }: BuildLabPreviewProps) {
               <dd>{copy.role}</dd>
             </div>
           </dl>
-          <ActionLink href={href} target="_blank" variant="signal">
+          <ActionLink
+            className={styles.homeProjectCta}
+            href={href}
+            target="_blank"
+            variant="signal"
+            data-home-project-cta
+          >
             {copy.action}
           </ActionLink>
         </div>

@@ -18,6 +18,7 @@ interface ActionLinkBaseProps
   > {
   readonly variant?: ActionLinkVariant;
   readonly icon?: LucideIcon;
+  readonly showExternalIcon?: boolean;
 }
 
 type ActionLinkProps = ActionLinkBaseProps &
@@ -61,6 +62,7 @@ export const ActionLink = forwardRef<HTMLAnchorElement, ActionLinkProps>(
       icon: Icon,
       onClick,
       rel,
+      showExternalIcon = true,
       target,
       variant = 'primary',
       ...anchorProps
@@ -68,7 +70,7 @@ export const ActionLink = forwardRef<HTMLAnchorElement, ActionLinkProps>(
     ref,
   ) {
     const opensNewTab = !disabled && (external || target === '_blank');
-    const showRemixExternalIcon = !Icon && opensNewTab;
+    const showRemixExternalIcon = showExternalIcon && !Icon && opensNewTab;
     const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
       if (disabled) {
         event.preventDefault();

@@ -77,10 +77,12 @@ export function FeaturedProject({
             </div>
           </dl>
           <ActionLink
+            className={styles.homeProjectCta}
             href={href}
             data-page-transition-tone={transitionTone}
             variant="primary"
             aria-label={`${copy.action} ${copy.title}`}
+            data-home-project-cta
           >
             {copy.action}
           </ActionLink>

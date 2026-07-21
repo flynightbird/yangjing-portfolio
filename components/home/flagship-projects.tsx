@@ -109,11 +109,12 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
             </a>
             <p className={styles.flagshipSummary}>{callAgent.copy.proposition}</p>
             <ActionLink
-              className={`${styles.flagshipCta} ${styles.whiteCta}`}
+              className={`${styles.flagshipCta} ${styles.whiteCta} ${styles.homeProjectCta}`}
               href={callAgent.href}
               aria-label={`${callAgent.copy.action} ${callAgent.copy.title}`}
               data-page-transition-tone="dark"
               data-cta-treatment="white"
+              data-home-project-cta
               variant="primary"
             >
               {callAgent.copy.action}
@@ -160,13 +161,15 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
             </a>
             <p className={styles.flagshipSummary}>{convoAi.copy.proposition}</p>
             <ActionLink
-              className={`${styles.flagshipCta} ${styles.whiteCta}`}
+              className={`${styles.flagshipCta} ${styles.whiteCta} ${styles.homeProjectCta}`}
               href={convoAi.href}
               aria-label={`${convoAi.copy.action} ${convoAi.copy.title}`}
               data-cta-treatment="white"
+              data-home-project-cta
               variant="primary"
               external
               externalLabel="(opens in a new tab)"
+              showExternalIcon={false}
               {...secureLinkProps}
             >
               {convoAi.copy.action}

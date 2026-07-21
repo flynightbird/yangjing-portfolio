@@ -134,6 +134,32 @@ describe('FeaturedWork', () => {
     ).toEqual(['call-agent', 'convo-ai', 'meeting']);
   });
 
+  it('uses one homepage CTA size hook and destination-aware external icons', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+    const ctas = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-home-project-cta]'),
+    );
+
+    expect(ctas).toHaveLength(6);
+    expect(
+      screen
+        .getByRole('link', { name: 'View case study ConvoAI' })
+        .querySelector('[data-remix-icon="arrow-right-up-line"]'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen
+        .getByRole('link', { name: /Visit live site AIDX/ })
+        .querySelector('[data-remix-icon="arrow-right-up-line"]'),
+    ).toBeInTheDocument();
+
+    const stt = container.querySelector<HTMLElement>('[data-project-id="stt-demo"]');
+    expect(
+      within(stt as HTMLElement)
+        .getByRole('link', { name: /Explore Build Lab/ })
+        .querySelector('[data-remix-icon="arrow-right-up-line"]'),
+    ).toBeInTheDocument();
+  });
+
   it('uses dark same-tab transitions for Call Agent and secure external links for ConvoAI', () => {
     const { container } = render(<FeaturedWork locale="en" />);
 
