@@ -76,6 +76,35 @@ describe('CallAgentBrowserVideo', () => {
     expect(video.defaultPlaybackRate).toBe(1.25);
   });
 
+  it('supports complete one-shot playback and reports when it ends', () => {
+    const onEnded = vi.fn();
+    const { container } = render(
+      <CallAgentBrowserVideo {...props} loop={false} onEnded={onEnded} />,
+    );
+    const video = container.querySelector('video') as HTMLVideoElement;
+
+    expect(video).not.toHaveAttribute('loop');
+    fireEvent.ended(video);
+    expect(onEnded).toHaveBeenCalledTimes(1);
+  });
+
+  it('rewinds a completed clip before a sequence plays it again', async () => {
+    const { container, rerender } = render(
+      <CallAgentBrowserVideo {...props} loop={false} active={false} />,
+    );
+    const video = container.querySelector('video') as HTMLVideoElement;
+    video.currentTime = 26.3;
+    Object.defineProperty(video, 'ended', { value: true, configurable: true });
+
+    rerender(<CallAgentBrowserVideo {...props} loop={false} active />);
+    await act(async () => observerCallback(
+      [{ target: video, isIntersecting: true } as unknown as IntersectionObserverEntry],
+      {} as IntersectionObserver,
+    ));
+
+    expect(video.currentTime).toBe(0);
+  });
+
   it('uses only the poster when reduced motion is requested', () => {
     vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
     const { container } = render(<CallAgentBrowserVideo {...props} />);

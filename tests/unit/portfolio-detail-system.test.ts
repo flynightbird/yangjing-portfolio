@@ -56,6 +56,20 @@ describe('portfolio detail visual system', () => {
     );
   });
 
+  it('clips Call Agent media cleanly and spaces paired evidence by 32px', () => {
+    const browserCss = read('components/call-agent/call-agent-browser-video.module.css');
+    const layoutCss = read('components/call-agent/call-agent-layout.module.css');
+
+    expect(browserCss).toMatch(/\.browser\s*\{[^}]*border-radius:\s*20px/);
+    expect(browserCss).toMatch(/\.viewport\s*\{[^}]*overflow:\s*hidden/);
+    expect(layoutCss).toMatch(
+      /:global\(\.call-dark-band\)\s*\{[^}]*border-radius:\s*20px/,
+    );
+    expect(layoutCss).toMatch(
+      /:global\(\[data-call-agent-browser\]\)\s*\+\s*:global\(\[data-call-agent-browser\]\)\s*\{[^}]*margin-top:\s*32px/,
+    );
+  });
+
   it.each([
     'components/case-study/case-layout.module.css',
     'components/call-agent/call-agent-layout.module.css',

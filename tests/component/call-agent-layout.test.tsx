@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { CallAgentLayout } from '@/components/call-agent/call-agent-layout';
@@ -56,6 +56,29 @@ describe('Call Agent dedicated layout', () => {
     expect(screen.getByRole('button', { name: '下载案例' })).toBeVisible();
     expect(screen.getByRole('link', { name: /学浪/ })).toHaveAttribute('href', '/zh/work/xuelang/');
     expect(screen.getByRole('link', { name: /Meeting/ })).toHaveAttribute('href', '/zh/work/meeting/');
+  });
+
+  it('plays the detail Hero story in full, advancing only when each clip ends', () => {
+    vi.stubGlobal('IntersectionObserver', undefined);
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+    const meta = getEntry('work', 'call-agent', 'zh').meta;
+    const { container } = render(
+      <CallAgentLayout meta={meta} locale="zh">
+        <section id="product-boundary"><h2>产品边界</h2></section>
+      </CallAgentLayout>,
+    );
+    const sequence = container.querySelector('[data-call-agent-hero-sequence]');
+    const layers = [...(sequence?.querySelectorAll('[data-hero-clip]') ?? [])];
+
+    expect(layers.map((layer) => layer.getAttribute('data-hero-clip'))).toEqual([
+      'create', 'preview', 'operate',
+    ]);
+    expect(layers[0]).toHaveAttribute('data-active', 'true');
+    expect(layers[1]).toHaveAttribute('data-active', 'false');
+
+    fireEvent.ended(layers[0].querySelector('video') as HTMLVideoElement);
+    expect(layers[0]).toHaveAttribute('data-active', 'false');
+    expect(layers[1]).toHaveAttribute('data-active', 'true');
   });
 });
 

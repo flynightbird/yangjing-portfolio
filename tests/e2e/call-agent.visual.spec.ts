@@ -59,7 +59,7 @@ test.describe('Call Agent responsive system story', () => {
   test('videos fill their browser viewport and operational stages use the approved clips', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop');
 
-    const heroViewport = page.locator('[data-call-agent-hero] [data-call-agent-video-viewport]');
+    const heroViewport = page.locator('[data-call-agent-hero] [data-hero-clip][data-active="true"] [data-call-agent-video-viewport]');
     await expectVideoToMeetViewportEdges(heroViewport);
 
     const system = page.locator('[data-system-mode]');
@@ -82,6 +82,50 @@ test.describe('Call Agent responsive system story', () => {
       const activeMedia = media.locator('[data-active="true"]');
       await expect(activeMedia.locator('video')).toHaveAttribute('src', item.source);
       await expectVideoToMeetViewportEdges(activeMedia.locator('[data-call-agent-video-viewport]'));
+    }
+  });
+
+  test('Hero handoff and detail media geometry match the approved video treatment', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop');
+
+    const hero = page.locator('[data-call-agent-hero-sequence]');
+    const clips = hero.locator('[data-hero-clip]');
+    await expect(clips).toHaveCount(3);
+    await expect(clips.nth(0)).toHaveAttribute('data-hero-clip', 'create');
+    await expect(clips.nth(1)).toHaveAttribute('data-hero-clip', 'preview');
+    await expect(clips.nth(2)).toHaveAttribute('data-hero-clip', 'operate');
+    await expect(clips.nth(0)).toHaveAttribute('data-active', 'true');
+    await clips.nth(0).locator('video').dispatchEvent('ended');
+    await expect(clips.nth(1)).toHaveAttribute('data-active', 'true');
+
+    const validateRelease = page.locator('#validate-release');
+    await validateRelease.scrollIntoViewIfNeeded();
+    await expect.poll(() => validateRelease.locator('video').first().evaluate(
+      (video: HTMLVideoElement) => video.duration,
+    )).toBeGreaterThan(26.2);
+
+    const browserRadius = await validateRelease.locator('[data-call-agent-browser]').first().evaluate(
+      (browser) => getComputedStyle(browser.firstElementChild as Element).borderRadius,
+    );
+    expect(browserRadius).toBe('20px');
+    await expect(validateRelease).toHaveCSS('border-radius', '20px');
+
+    for (const sectionId of ['validate-release', 'operationalize']) {
+      const section = page.locator(`#${sectionId}`);
+      await section.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(850);
+      const measurements = await section.evaluate((element) => {
+        const media = [...element.querySelectorAll(':scope > [data-call-agent-browser]')];
+        if (media.length !== 2) throw new Error(`Expected two media figures in ${element.id}`);
+        const first = media[0].getBoundingClientRect();
+        const second = media[1].getBoundingClientRect();
+        return {
+          gap: second.top - first.bottom,
+          marginTop: getComputedStyle(media[1]).marginTop,
+        };
+      });
+      expect(measurements.marginTop).toBe('32px');
+      expect(measurements.gap).toBeCloseTo(32, 0);
     }
   });
 

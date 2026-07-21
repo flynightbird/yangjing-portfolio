@@ -12,7 +12,7 @@ const manifest = JSON.parse(
   ),
 );
 describe('Call Agent video manifest', () => {
-  it('defines six portable, short, accelerated clips', () => {
+  it('defines six portable, accelerated clips with an explicit trim contract', () => {
     expect(() => validateVideoManifest(manifest)).not.toThrow();
     expect(manifest.clips.map(({ id }: { id: string }) => id)).toEqual([
       'create',
@@ -28,8 +28,13 @@ describe('Call Agent video manifest', () => {
       expect(clip.poster).toMatch(/^[a-z0-9-]+\.webp$/);
       expect(clip.playbackRate).toBeGreaterThanOrEqual(1.25);
       expect(clip.playbackRate).toBeLessThanOrEqual(1.6);
-      expect(clip.duration).toBeGreaterThanOrEqual(2.5);
-      expect(clip.duration).toBeLessThanOrEqual(8);
+      if (clip.fullSource) {
+        expect(clip).not.toHaveProperty('start');
+        expect(clip).not.toHaveProperty('duration');
+      } else {
+        expect(clip.duration).toBeGreaterThanOrEqual(2.5);
+        expect(clip.duration).toBeLessThanOrEqual(8);
+      }
       expect(path.isAbsolute(clip.source)).toBe(false);
       expect(clip.source.split(/[\\/]/)).not.toContain('..');
       expect(clip.description.trim().length).toBeGreaterThan(0);
@@ -73,7 +78,7 @@ describe('Call Agent video manifest', () => {
     ]));
   });
 
-  it('uses the replacement orchestration recording without its error states', () => {
+  it('uses the complete replacement recording for Preview', () => {
     expect(manifest.clips).toEqual(expect.arrayContaining([
       expect.objectContaining({
         id: 'orchestrate',
@@ -85,11 +90,13 @@ describe('Call Agent video manifest', () => {
       expect.objectContaining({
         id: 'preview',
         source: 'call agent/智能体编排和预览.mov',
-        start: 17.5,
-        duration: 8,
+        fullSource: true,
         posterSource: 'replacement-2026-07-21/frame-020.0.jpg',
       }),
     ]));
+    const preview = manifest.clips.find(({ id }: { id: string }) => id === 'preview');
+    expect(preview).not.toHaveProperty('start');
+    expect(preview).not.toHaveProperty('duration');
   });
 
 });

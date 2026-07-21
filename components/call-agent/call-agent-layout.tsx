@@ -1,14 +1,14 @@
 import { ChapterNav } from '@/components/case-study/chapter-nav';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
 
-import { CallAgentBrowserVideo } from './call-agent-browser-video';
+import { CallAgentHeroSequence } from './call-agent-hero-sequence';
 import styles from './call-agent-layout.module.css';
 import { CallAgentMotion } from './call-agent-motion';
 import './call-agent-print.css';
 
 const copy = {
-  zh: { eyebrow: '声网 · CALL AGENT', audience: '为企业呼叫运营人员打造', facts: '项目概况', role: '角色', duration: '周期', status: '状态', previous: '上一个项目', next: '下一个项目', navigation: '项目导航', previewTitle: '智能体编排与实时 Preview', previewDescription: '配置与实时运行状态在同一个工作台中连接。' },
-  en: { eyebrow: 'AGORA · CALL AGENT', audience: 'Built for enterprise call operators', facts: 'Project facts', role: 'Role', duration: 'Duration', status: 'Status', previous: 'Previous project', next: 'Next project', navigation: 'Project navigation', previewTitle: 'Agent orchestration with live Preview', previewDescription: 'Configuration and live runtime state meet in one workspace.' },
+  zh: { eyebrow: '声网 · CALL AGENT', audience: '为企业呼叫运营人员打造', facts: '项目概况', role: '角色', duration: '周期', status: '状态', previous: '上一个项目', next: '下一个项目', navigation: '项目导航' },
+  en: { eyebrow: 'AGORA · CALL AGENT', audience: 'Built for enterprise call operators', facts: 'Project facts', role: 'Role', duration: 'Duration', status: 'Status', previous: 'Previous project', next: 'Next project', navigation: 'Project navigation' },
 } as const;
 
 export function CallAgentLayout({ meta, locale, children, actions, previous, next }: ContentLayoutProps) {
@@ -33,7 +33,7 @@ export function CallAgentLayout({ meta, locale, children, actions, previous, nex
                 {actions}
               </div>
               <div className={styles.heroMedia}>
-                <CallAgentBrowserVideo src="/videos/call-agent/agent-preview.mp4" poster="/images/call-agent/agent-preview-poster.webp" playbackRate={1.25} title={text.previewTitle} description={text.previewDescription} priority />
+                <CallAgentHeroSequence locale={locale} />
               </div>
             </header>
             {children}
