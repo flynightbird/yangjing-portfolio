@@ -83,23 +83,15 @@ describe('IntroStory', () => {
   it('renders the approved three-stage Chinese introduction', () => {
     const { container } = render(<IntroStory locale="zh" />);
     const scenes = container.querySelectorAll('[data-intro-scene]');
+    const normalizeSceneText = (text: string | null) =>
+      text?.replace(/\s+/g, ' ').replace(/。 (?=\S)/g, '。').trim();
 
-    expect(scenes[0]).toHaveTextContent(
-      '嗨，我是杨静，一名拥有十多年经验的 UX/UI 设计师，也长期从事用户研究。',
-    );
-    expect(scenes[0]).toHaveTextContent(
-      '这是一个由我设计，并通过 Vibe Coding 构建的作品集。',
-    );
-    expect(scenes[0].querySelector('[data-intro-support]')).toBeInTheDocument();
-    expect(scenes[1]).toHaveTextContent(
+    expect(Array.from(scenes, (scene) => normalizeSceneText(scene.textContent))).toEqual([
+      '嗨，我是杨静，一名拥有十多年经验的 UX/UI 设计师，也长期从事用户研究。这是一个由我设计，并通过 Vibe Coding 构建的作品集。',
       '我的工作覆盖大规模 C 端产品、复杂 B2B 产品与 AI 系统，结合 UX/UI 设计与用户研究，将复杂状态梳理为清晰、可控且具有一致视觉表达的产品体验。',
-    );
-    expect(scenes[2]).toHaveTextContent(
-      '现在，我也借助 AI 将设计判断转化为可运行的产品，从概念探索、原型验证走向真实体验。',
-    );
-    expect(scenes[2]).toHaveTextContent(
-      '我使用 Codex、Claude Design 与 Figma Make 进行设计探索与产品构建，并结合 Midjourney、即梦等 AIGC 工具拓展视觉表达，提升产品的完整度与质感。',
-    );
+      '现在，我也借助 AI 将设计判断转化为可运行的产品，从概念探索、原型验证走向真实体验。我使用 Codex、Claude Design 与 Figma Make 进行设计探索与产品构建，并结合 Midjourney、即梦等 AIGC 工具拓展视觉表达，提升产品的完整度与质感。',
+    ]);
+    expect(scenes[0].querySelector('[data-intro-support]')).toBeInTheDocument();
     expect(
       Array.from(scenes[2].querySelectorAll('[data-intro-support-emphasis]')).map(
         (element) => element.textContent,
@@ -420,14 +412,25 @@ describe('FeaturedWork', () => {
   });
 
   it.each([
-    { locale: 'en' as const, roleLabel: 'Role', status: 'Pinned static prototype' },
-    { locale: 'zh' as const, roleLabel: '角色', status: 'Agora RTE 2026 大会发布' },
-  ])('renders localized STT facts in $locale', ({ locale, roleLabel, status }) => {
+    {
+      locale: 'en' as const,
+      roleLabel: 'Role',
+      statusLabel: 'Status',
+      status: 'Pinned static prototype',
+    },
+    {
+      locale: 'zh' as const,
+      roleLabel: '角色',
+      statusLabel: '状态',
+      status: 'Agora RTE 2026 大会发布',
+    },
+  ])('renders localized STT facts in $locale', ({ locale, roleLabel, statusLabel, status }) => {
     const { container } = render(<FeaturedWork locale={locale} />);
     const stt = container.querySelector<HTMLElement>('[data-project-id="stt-demo"]');
     const sttScope = within(stt as HTMLElement);
 
     expect.soft(sttScope.queryByText(roleLabel)).toBeVisible();
+    expect.soft(sttScope.queryByText(statusLabel)).toBeVisible();
     expect.soft(sttScope.queryByText(status)).toBeVisible();
   });
 
@@ -438,9 +441,10 @@ describe('FeaturedWork', () => {
       const callAgent = within(
         container.querySelector<HTMLElement>('[data-project-id="call-agent"]') as HTMLElement,
       );
-      const convoAi = within(
-        container.querySelector<HTMLElement>('[data-project-id="convo-ai"]') as HTMLElement,
-      );
+      const convoAiElement = container.querySelector<HTMLElement>(
+        '[data-project-id="convo-ai"]',
+      ) as HTMLElement;
+      const convoAi = within(convoAiElement);
 
       for (const removed of locale === 'zh'
         ? [
@@ -461,6 +465,11 @@ describe('FeaturedWork', () => {
         expect.soft(convoAi.queryByText(removed, { exact: false })).not.toBeInTheDocument();
       }
       expect.soft(convoAi.queryAllByRole('img')).toHaveLength(0);
+      const rawImages = convoAiElement.querySelectorAll('img');
+      expect.soft(rawImages).toHaveLength(2);
+      for (const image of rawImages) {
+        expect.soft(image).toHaveAttribute('alt', '');
+      }
     },
   );
 });
@@ -556,7 +565,7 @@ describe('VisualArchive', () => {
   });
 
   it('localizes project content and carousel controls in Chinese', () => {
-    render(<VisualArchive locale="zh" />);
+    const { container } = render(<VisualArchive locale="zh" />);
 
     expect(
       screen.getByRole('heading', { name: 'More C 端产品作品' }),
@@ -577,16 +586,22 @@ describe('VisualArchive', () => {
     expect(within(archive).queryByRole('link', { name: /躺平/ })).not.toBeInTheDocument();
     expect(screen.getByText('开言设计原则')).toBeVisible();
     expect(screen.getByText('豆豆狐')).toBeVisible();
-    expect(screen.getByText(
+    const archiveCard = (variant: string) =>
+      within(
+        container.querySelector<HTMLElement>(
+          `[data-cover-variant="${variant}"]`,
+        ) as HTMLElement,
+      );
+    expect(archiveCard('alibaba').getByText(
       '面向家居装修设计师的工具与平台。升级 App 与官网主站体验，并强化产品的品牌表达。',
     )).toBeVisible();
-    expect(screen.getByText(
+    expect(archiveCard('open-language').getByText(
       '字节跳动旗下的语言学习 App。探索新的设计原则，提升视觉一致性与体验品质。',
     )).toBeVisible();
-    expect(screen.getByText(
+    expect(archiveCard('doudou-fox').getByText(
       '字节跳动旗下的儿童语言学习 App。设计英语闯关体验，让学习任务更直观，也更具游戏感。',
     )).toBeVisible();
-    expect(screen.getByText(
+    expect(archiveCard('mr-chong').getByText(
       '为同程旅游某业务线打造可延展的品牌 IP，并完成三维角色、动作与视觉表达。',
     )).toBeVisible();
     expect(screen.getAllByText('技能')).toHaveLength(4);
