@@ -209,7 +209,7 @@ describe('FeaturedWork', () => {
     {
       locale: 'zh' as const,
       convoAction: '查看案例 ConvoAI',
-      sttProposition: '让双语对话在实时转写与翻译中清晰呈现。',
+      sttProposition: '让双语对话的实时转写与翻译更清晰。',
     },
     {
       locale: 'en' as const,
