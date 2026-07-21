@@ -49,7 +49,7 @@ describe('DualIdentityHero', () => {
 });
 
 describe('IntroStory', () => {
-  it('renders three naturally wrapping English statements with one emphasis each', () => {
+  it('renders the approved three-stage English introduction and AI toolchain', () => {
     const { container } = render(<IntroStory locale="en" />);
     const scenes = container.querySelectorAll('[data-intro-scene]');
 
@@ -62,6 +62,14 @@ describe('IntroStory', () => {
     expect(scenes[2]).toHaveTextContent(
       /moving from concept and prototype to real experience/,
     );
+    expect(scenes[2]).toHaveTextContent(
+      'I work fluently with Codex, Claude Design, and Figma Make to explore ideas and turn designs into working products. With AIGC tools such as Midjourney and Jimeng AI, I expand the visual language and bring greater coherence and polish to the product.',
+    );
+    expect(
+      Array.from(scenes[2].querySelectorAll('[data-intro-support-emphasis]')).map(
+        (element) => element.textContent,
+      ),
+    ).toEqual(['Codex', 'Claude Design', 'Figma Make', 'Midjourney', 'Jimeng AI']);
   });
 
   it('renders the approved three-stage Chinese introduction', () => {
@@ -79,9 +87,14 @@ describe('IntroStory', () => {
       '欢迎来到这个由我亲手设计，并通过 Vibe Coding 构建的作品集。',
     );
     expect(scenes[0].querySelector('[data-intro-support]')).toBeInTheDocument();
-    expect(container.querySelector('[data-intro-vibe]')).toHaveTextContent(
-      'Vibe Coding',
+    expect(scenes[2]).toHaveTextContent(
+      '熟练运用 Codex、Claude Design 与 Figma Make 进行设计探索，将创意转化为可运行的产品；结合 Midjourney、即梦等 AIGC 工具拓展视觉表达，提升产品的完整度与质感。',
     );
+    expect(
+      Array.from(scenes[2].querySelectorAll('[data-intro-support-emphasis]')).map(
+        (element) => element.textContent,
+      ),
+    ).toEqual(['Codex', 'Claude Design', 'Figma Make', 'Midjourney', '即梦']);
   });
 
   it('provides three progress controls and exposes the first scene as current', () => {
