@@ -61,10 +61,10 @@ export const homepageProjects = [
   {
     id: 'convo-ai',
     companyId: 'agora',
-    kind: 'live-launch',
-    destination: 'external-live-site',
-    availability: 'awaiting-assets',
-    href: 'https://conversational-ai.shengwang.cn/',
+    kind: 'deep-case',
+    destination: 'internal-case',
+    availability: 'complete',
+    href: 'work/convo-ai/',
   },
   {
     id: 'meeting',

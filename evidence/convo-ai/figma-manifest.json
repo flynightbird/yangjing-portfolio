@@ -1,0 +1,30 @@
+{
+  "source": {
+    "type": "figma-design-file",
+    "url": "https://www.figma.com/design/n9nbMEMgwDD4ESUg2WYhiZ/ConvoAI-demo?node-id=39530-4969",
+    "fileKey": "n9nbMEMgwDD4ESUg2WYhiZ",
+    "canvasNodeId": "39530:4969",
+    "reviewedOn": "2026-07-21"
+  },
+  "scope": {
+    "proves": [
+      "App and Web interface designs exist in the supplied project file",
+      "Ready, interruption, photo input, avatar plus video, and settings states are explicitly designed",
+      "The selected screens support a state-led case-study narrative"
+    ],
+    "doesNotProve": [
+      "Business impact or usage metrics",
+      "Research findings or customer outcomes",
+      "Sole ownership or shipping status without designer attribution"
+    ]
+  },
+  "assets": [
+    { "path": "public/images/convo-ai/figma/web-ready.png", "nodeId": "39534:5888", "name": "引导：你可以开始说话", "job": "Establish the cross-platform product and ready state" },
+    { "path": "public/images/convo-ai/figma/web-interrupt.png", "nodeId": "39531:5295", "name": "打断", "job": "Explain interruption on Web" },
+    { "path": "public/images/convo-ai/figma/ready.png", "nodeId": "39532:5527", "name": "1", "job": "Explain the mobile ready state" },
+    { "path": "public/images/convo-ai/figma/interrupt.png", "nodeId": "39530:4970", "name": "4", "job": "Explain mobile interruption" },
+    { "path": "public/images/convo-ai/figma/photo-entry.png", "nodeId": "39881:2074", "name": "发起照片（方案2）", "job": "Explain photo and camera input" },
+    { "path": "public/images/convo-ai/figma/avatar-video.png", "nodeId": "40190:2767", "name": "开启数字人+视频流", "job": "Explain avatar and live-video hierarchy" },
+    { "path": "public/images/convo-ai/figma/settings.png", "nodeId": "40282:4188", "name": "设置", "job": "Explain conversation preparation and settings" }
+  ]
+}

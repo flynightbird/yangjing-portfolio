@@ -84,8 +84,8 @@ for (const locale of ['en', 'zh'] as const) {
         `/${locale}/work/xuelang/`,
       );
       await expect(previous).toContainText(locale === 'zh' ? '学浪商业化体验升级' : 'Xuelang');
-      await expect(next).toHaveAttribute('href', `/${locale}/work/meeting/`);
-      await expect(next).toContainText('Meeting');
+      await expect(next).toHaveAttribute('href', `/${locale}/work/convo-ai/`);
+      await expect(next).toContainText('ConvoAI');
     });
 
     test('opens and dismisses evidence with the keyboard without losing scroll state', async ({ page }) => {

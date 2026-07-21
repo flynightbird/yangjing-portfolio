@@ -139,14 +139,15 @@ test.describe('portfolio homepage framework', () => {
         'href',
         `/${locale}/work/meeting/`,
       );
-      await expect(page.locator('[data-project-id="convo-ai"]')).toHaveAttribute(
-        'data-publication-state',
-        'temporary-media',
+      await expect(page.locator('[data-project-id="convo-ai"] a').first()).toHaveAttribute(
+        'href',
+        `/${locale}/work/convo-ai/`,
       );
 
       for (const [projectId, tone] of Object.entries({
         xuelang: 'light',
         'call-agent': 'dark',
+        'convo-ai': 'dark',
         meeting: 'dark',
       })) {
         const projectLinks = page.locator(`[data-project-id="${projectId}"] a`);
@@ -159,7 +160,7 @@ test.describe('portfolio homepage framework', () => {
         }
       }
 
-      for (const projectId of ['convo-ai', 'aidx', 'stt-demo']) {
+      for (const projectId of ['aidx', 'stt-demo']) {
         const projectLinks = page.locator(`[data-project-id="${projectId}"] a`);
         for (let index = 0; index < await projectLinks.count(); index += 1) {
           await expect(projectLinks.nth(index)).not.toHaveAttribute(

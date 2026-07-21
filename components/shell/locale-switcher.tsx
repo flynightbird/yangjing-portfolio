@@ -12,6 +12,7 @@ export const launchLocaleRoutes = [
   '/en/', '/zh/', '/en/about/', '/zh/about/', '/en/work/', '/zh/work/',
   '/en/work/xuelang/', '/zh/work/xuelang/',
   '/en/work/call-agent/', '/zh/work/call-agent/',
+  '/en/work/convo-ai/', '/zh/work/convo-ai/',
   '/en/work/meeting/', '/zh/work/meeting/',
   '/en/build/', '/zh/build/',
   '/en/build/stt-demo/', '/zh/build/stt-demo/',

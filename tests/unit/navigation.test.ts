@@ -12,6 +12,7 @@ describe('featured navigation', () => {
     expect(featuredOrder).toEqual([
       'work/xuelang',
       'work/call-agent',
+      'work/convo-ai',
       'work/meeting',
       'work/tangping',
       'build/stt-demo',
@@ -21,6 +22,10 @@ describe('featured navigation', () => {
   it('resolves typed previous and next neighbors without adding projects', () => {
     expect(getFeaturedNeighbors('work/call-agent')).toEqual({
       previous: 'work/xuelang',
+      next: 'work/convo-ai',
+    });
+    expect(getFeaturedNeighbors('work/convo-ai')).toEqual({
+      previous: 'work/call-agent',
       next: 'work/meeting',
     });
     expect(getPreviousFeatured('work/xuelang')).toBeUndefined();

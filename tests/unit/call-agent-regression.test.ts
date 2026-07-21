@@ -32,7 +32,7 @@ describe('Call Agent native content registry', () => {
         evidenceLevel: 'observed',
         featuredOrder: 2,
         previousSlug: 'xuelang',
-        nextSlug: 'meeting',
+        nextSlug: 'convo-ai',
         caseLabel: 'CALL AGENT / 0→1 AI PRODUCT',
       });
       expect(meta.facts).toEqual([
@@ -53,6 +53,8 @@ describe('Call Agent native content registry', () => {
       { locale: 'zh', slug: 'xuelang' },
       { locale: 'en', slug: 'call-agent' },
       { locale: 'zh', slug: 'call-agent' },
+      { locale: 'en', slug: 'convo-ai' },
+      { locale: 'zh', slug: 'convo-ai' },
       { locale: 'en', slug: 'meeting' },
       { locale: 'zh', slug: 'meeting' },
       { locale: 'en', slug: 'tangping' },

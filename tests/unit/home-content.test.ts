@@ -40,7 +40,7 @@ describe('homepage project contract', () => {
     ]);
   });
 
-  it('keeps ConvoAI and AIDX external-only and STT as the sole Build Lab entry', () => {
+  it('keeps ConvoAI internal, AIDX external, and STT as the sole Build Lab entry', () => {
     const convoAi = homepageProjects.find((project) => project.id === 'convo-ai');
     const aidx = homepageProjects.find((project) => project.id === 'aidx');
     const buildEntries = homepageProjects.filter(
@@ -48,9 +48,9 @@ describe('homepage project contract', () => {
     );
 
     expect(convoAi).toMatchObject({
-      destination: 'external-live-site',
-      availability: 'awaiting-assets',
-      href: 'https://conversational-ai.shengwang.cn/',
+      destination: 'internal-case',
+      availability: 'complete',
+      href: 'work/convo-ai/',
     });
     expect(aidx).toMatchObject({
       destination: 'external-live-site',

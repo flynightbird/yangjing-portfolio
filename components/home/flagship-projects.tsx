@@ -35,11 +35,6 @@ interface FlagshipProjectsProps {
   };
 }
 
-const secureLinkProps = {
-  target: '_blank',
-  rel: 'noopener noreferrer',
-} as const;
-
 export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProjectsProps) {
   const [focus, setFocus] = useState<FlagshipFocus>('call-agent');
   const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -140,8 +135,7 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
         <article
           className={styles.flagshipProject}
           data-project-id="convo-ai"
-          data-project-kind="live-launch"
-          data-publication-state="temporary-media"
+          data-project-kind="deep-case"
           onPointerEnter={() => selectProject('convo-ai')}
           onFocus={() => selectProject('convo-ai')}
         >
@@ -155,7 +149,7 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
               className={styles.flagshipTitleLink}
               href={convoAi.href}
               aria-label={`View ${convoAi.copy.title} project`}
-              {...secureLinkProps}
+              data-page-transition-tone="dark"
             >
               <h2>{convoAi.copy.title}</h2>
             </a>
@@ -167,10 +161,7 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
               data-cta-treatment="white"
               data-home-project-cta
               variant="primary"
-              external
-              externalLabel="(opens in a new tab)"
-              showExternalIcon={false}
-              {...secureLinkProps}
+              data-page-transition-tone="dark"
             >
               {convoAi.copy.action}
             </ActionLink>
@@ -181,23 +172,21 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
             href={convoAi.href}
             aria-label="Open ConvoAI project media"
             data-media-radius="20"
-            {...secureLinkProps}
+            data-page-transition-tone="dark"
           >
-            {/* Temporary third-party placeholders; provenance is documented in evidence/convo-ai. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className={styles.flagshipConvoWeb}
-              src="/images/convo-ai/temporary-web.webp"
-              alt="Temporary ConvoAI web interface placeholder"
+              src="/images/convo-ai/figma/web-ready.png"
+              alt="ConvoAI web conversation ready state"
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className={styles.flagshipConvoPhone}
-              src="/images/convo-ai/temporary-app.webp"
-              alt="Temporary ConvoAI app interface placeholder"
+              src="/images/convo-ai/figma/avatar-video.png"
+              alt="ConvoAI app avatar and live video state"
             />
           </a>
-          <p className={styles.flagshipSource}>{convoAi.copy.temporaryNotice}</p>
         </article>
       </div>
     </div>

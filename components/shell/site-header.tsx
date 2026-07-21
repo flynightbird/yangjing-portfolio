@@ -12,7 +12,7 @@ import type { Locale } from '@/content/types';
 import styles from './site-header.module.css';
 
 function resolveHeaderSurface(pathname: string): 'light' | 'dark' {
-  return /^\/(?:en|zh)\/work\/(?:call-agent|meeting|xuelang)\/?$/.test(pathname)
+  return /^\/(?:en|zh)\/work\/(?:call-agent|convo-ai|meeting|xuelang)\/?$/.test(pathname)
     ? 'light'
     : 'dark';
 }

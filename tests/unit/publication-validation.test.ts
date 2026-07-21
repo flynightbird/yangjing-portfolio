@@ -675,11 +675,13 @@ export const metadata = {
     for (const relativePath of [
       'content',
       'evidence/call-agent',
+      'evidence/convo-ai',
       'evidence/stt-demo',
       'evidence/xuelang',
       'evidence/media',
       'public/demos/stt-demo',
       'public/images/call-agent',
+      'public/images/convo-ai',
       'public/images/archive',
       'public/images/xuelang',
     ]) {
