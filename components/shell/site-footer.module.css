@@ -81,7 +81,7 @@
 .emailActions {
   display: inline-grid;
   max-width: 100%;
-  grid-template-columns: minmax(0, auto) 2.5rem 2.5rem;
+  grid-template-columns: minmax(0, auto) 1.5rem 1.5rem;
   align-items: center;
   column-gap: 0.25rem;
   margin-top: clamp(2rem, 5vh, 4rem);
@@ -100,12 +100,13 @@
 .copyButton,
 .emailArrow {
   display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  min-height: 1.5rem;
   place-items: center;
   padding: 0;
   border: 0;
-  border-radius: 4px;
+  border-radius: 3px;
   background: transparent;
   color: var(--color-paper);
   text-decoration: none;
@@ -129,16 +130,14 @@
 
 .emailIcon {
   display: block;
-  width: 1.75rem;
-  height: 1.75rem;
-  background: currentColor;
-  mask: url('/icons/remix/arrow-right-up-line.svg') center / contain no-repeat;
+  width: 1rem;
+  height: 1rem;
   transition: transform 350ms var(--ease-out);
 }
 
 .emailArrow:hover .emailIcon,
 .emailArrow:focus-visible .emailIcon {
-  transform: translate(0.2rem, -0.2rem);
+  transform: translate(0.125rem, -0.125rem);
 }
 
 .emailFeedback {
@@ -174,7 +173,7 @@
 
   .emailActions {
     width: min(100%, 30rem);
-    grid-template-columns: minmax(0, 1fr) 2.25rem 2.25rem;
+    grid-template-columns: minmax(0, 1fr) 1.5rem 1.5rem;
     column-gap: 0.125rem;
   }
 
@@ -182,11 +181,6 @@
     font-size: 1rem;
   }
 
-  .copyButton,
-  .emailArrow {
-    width: 2.25rem;
-    height: 2.25rem;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

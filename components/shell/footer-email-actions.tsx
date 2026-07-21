@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, Copy } from 'lucide-react';
+import { ArrowUpRight, Check, Copy } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import type { Locale } from '@/content/types';
@@ -69,9 +69,19 @@ export function FooterEmailActions({ locale }: { readonly locale: Locale }) {
         data-footer-email-control="copy"
       >
         {copyState === 'copied' ? (
-          <Check aria-hidden="true" size={18} strokeWidth={1.7} />
+          <Check
+            aria-hidden="true"
+            size={16}
+            strokeWidth={1.7}
+            data-footer-email-icon="check"
+          />
         ) : (
-          <Copy aria-hidden="true" size={18} strokeWidth={1.7} />
+          <Copy
+            aria-hidden="true"
+            size={16}
+            strokeWidth={1.7}
+            data-footer-email-icon="copy"
+          />
         )}
       </button>
       <a
@@ -80,10 +90,12 @@ export function FooterEmailActions({ locale }: { readonly locale: Locale }) {
         aria-label={text.send}
         data-footer-email-control="arrow"
       >
-        <span
+        <ArrowUpRight
           className={styles.emailIcon}
-          data-remix-icon="arrow-right-up-line"
           aria-hidden="true"
+          size={16}
+          strokeWidth={1.7}
+          data-footer-email-icon="arrow"
         />
       </a>
       <span className={styles.emailFeedback} role="status" aria-live="polite">
