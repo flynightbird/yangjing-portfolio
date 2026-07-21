@@ -35,7 +35,7 @@
 Use these imports and cleanup hooks in `tests/component/site-footer.test.tsx`:
 
 ```tsx
-import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 afterEach(() => {
@@ -91,9 +91,10 @@ it('copies the public email, announces success, and resets the control', async (
   render(<SiteFooter locale="en" />);
   fireEvent.click(screen.getByRole('button', { name: 'Copy email address' }));
 
-  await waitFor(() => {
-    expect(writeText).toHaveBeenCalledWith('amanda.yangj@gmail.com');
+  await act(async () => {
+    await Promise.resolve();
   });
+  expect(writeText).toHaveBeenCalledWith('amanda.yangj@gmail.com');
   expect(screen.getByRole('button', { name: 'Email copied' })).toHaveAttribute(
     'data-copy-state',
     'copied',
