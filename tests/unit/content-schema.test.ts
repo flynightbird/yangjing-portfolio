@@ -56,21 +56,29 @@ const launchDefinitions = [
     translationKey: 'work-call-agent',
     featuredOrder: 2,
     previousSlug: 'xuelang',
+    nextSlug: 'convo-ai',
+  },
+  {
+    type: 'work',
+    slug: 'convo-ai',
+    translationKey: 'work-convo-ai',
+    featuredOrder: 3,
+    previousSlug: 'call-agent',
     nextSlug: 'meeting',
   },
   {
     type: 'work',
     slug: 'meeting',
     translationKey: 'work-meeting',
-    featuredOrder: 3,
-    previousSlug: 'call-agent',
+    featuredOrder: 4,
+    previousSlug: 'convo-ai',
     nextSlug: 'tangping',
   },
   {
     type: 'work',
     slug: 'tangping',
     translationKey: 'work-tangping',
-    featuredOrder: 4,
+    featuredOrder: 5,
     previousSlug: 'meeting',
     nextSlug: 'stt-demo',
   },
@@ -78,7 +86,7 @@ const launchDefinitions = [
     type: 'build',
     slug: 'stt-demo',
     translationKey: 'build-stt-demo',
-    featuredOrder: 5,
+    featuredOrder: 6,
     previousSlug: 'tangping',
   },
 ] as const;
@@ -137,11 +145,11 @@ describe('content metadata', () => {
         type: 'build',
         slug: 'stt-demo',
         translationKey: 'build-stt-demo',
-        featuredOrder: 4,
-        previousSlug: 'meeting',
+        featuredOrder: 6,
+        previousSlug: 'tangping',
         nextSlug: undefined,
       }),
-    ).toMatchObject({ slug: 'stt-demo', previousSlug: 'meeting' });
+    ).toMatchObject({ slug: 'stt-demo', previousSlug: 'tangping' });
   });
 
   it('rejects unsupported evidence claims', () => {
@@ -207,6 +215,8 @@ describe('content registry', () => {
       'work/xuelang:zh',
       'work/call-agent:en',
       'work/call-agent:zh',
+      'work/convo-ai:en',
+      'work/convo-ai:zh',
       'work/meeting:en',
       'work/meeting:zh',
       'work/tangping:en',
@@ -253,7 +263,7 @@ describe('content registry', () => {
     );
 
     expect(() => assertCompleteRegistry(entries)).toThrow(
-      /entries\[1\]\.meta\.nextSlug.*expected.*meeting/i,
+      /entries\[1\]\.meta\.nextSlug.*expected.*convo-ai/i,
     );
   });
 

@@ -20,7 +20,7 @@ for (const locale of ['en', 'zh'] as const) {
       await expect(page.locator('[data-call-agent-hero] [data-call-agent-browser]')).toBeVisible();
       await expect(page.locator('[data-call-agent-hero] video')).toHaveAttribute('src', '/videos/call-agent/agent-preview.mp4');
       await expect(page.locator('[data-project-previous]')).toHaveAttribute('href', `/${locale}/work/xuelang/`);
-      await expect(page.locator('[data-project-next]')).toHaveAttribute('href', `/${locale}/work/meeting/`);
+      await expect(page.locator('[data-project-next]')).toHaveAttribute('href', `/${locale}/work/convo-ai/`);
     });
 
     test('keeps chapter navigation and horizontal geometry usable', async ({ page }, testInfo) => {

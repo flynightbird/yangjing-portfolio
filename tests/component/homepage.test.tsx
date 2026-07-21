@@ -173,7 +173,7 @@ describe('FeaturedWork', () => {
     ).toBeInTheDocument();
   });
 
-  it('uses dark same-tab transitions for Call Agent and secure external links for ConvoAI', () => {
+  it('uses dark same-tab transitions for Call Agent and ConvoAI', () => {
     const { container } = render(<FeaturedWork locale="en" />);
 
     const callAgent = container.querySelector<HTMLElement>('[data-project-id="call-agent"]');
@@ -188,10 +188,8 @@ describe('FeaturedWork', () => {
     const convoAiLinks = within(convoAi as HTMLElement).getAllByRole('link');
     expect(convoAiLinks).toHaveLength(3);
     for (const link of convoAiLinks) {
-      expect(link).not.toHaveAttribute('data-page-transition-tone');
-      expect(link).toHaveAttribute('target', '_blank');
-      expect(link.getAttribute('rel')).toContain('noopener');
-      expect(link.getAttribute('rel')).toContain('noreferrer');
+      expect(link).toHaveAttribute('data-page-transition-tone', 'dark');
+      expect(link).not.toHaveAttribute('target');
     }
   });
 
@@ -218,16 +216,15 @@ describe('FeaturedWork', () => {
     },
   );
 
-  it('defaults to Call Agent focus and marks ConvoAI media as temporary', () => {
+  it('defaults to Call Agent focus and publishes owned ConvoAI media', () => {
     const { container } = render(<FeaturedWork locale="en" />);
 
     expect(container.querySelector('[data-flagship-focus]')).toHaveAttribute(
       'data-flagship-focus',
       'call-agent',
     );
-    expect(container.querySelector('[data-project-id="convo-ai"]')).toHaveAttribute(
+    expect(container.querySelector('[data-project-id="convo-ai"]')).not.toHaveAttribute(
       'data-publication-state',
-      'temporary-media',
     );
     expect(
       container.querySelectorAll('[data-flagship-focus] [data-media-radius="20"]'),
@@ -253,6 +250,7 @@ describe('FeaturedWork', () => {
     const expectedInternalTones = {
       xuelang: 'light',
       'call-agent': 'dark',
+      'convo-ai': 'dark',
       meeting: 'dark',
     } as const;
     for (const [projectId, tone] of Object.entries(expectedInternalTones)) {
@@ -264,7 +262,7 @@ describe('FeaturedWork', () => {
       }
     }
 
-    for (const projectId of ['convo-ai', 'aidx', 'stt-demo']) {
+    for (const projectId of ['aidx', 'stt-demo']) {
       const project = container.querySelector<HTMLElement>(`[data-project-id="${projectId}"]`);
       const links = within(project as HTMLElement).getAllByRole('link');
       for (const link of links) {
@@ -382,19 +380,16 @@ describe('FeaturedWork', () => {
     expect(sttScope.queryByText(status)).not.toBeInTheDocument();
   });
 
-  it('labels both ConvoAI images as temporary placeholders', () => {
+  it('uses Figma-derived ConvoAI project media', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const convoAi = container.querySelector<HTMLElement>('[data-project-id="convo-ai"]');
 
     expect(
-      within(convoAi as HTMLElement).getByRole('img', { name: /temporary ConvoAI web/i }),
-    ).toHaveAttribute('src', '/images/convo-ai/temporary-web.webp');
+      within(convoAi as HTMLElement).getByRole('img', { name: /ConvoAI web conversation ready/i }),
+    ).toHaveAttribute('src', '/images/convo-ai/figma/web-ready.png');
     expect(
-      within(convoAi as HTMLElement).getByRole('img', { name: /temporary ConvoAI app/i }),
-    ).toHaveAttribute('src', '/images/convo-ai/temporary-app.webp');
-    expect(
-      within(convoAi as HTMLElement).getByText(/replace with owned project assets/i),
-    ).toBeVisible();
+      within(convoAi as HTMLElement).getByRole('img', { name: /ConvoAI app avatar and live video/i }),
+    ).toHaveAttribute('src', '/images/convo-ai/figma/avatar-video.png');
   });
 });
 

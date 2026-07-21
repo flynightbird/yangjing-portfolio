@@ -87,6 +87,7 @@ describe('SiteHeader', () => {
   it.each([
     '/en/work/meeting/',
     '/zh/work/call-agent/',
+    '/en/work/convo-ai/',
     '/en/work/xuelang/',
   ])('marks detail route %s as light', (pathname) => {
     navigationMocks.pathname = pathname;

@@ -139,14 +139,15 @@ test.describe('portfolio homepage framework', () => {
         'href',
         `/${locale}/work/meeting/`,
       );
-      await expect(page.locator('[data-project-id="convo-ai"]')).toHaveAttribute(
-        'data-publication-state',
-        'temporary-media',
+      await expect(page.locator('[data-project-id="convo-ai"] a').first()).toHaveAttribute(
+        'href',
+        `/${locale}/work/convo-ai/`,
       );
 
       for (const [projectId, tone] of Object.entries({
         xuelang: 'light',
         'call-agent': 'dark',
+        'convo-ai': 'dark',
         meeting: 'dark',
       })) {
         const projectLinks = page.locator(`[data-project-id="${projectId}"] a`);
@@ -159,7 +160,7 @@ test.describe('portfolio homepage framework', () => {
         }
       }
 
-      for (const projectId of ['convo-ai', 'aidx', 'stt-demo']) {
+      for (const projectId of ['aidx', 'stt-demo']) {
         const projectLinks = page.locator(`[data-project-id="${projectId}"] a`);
         for (let index = 0; index < await projectLinks.count(); index += 1) {
           await expect(projectLinks.nth(index)).not.toHaveAttribute(
@@ -519,7 +520,7 @@ test.describe('portfolio homepage framework', () => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
     const images = page.locator('main img:not([data-placeholder-media])');
-    await expect(images).toHaveCount(12);
+    await expect(images).toHaveCount(11);
     for (let index = 0; index < await images.count(); index += 1) {
       const image = images.nth(index);
       await image.scrollIntoViewIfNeeded();
@@ -998,7 +999,7 @@ test.describe('portfolio homepage framework', () => {
     );
   });
 
-  test('keeps the remaining draft work route keyboard reachable and explicitly marked', async ({
+  test('keeps the published Meeting route keyboard reachable and explicitly marked', async ({
     page,
   }, testInfo) => {
     test.skip(
@@ -1006,8 +1007,10 @@ test.describe('portfolio homepage framework', () => {
       'Route keyboard behavior needs one viewport; responsive coverage runs separately.',
     );
     await page.goto('/en/', { waitUntil: 'networkidle' });
+    const meeting = page.locator('[data-project-id="meeting"]');
+    await expect(meeting).toHaveAttribute('data-publication-state', 'complete');
     const meetingLink = page.getByRole('link', {
-      name: 'Open draft case Meeting',
+      name: 'View case study Agora Meeting',
     });
     await meetingLink.focus();
     await expect(meetingLink).toBeFocused();
@@ -1019,7 +1022,7 @@ test.describe('portfolio homepage framework', () => {
     await page.waitForURL('**/en/work/meeting/');
 
     await expect(page).toHaveURL(/\/en\/work\/meeting\/$/);
-    await expect(page.locator('[data-publication-state="draft"]')).toBeVisible();
-    await expect(page.getByText('Draft', { exact: true }).first()).toBeVisible();
+    await expect(page.locator('article[data-case-study]')).toBeVisible();
+    await expect(page.getByText('Shipped', { exact: true }).first()).toBeVisible();
   });
 });

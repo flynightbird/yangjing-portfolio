@@ -34,7 +34,7 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
           }}
           convoAi={{
             copy: copy.convoAi,
-            href: convoAi.href,
+            href: `${localeRoot}${convoAi.href}`,
           }}
         />
       </SectionReveal>

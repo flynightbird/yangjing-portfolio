@@ -1,0 +1,167 @@
+.root {
+  --case-portfolio-accent: #84bd23;
+}
+
+.root :global([data-case-study]) {
+  --case-portfolio-accent: #a8ef57;
+}
+
+.root :global(.convo-hero-evidence) {
+  margin-block-start: var(--space-6);
+}
+
+.root :global(.convo-hero-evidence img) {
+  border-radius: 20px;
+}
+
+.root :global(.convo-thesis) {
+  display: grid;
+  gap: var(--space-5);
+  margin-block-start: var(--space-6);
+}
+
+.root :global(.convo-thesis article) {
+  min-height: 13rem;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--color-paper) 95%, #b9ee70 5%);
+  color: #111116;
+}
+
+.root :global(.convo-thesis article p) {
+  color: #3f403c;
+}
+
+.root :global(.convo-thesis span),
+.root :global(.state-flow span) {
+  color: var(--case-portfolio-accent);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+.root :global(.convo-thesis h3) {
+  margin-block: var(--space-6) var(--space-3);
+  font-size: var(--case-h3-size);
+}
+
+.root :global(.state-flow) {
+  display: grid;
+  margin-block-start: var(--space-6);
+  overflow: hidden;
+  border: 1px solid #34343d;
+  border-radius: 20px;
+  background: #17171c;
+  color: #fff;
+}
+
+.root :global(.state-flow div) {
+  min-height: 8.5rem;
+  padding: var(--space-4);
+  border-block-end: 1px solid #34343d;
+}
+
+.root :global(.state-flow div:last-child) {
+  border-block-end: 0;
+}
+
+.root :global(.state-flow strong) {
+  display: block;
+  margin-block-start: var(--space-5);
+}
+
+.root :global(.convo-dark-band) {
+  margin-inline: calc(-1 * var(--content-gutter));
+  padding-inline: var(--content-gutter);
+  background: #111116;
+  color: #f7f7f4;
+}
+
+.root :global(.convo-dark-band .lead),
+.root :global(.convo-dark-band .reading p),
+.root :global(.convo-dark-band figcaption) {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.root :global(.convo-screen-pair),
+.root :global(.convo-screen-trio) {
+  display: grid;
+  gap: var(--space-5);
+  margin-block-start: var(--space-6);
+}
+
+.root :global(.convo-screen-pair figure),
+.root :global(.convo-screen-trio figure) {
+  min-width: 0;
+}
+
+.root :global(.convo-screen-pair img),
+.root :global(.convo-screen-trio img) {
+  width: 100%;
+  max-height: 44rem;
+  object-fit: contain;
+  border-radius: 20px;
+  background: #17171c;
+}
+
+.root :global(.convo-dark-band .convo-screen-pair img) {
+  background: #242439;
+}
+
+.root :global(.convo-decision) {
+  display: grid;
+  gap: var(--space-5);
+  margin-block-start: var(--space-6);
+  padding-block: var(--space-5);
+  border-block: 1px solid var(--color-border-strong);
+}
+
+.root :global(.convo-decision p) {
+  margin: 0;
+}
+
+.root :global(.convo-outcome) {
+  max-width: 58ch;
+  font-size: clamp(1.4rem, 2.2vw, 2.2rem);
+  line-height: 1.38;
+}
+
+@media (min-width: 901px) {
+  .root :global(.convo-thesis) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .root :global(.state-flow) {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .root :global(.state-flow div) {
+    border-block-end: 0;
+    border-inline-end: 1px solid #34343d;
+  }
+
+  .root :global(.state-flow div:last-child) {
+    border-inline-end: 0;
+  }
+
+  .root :global(.convo-screen-pair) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .root :global(.convo-screen-trio) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .root :global(.convo-decision) {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  }
+}
+
+@media print {
+  .root :global(.convo-dark-band),
+  .root :global(.state-flow) {
+    background: #fff;
+    color: #111;
+  }
+}
