@@ -128,7 +128,7 @@ test.describe('portfolio homepage framework', () => {
       await expect(page.locator('[data-cover-variant]')).toHaveCount(4);
       await expect(
         page.locator('[data-archive-card]').first().getByRole('button', {
-          name: locale === 'zh' ? /打开项目图片：躺平/ : /Open project image: Tangping/,
+          name: locale === 'zh' ? /打开项目图片: 躺平/ : /Open project image: Tangping/,
         }),
       ).toBeVisible();
       await expect(page.locator('[data-project-id="xuelang"] a')).toHaveAttribute(
