@@ -12,6 +12,8 @@ export interface CallAgentBrowserVideoProps {
   readonly description: string;
   readonly active?: boolean;
   readonly priority?: boolean;
+  readonly loop?: boolean;
+  readonly onEnded?: () => void;
 }
 
 export function CallAgentBrowserImage({
@@ -50,6 +52,8 @@ export function CallAgentBrowserVideo({
   description,
   active = true,
   priority = false,
+  loop = true,
+  onEnded,
 }: CallAgentBrowserVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const descriptionId = useId();
@@ -80,6 +84,7 @@ export function CallAgentBrowserVideo({
     }
 
     const play = () => {
+      if (video.ended) video.currentTime = 0;
       void Promise.resolve(video.play()).catch(() => undefined);
     };
     if (typeof IntersectionObserver === 'undefined') {
@@ -115,11 +120,12 @@ export function CallAgentBrowserVideo({
               src={src}
               poster={poster}
               muted
-              loop
+              loop={loop}
               playsInline
               preload={priority ? 'auto' : 'metadata'}
               aria-label={title}
               aria-describedby={descriptionId}
+              onEnded={onEnded}
               onLoadedMetadata={(event) => {
                 event.currentTarget.defaultPlaybackRate = playbackRate;
                 event.currentTarget.playbackRate = playbackRate;

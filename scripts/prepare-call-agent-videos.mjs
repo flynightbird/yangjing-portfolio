@@ -31,7 +31,15 @@ export function validateVideoManifest(manifest) {
       if (outputs.has(output)) throw new Error(`Duplicate manifest output: ${output}`);
       outputs.add(output);
     }
-    if (clip.duration < 2.5 || clip.duration > 8 || clip.playbackRate < 1.25 || clip.playbackRate > 1.6) {
+    const usesFullSource = clip.fullSource === true;
+    const hasTrim = Number.isFinite(clip.start) && Number.isFinite(clip.duration);
+    if (
+      (usesFullSource && ('start' in clip || 'duration' in clip)) ||
+      (!usesFullSource && (!hasTrim || clip.start < 0 || clip.duration < 2.5 || clip.duration > 8))
+    ) {
+      throw new Error(`Invalid trim contract for clip: ${clip.id ?? ''}`);
+    }
+    if (clip.playbackRate < 1.25 || clip.playbackRate > 1.6) {
       throw new Error(`Invalid timing for clip: ${clip.id ?? ''}`);
     }
     if (typeof clip.description !== 'string' || !clip.description.trim()) {
@@ -102,14 +110,16 @@ export async function prepareCallAgentVideos({
     for (const clip of manifest.clips) {
       const source = await containedFile(sourceRoot, clip.source);
       const poster = await containedFile(posterRoot, clip.posterSource);
-      await execFileAsync(convertBinary, [
+      const conversionArguments = [
         '--source', source,
         '--preset', 'Preset1280x720',
         '--output', path.join(videoTemp, clip.output),
-        '--start', String(clip.start),
-        '--duration', String(clip.duration),
-        '--replace',
-      ]);
+      ];
+      if (!clip.fullSource) {
+        conversionArguments.push('--start', String(clip.start), '--duration', String(clip.duration));
+      }
+      conversionArguments.push('--replace');
+      await execFileAsync(convertBinary, conversionArguments);
       await sharp(poster).webp({ quality: 88, effort: 5 }).toFile(path.join(imageTemp, clip.poster));
     }
     for (const image of manifest.images) {
