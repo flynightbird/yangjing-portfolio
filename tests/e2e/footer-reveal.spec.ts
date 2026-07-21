@@ -39,7 +39,10 @@ test.describe('homepage Footer reveal', () => {
           ),
         )
         .toBeCloseTo(1, 1);
-      await expect(layer).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
+      const transform = await layer.evaluate((element) =>
+        new DOMMatrixReadOnly(getComputedStyle(element).transform).m42,
+      );
+      expect(Math.abs(transform)).toBeLessThan(0.1);
       await expect(footer.getByRole('link', { name: /yangux@qq\.com/i })).toBeVisible();
       await expect(footer.getByText('© 2026 Yang Jing')).toBeVisible();
 

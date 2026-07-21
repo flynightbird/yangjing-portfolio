@@ -1,5 +1,5 @@
 import { EvidenceFigure } from '@/components/case-study/evidence-figure'
-import { BreakoutDecisionEvidence, MeetingVideo } from '@/components/meeting/meeting-evidence'
+import { BreakoutDecisionEvidence } from '@/components/meeting/meeting-evidence'
 import { CapabilitySystem, ContextPriorityModel, LanguageControlModel, MeetingStateMatrix, ParticipantPriorityStack } from '@/components/meeting/meeting-models'
 
 export const metadata = {
@@ -12,7 +12,7 @@ export const metadata = {
   role: 'Sole Product Designer',
   duration: '2024-2026 · 1.5 years',
   status: 'Shipped',
-  disclosure: 'This case uses shipped product interfaces and real product recordings. No quantitative adoption or satisfaction metrics are claimed.',
+  disclosure: 'This case uses shipped product interfaces. No quantitative adoption or satisfaction metrics are claimed.',
   heroMedia: '/images/meeting/meeting-hero.webp',
   evidenceLevel: 'delivered',
   featuredOrder: 4,
@@ -77,7 +77,7 @@ export const metadata = {
     <h3>Decision</h3><p>Three triggers drive layout: Screen Share, Whiteboard Open, and Participant Count. Each changes information priority before the interface changes.</p>
     <h3>Delivery</h3><p>The state-driven stage shipped across all four platform categories and supported the required customer scenarios.</p>
   </div>
-  <MeetingVideo src="/videos/meeting/adaptive-layout-demo.mp4" poster="/images/meeting/adaptive-layout-poster.webp" captions="/captions/meeting/adaptive-layout-demo.en.vtt" title="Adaptive meeting-stage transitions" description="Screen Share, Whiteboard Open, and Participant Count change information priority and layout." fallback={{ src: '/images/meeting/adaptive-layout-poster.webp', alt: 'Representative shipped meeting-stage states showing the gallery and whiteboard workspace' }} locale="en" />
+  <EvidenceFigure src="/images/meeting/adaptive-layout-poster.webp" width={1800} height={1000} alt="Representative shipped meeting-stage states showing the gallery and whiteboard workspace" label="ADAPTIVE STAGE / SHIPPED STATES" caption="Screen Share, Whiteboard Open, and Participant Count change information priority and layout." locale="en" />
   <MeetingStateMatrix locale="en" />
 </section>
 
@@ -107,7 +107,7 @@ export const metadata = {
     <h3>Decision</h3><p>Live Captions are an individual control. The Transcript Panel is started and stopped by the host, while participants can request activation. The in-meeting layer supports source-language selection, translation, bilingual output, and simultaneous interpretation.</p>
     <h3>Impact</h3><p>The complete in-meeting language experience shipped. Transcript data is exposed through the Customer API; Agora Meeting does not own customer-built post-meeting storage, copy, or download interfaces.</p>
   </div>
-  <MeetingVideo src="/videos/meeting/transcript-demo.mp4" poster="/images/meeting/transcript-poster.webp" captions="/captions/meeting/transcript-demo.en.vtt" title="Real-time meeting information layer" description="Live Captions, host-governed transcription, translation, bilingual output, and simultaneous interpretation form one in-meeting information layer." fallback={{ src: '/images/meeting/transcript-poster.webp', alt: 'Live captions, transcript panel, language selection, and bilingual output' }} locale="en" />
+  <EvidenceFigure src="/images/meeting/transcript-poster.webp" width={1764} height={900} alt="Live captions, transcript panel, language selection, and bilingual output" label="REAL-TIME INFORMATION LAYER / SHIPPED UI" caption="Live Captions, host-governed transcription, translation, bilingual output, and simultaneous interpretation form one in-meeting information layer." locale="en" />
   <LanguageControlModel locale="en" />
 </section>
 

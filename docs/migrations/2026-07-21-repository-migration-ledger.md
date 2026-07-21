@@ -82,6 +82,8 @@ Known failures:
 
 These failures are not a blanket waiver. Project extraction must resolve the failures belonging to its files, and the final `main` must not add new unexplained failures.
 
+Final `main` resolution: the unavailable Meeting recordings and captions were not present in any retained branch or worktree, so they were not fabricated or migrated. The published Meeting case now uses the committed static product evidence, and the manifest, publication contract, and tests were aligned to that evidence. The stale publication diagnostics and timeout-sensitive expectations were also corrected; the final Vitest suite and production export pass.
+
 The repeated jsdom `HTMLCanvasElement.getContext()` messages are warnings, not additional failed assertions.
 
 ## Dirty-Work Backup

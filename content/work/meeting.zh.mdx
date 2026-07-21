@@ -1,5 +1,5 @@
 import { EvidenceFigure } from '@/components/case-study/evidence-figure'
-import { BreakoutDecisionEvidence, MeetingVideo } from '@/components/meeting/meeting-evidence'
+import { BreakoutDecisionEvidence } from '@/components/meeting/meeting-evidence'
 import { CapabilitySystem, ContextPriorityModel, LanguageControlModel, MeetingStateMatrix, ParticipantPriorityStack } from '@/components/meeting/meeting-models'
 
 export const metadata = {
@@ -12,7 +12,7 @@ export const metadata = {
   role: '唯一产品设计师',
   duration: '2024-2026 · 1.5 年',
   status: '已上线',
-  disclosure: '本案例使用已上线产品界面与真实产品录屏，不声明缺少证据的采用率、满意度或效率数据。',
+  disclosure: '本案例使用已上线产品界面，不声明缺少证据的采用率、满意度或效率数据。',
   heroMedia: '/images/meeting/meeting-hero.webp',
   evidenceLevel: 'delivered',
   featuredOrder: 4,
@@ -62,7 +62,7 @@ export const metadata = {
     <h3>决策</h3><p>屏幕共享、白板开启和参会人数变化是三个主要触发条件。系统先改变信息优先级，再改变界面。</p>
     <h3>交付</h3><p>状态驱动的舞台已在四类终端上线并支持客户要求的会议场景。</p>
   </div>
-  <MeetingVideo src="/videos/meeting/adaptive-layout-demo.mp4" poster="/images/meeting/adaptive-layout-poster.webp" captions="/captions/meeting/adaptive-layout-demo.zh.vtt" title="自适应会议舞台状态切换" description="屏幕共享、白板开启和参会人数变化共同改变信息优先级与布局。" fallback={{ src: '/images/meeting/adaptive-layout-poster.webp', alt: '两种代表性已上线会议舞台状态：宫格与白板工作区' }} locale="zh" />
+  <EvidenceFigure src="/images/meeting/adaptive-layout-poster.webp" width={1800} height={1000} alt="两种代表性已上线会议舞台状态：宫格与白板工作区" label="自适应舞台 / 已上线状态" caption="屏幕共享、白板开启和参会人数变化共同改变信息优先级与布局。" locale="zh" />
   <MeetingStateMatrix locale="zh" />
 </section>
 
@@ -86,7 +86,7 @@ export const metadata = {
     <h3>决策</h3><p>实时字幕是个人控制。转写面板由主持人开启和停止，参会者可以申请主持人开启；会中同时支持声源语言选择、翻译、双语输出和同声传译。</p>
     <h3>影响</h3><p>完整会中语言体验已上线。转写数据通过客户 API 提供；客户自行建设的会后存储、复制和下载界面不属于 Agora Meeting 的端内范围。</p>
   </div>
-  <MeetingVideo src="/videos/meeting/transcript-demo.mp4" poster="/images/meeting/transcript-poster.webp" captions="/captions/meeting/transcript-demo.zh.vtt" title="会中实时信息层" description="实时字幕、主持人治理的转写、翻译、双语输出和同声传译组成统一的会中信息层。" fallback={{ src: '/images/meeting/transcript-poster.webp', alt: '实时字幕、转写面板、语言选择和双语输出' }} locale="zh" />
+  <EvidenceFigure src="/images/meeting/transcript-poster.webp" width={1764} height={900} alt="实时字幕、转写面板、语言选择和双语输出" label="实时信息层 / 已上线界面" caption="实时字幕、主持人治理的转写、翻译、双语输出和同声传译组成统一的会中信息层。" locale="zh" />
   <LanguageControlModel locale="zh" />
 </section>
 

@@ -6,21 +6,15 @@ import { describe, expect, it } from 'vitest';
 const requiredIds = [
   'meeting-hero',
   'adaptive-layout-poster',
-  'adaptive-layout-demo',
   'meeting-state-matrix',
   'device-comparison',
   'whiteboard-multidevice',
   'participant-priority',
   'transcript-poster',
-  'transcript-demo',
   'caption-vs-transcript',
   'speech-to-api',
   'capability-system',
   'launch-coverage',
-  'adaptive-layout-captions-en',
-  'adaptive-layout-captions-zh',
-  'transcript-captions-en',
-  'transcript-captions-zh',
 ] as const;
 
 interface MeetingAsset {
@@ -77,6 +71,18 @@ describe('Meeting evidence manifest', () => {
         });
       }
     }
+  });
+
+  it('publishes only evidence that exists in the repository', () => {
+    const { assets } = loadManifest();
+
+    expect(assets.every(({ kind }) => kind === 'image')).toBe(true);
+    expect(assets.map(({ output }) => output)).not.toContain(
+      'public/videos/meeting/adaptive-layout-demo.mp4',
+    );
+    expect(assets.map(({ output }) => output)).not.toContain(
+      'public/videos/meeting/transcript-demo.mp4',
+    );
   });
 
   it('generates non-empty public derivatives', () => {

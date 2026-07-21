@@ -47,7 +47,7 @@ test.describe('portfolio detail system', () => {
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop');
-    await page.goto('/zh/build/stt-demo/', { waitUntil: 'networkidle' });
+    await page.goto('/zh/build/stt-demo/', { waitUntil: 'commit' });
 
     const header = page.getByRole('banner');
     await expect(header).toHaveAttribute('data-surface', 'dark');

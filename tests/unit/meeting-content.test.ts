@@ -59,4 +59,15 @@ describe('Agora Meeting content', () => {
     expect(english).toContain("title: 'Agora Meeting: A Real-time Collaboration System'");
     expect(chinese).toContain("title: 'Agora Meeting：实时协作系统'");
   });
+
+  it('uses committed static evidence instead of unavailable recordings', () => {
+    const source = ['en', 'zh']
+      .map((locale) => readFileSync(`content/work/meeting.${locale}.mdx`, 'utf8'))
+      .join('\n');
+
+    expect(source).not.toMatch(/MeetingVideo|\/videos\/meeting\//);
+    expect(source).toMatch(/adaptive-layout-poster\.webp/);
+    expect(source).toMatch(/transcript-poster\.webp/);
+    expect(source).not.toMatch(/product recordings|产品录屏/);
+  });
 });

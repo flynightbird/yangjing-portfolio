@@ -173,6 +173,7 @@ describe('Call Agent privacy controls', () => {
       'account or internal identifier',
     ]);
     expect(findSensitiveText('hello@example.com')).toEqual([]);
+    expect(findSensitiveText('<article data-project-id="call-agent">')).toEqual([]);
   });
 
   it('flags international phone formats and literal internal identifiers', () => {

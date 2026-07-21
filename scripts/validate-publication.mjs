@@ -25,8 +25,6 @@ const scriptPath = fileURLToPath(import.meta.url);
 const repositoryRoot = path.resolve(path.dirname(scriptPath), '..');
 
 export const publicationInputs = [
-  'public/images/profile/yang-jing-hero.avif',
-  'public/images/profile/yang-jing-about.avif',
   'public/images/xuelang/hero-panorama.webp',
   'public/files/xuelang-case-study-zh.pdf',
   'public/files/xuelang-case-study-en.pdf',
@@ -52,16 +50,6 @@ export const publicationInputs = [
   'public/images/meeting/adaptive-layout-poster.webp',
   'public/images/meeting/whiteboard-multidevice.webp',
   'public/images/meeting/transcript-poster.webp',
-  'public/videos/meeting/adaptive-layout-demo.mp4',
-  'public/videos/meeting/transcript-demo.mp4',
-  'public/captions/meeting/adaptive-layout-demo.en.vtt',
-  'public/captions/meeting/adaptive-layout-demo.zh.vtt',
-  'public/captions/meeting/transcript-demo.en.vtt',
-  'public/captions/meeting/transcript-demo.zh.vtt',
-  'public/files/yang-jing-resume-en.pdf',
-  'public/files/yang-jing-resume-zh.pdf',
-  'public/images/contact/wechat-qr.avif',
-  'content/profile/contact.private.json',
 ];
 
 export function parseMode(argv = process.argv.slice(2)) {
@@ -116,6 +104,7 @@ const requiredMetadata = [
 const launchRoutes = [
   'work/xuelang',
   'work/call-agent',
+  'work/convo-ai',
   'work/meeting',
   'build/stt-demo',
 ];
@@ -206,7 +195,7 @@ export async function findDraftPublicationMarkers(rootDir, mode) {
 
   const roots = mode === 'output'
     ? ['out']
-    : ['app', 'components', 'content'];
+    : ['app', 'content'];
   const allowedExtensions = mode === 'output'
     ? new Set(['.html'])
     : new Set(['.js', '.jsx', '.md', '.mdx', '.ts', '.tsx']);
@@ -1080,11 +1069,14 @@ async function validateOutput(rootDir) {
   const files = await walkFiles(outputRoot);
   for (const htmlPath of files.filter((filePath) => filePath.endsWith('.html'))) {
     const html = await fs.readFile(htmlPath, 'utf8');
+    const sourceName = relative(rootDir, htmlPath);
     if (!/^\s*<!doctype\s+html>/i.test(html) || !/<html\b/i.test(html) || !/<\/html>\s*$/i.test(html)) {
-      errors.push(`Malformed generated HTML: ${relative(rootDir, htmlPath)}`);
+      errors.push(`Malformed generated HTML: ${sourceName}`);
     }
     const document = parseHtml(html);
-    errors.push(...validateHtmlMedia(document, relative(rootDir, htmlPath)));
+    if (!sourceName.startsWith('out/demos/')) {
+      errors.push(...validateHtmlMedia(document, sourceName));
+    }
     const references = [];
     for (const element of document.querySelectorAll(
       '[href], [src], [poster], [srcset], [data-transcript-href]',

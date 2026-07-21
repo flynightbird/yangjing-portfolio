@@ -25,6 +25,7 @@ for (const locale of ['en', 'zh'] as const) {
       expect(ids).toEqual(chapterIds);
       await expect(page.getByText(
         locale === 'zh' ? '唯一产品设计师' : 'Sole Product Designer',
+        { exact: true },
       )).toBeVisible();
       await expect(page.getByText(
         locale === 'zh' ? '已上线' : 'Shipped',
@@ -35,16 +36,14 @@ for (const locale of ['en', 'zh'] as const) {
       );
     });
 
-    test('loads accessible video evidence', async ({ page }) => {
-      const videos = page.locator('video');
-      await expect(videos).toHaveCount(2);
-      for (let index = 0; index < 2; index += 1) {
-        await expect(videos.nth(index)).toHaveAttribute(
-          'poster',
-          /\/images\/meeting\/.+\.webp$/,
-        );
-        await expect(videos.nth(index).locator('track[kind="captions"]')).toHaveCount(1);
-      }
+    test('loads committed static evidence without missing recordings', async ({ page }) => {
+      await expect(page.locator('video[src^="/videos/meeting/"]')).toHaveCount(0);
+      await expect(
+        page.locator('img[src="/images/meeting/adaptive-layout-poster.webp"]'),
+      ).toBeVisible();
+      await expect(
+        page.locator('img[src="/images/meeting/transcript-poster.webp"]'),
+      ).toBeVisible();
     });
 
     test('has no horizontal overflow', async ({ page }) => {

@@ -17,23 +17,11 @@
       "kind": "image",
       "source": "evidence/meeting/source/adaptive-layout-poster.png",
       "output": "public/images/meeting/adaptive-layout-poster.webp",
-      "purpose": "Provide a static fallback for the adaptive stage transition recording.",
+      "purpose": "Show representative shipped states for the adaptive meeting stage.",
       "alt": {
         "en": "Representative shipped meeting-stage states showing the gallery and whiteboard workspace",
         "zh": "两种代表性已上线会议舞台状态：宫格与白板工作区"
       }
-    },
-    {
-      "id": "adaptive-layout-demo",
-      "kind": "video",
-      "source": "evidence/meeting/source/adaptive-layout-demo.mp4",
-      "output": "public/videos/meeting/adaptive-layout-demo.mp4",
-      "poster": "/images/meeting/adaptive-layout-poster.webp",
-      "captions": {
-        "en": "/captions/meeting/adaptive-layout-demo.en.vtt",
-        "zh": "/captions/meeting/adaptive-layout-demo.zh.vtt"
-      },
-      "purpose": "Prove that live meeting events cause continuous, shipped stage transitions."
     },
     {
       "id": "meeting-state-matrix",
@@ -84,23 +72,11 @@
       "kind": "image",
       "source": "evidence/meeting/source/transcript-poster.png",
       "output": "public/images/meeting/transcript-poster.webp",
-      "purpose": "Provide a static fallback for the real-time information-layer recording.",
+      "purpose": "Show the shipped controls in the real-time meeting information layer.",
       "alt": {
         "en": "Live captions, transcript panel, language selection, and bilingual output",
         "zh": "实时字幕、转写面板、语言选择和双语输出"
       }
-    },
-    {
-      "id": "transcript-demo",
-      "kind": "video",
-      "source": "evidence/meeting/source/transcript-demo.mp4",
-      "output": "public/videos/meeting/transcript-demo.mp4",
-      "poster": "/images/meeting/transcript-poster.webp",
-      "captions": {
-        "en": "/captions/meeting/transcript-demo.en.vtt",
-        "zh": "/captions/meeting/transcript-demo.zh.vtt"
-      },
-      "purpose": "Prove the shipped relationship among captions, transcription, translation, and interpretation."
     },
     {
       "id": "caption-vs-transcript",
@@ -145,34 +121,6 @@
         "en": "Shipped Agora Meeting coverage across Desktop, Web, Tablet, and Mobile",
         "zh": "Agora Meeting 在桌面、Web、平板和手机四类终端的上线覆盖"
       }
-    },
-    {
-      "id": "adaptive-layout-captions-en",
-      "kind": "captions",
-      "source": "evidence/meeting/source/adaptive-layout-demo.en.vtt",
-      "output": "public/captions/meeting/adaptive-layout-demo.en.vtt",
-      "purpose": "Provide English text access for the adaptive layout recording."
-    },
-    {
-      "id": "adaptive-layout-captions-zh",
-      "kind": "captions",
-      "source": "evidence/meeting/source/adaptive-layout-demo.zh.vtt",
-      "output": "public/captions/meeting/adaptive-layout-demo.zh.vtt",
-      "purpose": "Provide Chinese text access for the adaptive layout recording."
-    },
-    {
-      "id": "transcript-captions-en",
-      "kind": "captions",
-      "source": "evidence/meeting/source/transcript-demo.en.vtt",
-      "output": "public/captions/meeting/transcript-demo.en.vtt",
-      "purpose": "Provide English text access for the transcript recording."
-    },
-    {
-      "id": "transcript-captions-zh",
-      "kind": "captions",
-      "source": "evidence/meeting/source/transcript-demo.zh.vtt",
-      "output": "public/captions/meeting/transcript-demo.zh.vtt",
-      "purpose": "Provide Chinese text access for the transcript recording."
     }
   ]
 }
