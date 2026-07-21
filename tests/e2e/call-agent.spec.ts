@@ -17,8 +17,20 @@ for (const locale of ['en', 'zh'] as const) {
     });
 
     test('keeps hero evidence and project navigation intact', async ({ page }) => {
-      await expect(page.locator('[data-call-agent-hero] [data-call-agent-browser]')).toBeVisible();
-      await expect(page.locator('[data-call-agent-hero] video')).toHaveAttribute('src', '/videos/call-agent/agent-preview.mp4');
+      const heroSequence = page.locator('[data-call-agent-hero-sequence]');
+      await expect(heroSequence.locator('[data-hero-clip]')).toHaveCount(3);
+      await expect(
+        heroSequence.locator('[data-hero-clip][data-active="true"] [data-call-agent-browser]'),
+      ).toBeVisible();
+      expect(
+        await heroSequence.locator('video').evaluateAll((videos) =>
+          videos.map((video) => video.getAttribute('src')),
+        ),
+      ).toEqual([
+        '/videos/call-agent/agent-create.mp4',
+        '/videos/call-agent/agent-preview.mp4',
+        '/videos/call-agent/agent-operate.mp4',
+      ]);
       await expect(page.locator('[data-project-previous]')).toHaveAttribute('href', `/${locale}/work/xuelang/`);
       await expect(page.locator('[data-project-next]')).toHaveAttribute('href', `/${locale}/work/convo-ai/`);
     });
