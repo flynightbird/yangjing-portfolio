@@ -73,16 +73,13 @@ test.describe('portfolio detail system', () => {
     const header = page.getByRole('banner');
     await expect(header).toHaveAttribute('data-surface', 'light');
 
-    await page.evaluate(() => window.scrollTo(0, 500));
+    await page.mouse.wheel(0, 500);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(100);
     await expect(header).toHaveAttribute('data-scrolled', 'true');
 
     const capsule = header.locator('div').first();
-    const capsuleColors = await capsule.evaluate((node) => {
-      const style = getComputedStyle(node);
-      return { background: style.backgroundColor, color: style.color };
-    });
-    expect(capsuleColors.background).not.toBe('rgba(0, 0, 0, 0)');
-    expect(capsuleColors.color).toBe('rgb(16, 17, 15)');
+    await expect(capsule).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(capsule).toHaveCSS('color', 'rgb(16, 17, 15)');
 
     await page.getByRole('button', { name: '打开章节目录' }).click();
     await expect(

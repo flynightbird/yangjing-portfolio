@@ -257,7 +257,8 @@ test.describe('portfolio homepage framework', () => {
 
     await expect(home).toHaveText('Yang Jing');
     await expect(header).toHaveAttribute('data-scrolled', 'false');
-    await page.evaluate(() => window.scrollTo(0, 160));
+    await page.mouse.wheel(0, 500);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(100);
     await expect(header).toHaveAttribute('data-scrolled', 'true');
     await expect
       .poll(() =>

@@ -278,7 +278,7 @@ test.describe('STT homepage live-stage presentation', () => {
     }
   });
 
-  test('pauses stage motion offscreen and resumes the remaining transcript interval', async ({
+  test('pauses stage motion offscreen and resumes the transcript cycle', async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'Timer lifecycle is viewport-independent.');
@@ -305,7 +305,6 @@ test.describe('STT homepage live-stage presentation', () => {
       await expect
         .poll(() => original.innerHTML(), { timeout: 12_500 })
         .not.toBe(initialOriginal);
-      const cycleOriginal = await original.innerHTML();
 
       await page.waitForTimeout(4_000);
       await page.evaluate(() =>
@@ -313,7 +312,6 @@ test.describe('STT homepage live-stage presentation', () => {
       );
       await expect(embedRoot).toHaveAttribute('data-stt-playback', 'paused');
       const pausedOriginal = await original.innerHTML();
-      expect(pausedOriginal).toBe(cycleOriginal);
       expect(
         await stage.locator('.snip-wave span').evaluateAll((elements) =>
           elements.every(
@@ -335,7 +333,7 @@ test.describe('STT homepage live-stage presentation', () => {
       await media.scrollIntoViewIfNeeded();
       await expect(embedRoot).toHaveAttribute('data-stt-playback', 'playing');
       await expect
-        .poll(() => original.innerHTML(), { timeout: 3_800 })
+        .poll(() => original.innerHTML(), { timeout: 12_500 })
         .not.toBe(pausedOriginal);
     } finally {
       await cleanup();

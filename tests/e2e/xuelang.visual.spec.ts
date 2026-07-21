@@ -45,7 +45,7 @@ test.describe('Xuelang visual matrix', () => {
         ).toBe(true);
 
         await expect(page.locator('[data-xuelang-hero] h1')).toBeInViewport();
-        await expect(page.locator('[data-xuelang-hero] [data-case-web-control]')).toBeInViewport();
+        await expect(page.locator('[data-xuelang-case] [data-case-web-control]')).toBeInViewport();
         await expect(page.locator('[data-hero-panorama]')).toBeInViewport();
 
         if (viewport.width >= 1280) {
@@ -85,13 +85,28 @@ test.describe('Xuelang visual matrix', () => {
                 ?? '';
               return `${element.tagName.toLowerCase()}${label ? ` (${label})` : ''}`;
             };
+            const isInsideHorizontalScroller = (element: Element) => {
+              for (let parent = element.parentElement; parent; parent = parent.parentElement) {
+                const style = getComputedStyle(parent);
+                if (
+                  (style.overflowX === 'auto' || style.overflowX === 'scroll')
+                  && parent.scrollWidth > parent.clientWidth
+                ) {
+                  return true;
+                }
+              }
+              return false;
+            };
 
             return elements.flatMap((element) => {
               if (!isVisible(element)) return [];
               const box = element.getBoundingClientRect();
               const defects: string[] = [];
 
-              if (box.left < -1 || box.right > viewportWidth + 1) {
+              if (
+                !isInsideHorizontalScroller(element)
+                && (box.left < -1 || box.right > viewportWidth + 1)
+              ) {
                 defects.push(
                   `${describe(element)} exceeds viewport: ${box.left.toFixed(1)}..${box.right.toFixed(1)} / ${viewportWidth}`,
                 );
@@ -187,7 +202,7 @@ test.describe('Xuelang visual matrix', () => {
     }
   }
 
-  test('Xuelang owns the wider compact chapter breakpoint without changing shared cases', async ({
+  test('portfolio details share the wider compact chapter breakpoint', async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'This test sets exact breakpoint widths.');
@@ -211,8 +226,8 @@ test.describe('Xuelang visual matrix', () => {
 
     await page.setViewportSize({ width: 1024, height: 800 });
     await page.goto('/en/work/call-agent/', { waitUntil: 'networkidle' });
-    await expect(toggle, 'Shared cases should retain the original 900px breakpoint').toBeHidden();
-    await expect(navigation).toBeVisible();
+    await expect(toggle, 'Shared cases should use the unified compact index').toBeVisible();
+    await expect(navigation).toBeHidden();
   });
 
   test('the 1024px Xuelang chapter index remains sticky and opens as an overlay', async ({

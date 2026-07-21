@@ -3,15 +3,17 @@ import { expect, test } from '@playwright/test';
 const frameIds = ['6', '10', '11', '20'];
 
 test.describe('Tangping visual detail', () => {
-  test('opens the Chinese detail from the Visual Archive card', async ({ page }) => {
+  test('opens the Chinese gallery from the Visual Archive card', async ({ page }) => {
     await page.goto('/zh/', { waitUntil: 'networkidle' });
 
     const archive = page.locator('[data-archive-carousel]');
     await archive.scrollIntoViewIfNeeded();
-    await archive.getByRole('link', { name: '查看项目：躺平' }).click();
+    await archive.getByRole('button', { name: '打开项目图片: 躺平' }).click();
 
-    await expect(page).toHaveURL(/\/zh\/work\/tangping\/$/);
-    await expect(page.getByRole('heading', { level: 1, name: '躺平设计家' })).toBeVisible();
+    await expect(page).toHaveURL(/\/zh\/$/);
+    const dialog = page.getByRole('dialog', { name: '项目图片详情: 躺平' });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('img', { name: '躺平设计家 APP 与官网界面系统' })).toBeVisible();
   });
 
   for (const locale of ['en', 'zh'] as const) {

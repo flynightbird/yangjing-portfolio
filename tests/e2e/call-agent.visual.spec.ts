@@ -28,8 +28,10 @@ test.describe('Call Agent responsive system story', () => {
     const media = page.locator('[data-call-agent-media-stage]');
     await media.scrollIntoViewIfNeeded();
     const initial = await media.boundingBox();
-    await page.locator('ol [data-stage-id="publish"] button').evaluate((button: HTMLButtonElement) => button.click());
-    await expect(page.locator('ol [data-stage-id="publish"]')).toHaveAttribute('data-active', 'true');
+    const publish = page.locator('ol [data-stage-id="publish"]');
+    await publish.scrollIntoViewIfNeeded();
+    await publish.locator('button').click();
+    await expect(publish).toHaveAttribute('data-active', 'true');
     const next = await media.boundingBox();
     expect(initial).not.toBeNull();
     expect(next).not.toBeNull();
