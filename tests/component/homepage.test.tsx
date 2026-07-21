@@ -45,6 +45,14 @@ describe('DualIdentityHero', () => {
 
     expect(screen.getByRole('heading', { level: 2, name: 'Product Designer' })).toBeVisible();
     expect(screen.getByRole('heading', { level: 2, name: 'AI-native Builder' })).toBeVisible();
+    expect(
+      screen.getByText('专注于 C 端产品，以及复杂的 B2B 与 AI 系统设计。'),
+    ).toBeVisible();
+    expect(
+      screen.getByText(
+        '通过 Vibe Coding 探索、验证并构建可运行的产品体验，借助 AIGC 拓展视觉表达、提升设计效率。',
+      ),
+    ).toBeVisible();
   });
 });
 
@@ -77,18 +85,20 @@ describe('IntroStory', () => {
     const scenes = container.querySelectorAll('[data-intro-scene]');
 
     expect(scenes[0]).toHaveTextContent(
-      '嗨，我是杨静，一名拥有十多年经验的 UX/UI 设计师。',
-    );
-    expect(scenes[1]).toHaveTextContent(/将复杂状态转化为清晰、可控的产品体验/);
-    expect(scenes[2]).toHaveTextContent(
-      '现在，我也使用 AI 将设计判断转化为可运行的产品，从概念、原型走向真实体验。',
+      '嗨，我是杨静，一名拥有十多年经验的 UX/UI 设计师，也长期从事用户研究。',
     );
     expect(scenes[0]).toHaveTextContent(
-      '欢迎来到这个由我亲手设计，并通过 Vibe Coding 构建的作品集。',
+      '这是一个由我设计，并通过 Vibe Coding 构建的作品集。',
     );
     expect(scenes[0].querySelector('[data-intro-support]')).toBeInTheDocument();
+    expect(scenes[1]).toHaveTextContent(
+      '我的工作覆盖大规模 C 端产品、复杂 B2B 产品与 AI 系统，结合 UX/UI 设计与用户研究，将复杂状态梳理为清晰、可控且具有一致视觉表达的产品体验。',
+    );
     expect(scenes[2]).toHaveTextContent(
-      '熟练运用 Codex、Claude Design 与 Figma Make 进行设计探索，将创意转化为可运行的产品；结合 Midjourney、即梦等 AIGC 工具拓展视觉表达，提升产品的完整度与质感。',
+      '现在，我也借助 AI 将设计判断转化为可运行的产品，从概念探索、原型验证走向真实体验。',
+    );
+    expect(scenes[2]).toHaveTextContent(
+      '我使用 Codex、Claude Design 与 Figma Make 进行设计探索与产品构建，并结合 Midjourney、即梦等 AIGC 工具拓展视觉表达，提升产品的完整度与质感。',
     );
     expect(
       Array.from(scenes[2].querySelectorAll('[data-intro-support-emphasis]')).map(
@@ -217,6 +227,46 @@ describe('FeaturedWork', () => {
       expect(within(stt as HTMLElement).getByText(sttProposition)).toBeVisible();
     },
   );
+
+  it('renders the approved Chinese project propositions, roles, and statuses', () => {
+    const { container } = render(<FeaturedWork locale="zh" />);
+    const project = (id: string) =>
+      within(
+        container.querySelector<HTMLElement>(`[data-project-id="${id}"]`) as HTMLElement,
+      );
+
+    expect.soft(
+      project('call-agent').queryByText(
+        '面向 AI 对话配置的 SaaS 产品，让 AI 对话在发布前可见、可验证、可控。',
+      ),
+    ).toBeVisible();
+    expect.soft(
+      project('call-agent').queryByText('唯一产品设计师 · 前端原型构建（Vibe Coding）'),
+    ).toBeVisible();
+    expect.soft(
+      project('convo-ai').queryByText('为 AI 对话打造自然、清晰的跨端体验。'),
+    ).toBeVisible();
+    expect.soft(project('convo-ai').queryByText('唯一产品设计师')).toBeVisible();
+    expect.soft(
+      project('meeting').queryByText(
+        '在参会者、内容、角色与设备持续变化的会议场景中，构建覆盖桌面端、Web、App 与 Pad 的实时协作体验。',
+      ),
+    ).toBeVisible();
+    expect.soft(project('meeting').queryByText('唯一产品设计师')).toBeVisible();
+    expect.soft(project('meeting').queryByText('已在四类终端上线')).toBeVisible();
+    expect.soft(project('aidx').queryByText('网站已上线')).toBeVisible();
+    expect.soft(
+      project('stt-demo').queryByText('让双语对话的实时转写与翻译更清晰。'),
+    ).toBeVisible();
+    expect.soft(
+      project('stt-demo').queryByText('唯一产品设计师 · AI 辅助高保真原型'),
+    ).toBeVisible();
+    expect.soft(project('stt-demo').queryByText('Agora RTE 2026 大会发布')).toBeVisible();
+    expect.soft(
+      project('xuelang').queryByText('从卖课工具，走向高品质学习平台'),
+    ).toBeVisible();
+    expect.soft(project('xuelang').queryByText('项目主设计师')).toBeVisible();
+  });
 
   it('defaults to Call Agent focus and marks ConvoAI media as temporary', () => {
     const { container } = render(<FeaturedWork locale="en" />);
@@ -370,32 +420,49 @@ describe('FeaturedWork', () => {
   });
 
   it.each([
-    { locale: 'en' as const, status: 'Pinned static prototype' },
-    { locale: 'zh' as const, status: '固定版本的静态原型' },
-  ])('removes the homepage STT status row in $locale', ({ locale, status }) => {
+    { locale: 'en' as const, roleLabel: 'Role', status: 'Pinned static prototype' },
+    { locale: 'zh' as const, roleLabel: '角色', status: 'Agora RTE 2026 大会发布' },
+  ])('renders localized STT facts in $locale', ({ locale, roleLabel, status }) => {
     const { container } = render(<FeaturedWork locale={locale} />);
     const stt = container.querySelector<HTMLElement>('[data-project-id="stt-demo"]');
     const sttScope = within(stt as HTMLElement);
 
-    expect(sttScope.getByText('Role')).toBeVisible();
-    expect(sttScope.queryByText('Status')).not.toBeInTheDocument();
-    expect(sttScope.queryByText(status)).not.toBeInTheDocument();
+    expect.soft(sttScope.queryByText(roleLabel)).toBeVisible();
+    expect.soft(sttScope.queryByText(status)).toBeVisible();
   });
 
-  it('labels both ConvoAI images as temporary placeholders', () => {
-    const { container } = render(<FeaturedWork locale="en" />);
-    const convoAi = container.querySelector<HTMLElement>('[data-project-id="convo-ai"]');
+  it.each(['en', 'zh'] as const)(
+    'removes Call Agent and ConvoAI status and media-production copy in %s',
+    (locale) => {
+      const { container } = render(<FeaturedWork locale={locale} />);
+      const callAgent = within(
+        container.querySelector<HTMLElement>('[data-project-id="call-agent"]') as HTMLElement,
+      );
+      const convoAi = within(
+        container.querySelector<HTMLElement>('[data-project-id="convo-ai"]') as HTMLElement,
+      );
 
-    expect(
-      within(convoAi as HTMLElement).getByRole('img', { name: /temporary ConvoAI web/i }),
-    ).toHaveAttribute('src', '/images/convo-ai/temporary-web.webp');
-    expect(
-      within(convoAi as HTMLElement).getByRole('img', { name: /temporary ConvoAI app/i }),
-    ).toHaveAttribute('src', '/images/convo-ai/temporary-app.webp');
-    expect(
-      within(convoAi as HTMLElement).getByText(/replace with owned project assets/i),
-    ).toBeVisible();
-  });
+      for (const removed of locale === 'zh'
+        ? [
+            '有限客户测试',
+            '真实产品证据',
+            '公开产品，等待替换项目素材',
+            '临时 Web 与 App 素材',
+            '当前为临时第三方图片',
+          ]
+        : [
+            'Limited beta',
+            'Real product evidence',
+            'Public product, media replacement pending',
+            'Temporary web and app media',
+            'Temporary third-party imagery',
+          ]) {
+        expect.soft(callAgent.queryByText(removed, { exact: false })).not.toBeInTheDocument();
+        expect.soft(convoAi.queryByText(removed, { exact: false })).not.toBeInTheDocument();
+      }
+      expect.soft(convoAi.queryAllByRole('img')).toHaveLength(0);
+    },
+  );
 });
 
 describe('VisualArchive', () => {
@@ -492,11 +559,11 @@ describe('VisualArchive', () => {
     render(<VisualArchive locale="zh" />);
 
     expect(
-      screen.getByRole('heading', { name: 'More C端用户设计作品' }),
+      screen.getByRole('heading', { name: 'More C 端产品作品' }),
     ).toBeVisible();
     expect(
       screen.getByText(
-        '更多设计作品，将以图片为主，轻量呈现产品、品牌与角色设计作品。',
+        '以视觉卡片为主，呈现更多产品、品牌与角色设计。',
       ),
     ).toBeVisible();
     expect(screen.getByRole('button', { name: '上一个视觉项目' })).toBeVisible();
@@ -510,9 +577,18 @@ describe('VisualArchive', () => {
     expect(within(archive).queryByRole('link', { name: /躺平/ })).not.toBeInTheDocument();
     expect(screen.getByText('开言设计原则')).toBeVisible();
     expect(screen.getByText('豆豆狐')).toBeVisible();
-    expect(
-      screen.getByText(/阿里巴巴旗下的家居装修设计师工具和平台/),
-    ).toBeVisible();
+    expect(screen.getByText(
+      '面向家居装修设计师的工具与平台。升级 App 与官网主站体验，并强化产品的品牌表达。',
+    )).toBeVisible();
+    expect(screen.getByText(
+      '字节跳动旗下的语言学习 App。探索新的设计原则，提升视觉一致性与体验品质。',
+    )).toBeVisible();
+    expect(screen.getByText(
+      '字节跳动旗下的儿童语言学习 App。设计英语闯关体验，让学习任务更直观，也更具游戏感。',
+    )).toBeVisible();
+    expect(screen.getByText(
+      '为同程旅游某业务线打造可延展的品牌 IP，并完成三维角色、动作与视觉表达。',
+    )).toBeVisible();
     expect(screen.getAllByText('技能')).toHaveLength(4);
   });
 
