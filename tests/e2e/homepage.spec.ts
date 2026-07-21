@@ -80,6 +80,29 @@ test.describe('portfolio homepage framework', () => {
       await expect(page.locator('[data-company-mark]')).toHaveCount(6);
       await expect(page.locator('[data-project-meta]')).toHaveCount(6);
       await expect(page.locator('[data-cta-treatment="white"]')).toHaveCount(3);
+      const projectCtas = page.locator('[data-home-project-cta]');
+      await expect(projectCtas).toHaveCount(6);
+      expect(await projectCtas.evaluateAll((ctas) => ctas.map((cta) => {
+        const style = getComputedStyle(cta);
+        return {
+          height: style.height,
+          fontSize: style.fontSize,
+          fontWeight: style.fontWeight,
+        };
+      }))).toEqual(Array.from({ length: 6 }, () => ({
+        height: '48px',
+        fontSize: '14px',
+        fontWeight: '500',
+      })));
+      await expect(
+        page.locator('[data-project-id="convo-ai"] [data-home-project-cta] [data-remix-icon]'),
+      ).toHaveCount(0);
+      await expect(
+        page.locator('[data-project-id="aidx"] [data-home-project-cta] [data-remix-icon]'),
+      ).toHaveCount(1);
+      await expect(
+        page.locator('[data-project-id="stt-demo"] [data-home-project-cta] [data-remix-icon]'),
+      ).toHaveCount(1);
       await expect(page.locator('[data-project-chapter]')).toHaveCount(4);
       await expect(page.locator('[data-aidx-showcase]')).toHaveCount(1);
       await expect(page.locator('[data-aidx-browser]')).toHaveAttribute(
@@ -104,8 +127,10 @@ test.describe('portfolio homepage framework', () => {
       await expect(page.locator('[data-archive-slot]')).toHaveCount(0);
       await expect(page.locator('[data-cover-variant]')).toHaveCount(4);
       await expect(
-        page.locator('[data-archive-card]').first().getByRole('link'),
-      ).toHaveAttribute('href', `/${locale}/work/tangping/`);
+        page.locator('[data-archive-card]').first().getByRole('button', {
+          name: locale === 'zh' ? /打开项目图片：躺平/ : /Open project image: Tangping/,
+        }),
+      ).toBeVisible();
       await expect(page.locator('[data-project-id="xuelang"] a')).toHaveAttribute(
         'href',
         `/${locale}/work/xuelang/`,
@@ -734,7 +759,10 @@ test.describe('portfolio homepage framework', () => {
     await expect(canvasControls).toBeVisible();
     await expect(rail.locator('[data-lightbox-canvas-controls]')).toHaveCount(0);
     await expect(title).toHaveCSS('writing-mode', 'vertical-rl');
-    await expect(title).toHaveCSS('transform', 'none');
+    expect(await title.evaluate((element) => {
+      const matrix = new DOMMatrixReadOnly(getComputedStyle(element).transform);
+      return { a: matrix.a, b: matrix.b, c: matrix.c, d: matrix.d };
+    })).toEqual({ a: 1, b: 0, c: 0, d: 1 });
     await expect(counter).toHaveText('01 / 07');
     await expect(desktopGallery.locator('img')).toHaveCSS('border-radius', '18px');
     const [controlsBox, counterBox] = await Promise.all([
@@ -752,14 +780,18 @@ test.describe('portfolio homepage framework', () => {
     await expect(previous).toBeVisible();
     await expect(next).toBeVisible();
     await expect(next).toHaveCSS('border-radius', '999px');
+    await expect(next).toHaveCSS('outline-style', 'none');
     await next.hover();
     await expect(next).toHaveCSS('background-color', 'rgb(244, 244, 241)');
     await expect(next).toHaveCSS('color', 'rgb(13, 13, 15)');
+    await expect(next).toHaveCSS('outline-style', 'none');
     await page.mouse.move(0, 0);
     await page.keyboard.press('Tab');
     await expect(next).toBeFocused();
     await expect(next).toHaveCSS('background-color', 'rgb(244, 244, 241)');
     await expect(next).toHaveCSS('color', 'rgb(13, 13, 15)');
+    await expect(next).toHaveCSS('outline-style', 'solid');
+    await expect(next).toHaveCSS('outline-width', '2px');
 
     if (testInfo.project.name === 'tablet') {
       const viewport = page.viewportSize();
