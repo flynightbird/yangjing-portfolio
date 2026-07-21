@@ -147,7 +147,27 @@ No historical commit was classified `migrate`, so no cherry-pick was applied. Th
 
 ## Verification
 
-Baseline and focused extraction verification are recorded above. Canonical integration verification has not started.
+Local canonical `main` was created from approved base `a82387f`. Post-backup source commit `f2f5224` remains preserved on `codex/portfolio-nextjs` but was not used as the base because it combines shared and Call Agent work with the excluded Call Agent PDF contract.
+
+Merged and verified locally:
+
+- Shared integration merge `5a1b47d`; its immediate full-suite run exposed the recorded baseline failures, resource-contention timeouts, and one expected transitional Meeting assertion resolved by the Meeting branch.
+- Call Agent merge `50edc22`; 7/7 focused integration tests passed.
+- Xuelang merge `389bbbc`; 3/3 focused integration tests passed.
+- Meeting merge `2aa6570`; 2/2 focused integration tests passed.
+- Migration audit merge `97ed48c`; this also preserves the previously completed Homepage AI toolchain copy commits already present on the migration-control branch.
+
+### ConvoAI publication gate
+
+Final verification and publication are blocked by the explicit no-placeholder contract:
+
+- Missing `content/work/convo-ai.zh.mdx`.
+- Missing `content/work/convo-ai.en.mdx`.
+- Missing `convo-ai` work slug and registry entries.
+- Homepage still declares ConvoAI as `external-live-site`, `awaiting-assets`, and `https://conversational-ai.shengwang.cn/` instead of `internal-case` and `work/convo-ai/`.
+- Missing `tests/e2e/convo-ai.spec.ts`.
+
+Branch `codex/case/convo-ai-build` currently contains only evidence blueprint commit `93d173f`; it has not been merged. Full canonical verification, remote `main` replacement, deployment, and cleanup remain intentionally pending.
 
 ## Cleanup
 
