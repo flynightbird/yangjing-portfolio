@@ -10,11 +10,12 @@ import {
 } from 'react';
 
 import styles from '@/components/home/home.module.css';
+import { withBasePath } from '@/lib/i18n/locales';
 
 const DEFAULT_SPLIT = 48;
 const MIN_SPLIT = 8;
 const MAX_SPLIT = 92;
-const PORTRAIT_SRC = '/images/profile/yang-jing-hero-placeholder.png';
+const PORTRAIT_SRC = withBasePath('/images/profile/yang-jing-hero-placeholder.png');
 
 interface HeroMotionProps {
   readonly name: string;

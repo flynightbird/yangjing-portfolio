@@ -1,5 +1,6 @@
 import { ChapterNav } from '@/components/case-study/chapter-nav';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import { CallAgentHeroSequence } from './call-agent-hero-sequence';
 import styles from './call-agent-layout.module.css';
@@ -39,8 +40,8 @@ export function CallAgentLayout({ meta, locale, children, actions, previous, nex
             {children}
             {previous || next ? (
               <nav className={styles.projectNavigation} aria-label={text.navigation}>
-                {previous ? <a href={previous.href} data-project-previous><span>{text.previous}</span><strong>{previous.title}</strong></a> : <span />}
-                {next ? <a href={next.href} data-project-next><span>{text.next}</span><strong>{next.title}</strong></a> : null}
+                {previous ? <a href={withBasePath(previous.href)} data-project-previous><span>{text.previous}</span><strong>{previous.title}</strong></a> : <span />}
+                {next ? <a href={withBasePath(next.href)} data-project-next><span>{text.next}</span><strong>{next.title}</strong></a> : null}
               </nav>
             ) : null}
           </article>

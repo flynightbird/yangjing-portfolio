@@ -962,7 +962,7 @@ async function validateMediaManifest(rootDir, mode) {
 
 const unsafeOutputReference = Symbol('unsafe output reference');
 
-function outputTargetForReference(outputRoot, htmlPath, reference) {
+function outputTargetForReference(outputRoot, htmlPath, reference, basePath = '') {
   if (!reference || /^(?:[a-z]+:|\/\/|#)/i.test(reference)) return undefined;
   if (reference.includes('\\')) return unsafeOutputReference;
   let decodedPath;
@@ -978,6 +978,13 @@ function outputTargetForReference(outputRoot, htmlPath, reference) {
       decodedPath = next;
       if (decodedPath.includes('\\')) return unsafeOutputReference;
       if (index === 9) return unsafeOutputReference;
+    }
+    const normalizedBasePath = basePath.replace(/\/+$/, '');
+    if (
+      normalizedBasePath
+      && (decodedPath === normalizedBasePath || decodedPath.startsWith(`${normalizedBasePath}/`))
+    ) {
+      decodedPath = decodedPath.slice(normalizedBasePath.length) || '/';
     }
     const escapedPath = decodedPath
       .replaceAll('%', '%25')
@@ -1038,7 +1045,7 @@ function validateHtmlMedia(document, sourceName) {
   return errors;
 }
 
-async function validateOutput(rootDir) {
+async function validateOutput(rootDir, basePath = '') {
   const errors = [];
   const outputRoot = path.join(rootDir, 'out');
   for (const relativePath of outputPublicationPaths) {
@@ -1097,7 +1104,7 @@ async function validateOutput(rootDir) {
       if (transcriptHref) references.push(transcriptHref);
     }
     for (const reference of references) {
-      const target = outputTargetForReference(outputRoot, htmlPath, reference);
+      const target = outputTargetForReference(outputRoot, htmlPath, reference, basePath);
       if (target === undefined) continue;
       if (target === unsafeOutputReference) {
         errors.push(`Unsafe internal reference "${reference}" in ${relative(rootDir, htmlPath)}`);
@@ -1122,6 +1129,7 @@ async function validateOutput(rootDir) {
 export async function runPublicationValidation({
   mode,
   rootDir = repositoryRoot,
+  basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '',
 }) {
   assertMode(mode);
   const publicationRoots = mode === 'output'
@@ -1135,7 +1143,7 @@ export async function runPublicationValidation({
         ...await validatePrivacy(rootDir, ['out']),
         ...await findDraftPublicationMarkers(rootDir, mode),
         ...await validateMediaManifest(rootDir, mode),
-        ...await validateOutput(rootDir),
+        ...await validateOutput(rootDir, basePath),
       ]
     : [
         ...await validatePrivacy(rootDir, ['content', 'evidence', 'public']),

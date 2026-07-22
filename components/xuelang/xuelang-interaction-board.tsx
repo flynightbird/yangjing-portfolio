@@ -1,4 +1,5 @@
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './xuelang-interaction-board.module.css';
 
@@ -52,7 +53,7 @@ export function XuelangInteractionBoard({ locale }: { readonly locale: Locale })
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           className={styles.productImage}
-          src="/images/xuelang/learning-interaction.webp"
+          src={withBasePath('/images/xuelang/learning-interaction.webp')}
           alt={text.alt}
         />
         <ol className={styles.rail} aria-label={text.label}>

@@ -982,6 +982,26 @@ role: 'body-only'
     );
   });
 
+  it('resolves prefixed GitHub Pages references against the export root', async () => {
+    const root = createRoot();
+    write(root, 'out/assets/present.txt', 'present');
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><a href="/yangjing-portfolio/assets/present.txt">File</a></body></html>',
+    );
+
+    const result = await runPublicationValidation({
+      mode: 'output',
+      rootDir: root,
+      basePath: '/yangjing-portfolio',
+    });
+
+    expect(result.errors).not.toContain(
+      'Broken internal reference "/yangjing-portfolio/assets/present.txt" in out/index.html',
+    );
+  });
+
   it('rejects output references resolved through a symlinked ancestor', async () => {
     const root = createRoot();
     const outside = createRoot();

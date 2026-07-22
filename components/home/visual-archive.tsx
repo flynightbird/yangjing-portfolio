@@ -13,6 +13,7 @@ import {
   type ArchiveEntry,
 } from '@/content/home';
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './home.module.css';
 
@@ -229,7 +230,7 @@ export function VisualArchive({
                       {/* Development-only composition reference, blocked by publication validation. */}
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={media.src}
+                        src={withBasePath(media.src)}
                         width={media.width}
                         height={media.height}
                         alt=""
@@ -260,7 +261,7 @@ export function VisualArchive({
             const end = entry.period.end;
             const alt = entry.image.alt[locale];
             const gallery = entry.gallery?.map((image) => ({
-              src: image.src,
+              src: withBasePath(image.src),
               width: image.width,
               height: image.height,
               alt: image.alt[locale],
@@ -279,7 +280,7 @@ export function VisualArchive({
                 <div className={styles.archiveStage}>
                   <Lightbox
                     variant="archive"
-                    src={entry.image.src}
+                    src={withBasePath(entry.image.src)}
                     width={entry.image.width}
                     height={entry.image.height}
                     alt={alt}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './call-agent-browser-video.module.css';
 
@@ -36,7 +37,7 @@ export function CallAgentBrowserImage({
         </div>
         <div className={styles.viewport}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src} alt={title} loading="lazy" />
+          <img src={withBasePath(src)} alt={title} loading="lazy" />
         </div>
       </div>
       <figcaption>{description}</figcaption>
@@ -55,6 +56,8 @@ export function CallAgentBrowserVideo({
   loop = true,
   onEnded,
 }: CallAgentBrowserVideoProps) {
+  const mediaSrc = withBasePath(src);
+  const posterSrc = withBasePath(poster);
   const videoRef = useRef<HTMLVideoElement>(null);
   const descriptionId = useId();
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -113,12 +116,12 @@ export function CallAgentBrowserVideo({
         </div>
         <div className={styles.viewport} data-call-agent-video-viewport>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className={styles.poster} src={poster} alt={title} loading={priority ? 'eager' : 'lazy'} />
+          <img className={styles.poster} src={posterSrc} alt={title} loading={priority ? 'eager' : 'lazy'} />
           {!reducedMotion ? (
             <video
               ref={videoRef}
-              src={src}
-              poster={poster}
+              src={mediaSrc}
+              poster={posterSrc}
               muted
               loop={loop}
               playsInline

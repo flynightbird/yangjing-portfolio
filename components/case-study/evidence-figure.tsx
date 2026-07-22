@@ -1,4 +1,5 @@
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import { Lightbox } from '../media/lightbox';
 import styles from './evidence-figure.module.css';
@@ -36,7 +37,7 @@ export function EvidenceFigure({
     >
       <p className={styles.label}>{label}</p>
       <Lightbox
-        src={src}
+        src={withBasePath(src)}
         width={width}
         height={height}
         alt={alt}

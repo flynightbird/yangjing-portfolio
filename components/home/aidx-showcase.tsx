@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { LiquidField } from '@/components/ui/liquid-field';
+import { withBasePath } from '@/lib/i18n/locales';
 import { useReducedMotionPreference } from '@/lib/use-reduced-motion';
 
 import styles from './aidx-showcase.module.css';
@@ -78,7 +79,7 @@ export function AidxShowcase({ href, caption }: AidxShowcaseProps) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           className={styles.fallback}
-          src="/images/aidx/home-2026-07.png"
+          src={withBasePath('/images/aidx/home-2026-07.png')}
           width={1440}
           height={900}
           alt="AIDX public website homepage with Tested AI, Trusted AI positioning"
@@ -87,7 +88,7 @@ export function AidxShowcase({ href, caption }: AidxShowcaseProps) {
           <iframe
             ref={frameRef}
             className={styles.frame}
-            src="/demos/aidx-showcase/index.html"
+            src={withBasePath('/demos/aidx-showcase/index.html')}
             title="AIDX homepage scrolling showcase"
             loading="lazy"
             tabIndex={-1}

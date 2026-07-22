@@ -16,7 +16,7 @@
 
 @font-face {
   font-family: 'MiSans';
-  src: url('/fonts/misans-regular.woff2') format('woff2');
+  src: url('../public/fonts/misans-regular.woff2') format('woff2');
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -24,7 +24,7 @@
 
 @font-face {
   font-family: 'MiSans';
-  src: url('/fonts/misans-semibold.woff2') format('woff2');
+  src: url('../public/fonts/misans-semibold.woff2') format('woff2');
   font-style: normal;
   font-weight: 600;
   font-display: swap;
@@ -32,7 +32,7 @@
 
 @font-face {
   font-family: 'MiSans';
-  src: url('/fonts/misans-bold.woff2') format('woff2');
+  src: url('../public/fonts/misans-bold.woff2') format('woff2');
   font-style: normal;
   font-weight: 700;
   font-display: swap;

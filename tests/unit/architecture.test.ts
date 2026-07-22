@@ -19,6 +19,18 @@ describe('static portfolio architecture', () => {
     );
   });
 
+  it('builds GitHub Pages with the repository base path', () => {
+    const nextConfig = fs.readFileSync(path.join(root, 'next.config.mjs'), 'utf8');
+    const deployment = fs.readFileSync(
+      path.join(root, '.github/workflows/deploy.yml'),
+      'utf8',
+    );
+
+    expect(nextConfig).toContain('NEXT_PUBLIC_BASE_PATH');
+    expect(nextConfig).toContain('basePath,');
+    expect(deployment).toContain('NEXT_PUBLIC_BASE_PATH: /yangjing-portfolio');
+  });
+
   it('wires deterministic export verification after a fresh framework build', () => {
     const packageJson = JSON.parse(
       fs.readFileSync(path.join(root, 'package.json'), 'utf8'),
@@ -108,6 +120,23 @@ describe('static portfolio architecture', () => {
 
     for (const border of inlineStartBorders) {
       expect(border).not.toMatch(/(?:[2-9]|\d{2,})px|coral/i);
+    }
+  });
+
+  it('keeps public CSS resources inside the deployed site base path', () => {
+    for (const directory of ['app', 'components']) {
+      const files = fs.readdirSync(path.join(root, directory), {
+        recursive: true,
+        withFileTypes: true,
+      });
+
+      for (const file of files) {
+        if (!file.isFile() || !file.name.endsWith('.css')) continue;
+        const source = fs.readFileSync(path.join(file.parentPath, file.name), 'utf8');
+        expect(source, path.relative(root, path.join(file.parentPath, file.name))).not.toMatch(
+          /url\(\s*['"]?\//,
+        );
+      }
     }
   });
 });

@@ -1,6 +1,7 @@
 import { ActionLink } from '@/components/ui/action-link';
 import type { PageTransitionTone } from '@/components/shell/page-transition-layer';
 import type { HomepageCompanyId, ProjectAvailability } from '@/content/home';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import { ProjectMeta } from './project-meta';
 import styles from './home.module.css';
@@ -97,7 +98,7 @@ export function FeaturedProject({
             // The image is verified product evidence with preserved dimensions.
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={media.src}
+              src={withBasePath(media.src)}
               width={media.width}
               height={media.height}
               alt={media.alt}

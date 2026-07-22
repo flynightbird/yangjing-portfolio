@@ -8,6 +8,7 @@ import { LocaleSwitcher } from '@/components/shell/locale-switcher';
 import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './site-header.module.css';
 
@@ -19,7 +20,7 @@ function resolveHeaderSurface(pathname: string): 'light' | 'dark' {
 
 export function SiteHeader({ locale }: { readonly locale: Locale }) {
   const dictionary = locale === 'zh' ? zhDictionary : enDictionary;
-  const localeRoot = `/${locale}/`;
+  const localeRoot = withBasePath(`/${locale}/`);
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const topSentinelRef = useRef<HTMLSpanElement>(null);

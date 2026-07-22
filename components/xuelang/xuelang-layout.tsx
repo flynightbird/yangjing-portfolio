@@ -1,5 +1,6 @@
 import { ChapterNav } from '@/components/case-study/chapter-nav';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './xuelang-layout.module.css';
 import { XuelangMotion } from './xuelang-motion';
@@ -141,7 +142,7 @@ export function XuelangLayout({
                     >
                       <span aria-hidden="true">{state.label}</span>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={state.src} alt={state.alt} />
+                      <img src={withBasePath(state.src)} alt={state.alt} />
                     </div>
                   ))}
                 </div>

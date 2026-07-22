@@ -103,7 +103,7 @@
   flex: 0 0 1.75rem;
   align-self: center;
   background: currentColor;
-  mask: url('/icons/remix/arrow-right-up-line.svg') center / contain no-repeat;
+  mask: url('../../public/icons/remix/arrow-right-up-line.svg') center / contain no-repeat;
   transition: transform 350ms var(--ease-out);
 }
 

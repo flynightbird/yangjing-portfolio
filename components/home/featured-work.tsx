@@ -7,6 +7,7 @@ import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
 import { homepageProjects } from '@/content/home';
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './home.module.css';
 
@@ -16,7 +17,7 @@ interface FeaturedWorkProps {
 
 export function FeaturedWork({ locale }: FeaturedWorkProps) {
   const copy = locale === 'zh' ? zhDictionary.home.projects : enDictionary.home.projects;
-  const localeRoot = `/${locale}/`;
+  const localeRoot = withBasePath(`/${locale}/`);
   const [xuelang, callAgent, convoAi, meeting, aidx, sttDemo] = homepageProjects;
 
   return (
@@ -42,7 +43,7 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
         <CommunicationProjects
           locale={locale}
           meeting={{ copy: copy.meeting, href: `${localeRoot}${meeting.href}` }}
-          stt={{ copy: copy.sttDemo, href: sttDemo.href }}
+          stt={{ copy: copy.sttDemo, href: withBasePath(sttDemo.href) }}
         />
       </SectionReveal>
       <SectionReveal tone="iris">
@@ -61,7 +62,7 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
             order="06"
             variant="evidence"
             media={{
-              src: '/images/xuelang/hero-panorama.webp',
+              src: withBasePath('/images/xuelang/hero-panorama.webp'),
               width: 3000,
               height: 1500,
               alt:

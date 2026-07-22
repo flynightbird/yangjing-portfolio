@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type PointerEvent } from 'react';
 
 import { ActionLink } from '@/components/ui/action-link';
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import { ConvoAiStudioWindow } from './convo-ai-studio-window';
 import { ProjectMeta } from './project-meta';
@@ -177,13 +178,13 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className={styles.flagshipConvoWeb}
-              src="/images/convo-ai/figma/web-ready.png"
+              src={withBasePath('/images/convo-ai/figma/web-ready.png')}
               alt="ConvoAI web conversation ready state"
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className={styles.flagshipConvoPhone}
-              src="/images/convo-ai/figma/avatar-video.png"
+              src={withBasePath('/images/convo-ai/figma/avatar-video.png')}
               alt="ConvoAI app avatar and live video state"
             />
           </a>

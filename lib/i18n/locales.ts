@@ -13,6 +13,25 @@ export function getStaticLocaleParams(): Array<{ locale: Locale }> {
   return locales.map((locale) => ({ locale }));
 }
 
+export function withBasePath(
+  sitePath: string,
+  basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '',
+): string {
+  const normalizedBase = basePath.replace(/\/+$/, '');
+
+  if (
+    !normalizedBase
+    || !sitePath.startsWith('/')
+    || sitePath.startsWith('//')
+    || sitePath === normalizedBase
+    || sitePath.startsWith(`${normalizedBase}/`)
+  ) {
+    return sitePath;
+  }
+
+  return `${normalizedBase}${sitePath}`;
+}
+
 function normalizeSitePath(pathname: string): string {
   const withoutQuery = pathname.split(/[?#]/, 1)[0] ?? '';
   const withLeadingSlash = withoutQuery.startsWith('/')
