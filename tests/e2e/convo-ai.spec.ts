@@ -127,9 +127,13 @@ for (const locale of ['en', 'zh'] as const) {
       }
 
       const showcase = page.locator('[data-convo-app-showcase]');
-      const showcaseSources = testInfo.project.name === 'mobile'
-        ? new Set(await Promise.all(showcaseIds.map((id) => activateMobileShowcaseScene(showcase, id))))
-        : sourcesFor(showcaseIds);
+      const showcaseSources = sourcesFor(showcaseIds);
+      if (testInfo.project.name === 'mobile') {
+        showcaseSources.clear();
+        for (const id of showcaseIds) {
+          showcaseSources.add(await activateMobileShowcaseScene(showcase, id));
+        }
+      }
 
       const avatars = page.locator('[data-convo-ai-avatar-pair] video');
       await expect(avatars).toHaveCount(2);

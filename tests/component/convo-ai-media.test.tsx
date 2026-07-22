@@ -18,7 +18,21 @@ class IntersectionObserverHarness {
   trigger(id: string) {
     const target = this.elements.find((element) => element.getAttribute('data-app-showcase-step') === id);
     if (!target) throw new Error(`Unknown observed step: ${id}`);
-    this.callback([{ target, isIntersecting: true, boundingClientRect: target.getBoundingClientRect(), intersectionRatio: 1, intersectionRect: target.getBoundingClientRect(), rootBounds: null, time: 0 } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
+    this.callback(this.elements.map((element) => {
+      const bounds = element.getBoundingClientRect();
+      const isIntersecting = element === target;
+      return { target: element, isIntersecting, boundingClientRect: bounds, intersectionRatio: isIntersecting ? 1 : 0, intersectionRect: bounds, rootBounds: null, time: 0 } as IntersectionObserverEntry;
+    }), this as unknown as IntersectionObserver);
+  }
+
+  triggerAtActivationLine(entries: readonly { readonly id: string; readonly top: number }[]) {
+    const rootBounds = { top: 378, bottom: 387 } as DOMRectReadOnly;
+    this.callback(entries.map(({ id, top }) => {
+      const target = this.elements.find((element) => element.getAttribute('data-app-showcase-step') === id);
+      if (!target) throw new Error(`Unknown observed step: ${id}`);
+      const bounds = { top } as DOMRectReadOnly;
+      return { target, isIntersecting: true, boundingClientRect: bounds, intersectionRatio: 1, intersectionRect: bounds, rootBounds, time: 0 } as IntersectionObserverEntry;
+    }), this as unknown as IntersectionObserver);
   }
 }
 
@@ -369,16 +383,44 @@ describe('ConvoAiAppShowcase', () => {
     expect(container.querySelector('[data-app-showcase-step="app-profile-settings"]')).toHaveAttribute('data-active', 'false');
   });
 
+  it('selects the scene nearest the activation line when adjacent steps intersect together', () => {
+    installMediaEnvironment();
+    const { container } = render(<ConvoAiAppShowcase locale="en" />);
+
+    act(() => {
+      IntersectionObserverHarness.instances[0].triggerAtActivationLine([
+        { id: 'app-structure', top: -158 },
+        { id: 'app-profile-settings', top: 382 },
+      ]);
+    });
+
+    expect(container.querySelector('[data-convo-app-showcase]')).toHaveAttribute('data-active-id', 'app-profile-settings');
+  });
+
+  it('keeps the nearest intersecting scene when adjacent updates arrive separately', () => {
+    installMediaEnvironment();
+    const { container } = render(<ConvoAiAppShowcase locale="en" />);
+    const observer = IntersectionObserverHarness.instances[0];
+
+    act(() => { observer.triggerAtActivationLine([{ id: 'app-structure', top: 382 }]); });
+    act(() => { observer.triggerAtActivationLine([{ id: 'app-login', top: -158 }]); });
+
+    expect(container.querySelector('[data-convo-app-showcase]')).toHaveAttribute('data-active-id', 'app-structure');
+  });
+
   it('uses desktop buttons as scroll commands until the observer selects a scene', () => {
     installMediaEnvironment();
     const { container } = render(<ConvoAiAppShowcase locale="en" />);
     const structure = container.querySelector('[data-app-showcase-step="app-structure"]') as HTMLElement;
-    const scrollIntoView = vi.fn();
-    structure.scrollIntoView = scrollIntoView;
+    vi.spyOn(structure, 'getBoundingClientRect').mockReturnValue({ top: 600 } as DOMRect);
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
 
     fireEvent.click(screen.getByRole('button', { name: /Product structure/i }));
 
-    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+    expect(scrollTo).toHaveBeenCalledWith({
+      behavior: 'smooth',
+      top: Math.max(0, window.scrollY + 600 - window.innerHeight * 0.425),
+    });
     expect(container.querySelector('[data-convo-app-showcase]')).toHaveAttribute('data-active-id', 'app-login');
     act(() => { IntersectionObserverHarness.instances[0].trigger('app-structure'); });
     expect(container.querySelector('[data-convo-app-showcase]')).toHaveAttribute('data-active-id', 'app-structure');
@@ -388,12 +430,15 @@ describe('ConvoAiAppShowcase', () => {
     installMediaEnvironment({ reducedMotion: true });
     const { container } = render(<ConvoAiAppShowcase locale="en" />);
     const structure = container.querySelector('[data-app-showcase-step="app-structure"]') as HTMLElement;
-    const scrollIntoView = vi.fn();
-    structure.scrollIntoView = scrollIntoView;
+    vi.spyOn(structure, 'getBoundingClientRect').mockReturnValue({ top: 600 } as DOMRect);
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
 
     expect(container.querySelector('video[aria-label="App entry and sign in"]')).not.toHaveAttribute('autoplay');
     fireEvent.click(screen.getByRole('button', { name: /Product structure/i }));
-    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'auto', block: 'start' });
+    expect(scrollTo).toHaveBeenCalledWith({
+      behavior: 'auto',
+      top: Math.max(0, window.scrollY + 600 - window.innerHeight * 0.425),
+    });
   });
 
   it('starts the initial video when autoplay becomes allowed without remounting it', () => {

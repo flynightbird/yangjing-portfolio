@@ -150,6 +150,7 @@ export function ConvoAiAppShowcase({ locale }: { readonly locale: Locale }) {
   const autoplayAllowed = useAutoplayAllowed();
   const videoRef = useRef<HTMLVideoElement>(null);
   const stepRefs = useRef(new Map<AppShowcaseId, HTMLElement>());
+  const intersectingEntriesRef = useRef(new Map<Element, IntersectionObserverEntry>());
   const observerAvailable = useRef(false);
   const activeIdRef = useRef<AppShowcaseId>('app-login');
   const descriptionId = useId();
@@ -174,21 +175,34 @@ export function ConvoAiAppShowcase({ locale }: { readonly locale: Locale }) {
   }, [activeId, autoplayAllowed]);
 
   const observerCallback = useCallback((entries: IntersectionObserverEntry[]) => {
-    const candidate = entries
-      .filter((entry) => entry.isIntersecting)
-      .sort((first, second) => Math.abs(first.boundingClientRect.top) - Math.abs(second.boundingClientRect.top))[0];
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) intersectingEntriesRef.current.set(entry.target, entry);
+      else intersectingEntriesRef.current.delete(entry.target);
+    });
+    const intersectingEntries = Array.from(intersectingEntriesRef.current.values());
+    const rootBounds = intersectingEntries.find((entry) => entry.rootBounds)?.rootBounds;
+    const activationLine = rootBounds
+      ? (rootBounds.top + rootBounds.bottom) / 2
+      : window.innerHeight * 0.425;
+    const candidate = intersectingEntries
+      .sort((first, second) => (
+        Math.abs(first.boundingClientRect.top - activationLine)
+        - Math.abs(second.boundingClientRect.top - activationLine)
+      ))[0];
     const id = candidate?.target.getAttribute('data-app-showcase-step') as AppShowcaseId | null;
     if (id) activate(id);
   }, [activate]);
 
   useEffect(() => {
     observerAvailable.current = false;
+    intersectingEntriesRef.current.clear();
     if (!isDesktop || typeof IntersectionObserver === 'undefined') return;
     const observer = new IntersectionObserver(observerCallback, { rootMargin: '-42% 0px -57% 0px', threshold: 0 });
     observerAvailable.current = true;
     stepRefs.current.forEach((step) => observer.observe(step));
     return () => {
       observerAvailable.current = false;
+      intersectingEntriesRef.current.clear();
       observer.disconnect();
     };
   }, [isDesktop, observerCallback]);
@@ -200,8 +214,12 @@ export function ConvoAiAppShowcase({ locale }: { readonly locale: Locale }) {
 
   const navigateToStep = useCallback((id: AppShowcaseId) => {
     const step = stepRefs.current.get(id);
-    if (typeof step?.scrollIntoView === 'function') {
-      step.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+    if (isDesktop && step && typeof window.scrollTo === 'function') {
+      const targetTop = window.scrollY + step.getBoundingClientRect().top - window.innerHeight * 0.425;
+      window.scrollTo({
+        behavior: reducedMotion ? 'auto' : 'smooth',
+        top: Math.max(0, targetTop),
+      });
     }
     if (!isDesktop || !observerAvailable.current) activate(id);
   }, [activate, isDesktop, reducedMotion]);
