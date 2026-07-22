@@ -232,6 +232,71 @@ export const archiveProjects = [
         zh: '躺平设计家 APP 与官网界面系统',
       },
     },
+    gallery: [
+      {
+        src: '/images/archive/details/tangping/06.jpg',
+        width: 2880,
+        height: 1620,
+        alt: {
+          en: 'Tangping Designer project presentation, page 6',
+          zh: '躺平设计家项目展示，第 6 页',
+        },
+      },
+      {
+        src: '/images/archive/details/tangping/10.jpg',
+        width: 2880,
+        height: 1620,
+        alt: {
+          en: 'Tangping Designer project presentation, page 10',
+          zh: '躺平设计家项目展示，第 10 页',
+        },
+      },
+      {
+        src: '/images/archive/details/tangping/11.jpg',
+        width: 2880,
+        height: 1620,
+        alt: {
+          en: 'Tangping Designer project presentation, page 11',
+          zh: '躺平设计家项目展示，第 11 页',
+        },
+      },
+      {
+        src: '/images/archive/details/tangping/23.jpg',
+        width: 2880,
+        height: 1620,
+        alt: {
+          en: 'Tangping Designer project presentation, page 23',
+          zh: '躺平设计家项目展示，第 23 页',
+        },
+      },
+      {
+        src: '/images/archive/details/tangping/24.jpg',
+        width: 2880,
+        height: 1620,
+        alt: {
+          en: 'Tangping Designer project presentation, page 24',
+          zh: '躺平设计家项目展示，第 24 页',
+        },
+      },
+      {
+        src: '/images/archive/details/tangping/51.jpg',
+        width: 2880,
+        height: 1620,
+        alt: {
+          en: 'Tangping Designer project presentation, page 51',
+          zh: '躺平设计家项目展示，第 51 页',
+        },
+      },
+      {
+        src: '/images/archive/details/tangping/50.jpg',
+        width: 6731,
+        height: 3680,
+        alt: {
+          en: 'Tangping Designer project presentation, page 50',
+          zh: '躺平设计家项目展示，第 50 页',
+        },
+      },
+    ],
   },
   {
     key: 'bytedance-open-language',

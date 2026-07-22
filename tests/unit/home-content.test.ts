@@ -80,6 +80,22 @@ describe('homepage project contract', () => {
 });
 
 describe('Visual Archive contract', () => {
+  it('publishes the Tangping lightbox gallery in numeric filename order', () => {
+    const tangping = archiveProjects.find(
+      (project) => project.key === 'alibaba-meipingmeiwu',
+    );
+
+    expect(tangping?.gallery?.map((image) => image.src)).toEqual([
+      '/images/archive/details/tangping/06.jpg',
+      '/images/archive/details/tangping/10.jpg',
+      '/images/archive/details/tangping/11.jpg',
+      '/images/archive/details/tangping/23.jpg',
+      '/images/archive/details/tangping/24.jpg',
+      '/images/archive/details/tangping/51.jpg',
+      '/images/archive/details/tangping/50.jpg',
+    ]);
+  });
+
   it('publishes the approved ordered galleries for Doudou Fox and MR CHONG', () => {
     const doudou = archiveProjects.find(
       (project) => project.key === 'bytedance-doudou-fox',
