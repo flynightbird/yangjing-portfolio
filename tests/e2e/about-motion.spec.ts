@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 
 const motionProjects = new Set(['desktop', 'mobile']);
 
@@ -17,9 +17,39 @@ async function expectNoHorizontalOverflow(page: Page) {
     .toBe(true);
 }
 
+async function readRevealGroupStyle(locator: Locator) {
+  return locator.evaluate((element) => {
+    const style = getComputedStyle(element);
+    const properties = style.transitionProperty.split(',').map((value) => value.trim());
+    const durations = style.transitionDuration.split(',').map((value) => value.trim());
+    const delays = style.transitionDelay.split(',').map((value) => value.trim());
+    const toMilliseconds = (value: string) => (
+      Number.parseFloat(value) * (value.endsWith('ms') ? 1 : 1000)
+    );
+    const transitions = Object.fromEntries(properties.map((property, index) => [
+      property,
+      {
+        durationMs: toMilliseconds(durations[index % durations.length] ?? '0s'),
+        delayMs: toMilliseconds(delays[index % delays.length] ?? '0s'),
+      },
+    ]));
+    const matrix = style.transform === 'none'
+      ? new DOMMatrixReadOnly()
+      : new DOMMatrixReadOnly(style.transform);
+    const blur = style.filter.match(/blur\(([-\d.]+)px\)/);
+
+    return {
+      opacity: Number.parseFloat(style.opacity),
+      blurPx: blur ? Number.parseFloat(blur[1] ?? '0') : 0,
+      translateY: matrix.m42,
+      transitions,
+    };
+  });
+}
+
 test.describe('localized About scroll reveals', () => {
   for (const locale of ['en', 'zh'] as const) {
-    test(`${locale} reveals each section once with the approved motion`, async ({
+    test(`${locale} keeps the career reveal visible after its first intersection`, async ({
       page,
     }, testInfo) => {
       skipNonMotionProject(testInfo.project.name);
@@ -29,12 +59,15 @@ test.describe('localized About scroll reveals', () => {
       const heroRevealAncestor = page.locator(
         '[data-scroll-reveal]:has([data-about-hero])',
       );
-      const careerBoundary = boundaries.nth(2);
+      const careerBoundary = page.locator(
+        '[data-about-page] [data-scroll-reveal]:has([data-about-timeline])',
+      );
       const text = careerBoundary.locator('[data-scroll-reveal-group="text"]');
       const media = careerBoundary.locator('[data-scroll-reveal-group="media"]');
 
       await expect(boundaries).toHaveCount(3);
       await expect(heroRevealAncestor).toHaveCount(0);
+      await expect(careerBoundary).toHaveCount(1);
       await expect(careerBoundary).toHaveAttribute(
         'data-scroll-reveal-state',
         'pending',
@@ -48,40 +81,28 @@ test.describe('localized About scroll reveals', () => {
       await expect(media).toHaveCount(1);
 
       await expect
-        .poll(() => text.evaluate((element) => {
-          const style = getComputedStyle(element);
-          return {
-            opacity: style.opacity,
-            filter: style.filter,
-            transform: style.transform,
-            duration: style.transitionDuration,
-            delay: style.transitionDelay,
-          };
-        }))
+        .poll(() => readRevealGroupStyle(text))
         .toEqual({
-          opacity: '0',
-          filter: 'blur(2px)',
-          transform: 'matrix(1, 0, 0, 1, 0, 22)',
-          duration: '0.74s, 0.74s, 0.74s',
-          delay: '0s, 0s, 0s',
+          opacity: 0,
+          blurPx: 2,
+          translateY: 22,
+          transitions: {
+            opacity: { durationMs: 740, delayMs: 0 },
+            transform: { durationMs: 740, delayMs: 0 },
+            filter: { durationMs: 740, delayMs: 0 },
+          },
         });
       await expect
-        .poll(() => media.evaluate((element) => {
-          const style = getComputedStyle(element);
-          return {
-            opacity: style.opacity,
-            filter: style.filter,
-            transform: style.transform,
-            duration: style.transitionDuration,
-            delay: style.transitionDelay,
-          };
-        }))
+        .poll(() => readRevealGroupStyle(media))
         .toEqual({
-          opacity: '0',
-          filter: 'blur(2px)',
-          transform: 'matrix(1, 0, 0, 1, 0, 22)',
-          duration: '0.8s',
-          delay: '0.18s',
+          opacity: 0,
+          blurPx: 2,
+          translateY: 22,
+          transitions: {
+            opacity: { durationMs: 800, delayMs: 180 },
+            transform: { durationMs: 800, delayMs: 180 },
+            filter: { durationMs: 800, delayMs: 180 },
+          },
         });
 
       await careerBoundary.evaluate((element) => {
@@ -149,20 +170,19 @@ test.describe('reduced-motion About scroll reveals', () => {
       )))
       .toEqual(['revealed', 'revealed', 'revealed']);
     await expect(groups).toHaveCount(6);
-    expect(await groups.evaluateAll((elements) => elements.map((element) => {
-      const style = getComputedStyle(element);
-      return {
-        opacity: style.opacity,
-        filter: style.filter,
-        transform: style.transform,
-        duration: style.transitionDuration,
-      };
-    }))).toEqual(Array.from({ length: 6 }, () => ({
-      opacity: '1',
-      filter: 'none',
-      transform: 'none',
-      duration: '0s',
-    })));
+    await expect
+      .poll(() => Promise.all(Array.from(
+        { length: 6 },
+        (_, index) => readRevealGroupStyle(groups.nth(index)),
+      )))
+      .toEqual(Array.from({ length: 6 }, () => ({
+        opacity: 1,
+        blurPx: 0,
+        translateY: 0,
+        transitions: {
+          none: { durationMs: 0, delayMs: 0 },
+        },
+      })));
     await expectNoHorizontalOverflow(page);
   });
 });

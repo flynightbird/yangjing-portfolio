@@ -265,75 +265,77 @@ test.describe('portfolio homepage framework', () => {
     expect(dimensions.page).toBeLessThanOrEqual(dimensions.viewport);
   });
 
-  test('reveals a below-fold boundary only once without horizontal overflow', async ({
-    page,
-  }, testInfo) => {
-    test.skip(
-      !['desktop', 'mobile'].includes(testInfo.project.name),
-      'Desktop and mobile cover the supported motion viewports.',
-    );
-    await page.goto('/en/', { waitUntil: 'networkidle' });
+  for (const locale of ['en', 'zh'] as const) {
+    test(`${locale} reveals a below-fold boundary only once without horizontal overflow`, async ({
+      page,
+    }, testInfo) => {
+      test.skip(
+        !['desktop', 'mobile'].includes(testInfo.project.name),
+        'Desktop and mobile cover the supported motion viewports.',
+      );
+      await page.goto(`/${locale}/`, { waitUntil: 'networkidle' });
 
-    const boundaries = page.locator('[data-scroll-reveal]');
-    const archiveBoundary = page.locator(
-      '[data-scroll-reveal]:has([data-archive-carousel])',
-    );
+      const boundaries = page.locator('[data-scroll-reveal]');
+      const archiveBoundary = page.locator(
+        '[data-scroll-reveal]:has([data-archive-carousel])',
+      );
 
-    await expect(boundaries).toHaveCount(5);
-    await expect(archiveBoundary).toHaveCount(1);
-    await expect(archiveBoundary).toHaveAttribute(
-      'data-scroll-reveal-state',
-      'pending',
-    );
-    await expect
-      .poll(() => archiveBoundary.evaluate(
-        (element) => element.getBoundingClientRect().top >= window.innerHeight - 1,
-      ))
-      .toBe(true);
+      await expect(boundaries).toHaveCount(5);
+      await expect(archiveBoundary).toHaveCount(1);
+      await expect(archiveBoundary).toHaveAttribute(
+        'data-scroll-reveal-state',
+        'pending',
+      );
+      await expect
+        .poll(() => archiveBoundary.evaluate(
+          (element) => element.getBoundingClientRect().top >= window.innerHeight - 1,
+        ))
+        .toBe(true);
 
-    await archiveBoundary.evaluate((element) => {
-      document.documentElement.style.scrollBehavior = 'auto';
-      element.scrollIntoView({ block: 'start', behavior: 'auto' });
+      await archiveBoundary.evaluate((element) => {
+        document.documentElement.style.scrollBehavior = 'auto';
+        element.scrollIntoView({ block: 'start', behavior: 'auto' });
+      });
+      await expect
+        .poll(() => archiveBoundary.evaluate((element) => {
+          const rect = element.getBoundingClientRect();
+          const visibleHeight = Math.max(
+            0,
+            Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0),
+          );
+          return visibleHeight / rect.height;
+        }))
+        .toBeGreaterThanOrEqual(0.12);
+      await expect(archiveBoundary).toHaveAttribute(
+        'data-scroll-reveal-state',
+        'revealed',
+      );
+
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'auto' }));
+      await expect
+        .poll(() => archiveBoundary.evaluate(
+          (element) => element.getBoundingClientRect().top >= window.innerHeight - 1,
+        ))
+        .toBe(true);
+      await expect(archiveBoundary).toHaveAttribute(
+        'data-scroll-reveal-state',
+        'revealed',
+      );
+      await archiveBoundary.evaluate((element) => {
+        element.scrollIntoView({ block: 'start', behavior: 'auto' });
+      });
+      await expect(archiveBoundary).toHaveAttribute(
+        'data-scroll-reveal-state',
+        'revealed',
+      );
+
+      await expect
+        .poll(() => page.evaluate(
+          () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+        ))
+        .toBe(true);
     });
-    await expect
-      .poll(() => archiveBoundary.evaluate((element) => {
-        const rect = element.getBoundingClientRect();
-        const visibleHeight = Math.max(
-          0,
-          Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0),
-        );
-        return visibleHeight / rect.height;
-      }))
-      .toBeGreaterThanOrEqual(0.12);
-    await expect(archiveBoundary).toHaveAttribute(
-      'data-scroll-reveal-state',
-      'revealed',
-    );
-
-    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'auto' }));
-    await expect
-      .poll(() => archiveBoundary.evaluate(
-        (element) => element.getBoundingClientRect().top >= window.innerHeight - 1,
-      ))
-      .toBe(true);
-    await expect(archiveBoundary).toHaveAttribute(
-      'data-scroll-reveal-state',
-      'revealed',
-    );
-    await archiveBoundary.evaluate((element) => {
-      element.scrollIntoView({ block: 'start', behavior: 'auto' });
-    });
-    await expect(archiveBoundary).toHaveAttribute(
-      'data-scroll-reveal-state',
-      'revealed',
-    );
-
-    await expect
-      .poll(() => page.evaluate(
-        () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
-      ))
-      .toBe(true);
-  });
+  }
 
   test('morphs the full-width header into a centered capsule', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'Desktop navigation geometry contract.');
