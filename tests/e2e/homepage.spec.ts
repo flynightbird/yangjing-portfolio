@@ -380,6 +380,9 @@ test.describe('portfolio homepage framework', () => {
     await expect(callMedia).toHaveCSS('background-image', 'none');
     await expect(convoMedia).not.toHaveCSS('background-image', 'none');
     await expect(convoBrowser).toBeVisible();
+    await expect(convoBrowser).toHaveCSS('left', '28px');
+    await expect(convoBrowser).toHaveCSS('right', '28px');
+    await expect(convoBrowser).toHaveCSS('border-radius', '15px 15px 18px 18px');
     await expect(convoWebImage).toHaveCSS('object-position', '0% 0%');
     await expect(convoPhone).toBeVisible();
 
@@ -466,8 +469,10 @@ test.describe('portfolio homepage framework', () => {
     const convo = page.locator('[data-project-id="convo-ai"]');
     const callMedia = call.locator('[data-media-radius="20"]');
     const convoMedia = convo.locator('[data-media-radius="20"]');
+    const convoLoop = convoMedia.locator('[data-convo-mobile-loop]');
     const callBox = await call.boundingBox();
     const convoBox = await convo.boundingBox();
+    const convoMediaBox = await convoMedia.boundingBox();
 
     expect(callBox).not.toBeNull();
     expect(convoBox).not.toBeNull();
@@ -476,8 +481,13 @@ test.describe('portfolio homepage framework', () => {
     await expect(convoMedia).toHaveCSS('transform', 'none');
     await expect(convoMedia.locator('[data-convo-web-browser]')).toBeHidden();
     await expect(convoMedia.locator('[data-convo-phone]')).toBeHidden();
-    await expect(convoMedia.locator('[data-convo-mobile-loop]')).toBeVisible();
+    await expect(convoLoop).toBeVisible();
+    await expect(convoLoop).toHaveAttribute('src', '/images/convo-ai/home-mobile-loop.gif');
+    await expect(convoLoop).toHaveCSS('object-fit', 'contain');
     await expect(convoMedia.locator('[data-convo-mobile-poster]')).toBeHidden();
+    expect(convoMediaBox).not.toBeNull();
+    expect(convoMediaBox?.height ?? 0).toBeGreaterThanOrEqual(320);
+    expect(convoMediaBox?.height ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(420);
     await expect(callMedia.locator('[data-convo-studio-window]')).toHaveCSS(
       'transform',
       'none',
@@ -502,8 +512,16 @@ test.describe('portfolio homepage framework', () => {
 
     const convoMedia = page.locator('[data-project-id="convo-ai"] [data-convo-home-media]');
     await convoMedia.scrollIntoViewIfNeeded();
-    await expect(convoMedia.locator('[data-convo-mobile-loop]')).toBeHidden();
-    await expect(convoMedia.locator('[data-convo-mobile-poster]')).toBeVisible();
+    const loop = convoMedia.locator('[data-convo-mobile-loop]');
+    const poster = convoMedia.locator('[data-convo-mobile-poster]');
+    await expect(loop).toHaveAttribute('src', '/images/convo-ai/home-mobile-loop.gif');
+    await expect(poster).toHaveAttribute(
+      'src',
+      '/images/convo-ai/home-mobile-loop-poster.webp',
+    );
+    await expect(loop).toBeHidden();
+    await expect(poster).toBeVisible();
+    await expect(poster).toHaveCSS('object-fit', 'contain');
   });
 
   test('uses a media-dominant STT stage with direct prototype actions', async ({
