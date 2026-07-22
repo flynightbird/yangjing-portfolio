@@ -265,6 +265,51 @@ test.describe('portfolio homepage framework', () => {
     expect(dimensions.page).toBeLessThanOrEqual(dimensions.viewport);
   });
 
+  test('reveals a below-fold boundary only once without horizontal overflow', async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      !['desktop', 'mobile'].includes(testInfo.project.name),
+      'Desktop and mobile cover the supported motion viewports.',
+    );
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const boundaries = page.locator('[data-scroll-reveal]');
+    const archiveBoundary = page.locator(
+      '[data-scroll-reveal]:has([data-archive-carousel])',
+    );
+
+    await expect(boundaries).toHaveCount(5);
+    await expect(archiveBoundary).toHaveCount(1);
+    await expect(archiveBoundary).toHaveAttribute(
+      'data-scroll-reveal-state',
+      'pending',
+    );
+
+    await archiveBoundary.scrollIntoViewIfNeeded();
+    await expect(archiveBoundary).toHaveAttribute(
+      'data-scroll-reveal-state',
+      'revealed',
+    );
+
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect(archiveBoundary).toHaveAttribute(
+      'data-scroll-reveal-state',
+      'revealed',
+    );
+    await archiveBoundary.scrollIntoViewIfNeeded();
+    await expect(archiveBoundary).toHaveAttribute(
+      'data-scroll-reveal-state',
+      'revealed',
+    );
+
+    await expect
+      .poll(() => page.evaluate(
+        () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+      ))
+      .toBe(true);
+  });
+
   test('morphs the full-width header into a centered capsule', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'Desktop navigation geometry contract.');
     await page.goto('/en/', { waitUntil: 'networkidle' });
