@@ -670,6 +670,11 @@
   min-width: 0;
 }
 
+.flagshipMediaReveal {
+  width: 100%;
+  min-width: 0;
+}
+
 .flagshipCopy {
   display: flex;
   min-height: clamp(14.5rem, 20vw, 17rem);

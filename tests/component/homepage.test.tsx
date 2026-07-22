@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import LocaleHomePage from '@/app/(localized)/[locale]/page';
 import { AboutPreview } from '@/components/home/about-preview';
 import { DualIdentityHero } from '@/components/home/dual-identity-hero';
 import { FeaturedWork } from '@/components/home/featured-work';
@@ -112,21 +113,61 @@ describe('IntroStory', () => {
 });
 
 describe('FeaturedWork', () => {
-  it('uses four scroll reveal boundaries with coherent text and media groups', () => {
+  it('uses four chapter boundaries with exact project text and media groups', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const boundaries = Array.from(
       container.querySelectorAll<HTMLElement>('[data-scroll-reveal]'),
     );
+    const expectedGroups = {
+      'call-agent': { text: 1, media: 1 },
+      'convo-ai': { text: 1, media: 1 },
+      meeting: { text: 2, media: 1 },
+      'stt-demo': { text: 1, media: 1 },
+      aidx: { text: 1, media: 1 },
+      xuelang: { text: 1, media: 1 },
+    } as const;
 
     expect(boundaries).toHaveLength(4);
-    for (const boundary of boundaries) {
-      expect(
-        boundary.querySelectorAll('[data-scroll-reveal-group="text"]').length,
-      ).toBeGreaterThan(0);
-      expect(
-        boundary.querySelectorAll('[data-scroll-reveal-group="media"]').length,
-      ).toBeGreaterThan(0);
+    expect(
+      boundaries.map(
+        (boundary) => boundary.querySelector('[data-project-chapter]')?.getAttribute(
+          'data-project-chapter',
+        ),
+      ),
+    ).toEqual([
+      'ai-products',
+      'communication-systems',
+      'visual-brand',
+      'product-foundation',
+    ]);
+
+    for (const [projectId, groups] of Object.entries(expectedGroups)) {
+      const project = container.querySelector<HTMLElement>(
+        `[data-project-id="${projectId}"]`,
+      );
+      expect(project).toBeInTheDocument();
+      expect(project?.querySelectorAll('[data-scroll-reveal-group="text"]')).toHaveLength(
+        groups.text,
+      );
+      expect(project?.querySelectorAll('[data-scroll-reveal-group="media"]')).toHaveLength(
+        groups.media,
+      );
+      expect(project?.closest('[data-scroll-reveal]')).toBe(
+        project?.closest('[data-project-chapter]')?.parentElement,
+      );
     }
+
+    expect(container.querySelectorAll('[data-flagship-media-reveal]')).toHaveLength(2);
+    expect(
+      container.querySelectorAll(
+        '[data-flagship-media-reveal][data-scroll-reveal-group="media"]',
+      ),
+    ).toHaveLength(2);
+    expect(
+      container.querySelectorAll(
+        '[data-flagship-focus] [data-media-radius="20"][data-scroll-reveal-group]',
+      ),
+    ).toHaveLength(0);
     const legacyRevealAttribute = ['data', 'section', 'reveal'].join('-');
     expect(container.querySelector(`[${legacyRevealAttribute}]`)).not.toBeInTheDocument();
   });
@@ -499,11 +540,12 @@ describe('FeaturedWork', () => {
 });
 
 describe('VisualArchive', () => {
-  it('marks its header and viewport as the scroll reveal groups', () => {
+  it('uses only its stable header and scroller as reveal groups', () => {
     const { container } = render(<VisualArchive locale="en" />);
     const header = container.querySelector('[data-archive-header]');
     const viewport = container.querySelector('[data-archive-scroller]');
 
+    expect(container.querySelectorAll('[data-scroll-reveal-group]')).toHaveLength(2);
     expect(header).toHaveAttribute('data-scroll-reveal-group', 'text');
     expect(viewport).toHaveAttribute('data-scroll-reveal-group', 'media');
   });
@@ -695,6 +737,28 @@ describe('VisualArchive', () => {
       '01 / 07',
     );
     expect(baseElement.querySelectorAll('[data-gallery-mobile] img')).toHaveLength(7);
+  });
+});
+
+describe('localized homepage composition', () => {
+  it('reveals four work chapters and one archive without wrapping Hero or Intro', async () => {
+    const page = await LocaleHomePage({ params: Promise.resolve({ locale: 'en' }) });
+    const { container } = render(page);
+    const boundaries = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-scroll-reveal]'),
+    );
+    const archiveBoundaries = boundaries.filter((boundary) =>
+      boundary.querySelector('[data-archive-carousel]'),
+    );
+    const hero = container.querySelector('[data-media="portrait"]');
+    const intro = container.querySelector('[data-intro-story]');
+
+    expect(boundaries).toHaveLength(5);
+    expect(archiveBoundaries).toHaveLength(1);
+    expect(hero).toBeInTheDocument();
+    expect(hero?.closest('[data-scroll-reveal]')).toBeNull();
+    expect(intro).toBeInTheDocument();
+    expect(intro?.closest('[data-scroll-reveal]')).toBeNull();
   });
 });
 

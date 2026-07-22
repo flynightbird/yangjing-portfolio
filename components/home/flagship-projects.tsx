@@ -116,19 +116,24 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
           </div>
 
           <div
-            className={`${styles.flagshipMedia} ${styles.flagshipCallMedia}`}
-            data-media-radius="20"
+            className={styles.flagshipMediaReveal}
+            data-flagship-media-reveal
             data-scroll-reveal-group="media"
-            onPointerMove={updateStudioDrift}
-            onPointerLeave={resetStudioDrift}
           >
-            <ConvoAiStudioWindow locale={locale} />
-            <a
-              className={styles.flagshipMediaLink}
-              href={callAgent.href}
-              aria-label="Open Call Agent project media"
-              data-page-transition-tone="dark"
-            />
+            <div
+              className={`${styles.flagshipMedia} ${styles.flagshipCallMedia}`}
+              data-media-radius="20"
+              onPointerMove={updateStudioDrift}
+              onPointerLeave={resetStudioDrift}
+            >
+              <ConvoAiStudioWindow locale={locale} />
+              <a
+                className={styles.flagshipMediaLink}
+                href={callAgent.href}
+                aria-label="Open Call Agent project media"
+                data-page-transition-tone="dark"
+              />
+            </div>
           </div>
         </article>
 
@@ -168,27 +173,32 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
             </ActionLink>
           </div>
 
-          <a
-            className={`${styles.flagshipMedia} ${styles.flagshipConvoMedia}`}
-            href={convoAi.href}
-            aria-label="Open ConvoAI project media"
-            data-media-radius="20"
-            data-page-transition-tone="dark"
+          <div
+            className={styles.flagshipMediaReveal}
+            data-flagship-media-reveal
             data-scroll-reveal-group="media"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className={styles.flagshipConvoWeb}
-              src={withBasePath('/images/convo-ai/figma/web-ready.png')}
-              alt="ConvoAI web conversation ready state"
-            />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className={styles.flagshipConvoPhone}
-              src={withBasePath('/images/convo-ai/figma/avatar-video.png')}
-              alt="ConvoAI app avatar and live video state"
-            />
-          </a>
+            <a
+              className={`${styles.flagshipMedia} ${styles.flagshipConvoMedia}`}
+              href={convoAi.href}
+              aria-label="Open ConvoAI project media"
+              data-media-radius="20"
+              data-page-transition-tone="dark"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className={styles.flagshipConvoWeb}
+                src={withBasePath('/images/convo-ai/figma/web-ready.png')}
+                alt="ConvoAI web conversation ready state"
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className={styles.flagshipConvoPhone}
+                src={withBasePath('/images/convo-ai/figma/avatar-video.png')}
+                alt="ConvoAI app avatar and live video state"
+              />
+            </a>
+          </div>
         </article>
       </div>
     </div>

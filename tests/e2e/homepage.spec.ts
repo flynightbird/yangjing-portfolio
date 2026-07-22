@@ -363,10 +363,16 @@ test.describe('portfolio homepage framework', () => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
     const stage = page.locator('[data-flagship-focus]');
+    const reveal = page.locator('[data-scroll-reveal]:has([data-flagship-focus])');
+    const callProject = page.locator('[data-project-id="call-agent"]');
+    const convoProject = page.locator('[data-project-id="convo-ai"]');
     const callMedia = page.locator('[data-project-id="call-agent"] [data-media-radius="20"]');
     const convoMedia = page.locator('[data-project-id="convo-ai"] [data-media-radius="20"]');
+    const callMediaReveal = callProject.locator('[data-flagship-media-reveal]');
+    const convoMediaReveal = convoProject.locator('[data-flagship-media-reveal]');
 
     await callMedia.scrollIntoViewIfNeeded();
+    await expect(reveal).toHaveAttribute('data-scroll-reveal-state', 'revealed');
     await expect(stage).toHaveAttribute('data-flagship-focus', 'call-agent');
     await expect(callMedia).toHaveCSS('border-radius', '20px');
     await expect(convoMedia).toHaveCSS('border-radius', '20px');
@@ -374,6 +380,16 @@ test.describe('portfolio homepage framework', () => {
     await expect(convoMedia).toHaveCSS('background-color', 'rgb(220, 233, 239)');
     await expect(callMedia).toHaveCSS('background-image', 'none');
     await expect(convoMedia).toHaveCSS('background-image', 'none');
+
+    const callProjectBox = await callProject.boundingBox();
+    const convoProjectBox = await convoProject.boundingBox();
+    const callRevealBox = await callMediaReveal.boundingBox();
+    const convoRevealBox = await convoMediaReveal.boundingBox();
+    expect(callRevealBox?.width).toBeCloseTo(callProjectBox?.width ?? 0, 0);
+    expect(convoRevealBox?.width).toBeCloseTo(convoProjectBox?.width ?? 0, 0);
+    expect(convoProjectBox?.x ?? 0).toBeGreaterThan(
+      (callProjectBox?.x ?? 0) + (callProjectBox?.width ?? 0),
+    );
 
     const studioFrame = callMedia.locator('[data-convo-studio-frame]');
     await expect(studioFrame).toHaveAttribute(
@@ -422,9 +438,15 @@ test.describe('portfolio homepage framework', () => {
     await convoMedia.hover();
     await expect(stage).toHaveAttribute('data-flagship-focus', 'convo-ai');
     await expect(callMedia).toHaveCSS('opacity', '0.55');
+    await expect(convoMedia).toHaveCSS('opacity', '1');
+    expect(await callMedia.evaluate((element) => getComputedStyle(element).transform)).not.toBe(
+      await convoMedia.evaluate((element) => getComputedStyle(element).transform),
+    );
 
     await page.locator('[data-project-id="meeting"] h2').hover();
     await expect(stage).toHaveAttribute('data-flagship-focus', 'call-agent');
+    await expect(callMedia).toHaveCSS('opacity', '1');
+    await expect(convoMedia).toHaveCSS('opacity', '0.55');
   });
 
   test('stacks flagship media without transforms on mobile', async ({ page }, testInfo) => {
@@ -435,11 +457,19 @@ test.describe('portfolio homepage framework', () => {
     const convo = page.locator('[data-project-id="convo-ai"]');
     const callMedia = call.locator('[data-media-radius="20"]');
     const convoMedia = convo.locator('[data-media-radius="20"]');
+    const callMediaReveal = call.locator('[data-flagship-media-reveal]');
+    const convoMediaReveal = convo.locator('[data-flagship-media-reveal]');
     const callBox = await call.boundingBox();
     const convoBox = await convo.boundingBox();
+    const callMediaBox = await callMedia.boundingBox();
+    const convoMediaBox = await convoMedia.boundingBox();
+    const callRevealBox = await callMediaReveal.boundingBox();
+    const convoRevealBox = await convoMediaReveal.boundingBox();
 
     expect(callBox).not.toBeNull();
     expect(convoBox).not.toBeNull();
+    expect(callRevealBox?.width).toBeCloseTo(callMediaBox?.width ?? 0, 0);
+    expect(convoRevealBox?.width).toBeCloseTo(convoMediaBox?.width ?? 0, 0);
     expect(convoBox?.y ?? 0).toBeGreaterThan((callBox?.y ?? 0) + (callBox?.height ?? 0));
     await expect(callMedia).toHaveCSS('transform', 'none');
     await expect(convoMedia).toHaveCSS('transform', 'none');
