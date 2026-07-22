@@ -29,6 +29,22 @@
       "replacementPath": "figma://t0kTQ49hZ2uIoYjeQD8oh7/20220732+20220735+20220737+20220739_1"
     },
     {
+      "id": "opening-cover",
+      "chapter": "00",
+      "sourceFrames": ["20220693"],
+      "sourcePaths": ["evidence/xuelang/source/20220693.png"],
+      "output": "public/images/xuelang/opening-cover.webp",
+      "format": "webp",
+      "crop": { "left": 0, "top": 0, "width": 1920, "height": 1080 },
+      "intrinsic": { "width": 1920, "height": 1080 },
+      "purpose": "Establish the Xuelang project identity before product evidence.",
+      "alt": {
+        "zh": "学浪体验升级项目封面，使用实验性中文字体构成展示学习与兴趣主题",
+        "en": "Xuelang experience-upgrade cover using experimental Chinese typography around learning and interests"
+      },
+      "replacementPath": "figma://portfolio-supplied/xuelang-opening-cover-20220693"
+    },
+    {
       "id": "hero-discover",
       "chapter": "00",
       "sourceFrames": ["portfolio-supplied-xuelang-hero-discover"],

@@ -86,22 +86,40 @@ export function XuelangMotion({ children }: { readonly children: ReactNode }) {
         '(min-width: 1200px) and (prefers-reduced-motion: no-preference)',
         () => {
           const hero = rootRef.current?.querySelector<HTMLElement>('[data-xuelang-hero]');
+          const cover = hero?.querySelector<HTMLElement>('[data-xuelang-cover]');
           const panorama = rootRef.current?.querySelector<HTMLElement>('[data-hero-panorama]');
-          if (hero && panorama) {
+          if (hero && cover) {
             const copyElements = hero.querySelectorAll<HTMLElement>('p, h1, dl, a');
             const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
             timeline
+              .from(cover, {
+                autoAlpha: 0,
+                y: 20,
+                scale: 1.012,
+                duration: 0.9,
+              })
               .from(copyElements, {
                 autoAlpha: 0,
-                y: 24,
-                duration: 0.75,
+                y: 18,
+                duration: 0.65,
                 stagger: 0.055,
-              })
-              .from(
-                panorama,
-                { autoAlpha: 0, y: 30, scale: 1.035, duration: 0.85 },
-                '-=0.48',
-              );
+              }, '-=0.42');
+          }
+
+          if (panorama) {
+            gsap.from(panorama, {
+              autoAlpha: 0,
+              y: 34,
+              scale: 1.025,
+              clearProps: 'transform',
+              duration: 0.85,
+              ease: 'power3.out',
+              scrollTrigger: {
+                trigger: panorama,
+                start: 'top 86%',
+                once: true,
+              },
+            });
           }
 
           gsap.utils.toArray<HTMLElement>(

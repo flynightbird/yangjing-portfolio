@@ -34,6 +34,18 @@ function loadManifest(): XuelangManifest {
 }
 
 describe('Xuelang evidence manifest', () => {
+  it('declares the supplied opening cover as a semantic asset', () => {
+    const manifest = loadManifest();
+    const cover = manifest.assets.find((asset) => asset.id === 'opening-cover');
+
+    expect(cover).toMatchObject({
+      id: 'opening-cover',
+      sourcePaths: ['evidence/xuelang/source/20220693.png'],
+      output: 'public/images/xuelang/opening-cover.webp',
+      intrinsic: { width: 1920, height: 1080 },
+    });
+  });
+
   it('uses the approved interaction artwork source', () => {
     const source = readFileSync(
       path.join(root, 'evidence/xuelang/source/learning-interaction-board.png'),

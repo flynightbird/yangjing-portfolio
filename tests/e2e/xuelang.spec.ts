@@ -32,20 +32,21 @@ test.describe('Xuelang case study', () => {
         ? '学浪商业化体验升级'
         : 'Xuelang Commercial Experience Upgrade';
       const role = locale === 'zh' ? '项目主负责设计师' : 'Lead UX Designer';
-      const duration = locale === 'zh' ? '2022.03–05 · 2 个月' : 'Mar–May 2022 · 2 months';
+      const duration = locale === 'zh' ? '2022.03–04 · 2 个月' : 'Mar–Apr 2022 · 2 months';
       await expect(page.getByRole('heading', { level: 1, name: title })).toBeInViewport();
       await expect(page.getByText(role, { exact: true })).toBeInViewport();
       await expect(page.getByText(duration, { exact: true })).toBeInViewport();
+      const cover = page.locator('[data-xuelang-cover]');
       const heroPanorama = page.locator('[data-hero-panorama]');
-      await expect(heroPanorama).toBeInViewport();
+      await expect(cover).toBeInViewport();
       await expect(heroPanorama.locator('[data-hero-product-state]')).toHaveCount(4);
-      const pdfLink = page.getByRole('link', { name: /PDF/ });
-      await expect(pdfLink).toBeInViewport();
-      await expect(pdfLink).toHaveAttribute(
-        'href',
-        `/files/xuelang-case-study-${locale}.pdf`,
-      );
-      await expect(pdfLink).toHaveAttribute('download', '');
+      expect(await heroPanorama.evaluate((panorama) => {
+        const coverElement = document.querySelector('[data-xuelang-cover]');
+        if (!coverElement) return false;
+        return panorama.getBoundingClientRect().top
+          > coverElement.getBoundingClientRect().bottom;
+      })).toBe(true);
+      await expect(page.getByRole('link', { name: /PDF/ })).toHaveCount(0);
 
       for (const metric of ['+11.75%', '+1.36%', '+6.5%']) {
         await expect(page.getByText(metric, { exact: true }).last()).not.toBeInViewport();
@@ -55,7 +56,9 @@ test.describe('Xuelang case study', () => {
       await expect(page.locator('[data-testid="learning-state"]')).toHaveCount(5);
       await expect(page.getByRole('navigation', { name: locale === 'zh' ? '项目导航' : 'Project navigation' })).toHaveCount(0);
 
-      const evidence = page.locator('[data-evidence] img, [data-wipe-interactive] img');
+      const evidence = page.locator(
+        '[data-evidence] img, [data-wipe-interactive] img, [data-course-entry-interactive] img, [data-interaction-board] img',
+      );
       expect(await evidence.count()).toBeGreaterThanOrEqual(12);
       for (let index = 0; index < await evidence.count(); index += 1) {
         const image = evidence.nth(index);

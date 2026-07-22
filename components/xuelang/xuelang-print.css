@@ -54,19 +54,33 @@
   }
 
   [data-xuelang-hero] h1 {
-    max-width: 14ch !important;
-    font-size: 31pt !important;
-    line-height: 1.03 !important;
+    max-width: 18ch !important;
+    font-size: 22pt !important;
+    line-height: 1.08 !important;
   }
 
   [data-xuelang-hero] dl {
-    margin-top: 8mm !important;
+    margin-top: 5mm !important;
+  }
+
+  [data-xuelang-cover] {
+    width: 100% !important;
+    margin: 0 0 7mm !important;
+    break-inside: avoid;
+  }
+
+  [data-xuelang-cover] img {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
   }
 
   [data-hero-panorama] {
     width: 100% !important;
     max-height: 100mm !important;
-    margin-top: auto !important;
+    margin: 0 0 12mm !important;
+    break-before: page;
     break-inside: avoid;
   }
 

@@ -34,6 +34,11 @@ function chapterMetadata(source: string) {
 }
 
 describe('Xuelang bilingual case content', () => {
+  it('aligns the bilingual project duration with the approved cover period', () => {
+    expect(zh).toContain("duration: '2022.03–04 · 2 个月'");
+    expect(en).toContain("duration: 'Mar–Apr 2022 · 2 months'");
+  });
+
   it('keeps chapter labels semantic so navigation owns the visible sequence', () => {
     expect(chapterMetadata(zh)).not.toMatch(/label:\s*['"]\d{2}\s/);
     expect(chapterMetadata(en)).not.toMatch(/label:\s*['"]\d{2}\s/);

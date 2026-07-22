@@ -13,6 +13,7 @@ const copy = {
     duration: 'Duration',
     status: 'Status',
     proof: '14-day experiment · GMV per user +11.75%',
+    coverAlt: 'Xuelang experience-upgrade cover',
     panoramaAlt:
       'Xuelang product panorama showing course discovery, purchase decisions, and learning experiences',
     panoramaKicker: 'PRODUCT EXPERIENCE / 4 STATES',
@@ -47,6 +48,7 @@ const copy = {
     duration: '周期',
     status: '状态',
     proof: '14 天实验 · 人均 GMV +11.75%',
+    coverAlt: '学浪体验升级项目封面',
     panoramaAlt: '学浪产品体验全景，呈现课程发现、购买决策与持续学习体验',
     panoramaKicker: 'PRODUCT EXPERIENCE / 4 STATES',
     panoramaFlow: '发现 · 决策 · 学习 · 沉淀',
@@ -98,6 +100,11 @@ export function XuelangLayout({
 
         <article className={styles.case} data-case-study>
           <header className={styles.hero} data-xuelang-hero>
+            <figure className={styles.cover} data-xuelang-cover>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/xuelang/opening-cover.webp" alt={text.coverAlt} />
+            </figure>
+
             <div className={styles.heroCopy}>
               <p className={styles.eyebrow}>{text.eyebrow}</p>
               <div className={styles.heroThesis} data-hero-thesis>
@@ -122,31 +129,32 @@ export function XuelangLayout({
               </div>
             </div>
 
-            <figure
-              className={styles.panorama}
-              data-hero-panorama
-              aria-label={text.panoramaAlt}
-            >
-              <div className={styles.panoramaMeta} aria-hidden="true">
-                <span>{text.panoramaKicker}</span>
-                <span>{text.panoramaFlow}</span>
-              </div>
-              <span className={styles.panoramaWord} aria-hidden="true">XUELANG</span>
-              <div className={styles.productStates}>
-                {text.heroStates.map((state, index) => (
-                  <div
-                    key={state.src}
-                    className={`${styles.productState} ${styles[`productState${index + 1}`]}`}
-                    data-hero-product-state
-                  >
-                    <span aria-hidden="true">{state.label}</span>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={state.src} alt={state.alt} />
-                  </div>
-                ))}
-              </div>
-            </figure>
           </header>
+
+          <figure
+            className={styles.panorama}
+            data-hero-panorama
+            aria-label={text.panoramaAlt}
+          >
+            <div className={styles.panoramaMeta} aria-hidden="true">
+              <span>{text.panoramaKicker}</span>
+              <span>{text.panoramaFlow}</span>
+            </div>
+            <span className={styles.panoramaWord} aria-hidden="true">XUELANG</span>
+            <div className={styles.productStates}>
+              {text.heroStates.map((state, index) => (
+                <div
+                  key={state.src}
+                  className={`${styles.productState} ${styles[`productState${index + 1}`]}`}
+                  data-hero-product-state
+                >
+                  <span aria-hidden="true">{state.label}</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={state.src} alt={state.alt} />
+                </div>
+              ))}
+            </div>
+          </figure>
 
           <div className={styles.content}>{children}</div>
         </article>
