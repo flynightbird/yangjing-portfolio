@@ -98,7 +98,9 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
               aria-label={`View ${callAgent.copy.title} case study`}
               data-page-transition-tone="dark"
             >
-              <h2>{callAgent.copy.title}</h2>
+              <h2 className={styles.coreProjectTitle} data-core-project-title>
+                {callAgent.copy.title}
+              </h2>
             </a>
             <p className={styles.flagshipSummary}>{callAgent.copy.proposition}</p>
             <p className={styles.flagshipRole}>{callAgent.copy.role}</p>
@@ -150,7 +152,9 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
               aria-label={`View ${convoAi.copy.title} project`}
               data-page-transition-tone="dark"
             >
-              <h2>{convoAi.copy.title}</h2>
+              <h2 className={styles.coreProjectTitle} data-core-project-title>
+                {convoAi.copy.title}
+              </h2>
             </a>
             <p className={styles.flagshipSummary}>{convoAi.copy.proposition}</p>
             <p className={styles.flagshipRole}>{convoAi.copy.role}</p>

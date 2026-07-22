@@ -34,7 +34,9 @@ export function LiveWebsiteProject({ copy, href }: LiveWebsiteProjectProps) {
             kind={copy.kind}
             variant="company-only"
           />
-          <h2>{copy.title}</h2>
+          <h2 className={styles.coreProjectTitle} data-core-project-title>
+            {copy.title}
+          </h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
           <ul className={styles.scopeList} aria-label={copy.role}>
             {copy.scope.map((item) => (

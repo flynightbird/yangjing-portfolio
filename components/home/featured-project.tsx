@@ -69,7 +69,9 @@ export function FeaturedProject({
       <div className={styles.projectInner}>
         <div className={styles.projectCopy}>
           <ProjectMeta companyId={companyId} company={copy.company} kind={copy.kind} />
-          <h2>{copy.title}</h2>
+          <h2 className={styles.coreProjectTitle} data-core-project-title>
+            {copy.title}
+          </h2>
           <div className={styles.projectMeta}>
             <span className={styles.projectOrder} aria-hidden="true">
               {order}

@@ -211,6 +211,22 @@ describe('FeaturedWork', () => {
     expect(container.querySelectorAll('[data-project-chapter]')).toHaveLength(4);
   });
 
+  it('uses one title treatment for all six core projects', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+    const projects = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-project-id]'),
+    );
+    const titles = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-core-project-title]'),
+    );
+
+    expect(titles).toHaveLength(6);
+    expect(projects).toHaveLength(6);
+    for (const project of projects) {
+      expect(project.querySelectorAll('[data-core-project-title]')).toHaveLength(1);
+    }
+  });
+
   it('aligns company and project type for all six projects and reserves white CTAs for the first three', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const projects = Array.from(

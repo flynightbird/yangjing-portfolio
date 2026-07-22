@@ -29,7 +29,9 @@ export function BuildLabPreview({ locale, copy, href }: BuildLabPreviewProps) {
       <div className={styles.buildInner}>
         <div className={styles.buildCopy} data-stt-copy>
           <ProjectMeta companyId="agora" company={copy.company} kind={copy.kind} />
-          <h2>{copy.title}</h2>
+          <h2 className={styles.coreProjectTitle} data-core-project-title>
+            {copy.title}
+          </h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
           <dl className={styles.buildFacts}>
             <div>
