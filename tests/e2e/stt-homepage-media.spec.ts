@@ -89,7 +89,7 @@ test.describe('STT homepage live-stage presentation', () => {
 
   test('reserves the stage and crossfades only after valid embed readiness', async ({
     page,
-  }) => {
+  }, testInfo) => {
     const { requestHeld, releaseRequest, cleanup } = await holdStageEmbed(page);
 
     try {
@@ -131,18 +131,29 @@ test.describe('STT homepage live-stage presentation', () => {
       const browserOffsetsBefore = await offsetBox(browserWindow);
       const viewportOffsetsBefore = await offsetBox(viewport);
       expect(mediaBox).not.toBeNull();
+      await expect(media).toHaveCSS(
+        'aspect-ratio',
+        testInfo.project.name === 'desktop' ? '4 / 3' : '1.05 / 1',
+      );
       expect(browserBoxBefore).not.toBeNull();
       expect(viewportBox).not.toBeNull();
       await expect(viewport).toHaveCSS('aspect-ratio', '633 / 560');
       await expect(fallback).toHaveCSS('object-fit', 'contain');
       await expect(fallback).toHaveCSS('object-position', '50% 0%');
-      expect((viewportBox?.width ?? 0) / (viewportBox?.height ?? 1)).toBeCloseTo(
-        633 / 560,
-        2,
-      );
       expect(
-        (browserBoxBefore?.y ?? 0) + (browserBoxBefore?.height ?? 0),
-      ).toBeLessThanOrEqual((mediaBox?.y ?? 0) + (mediaBox?.height ?? 0) + 1);
+        Math.abs(
+          (viewportBox?.y ?? 0) +
+            (viewportBox?.height ?? 0) -
+            ((browserBoxBefore?.y ?? 0) + (browserBoxBefore?.height ?? 0)),
+        ),
+      ).toBeLessThanOrEqual(1);
+      expect(
+        Math.abs(
+          (browserBoxBefore?.y ?? 0) +
+            (browserBoxBefore?.height ?? 0) -
+            ((mediaBox?.y ?? 0) + (mediaBox?.height ?? 0)),
+        ),
+      ).toBeLessThanOrEqual(1);
       expect(
         await fallback.evaluate((image) => {
           const rendered = image as HTMLImageElement;
@@ -161,6 +172,7 @@ test.describe('STT homepage live-stage presentation', () => {
       const fill = await embed.locator('.land-visual').evaluate((element) => {
         const rect = element.getBoundingClientRect();
         const selectors = [
+          '.snip-topbar',
           '.snip-speaker',
           '.snip-original',
           '.snip-translation',
@@ -203,6 +215,14 @@ test.describe('STT homepage live-stage presentation', () => {
         expect(child.y + child.height, child.selector).toBeLessThanOrEqual(
           fill.viewportHeight + 1,
         );
+      }
+      const topbar = fill.content.find((child) => child?.selector === '.snip-topbar');
+      const speaker = fill.content.find((child) => child?.selector === '.snip-speaker');
+      expect(topbar).not.toBeNull();
+      expect(speaker).not.toBeNull();
+      if (topbar && speaker) {
+        const emptyStageHeight = speaker.y - (topbar.y + topbar.height);
+        expect(emptyStageHeight / fill.viewportHeight).toBeLessThanOrEqual(0.42);
       }
       expectStableBox(browserOffsetsBefore, await offsetBox(browserWindow));
       expectStableBox(viewportOffsetsBefore, await offsetBox(viewport));

@@ -1,5 +1,7 @@
 .stageViewport {
   position: relative;
+  min-height: 0;
+  flex: 1;
   aspect-ratio: 633 / 560;
   overflow: hidden;
   background: #08090b;
