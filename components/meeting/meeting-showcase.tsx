@@ -118,7 +118,7 @@ export function FilmActMedia({
         loading="lazy"
         decoding="async"
       />
-      <figcaption>
+      <figcaption className={styles.staticCopy} data-film-static-copy>
         <strong>{title}</strong>
         <span>{description}</span>
       </figcaption>

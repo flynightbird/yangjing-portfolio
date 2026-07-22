@@ -64,6 +64,41 @@ function isSafeMeetingPublicUrl(value, prefix) {
     isSafeMeetingRelativePath(value.slice(1), prefix.slice(1));
 }
 
+const meetingCaptionLocales = ['en', 'zh'];
+
+function validatedMeetingCaptionEntries(asset, errors) {
+  if (!Object.hasOwn(asset, 'captions') || asset.captions === undefined) return [];
+  if (
+    asset.captions === null ||
+    typeof asset.captions !== 'object' ||
+    Array.isArray(asset.captions)
+  ) {
+    errors.push(`Invalid Meeting manifest captions for ${asset.id}: expected an object`);
+    return [];
+  }
+
+  for (const locale of Object.keys(asset.captions)) {
+    if (!meetingCaptionLocales.includes(locale)) {
+      errors.push(`Unsupported Meeting manifest caption locale for ${asset.id}: ${locale}`);
+    }
+  }
+
+  const entries = [];
+  for (const locale of meetingCaptionLocales) {
+    if (!Object.hasOwn(asset.captions, locale)) {
+      errors.push(`Missing Meeting manifest captions.${locale} path for ${asset.id}`);
+      continue;
+    }
+    const caption = asset.captions[locale];
+    if (!isSafeMeetingPublicUrl(caption, '/captions/meeting/')) {
+      errors.push(`Unsafe Meeting manifest captions.${locale} path: ${caption}`);
+      continue;
+    }
+    entries.push([locale, caption]);
+  }
+  return entries;
+}
+
 async function loadMeetingPublicationContract(rootDir, { requireManifest = false } = {}) {
   const manifestPath = path.join(rootDir, 'evidence/meeting/manifest.json');
   let manifestStat;
@@ -117,6 +152,7 @@ async function loadMeetingPublicationContract(rootDir, { requireManifest = false
 
   const errors = [];
   const outputs = new Set();
+  const captionEntriesByVideo = new Map();
   for (const [index, asset] of manifest.assets.entries()) {
     if (!asset || typeof asset !== 'object' || Array.isArray(asset)) {
       errors.push(`Invalid Meeting manifest asset at index ${index}`);
@@ -163,12 +199,10 @@ async function loadMeetingPublicationContract(rootDir, { requireManifest = false
       if (!isSafeMeetingPublicUrl(asset.poster, '/images/meeting/')) {
         errors.push(`Unsafe Meeting manifest poster path: ${asset.poster}`);
       }
-      for (const locale of Object.keys(asset.captions ?? {})) {
-        const caption = asset.captions?.[locale];
-        if (!isSafeMeetingPublicUrl(caption, '/captions/meeting/')) {
-          errors.push(`Unsafe Meeting manifest captions.${locale} path: ${caption}`);
-        }
-      }
+      captionEntriesByVideo.set(
+        asset,
+        validatedMeetingCaptionEntries(asset, errors),
+      );
     }
   }
   if (errors.length) return { errors, requiredInputs: [], videos: [], assets: [] };
@@ -179,7 +213,7 @@ async function loadMeetingPublicationContract(rootDir, { requireManifest = false
   for (const video of manifest.assets.filter(({ kind }) => kind === 'video')) {
     const relationships = [
       ['poster', `public${video.poster}`, 'image'],
-      ...Object.entries(video.captions ?? {}).map(([locale, caption]) => (
+      ...(captionEntriesByVideo.get(video) ?? []).map(([locale, caption]) => (
         [`captions.${locale}`, `public${caption}`, 'captions']
       )),
     ];
@@ -197,9 +231,10 @@ async function loadMeetingPublicationContract(rootDir, { requireManifest = false
     .filter(({ publicationRequired }) => publicationRequired === true);
   const requiredVideoRelationships = publicationAssets
     .filter(({ kind }) => kind === 'video')
-    .flatMap(({ poster, captions }) => [
-      `public${poster}`,
-      ...Object.values(captions ?? {}).map((caption) => `public${caption}`),
+    .flatMap((video) => [
+      `public${video.poster}`,
+      ...(captionEntriesByVideo.get(video) ?? [])
+        .map(([, caption]) => `public${caption}`),
     ]);
   return {
     errors,
@@ -210,10 +245,11 @@ async function loadMeetingPublicationContract(rootDir, { requireManifest = false
     ],
     videos: manifest.assets
       .filter(({ kind }) => kind === 'video')
-      .map(({ output: video, poster, captions }) => ({
-        video,
-        poster: `public${poster}`,
-        captions: Object.values(captions ?? {}).map((caption) => `public${caption}`),
+      .map((asset) => ({
+        video: asset.output,
+        poster: `public${asset.poster}`,
+        captions: (captionEntriesByVideo.get(asset) ?? [])
+          .map(([, caption]) => `public${caption}`),
       })),
   };
 }

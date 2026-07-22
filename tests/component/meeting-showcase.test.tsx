@@ -2,10 +2,16 @@ import { readFileSync } from 'node:fs';
 import type { ComponentType } from 'react';
 import { createElement } from 'react';
 
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { render, screen, within } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ShowcaseProof } from '@/components/meeting/meeting-showcase';
+
+const filmReadiness = vi.hoisted(() => ({ ready: true }));
+
+vi.mock('@/components/meeting/meeting-film-readiness.server', () => ({
+  meetingFilmSourcesReady: () => filmReadiness.ready,
+}));
 
 type ShowcaseComponent = ComponentType<Record<string, unknown>>;
 
@@ -13,6 +19,10 @@ async function loadShowcaseComponent(name: string): Promise<ShowcaseComponent | 
   const showcase = await import('@/components/meeting/meeting-showcase');
   return (showcase as unknown as Record<string, ShowcaseComponent | undefined>)[name];
 }
+
+afterEach(() => {
+  filmReadiness.ready = true;
+});
 
 describe('Meeting Product Film showcase helpers', () => {
   it('renders a concise FilmTitle without a numbered eyebrow', async () => {
@@ -45,6 +55,37 @@ describe('Meeting Product Film showcase helpers', () => {
     expect(container.querySelector('[data-challenge-triggers]')).not.toBeNull();
     expect(container.querySelectorAll('[data-challenge-trigger]')).toHaveLength(3);
     for (const label of labels) expect(screen.getByText(label)).toBeVisible();
+  });
+
+  it('groups the static film title and description as spaced block copy', async () => {
+    filmReadiness.ready = false;
+    const FilmActMedia = await loadShowcaseComponent('FilmActMedia');
+    expect(FilmActMedia).toBeTypeOf('function');
+    if (!FilmActMedia) return;
+
+    const { container } = render(createElement(FilmActMedia, {
+      clipId: 'meeting-web-transcription',
+      locale: 'en',
+      title: 'Web transcription workspace',
+      description: 'The transcript and meeting stage share the workspace while primary content stays clear.',
+      replayLabel: 'Replay',
+    }));
+
+    expect(container.querySelector('video')).not.toBeInTheDocument();
+    const copy = container.querySelector('figcaption[data-film-static-copy]');
+    expect(copy).toBeInTheDocument();
+    expect(copy?.querySelector(':scope > strong')).toHaveTextContent('Web transcription workspace');
+    expect(copy?.querySelector(':scope > span')).toHaveTextContent(
+      'The transcript and meeting stage share the workspace while primary content stays clear.',
+    );
+
+    const showcaseStyles = readFileSync(
+      'components/meeting/meeting-showcase.module.css',
+      'utf8',
+    );
+    expect(showcaseStyles).toMatch(
+      /\.staticCopy\s*{[^}]*display:\s*grid[^}]*gap:\s*0\.125rem/s,
+    );
   });
 
   it.each([
@@ -151,8 +192,8 @@ describe('Meeting Product Film showcase helpers', () => {
       '/videos/meeting/meeting-web-transcription.mp4',
     );
     expect(container.querySelectorAll('track')).toHaveLength(0);
-    expect(screen.getByText(title)).toBeVisible();
-    expect(screen.getByText(description)).toBeVisible();
+    expect(within(container).getByText(title)).toBeVisible();
+    expect(within(container).getByText(description)).toBeVisible();
   });
 });
 

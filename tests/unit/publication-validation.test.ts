@@ -296,6 +296,99 @@ setInterval(() => {}, 1000);
     );
   });
 
+  it.each([
+    ['null', null],
+    ['an array', []],
+    ['a scalar', 'captions'],
+  ])('rejects captions metadata declared as %s', async (_name, captions) => {
+    const root = createRoot();
+    write(root, 'evidence/meeting/manifest.json', JSON.stringify({
+      version: 1,
+      assets: meetingManifestAssets({ captions }),
+    }));
+
+    const result = await runPublicationValidation({ mode: 'source', rootDir: root });
+
+    expect(result.errors).toContain(
+      'Invalid Meeting manifest captions for fixture-film: expected an object',
+    );
+  });
+
+  it('rejects unsupported caption locale keys', async () => {
+    const root = createRoot();
+    write(root, 'evidence/meeting/manifest.json', JSON.stringify({
+      version: 1,
+      assets: meetingManifestAssets({
+        captions: {
+          en: '/captions/meeting/fixture-film.en.vtt',
+          zh: '/captions/meeting/fixture-film.zh.vtt',
+          fr: '/captions/meeting/fixture-film.fr.vtt',
+        },
+      }),
+    }));
+
+    const result = await runPublicationValidation({ mode: 'source', rootDir: root });
+
+    expect(result.errors).toContain(
+      'Unsupported Meeting manifest caption locale for fixture-film: fr',
+    );
+  });
+
+  it('rejects a declared caption object missing a supported locale', async () => {
+    const root = createRoot();
+    write(root, 'evidence/meeting/manifest.json', JSON.stringify({
+      version: 1,
+      assets: meetingManifestAssets({
+        captions: {
+          en: '/captions/meeting/fixture-film.en.vtt',
+        },
+      }),
+    }));
+
+    const result = await runPublicationValidation({ mode: 'source', rootDir: root });
+
+    expect(result.errors).toContain(
+      'Missing Meeting manifest captions.zh path for fixture-film',
+    );
+  });
+
+  it.each([
+    ['an empty string', ''],
+    ['a non-string value', 42],
+  ])('rejects captions metadata with %s', async (_name, zh) => {
+    const root = createRoot();
+    write(root, 'evidence/meeting/manifest.json', JSON.stringify({
+      version: 1,
+      assets: meetingManifestAssets({
+        captions: {
+          en: '/captions/meeting/fixture-film.en.vtt',
+          zh,
+        },
+      }),
+    }));
+
+    const result = await runPublicationValidation({ mode: 'source', rootDir: root });
+
+    expect(result.errors).toContain(
+      `Unsafe Meeting manifest captions.zh path: ${zh}`,
+    );
+  });
+
+  it('accepts omitted captions on canonical video-only records', async () => {
+    const root = createRoot();
+    const manifest = readFileSync(
+      path.join(process.cwd(), 'evidence/meeting/manifest.json'),
+      'utf8',
+    );
+    write(root, 'evidence/meeting/manifest.json', manifest);
+
+    const result = await runPublicationValidation({ mode: 'source', rootDir: root });
+
+    expect(result.errors).not.toEqual(expect.arrayContaining([
+      expect.stringMatching(/Meeting manifest captions/),
+    ]));
+  });
+
   it('requires declared video, poster, and caption files in output mode', async () => {
     const root = createRoot();
     write(root, 'evidence/meeting/manifest.json', JSON.stringify({

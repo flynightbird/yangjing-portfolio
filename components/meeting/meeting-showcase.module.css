@@ -110,6 +110,11 @@
   line-height: 1.55;
 }
 
+.staticCopy {
+  display: grid;
+  gap: 0.125rem;
+}
+
 .staticMedia figcaption strong {
   color: var(--meeting-ink, #f2f1ed);
   font-weight: 500;
