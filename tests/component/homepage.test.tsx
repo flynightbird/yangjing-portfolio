@@ -860,6 +860,17 @@ describe('VisualArchive', () => {
     );
     expect(baseElement.querySelectorAll('[data-gallery-mobile] img')).toHaveLength(4);
   });
+
+  it('opens the seven-image Tangping gallery in Chinese', () => {
+    const { baseElement } = render(<VisualArchive locale="zh" />);
+
+    fireEvent.click(screen.getByRole('button', { name: '打开项目图片: 躺平' }));
+
+    expect(screen.getByRole('status', { name: '画廊位置: 01 / 07' })).toHaveTextContent(
+      '01 / 07',
+    );
+    expect(baseElement.querySelectorAll('[data-gallery-mobile] img')).toHaveLength(7);
+  });
 });
 
 describe('AboutPreview', () => {
