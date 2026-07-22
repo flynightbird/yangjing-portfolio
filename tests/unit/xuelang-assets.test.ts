@@ -34,6 +34,59 @@ function loadManifest(): XuelangManifest {
 }
 
 describe('Xuelang evidence manifest', () => {
+  it('prepares the interaction artwork with a lossless edge-connected green background', async () => {
+    const prepareInteraction = (
+      assetPreparation as typeof assetPreparation & {
+        prepareXuelangInteractionWebp?: (input: Buffer) => Promise<Buffer>;
+      }
+    ).prepareXuelangInteractionWebp;
+
+    expect(prepareInteraction).toBeTypeOf('function');
+    if (!prepareInteraction) return;
+
+    const width = 5;
+    const height = 5;
+    const background = [235, 237, 238];
+    const target = [227, 236, 231];
+    const pixels = Buffer.alloc(width * height * 3);
+    const setPixel = (buffer: Buffer, x: number, y: number, color: number[]) => {
+      const offset = (y * width + x) * 3;
+      buffer.set(color, offset);
+    };
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) setPixel(pixels, x, y, background);
+    }
+
+    const foregroundPixels = [
+      [2, 1, [13, 71, 219]],
+      [1, 2, [241, 143, 29]],
+      [3, 2, [44, 95, 52]],
+      [2, 3, [198, 32, 91]],
+    ] as const;
+    for (const [x, y, color] of foregroundPixels) setPixel(pixels, x, y, [...color]);
+    setPixel(pixels, 0, 2, [255, 237, 238]);
+    setPixel(pixels, 4, 2, [255, 238, 238]);
+
+    const source = await sharp(pixels, { raw: { width, height, channels: 3 } })
+      .png()
+      .toBuffer();
+    const output = await prepareInteraction(source);
+    const metadata = await sharp(output).metadata();
+    const { data, info } = await sharp(output).raw().toBuffer({ resolveWithObject: true });
+
+    const expected = Buffer.alloc(width * height * 3);
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) setPixel(expected, x, y, target);
+    }
+    for (const [x, y, color] of foregroundPixels) setPixel(expected, x, y, [...color]);
+    setPixel(expected, 2, 2, background);
+    setPixel(expected, 4, 2, [255, 238, 238]);
+
+    expect(metadata).toMatchObject({ format: 'webp', width, height });
+    expect(info).toMatchObject({ width, height, channels: 3 });
+    expect(Array.from(data)).toEqual(Array.from(expected));
+  });
+
   it('declares the supplied opening cover as a semantic asset', () => {
     const manifest = loadManifest();
     const cover = manifest.assets.find((asset) => asset.id === 'opening-cover');
