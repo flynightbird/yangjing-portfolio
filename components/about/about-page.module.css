@@ -107,6 +107,7 @@
 .orbitFrame {
   --orbit-ink: #123e63;
   --orbit-line: rgb(244 251 255 / 58%);
+  --orbit-ring: rgb(249 253 255 / 82%);
   --orbit-node: rgb(225 243 252 / 82%);
   --orbit-node-edge: rgb(255 255 255 / 78%);
   --orbit-hub: rgb(25 104 170 / 84%);
@@ -129,8 +130,9 @@
 
 .orbitRing {
   fill: none;
-  stroke: var(--orbit-line);
-  stroke-dasharray: 2 8;
+  stroke: var(--orbit-ring);
+  stroke-dasharray: 3 7;
+  stroke-width: 1.25;
   transform-origin: 220px 220px;
   animation: orbit-spin 40s linear infinite;
 }
