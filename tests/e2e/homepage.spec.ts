@@ -717,43 +717,56 @@ test.describe('portfolio homepage framework', () => {
         .toBeGreaterThan(0);
     }
 
-    const renderedImages = await imageCandidates.evaluateAll((nodes) =>
-      nodes
-        .filter((node) => {
-          const image = node as HTMLImageElement;
-          const bounds = image.getBoundingClientRect();
-          return (
-            image.currentSrc !== '' &&
-            !image.currentSrc.startsWith('data:') &&
-            image.getClientRects().length > 0 &&
-            bounds.width > 0 &&
-            bounds.height > 0
-          );
-        })
-        .map((node) => {
-          const rendered = node as HTMLImageElement;
-          const bounds = rendered.getBoundingClientRect();
-          return {
-            complete: rendered.complete,
-            currentSrc: rendered.currentSrc,
-            height: bounds.height,
-            naturalHeight: rendered.naturalHeight,
-            naturalWidth: rendered.naturalWidth,
-            rectCount: rendered.getClientRects().length,
-            width: bounds.width,
-          };
-        }),
+    const renderedImageCount = await imageCandidates.evaluateAll((nodes) =>
+      nodes.filter((node) => {
+        const image = node as HTMLImageElement;
+        const bounds = image.getBoundingClientRect();
+        return (
+          image.currentSrc !== '' &&
+          !image.currentSrc.startsWith('data:') &&
+          image.getClientRects().length > 0 &&
+          bounds.width > 0 &&
+          bounds.height > 0
+        );
+      }).length,
     );
-    expect(renderedImages.length).toBeGreaterThan(0);
-    for (const image of renderedImages) {
-      expect(image.currentSrc).not.toMatch(/^data:/);
-      expect(image.rectCount).toBeGreaterThan(0);
-      expect(image.width).toBeGreaterThan(0);
-      expect(image.height).toBeGreaterThan(0);
-      expect(image.complete).toBe(true);
-      expect(image.naturalWidth).toBeGreaterThan(0);
-      expect(image.naturalHeight).toBeGreaterThan(0);
-    }
+    expect(renderedImageCount).toBeGreaterThan(0);
+    await expect
+      .poll(
+        () =>
+          imageCandidates.evaluateAll((nodes) =>
+            nodes
+              .filter((node) => {
+                const image = node as HTMLImageElement;
+                const bounds = image.getBoundingClientRect();
+                return (
+                  image.currentSrc !== '' &&
+                  !image.currentSrc.startsWith('data:') &&
+                  image.getClientRects().length > 0 &&
+                  bounds.width > 0 &&
+                  bounds.height > 0
+                );
+              })
+              .map((node) => {
+                const image = node as HTMLImageElement;
+                return {
+                  alt: image.alt,
+                  complete: image.complete,
+                  currentSrc: image.currentSrc,
+                  naturalHeight: image.naturalHeight,
+                  naturalWidth: image.naturalWidth,
+                };
+              })
+              .filter(
+                (image) =>
+                  !image.complete ||
+                  image.naturalWidth <= 0 ||
+                  image.naturalHeight <= 0,
+              ),
+          ),
+        { timeout: 15_000 },
+      )
+      .toEqual([]);
 
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
