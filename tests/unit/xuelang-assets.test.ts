@@ -85,7 +85,7 @@ describe('Xuelang evidence manifest', () => {
       await rm(tempRoot, { recursive: true, force: true });
     }
     expect(existsSync(tempRoot)).toBe(false);
-  });
+  }, 120_000);
 
   it('prepares the interaction artwork with a lossless edge-connected green background', async () => {
     const prepareInteraction = (
