@@ -112,6 +112,25 @@ describe('IntroStory', () => {
 });
 
 describe('FeaturedWork', () => {
+  it('uses four scroll reveal boundaries with coherent text and media groups', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+    const boundaries = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-scroll-reveal]'),
+    );
+
+    expect(boundaries).toHaveLength(4);
+    for (const boundary of boundaries) {
+      expect(
+        boundary.querySelectorAll('[data-scroll-reveal-group="text"]').length,
+      ).toBeGreaterThan(0);
+      expect(
+        boundary.querySelectorAll('[data-scroll-reveal-group="media"]').length,
+      ).toBeGreaterThan(0);
+    }
+    const legacyRevealAttribute = ['data', 'section', 'reveal'].join('-');
+    expect(container.querySelector(`[${legacyRevealAttribute}]`)).not.toBeInTheDocument();
+  });
+
   it('renders the six approved project treatments in order', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const projectIds = Array.from(
@@ -480,6 +499,15 @@ describe('FeaturedWork', () => {
 });
 
 describe('VisualArchive', () => {
+  it('marks its header and viewport as the scroll reveal groups', () => {
+    const { container } = render(<VisualArchive locale="en" />);
+    const header = container.querySelector('[data-archive-header]');
+    const viewport = container.querySelector('[data-archive-scroller]');
+
+    expect(header).toHaveAttribute('data-scroll-reveal-group', 'text');
+    expect(viewport).toHaveAttribute('data-scroll-reveal-group', 'media');
+  });
+
   it('forwards vertical wheel movement once per animation frame without cancelling it', () => {
     const scrollBy = vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);
     const frames: FrameRequestCallback[] = [];

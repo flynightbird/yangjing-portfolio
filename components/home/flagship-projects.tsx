@@ -86,7 +86,7 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
           onPointerEnter={() => selectProject('call-agent')}
           onFocus={() => selectProject('call-agent')}
         >
-          <div className={styles.flagshipCopy}>
+          <div className={styles.flagshipCopy} data-scroll-reveal-group="text">
             <ProjectMeta
               companyId="agora"
               company={callAgent.copy.company}
@@ -118,6 +118,7 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
           <div
             className={`${styles.flagshipMedia} ${styles.flagshipCallMedia}`}
             data-media-radius="20"
+            data-scroll-reveal-group="media"
             onPointerMove={updateStudioDrift}
             onPointerLeave={resetStudioDrift}
           >
@@ -138,7 +139,7 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
           onPointerEnter={() => selectProject('convo-ai')}
           onFocus={() => selectProject('convo-ai')}
         >
-          <div className={styles.flagshipCopy}>
+          <div className={styles.flagshipCopy} data-scroll-reveal-group="text">
             <ProjectMeta
               companyId="agora"
               company={convoAi.copy.company}
@@ -173,6 +174,7 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
             aria-label="Open ConvoAI project media"
             data-media-radius="20"
             data-page-transition-tone="dark"
+            data-scroll-reveal-group="media"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img

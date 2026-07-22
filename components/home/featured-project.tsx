@@ -58,7 +58,7 @@ export function FeaturedProject({
       data-pointer-suppress={id === 'xuelang' ? '' : undefined}
     >
       <div className={styles.projectInner}>
-        <div className={styles.projectCopy}>
+        <div className={styles.projectCopy} data-scroll-reveal-group="text">
           <ProjectMeta companyId={companyId} company={copy.company} kind={copy.kind} />
           <h2>{copy.title}</h2>
           <div className={styles.projectMeta}>
@@ -93,6 +93,7 @@ export function FeaturedProject({
           className={styles.projectMedia}
           data-project-media-frame
           data-media-radius="20"
+          data-scroll-reveal-group="media"
         >
           {media ? (
             // The image is verified product evidence with preserved dimensions.

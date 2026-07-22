@@ -33,14 +33,18 @@ export function MeetingPreview({ copy, href }: MeetingPreviewProps) {
       data-publication-state="complete"
     >
       <div className={styles.meetingInner}>
-        <div className={styles.meetingHeading}>
+        <div className={styles.meetingHeading} data-scroll-reveal-group="text">
           <ProjectMeta companyId="agora" company={copy.company} kind={copy.kind} />
           <h2>{copy.title}</h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
           <p className={styles.meetingStatus}>{copy.status}</p>
         </div>
 
-        <div className={styles.meetingStates} aria-label={copy.mediaLabel}>
+        <div
+          className={styles.meetingStates}
+          aria-label={copy.mediaLabel}
+          data-scroll-reveal-group="media"
+        >
           {copy.stages.map((stage, index) => (
             <section key={stage.title}>
               <span aria-hidden="true">0{index + 1}</span>
@@ -50,7 +54,7 @@ export function MeetingPreview({ copy, href }: MeetingPreviewProps) {
           ))}
         </div>
 
-        <div className={styles.meetingAction}>
+        <div className={styles.meetingAction} data-scroll-reveal-group="text">
           <p>{copy.role}</p>
           <ActionLink
             href={href}

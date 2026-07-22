@@ -144,6 +144,7 @@ export function BuildLabMedia({ href }: BuildLabMediaProps) {
       aria-label="Open the interactive STT Demo in a new tab"
       data-stt-media-stage
       data-stt-ready={isReady ? 'true' : 'false'}
+      data-scroll-reveal-group="media"
       onPointerMove={handlePointerMove}
       onPointerLeave={resetPosition}
       onBlur={resetPosition}

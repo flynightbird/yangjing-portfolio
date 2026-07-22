@@ -164,7 +164,11 @@ export function VisualArchive({
       data-archive-carousel
       style={progressStyle}
     >
-      <div className={styles.archiveHeader}>
+      <div
+        className={styles.archiveHeader}
+        data-archive-header
+        data-scroll-reveal-group="text"
+      >
         <div className={styles.archiveIntro}>
           <h2 id="archive-title">{copy.title}</h2>
           <p>{copy.description}</p>
@@ -214,6 +218,7 @@ export function VisualArchive({
         role="region"
         aria-label={copy.carouselLabel}
         data-archive-scroller
+        data-scroll-reveal-group="media"
         onScroll={updateActiveIndex}
       >
         <div className={styles.archiveTrack}>

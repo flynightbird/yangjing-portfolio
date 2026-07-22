@@ -2,7 +2,7 @@ import { CommunicationProjects } from '@/components/home/communication-projects'
 import { FeaturedProject } from '@/components/home/featured-project';
 import { FlagshipProjects } from '@/components/home/flagship-projects';
 import { LiveWebsiteProject } from '@/components/home/live-website-project';
-import { SectionReveal } from '@/components/home/section-reveal';
+import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
 import { homepageProjects } from '@/content/home';
@@ -26,7 +26,7 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
       className={styles.featuredWork}
       aria-label={locale === 'zh' ? '精选作品' : 'Selected work'}
     >
-      <SectionReveal tone="dark">
+      <ScrollReveal>
         <FlagshipProjects
           locale={locale}
           callAgent={{
@@ -38,20 +38,20 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
             href: `${localeRoot}${convoAi.href}`,
           }}
         />
-      </SectionReveal>
-      <SectionReveal tone="dark">
+      </ScrollReveal>
+      <ScrollReveal>
         <CommunicationProjects
           locale={locale}
           meeting={{ copy: copy.meeting, href: `${localeRoot}${meeting.href}` }}
           stt={{ copy: copy.sttDemo, href: withBasePath(sttDemo.href) }}
         />
-      </SectionReveal>
-      <SectionReveal tone="iris">
+      </ScrollReveal>
+      <ScrollReveal>
         <section data-project-chapter="visual-brand">
           <LiveWebsiteProject copy={copy.aidx} href={aidx.href} />
         </section>
-      </SectionReveal>
-      <SectionReveal tone="light">
+      </ScrollReveal>
+      <ScrollReveal>
         <section data-project-chapter="product-foundation">
           <FeaturedProject
             id="xuelang"
@@ -73,7 +73,7 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
             transitionTone="light"
           />
         </section>
-      </SectionReveal>
+      </ScrollReveal>
     </section>
   );
 }

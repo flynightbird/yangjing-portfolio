@@ -27,7 +27,7 @@ export function LiveWebsiteProject({ copy, href }: LiveWebsiteProjectProps) {
       data-project-kind="live-launch"
     >
       <div className={styles.liveInner}>
-        <div className={styles.liveCopy}>
+        <div className={styles.liveCopy} data-scroll-reveal-group="text">
           <ProjectMeta companyId="aidx" company={copy.company} kind={copy.kind} />
           <h2>{copy.title}</h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
@@ -49,7 +49,7 @@ export function LiveWebsiteProject({ copy, href }: LiveWebsiteProjectProps) {
             {copy.action}
           </ActionLink>
         </div>
-        <div className={styles.liveMedia}>
+        <div className={styles.liveMedia} data-scroll-reveal-group="media">
           <AidxShowcase href={href} caption={copy.captureCaption} />
         </div>
       </div>

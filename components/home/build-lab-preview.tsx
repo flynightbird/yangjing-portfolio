@@ -27,7 +27,7 @@ export function BuildLabPreview({ locale, copy, href }: BuildLabPreviewProps) {
       data-project-kind="build-lab"
     >
       <div className={styles.buildInner}>
-        <div className={styles.buildCopy} data-stt-copy>
+        <div className={styles.buildCopy} data-stt-copy data-scroll-reveal-group="text">
           <ProjectMeta companyId="agora" company={copy.company} kind={copy.kind} />
           <h2>{copy.title}</h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
