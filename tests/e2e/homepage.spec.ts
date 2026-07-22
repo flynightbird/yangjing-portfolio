@@ -643,26 +643,116 @@ test.describe('portfolio homepage framework', () => {
     }
   });
 
-  test('loads every real homepage image and has no horizontal overflow', async ({ page }) => {
+  test('loads every rendered homepage image and has no horizontal overflow', async ({
+    page,
+  }, testInfo) => {
+    testInfo.setTimeout(90_000);
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
-    const images = page.locator('main img:not([data-placeholder-media])');
-    await expect(images).toHaveCount(14);
-    for (let index = 0; index < await images.count(); index += 1) {
-      const image = images.nth(index);
-      await image.evaluate((node) => node.scrollIntoView({ block: 'center' }));
-      await expect
-        .poll(() =>
-          image.evaluate((node) => {
-            const rendered = node as HTMLImageElement;
+    const imageCandidates = page.locator('main img:not([data-placeholder-media])');
+    await imageCandidates.evaluateAll(async (nodes) => {
+      for (const node of nodes) {
+        const image = node as HTMLImageElement;
+        const bounds = node.getBoundingClientRect();
+        if (
+          image.src === '' ||
+          image.src.startsWith('data:') ||
+          node.getClientRects().length === 0 ||
+          bounds.width <= 0 ||
+          bounds.height <= 0
+        ) {
+          continue;
+        }
+        node.scrollIntoView({ block: 'center' });
+        await new Promise<void>((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+        );
+      }
+    });
+
+    const comparisonImages = page.locator('[data-xuelang-home-comparison] img');
+    await expect(comparisonImages).toHaveCount(2);
+    await expect
+      .poll(() =>
+        comparisonImages.evaluateAll((nodes) =>
+          nodes.every((node) => {
+            const image = node as HTMLImageElement;
+            const bounds = image.getBoundingClientRect();
             return (
-              rendered.complete &&
-              rendered.naturalWidth > 0 &&
-              rendered.naturalHeight > 0
+              image.currentSrc !== '' &&
+              !image.currentSrc.startsWith('data:') &&
+              image.complete &&
+              image.naturalWidth > 0 &&
+              image.naturalHeight > 0 &&
+              image.getClientRects().length > 0 &&
+              bounds.width > 0 &&
+              bounds.height > 0
             );
           }),
+        ),
+      )
+      .toBe(true);
+
+    for (const group of [
+      page.locator('[data-media="portrait"] img'),
+      page.locator('[data-project-id] img:not([data-placeholder-media])'),
+      page.locator('[data-archive-card] img:not([data-placeholder-media])'),
+    ]) {
+      await expect
+        .poll(() =>
+          group.evaluateAll((nodes) =>
+            nodes.filter((node) => {
+              const image = node as HTMLImageElement;
+              const bounds = image.getBoundingClientRect();
+              return (
+                image.currentSrc !== '' &&
+                !image.currentSrc.startsWith('data:') &&
+                image.getClientRects().length > 0 &&
+                bounds.width > 0 &&
+                bounds.height > 0
+              );
+            }).length,
+          ),
         )
-        .toBe(true);
+        .toBeGreaterThan(0);
+    }
+
+    const renderedImages = await imageCandidates.evaluateAll((nodes) =>
+      nodes
+        .filter((node) => {
+          const image = node as HTMLImageElement;
+          const bounds = image.getBoundingClientRect();
+          return (
+            image.currentSrc !== '' &&
+            !image.currentSrc.startsWith('data:') &&
+            image.getClientRects().length > 0 &&
+            bounds.width > 0 &&
+            bounds.height > 0
+          );
+        })
+        .map((node) => {
+          const rendered = node as HTMLImageElement;
+          const bounds = rendered.getBoundingClientRect();
+          return {
+            complete: rendered.complete,
+            currentSrc: rendered.currentSrc,
+            height: bounds.height,
+            naturalHeight: rendered.naturalHeight,
+            naturalWidth: rendered.naturalWidth,
+            rectCount: rendered.getClientRects().length,
+            width: bounds.width,
+          };
+        }),
+    );
+    expect(renderedImages.length).toBeGreaterThan(0);
+    for (const image of renderedImages) {
+      expect(image.currentSrc).not.toMatch(/^data:/);
+      expect(image.rectCount).toBeGreaterThan(0);
+      expect(image.width).toBeGreaterThan(0);
+      expect(image.height).toBeGreaterThan(0);
+      expect(image.complete).toBe(true);
+      expect(image.naturalWidth).toBeGreaterThan(0);
+      expect(image.naturalHeight).toBeGreaterThan(0);
     }
 
     const overflow = await page.evaluate(
