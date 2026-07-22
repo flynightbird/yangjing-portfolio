@@ -71,9 +71,12 @@ const copy = {
     evidence: [
       ['Business outcomes', 'Alibaba app redesign: MAU +45%', 'Website upgrade: retention +35%'],
       ['Range', 'Consumer, B2B & SaaS', 'AI & real-time products'],
-      ['Build boundary', 'Independent experience validation', 'Not complex production backends'],
+      [
+        'Build boundary',
+        'Independent experience validation',
+        'Rapidly build interactive HTML with product logic using Codex and Claude.',
+      ],
     ],
-    evidenceNote: '* Outcomes are self-reported from my resume.',
     careerEyebrow: 'Five chapters',
     careerTitle: 'Step by step, to where I am now',
     careerIntro:
@@ -162,9 +165,8 @@ const copy = {
     evidence: [
       ['业务结果', '阿里 App 改版：MAU +45%', '官网升级：留存 +35%'],
       ['能力跨度', 'C 端、B 端与 SaaS', 'AI 与实时互动产品'],
-      ['构建边界', '可独立完成体验验证', '不承担复杂生产级后端开发'],
+      ['构建边界', '可独立完成体验验证', '通过 Codex、Claude 快速搭建涵盖产品逻辑的交互式 HTML'],
     ],
-    evidenceNote: '* 结果数据来自个人履历中的自述。',
     careerEyebrow: '五段经历',
     careerTitle: '一步一步，走到现在',
     careerIntro: '从用户研究与复杂 UX，到设计领导力与 AI 原生体验。',
@@ -460,7 +462,6 @@ export function AboutPage({ locale }: AboutPageProps) {
             </article>
           ))}
         </div>
-        <p className={styles.evidenceNote}>{content.evidenceNote}</p>
       </SectionBand>
 
       <SectionBand className={styles.careerBand}>

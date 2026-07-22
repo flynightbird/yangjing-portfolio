@@ -980,9 +980,10 @@ a.whiteCta:focus-visible {
   transform: rotate(2deg) scale(1.025);
 }
 
-.flagshipSource {
-  margin: 1rem 0 0;
-  color: #777c78;
+.flagshipRole {
+  margin: 0.75rem 0 0;
+  color: #8f948f;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   line-height: 1.5;
 }
@@ -1359,6 +1360,14 @@ a.whiteCta:focus-visible {
 .scopeList li {
   padding-block: var(--space-3);
   border-bottom: 1px solid var(--color-border);
+}
+
+.liveStatus {
+  margin: calc(-1 * var(--space-3)) 0 var(--space-6);
+  color: var(--color-iris-deep);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
 }
 
 .liveMedia {

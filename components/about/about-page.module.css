@@ -472,12 +472,6 @@
   line-height: 1.5;
 }
 
-.evidenceNote {
-  margin: 1.25rem 0 0;
-  color: var(--about-tertiary);
-  font-size: 0.75rem;
-}
-
 .timeline {
   position: relative;
   display: grid;

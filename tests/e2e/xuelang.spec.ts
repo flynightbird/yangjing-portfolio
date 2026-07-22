@@ -79,20 +79,17 @@ test.describe('Xuelang case study', () => {
       )).toBeVisible();
       await expect(page.locator('main')).not.toContainText(/灰度|gray release|long-term validated/i);
 
-      const email = locale === 'zh' ? 'yangux@qq.com' : 'amanda.yangj@gmail.com';
-      await expect(page.locator('#results').getByRole('link', { name: email })).toHaveAttribute(
-        'href',
-        `mailto:${email}`,
-      );
+      await expect(page.locator('#results a[href^="mailto:"]')).toHaveCount(0);
+      await expect(page.locator('#results')).not.toContainText('flydesigner_yangj');
+      await expect(page.locator('[data-site-footer]')).toHaveCount(1);
+      await expect(
+        page.locator('[data-site-footer] a[href="mailto:amanda.yangj@gmail.com"]'),
+      ).toHaveCount(2);
     });
   }
 
-  test('desktop chapter rail, lightbox, and Chinese contact remain operable', async ({
-    context,
-    page,
-  }, testInfo) => {
+  test('desktop chapter rail and lightbox remain operable', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'Interactions need one canonical viewport.');
-    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.goto('/zh/work/xuelang/', { waitUntil: 'networkidle' });
 
     for (const id of chapterIds) {
@@ -107,11 +104,6 @@ test.describe('Xuelang case study', () => {
     await expect(page.getByRole('dialog', { name: '查看产品界面' })).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog', { name: '查看产品界面' })).toHaveCount(0);
-
-    await page.getByRole('button', { name: '复制微信号' }).click();
-    await expect(page.getByText('已复制微信号', { exact: true })).toBeVisible();
-    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText()))
-      .toBe('flydesigner_yangj');
   });
 
   test('desktop creates one learning pin and reduced motion creates none', async ({

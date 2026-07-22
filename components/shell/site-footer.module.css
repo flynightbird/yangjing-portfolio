@@ -12,6 +12,12 @@
 .revealLayer {
   position: relative;
   min-height: inherit;
+  background:
+    radial-gradient(120% 105% at -18% 116%, rgba(47, 34, 62, 0.98) 0 36%, transparent 69%),
+    radial-gradient(105% 92% at 112% -8%, rgba(184, 177, 193, 0.9) 0 31%, transparent 68%),
+    radial-gradient(92% 88% at 72% 92%, rgba(119, 103, 139, 0.82) 0 30%, transparent 70%),
+    radial-gradient(105% 92% at 38% 34%, rgba(82, 67, 102, 0.88) 0 32%, transparent 72%),
+    #211a26;
   isolation: isolate;
 }
 
@@ -40,19 +46,6 @@
   will-change: transform;
 }
 
-.liquid {
-  z-index: -1;
-}
-
-.root::after {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: rgba(14, 16, 15, 0.24);
-  content: '';
-  pointer-events: none;
-}
-
 .inner {
   display: grid;
   width: min(100%, var(--content-max));
@@ -79,37 +72,85 @@
   max-width: 15ch;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(3rem, 7vw, 6.75rem);
+  font-size: clamp(2.25rem, 5vw, 4.75rem);
   font-weight: 700;
-  line-height: 0.94;
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+
+.emailActions {
+  display: inline-grid;
+  max-width: 100%;
+  grid-template-columns: minmax(0, auto) 1.5rem 1.5rem;
+  align-items: center;
+  column-gap: 0.25rem;
+  margin-top: clamp(2rem, 5vh, 4rem);
 }
 
 .email {
-  display: inline-flex;
-  min-height: 3.5rem;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: clamp(2rem, 5vh, 4rem);
+  min-width: 0;
+  padding-block: 0.625rem;
   border-bottom: 1px solid rgba(244, 245, 242, 0.72);
   color: var(--color-paper);
   font-size: clamp(1.15rem, 2vw, 1.75rem);
+  overflow-wrap: anywhere;
   text-decoration: none;
+}
+
+.copyButton,
+.emailArrow {
+  display: grid;
+  width: 1.5rem;
+  height: 1.5rem;
+  min-height: 1.5rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--color-paper);
+  text-decoration: none;
+  translate: 0 3px;
+}
+
+.copyButton {
+  cursor: pointer;
+  transition: background-color 180ms var(--ease-out);
+}
+
+.copyButton:hover,
+.copyButton:focus-visible {
+  background: rgba(244, 245, 242, 0.12);
+}
+
+.copyButton:focus-visible,
+.emailArrow:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .emailIcon {
   display: block;
-  width: 1.75rem;
-  height: 1.75rem;
-  flex: 0 0 1.75rem;
-  align-self: center;
-  background: currentColor;
-  mask: url('../../public/icons/remix/arrow-right-up-line.svg') center / contain no-repeat;
+  width: 1rem;
+  height: 1rem;
   transition: transform 350ms var(--ease-out);
 }
 
-.email:hover .emailIcon,
-.email:focus-visible .emailIcon {
-  transform: translate(0.2rem, -0.2rem);
+.emailArrow:hover .emailIcon,
+.emailArrow:focus-visible .emailIcon {
+  transform: translate(0.125rem, -0.125rem);
+}
+
+.emailFeedback {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .meta {
@@ -131,6 +172,16 @@
     min-height: 42rem;
   }
 
+  .emailActions {
+    width: min(100%, 30rem);
+    grid-template-columns: minmax(0, 1fr) 1.5rem 1.5rem;
+    column-gap: 0.125rem;
+  }
+
+  .email {
+    font-size: 1rem;
+  }
+
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -138,6 +189,7 @@
     transform: none;
   }
 
+  .copyButton,
   .emailIcon {
     transition: none;
   }

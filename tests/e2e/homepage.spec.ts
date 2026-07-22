@@ -77,6 +77,24 @@ test.describe('portfolio homepage framework', () => {
         'xuelang',
       ]);
 
+      const callAgent = page.locator('[data-project-id="call-agent"]');
+      const convoAi = page.locator('[data-project-id="convo-ai"]');
+      await expect(callAgent).not.toContainText(
+        /Limited beta|Real product evidence|有限客户测试|真实产品证据/,
+      );
+      await expect(convoAi).not.toContainText(
+        /temporary third-party|media replacement|temporary web and app|临时第三方|等待替换|临时 Web 与 App/i,
+      );
+      await expect(page.locator('[data-project-id="meeting"]')).toContainText(
+        locale === 'zh' ? '已在四类终端上线' : 'Shipped across four platforms',
+      );
+      await expect(page.locator('[data-project-id="aidx"]')).toContainText(
+        locale === 'zh' ? '网站已上线' : 'Live website',
+      );
+      await expect(page.locator('[data-project-id="stt-demo"]')).toContainText(
+        locale === 'zh' ? 'Agora RTE 2026 大会发布' : 'Pinned static prototype',
+      );
+
       await expect(page.locator('[data-company-mark]')).toHaveCount(6);
       await expect(page.locator('[data-project-meta]')).toHaveCount(6);
       await expect(page.locator('[data-cta-treatment="white"]')).toHaveCount(3);
@@ -117,10 +135,12 @@ test.describe('portfolio homepage framework', () => {
       await expect(page.locator('[data-about-preview]')).toHaveCount(0);
       await expect(
         page.getByRole('heading', {
-          name: locale === 'zh' ? 'More C端用户设计作品' : 'More Consumer Product Work',
+          name: locale === 'zh' ? 'More C 端产品作品' : 'More Consumer Product Work',
         }),
       ).toBeVisible();
-      await expect(page.locator('footer a[href="mailto:yangux@qq.com"]')).toHaveCount(1);
+      await expect(
+        page.locator('footer a[href="mailto:amanda.yangj@gmail.com"]'),
+      ).toHaveCount(2);
 
       await expect(page.locator('[data-project-kind="build-lab"]')).toHaveCount(1);
       await expect(page.locator('[data-archive-card]')).toHaveCount(4);
@@ -624,13 +644,64 @@ test.describe('portfolio homepage framework', () => {
     if (!box) throw new Error('Missing Visual Archive scroller bounds');
 
     await page.mouse.move(box.x + box.width / 2, box.y + Math.min(box.height / 2, 160));
-    const before = await page.evaluate(() => window.scrollY);
+    const before = await page.evaluate(() => ({
+      pageY: window.scrollY,
+      archiveX: document.querySelector<HTMLElement>('[data-archive-scroller]')
+        ?.scrollLeft ?? 0,
+      inlineScrollBehavior: document.documentElement.style.scrollBehavior,
+    }));
     const maximum = await page.evaluate(
       () => document.documentElement.scrollHeight - window.innerHeight,
     );
-    expect(maximum - before).toBeGreaterThan(100);
+    expect(maximum - before.pageY).toBeGreaterThan(550);
     await page.mouse.wheel(0, 500);
-    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(before + 100);
+    await page.waitForTimeout(100);
+
+    const after = await page.evaluate(() => ({
+      pageY: window.scrollY,
+      archiveX: document.querySelector<HTMLElement>('[data-archive-scroller]')
+        ?.scrollLeft ?? 0,
+      inlineScrollBehavior: document.documentElement.style.scrollBehavior,
+    }));
+    expect(after.pageY - before.pageY).toBeGreaterThanOrEqual(450);
+    expect(after.pageY - before.pageY).toBeLessThanOrEqual(550);
+    expect(Math.abs(after.archiveX - before.archiveX)).toBeLessThanOrEqual(1);
+    expect(after.inlineScrollBehavior).toBe(before.inlineScrollBehavior);
+  });
+
+  test('leaves horizontal-dominant archive wheel input on the carousel', async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== 'desktop',
+      'Fine-pointer wheel behavior is verified at the desktop viewport.',
+    );
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const scroller = page.locator('[data-archive-scroller]');
+    await scroller.evaluate((element) => {
+      const top = element.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: Math.max(0, top - 120), behavior: 'instant' });
+    });
+    const box = await scroller.boundingBox();
+    if (!box) throw new Error('Missing Visual Archive scroller bounds');
+
+    await page.mouse.move(box.x + box.width / 2, box.y + Math.min(box.height / 2, 160));
+    const before = await page.evaluate(() => ({
+      pageY: window.scrollY,
+      archiveX: document.querySelector<HTMLElement>('[data-archive-scroller]')
+        ?.scrollLeft ?? 0,
+    }));
+    await page.mouse.wheel(400, 0);
+    await page.waitForTimeout(100);
+    const after = await page.evaluate(() => ({
+      pageY: window.scrollY,
+      archiveX: document.querySelector<HTMLElement>('[data-archive-scroller]')
+        ?.scrollLeft ?? 0,
+    }));
+
+    expect(Math.abs(after.pageY - before.pageY)).toBeLessThanOrEqual(1);
+    expect(after.archiveX).toBeGreaterThan(before.archiveX + 1);
   });
 
   test('moves the Visual Archive with explicit controls and reports position', async ({
