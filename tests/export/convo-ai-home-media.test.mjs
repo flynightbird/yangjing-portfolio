@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 import test from 'node:test';
 
 import {
@@ -7,6 +10,7 @@ import {
   buildPosterArgs,
   parseCliArgs,
   parseDuration,
+  prepareConvoAiHomeMedia,
 } from '../../scripts/prepare-convo-ai-home-media.mjs';
 
 const source = '/private/source/convo-ai.mp4';
@@ -84,4 +88,189 @@ test('parseCliArgs validates the optional speed', () => {
     () => parseCliArgs(['--source', source, '--speed', '0']),
     /positive number/,
   );
+});
+
+const gifBytes = Buffer.from('GIF89a-staged');
+const webpBytes = Buffer.concat([
+  Buffer.from('RIFF'),
+  Buffer.alloc(4),
+  Buffer.from('WEBP-staged'),
+]);
+
+async function withTemporaryRoot(runTest) {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'convo-ai-media-test-'));
+  try {
+    await runTest(root);
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+}
+
+function createFakeRunner({ webpEncoder = true } = {}) {
+  const calls = [];
+  const runner = async (binary, args) => {
+    calls.push({ binary, args });
+    if (binary === 'ffprobe') return '18.4\n';
+    if (args.includes('-encoders')) return webpEncoder ? ' V....D libwebp' : '';
+    const output = args.at(-1);
+    if (args.includes('-filter_complex')) await fs.writeFile(output, gifBytes);
+    else if (args.includes('libwebp')) await fs.writeFile(output, webpBytes);
+    else await fs.writeFile(output, Buffer.from('png-staged'));
+    return '';
+  };
+  return { calls, runner };
+}
+
+test('prepareConvoAiHomeMedia publishes both generated files together', async () => {
+  await withTemporaryRoot(async (root) => {
+    const { runner } = createFakeRunner();
+
+    await prepareConvoAiHomeMedia(
+      { source, speed: 1.35 },
+      { repositoryRoot: root, runner },
+    );
+
+    assert.deepEqual(
+      await fs.readFile(path.join(root, gifOutput)),
+      gifBytes,
+    );
+    assert.deepEqual(
+      await fs.readFile(path.join(root, posterOutput)),
+      webpBytes,
+    );
+    assert.deepEqual(
+      (await fs.readdir(path.join(root, 'public/images'))).sort(),
+      ['convo-ai'],
+    );
+  });
+});
+
+test('prepareConvoAiHomeMedia selects PNG plus Sharp when FFmpeg lacks WebP', async () => {
+  await withTemporaryRoot(async (root) => {
+    const { calls, runner } = createFakeRunner({ webpEncoder: false });
+    let encoded = 0;
+    const encodeWebp = async ({ input, output }) => {
+      assert.equal((await fs.readFile(input)).toString(), 'png-staged');
+      encoded += 1;
+      await fs.writeFile(output, webpBytes);
+    };
+
+    await prepareConvoAiHomeMedia(
+      { source },
+      { repositoryRoot: root, runner, encodeWebp },
+    );
+
+    assert.equal(encoded, 1);
+    assert.ok(calls.some(({ args }) => args.includes('png')));
+    assert.ok(!calls.some(({ args }) => args.includes('libwebp')));
+    assert.deepEqual(await fs.readFile(path.join(root, posterOutput)), webpBytes);
+  });
+});
+
+test('prepareConvoAiHomeMedia gives actionable missing-binary messages', async () => {
+  await withTemporaryRoot(async (root) => {
+    const missing = Object.assign(new Error('spawn ENOENT'), { code: 'ENOENT' });
+    await assert.rejects(
+      prepareConvoAiHomeMedia(
+        { source },
+        { repositoryRoot: root, runner: async () => { throw missing; } },
+      ),
+      /ffprobe.*install FFmpeg.*FFPROBE_BIN/i,
+    );
+
+    await assert.rejects(
+      prepareConvoAiHomeMedia(
+        { source },
+        {
+          repositoryRoot: root,
+          runner: async (binary) => {
+            if (binary === 'ffprobe') return '18.4\n';
+            throw missing;
+          },
+        },
+      ),
+      /ffmpeg.*install FFmpeg.*FFMPEG_BIN/i,
+    );
+  });
+});
+
+test('prepareConvoAiHomeMedia rolls back both outputs and cleans staging on publish failure', async () => {
+  await withTemporaryRoot(async (root) => {
+    const outputDir = path.join(root, 'public/images/convo-ai');
+    const finalGif = path.join(root, gifOutput);
+    const finalPoster = path.join(root, posterOutput);
+    await fs.mkdir(outputDir, { recursive: true });
+    await fs.writeFile(finalGif, Buffer.from('GIF89a-old'));
+    await fs.writeFile(
+      finalPoster,
+      Buffer.concat([Buffer.from('RIFF'), Buffer.alloc(4), Buffer.from('WEBP-old')]),
+    );
+    const { runner } = createFakeRunner();
+    const failingFs = new Proxy(fs, {
+      get(target, property) {
+        if (property !== 'rename') return target[property];
+        return async (from, to) => {
+          if (to === finalPoster && from.includes('.convo-ai-home-')) {
+            throw Object.assign(new Error('simulated publish failure'), { code: 'EIO' });
+          }
+          return target.rename(from, to);
+        };
+      },
+    });
+
+    await assert.rejects(
+      prepareConvoAiHomeMedia(
+        { source },
+        { repositoryRoot: root, runner, fileSystem: failingFs },
+      ),
+      /simulated publish failure/,
+    );
+
+    assert.equal((await fs.readFile(finalGif)).toString(), 'GIF89a-old');
+    assert.ok((await fs.readFile(finalPoster)).includes(Buffer.from('WEBP-old')));
+    assert.deepEqual(
+      (await fs.readdir(path.join(root, 'public/images'))).sort(),
+      ['convo-ai'],
+    );
+  });
+});
+
+test('prepareConvoAiHomeMedia preserves both outputs after a partial GIF failure', async () => {
+  await withTemporaryRoot(async (root) => {
+    const outputDir = path.join(root, 'public/images/convo-ai');
+    const finalGif = path.join(root, gifOutput);
+    const finalPoster = path.join(root, posterOutput);
+    const oldGif = Buffer.from('GIF89a-old');
+    const oldPoster = Buffer.concat([
+      Buffer.from('RIFF'),
+      Buffer.alloc(4),
+      Buffer.from('WEBP-old'),
+    ]);
+    await fs.mkdir(outputDir, { recursive: true });
+    await fs.writeFile(finalGif, oldGif);
+    await fs.writeFile(finalPoster, oldPoster);
+    const runner = async (binary, args) => {
+      if (binary === 'ffprobe') return '18.4\n';
+      if (args.includes('-filter_complex')) {
+        await fs.writeFile(args.at(-1), Buffer.from('GIF8-partial'));
+        throw new Error('simulated GIF failure');
+      }
+      return '';
+    };
+
+    await assert.rejects(
+      prepareConvoAiHomeMedia(
+        { source },
+        { repositoryRoot: root, runner },
+      ),
+      /simulated GIF failure/,
+    );
+
+    assert.deepEqual(await fs.readFile(finalGif), oldGif);
+    assert.deepEqual(await fs.readFile(finalPoster), oldPoster);
+    assert.deepEqual(
+      (await fs.readdir(path.join(root, 'public/images'))).sort(),
+      ['convo-ai'],
+    );
+  });
 });
