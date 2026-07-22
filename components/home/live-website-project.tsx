@@ -28,7 +28,12 @@ export function LiveWebsiteProject({ copy, href }: LiveWebsiteProjectProps) {
     >
       <div className={styles.liveInner}>
         <div className={styles.liveCopy}>
-          <ProjectMeta companyId="aidx" company={copy.company} kind={copy.kind} />
+          <ProjectMeta
+            companyId="aidx"
+            company={copy.company}
+            kind={copy.kind}
+            variant="company-only"
+          />
           <h2>{copy.title}</h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
           <ul className={styles.scopeList} aria-label={copy.role}>

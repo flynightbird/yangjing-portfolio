@@ -259,7 +259,7 @@ export const enDictionary = {
         ],
       },
       aidx: {
-        company: 'Singapore AIDX',
+        company: 'Singapore AI company',
         kind: 'Singapore AI company',
         title: 'AIDX',
         proposition:

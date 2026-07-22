@@ -149,6 +149,36 @@ describe('FeaturedWork', () => {
     ).toEqual(['call-agent', 'convo-ai', 'meeting']);
   });
 
+  it.each([
+    { locale: 'en' as const, descriptor: 'Singapore AI company' },
+    { locale: 'zh' as const, descriptor: '新加坡 AI 公司' },
+  ])(
+    'uses company-only AIDX metadata while preserving default metadata in $locale',
+    ({ locale, descriptor }) => {
+      const { container } = render(<FeaturedWork locale={locale} />);
+      const aidx = container.querySelector<HTMLElement>('[data-project-id="aidx"]');
+      const aidxMeta = aidx?.querySelector<HTMLElement>('[data-project-meta]');
+
+      expect(aidxMeta).toHaveAttribute('data-meta-variant', 'company-only');
+      expect(
+        within(aidxMeta as HTMLElement).getByText(descriptor, { selector: '[data-company-mark] span' }),
+      ).toBeVisible();
+      expect(aidxMeta?.querySelector('[data-project-meta-separator]')).not.toBeInTheDocument();
+      expect(aidxMeta?.querySelector('[data-project-kind-label]')).not.toBeInTheDocument();
+
+      for (const projectId of ['call-agent', 'convo-ai', 'meeting', 'stt-demo', 'xuelang']) {
+        const project = container.querySelector<HTMLElement>(
+          `[data-project-id="${projectId}"]`,
+        );
+        const meta = project?.querySelector<HTMLElement>('[data-project-meta]');
+
+        expect(meta).toHaveAttribute('data-meta-variant', 'default');
+        expect(meta?.querySelector('[data-project-meta-separator]')).toHaveTextContent('/');
+        expect(meta?.querySelector('[data-project-kind-label]')).not.toBeEmptyDOMElement();
+      }
+    },
+  );
+
   it('uses one homepage CTA size hook and destination-aware external icons', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const ctas = Array.from(
