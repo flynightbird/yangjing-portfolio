@@ -42,12 +42,26 @@ describe('AboutPage', () => {
     expect(screen.getByText('2022.07–Present')).toBeVisible();
     expect(screen.getByText('Alibaba · TDesign')).toBeVisible();
     expect(screen.getByText('Experience Design')).toBeVisible();
-    expect(screen.getByText('Not complex production backends')).toBeVisible();
+    expect(screen.getByText('Independent experience validation')).toBeVisible();
+    expect(
+      screen.getByText(
+        'Rapidly build interactive HTML with product logic using Codex and Claude.',
+      ),
+    ).toBeVisible();
+    expect(
+      screen.queryByText('* Outcomes are self-reported from my resume.'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Not complex production backends')).not.toBeInTheDocument();
+    const evidenceSection = screen
+      .getByRole('heading', { name: 'Design value, beyond the screen' })
+      .closest('section');
+    expect(evidenceSection).not.toBeNull();
+    expect(within(evidenceSection as HTMLElement).getAllByRole('article')).toHaveLength(3);
     expect(container).not.toHaveTextContent(/AIDX/i);
     expect(container).not.toHaveTextContent(/\bship\b/i);
   });
 
-  it('provides the Chinese version without changing the evidence boundary', () => {
+  it('provides the approved Chinese evidence copy', () => {
     const { container } = render(<AboutPage locale="zh" />);
 
     expect(
@@ -56,7 +70,14 @@ describe('AboutPage', () => {
         name: 'AI 原生产品设计师，让产品判断成为可体验的现实。',
       }),
     ).toBeVisible();
-    expect(screen.getByText('不承担复杂生产级后端开发')).toBeVisible();
+    expect(screen.getByText('可独立完成体验验证')).toBeVisible();
+    expect(
+      screen.getByText('通过 Codex、Claude 快速搭建涵盖产品逻辑的交互式 HTML'),
+    ).toBeVisible();
+    expect(
+      screen.queryByText('* 结果数据来自个人履历中的自述。'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('不承担复杂生产级后端开发')).not.toBeInTheDocument();
     expect(screen.getByText('阿里巴巴·躺平设计家')).toBeVisible();
     expect(screen.getByText('体验设计')).toBeVisible();
     expect(screen.getByText('字节跳动')).toBeVisible();
