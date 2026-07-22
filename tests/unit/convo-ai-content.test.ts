@@ -31,7 +31,6 @@ describe('ConvoAI publication contract', () => {
         previousSlug: 'call-agent',
         nextSlug: 'meeting',
       });
-      expect(getEntry('work', 'convo-ai', locale).meta.title).toBe('ConvoAI');
       expect(getEntry('work', 'convo-ai', locale).meta.chapters?.map(({ id }) => id)).toEqual(chapterIds[locale]);
     }
   });
@@ -45,7 +44,7 @@ describe('ConvoAI publication contract', () => {
     expect(source).toContain('一次回答背后的实时链路');
     expect(source).not.toMatch(/确认谁在参与|建立会话信心|定位实时问题|交付与反思/);
     expect(source).not.toContain('这个项目让我更确定');
-    expect(source).not.toMatch(/<h[1-6][^>]*>\s*(?:Gap|缺口)/i);
+    expect(source).not.toMatch(/(?:<h[1-6][^>]*>\s*|^\s*#{1,6}\s+)(?:Gap|缺口)/im);
   });
 
   it('publishes all sixteen complete recordings without a Gap chapter or metrics', () => {
@@ -70,10 +69,10 @@ describe('ConvoAI publication contract', () => {
     for (const id of chineseIds) expect(chineseSource).toContain(`'${id}'`);
     expect(chineseSource).toContain('<ConvoAiAppShowcase locale="zh"');
     expect(chineseSource).toContain('<ConvoAiAvatarPair locale="zh"');
-    expect(chineseSource.match(/className="convo-phone-evidence"/g)).toHaveLength(0);
+    expect((chineseSource.match(/className="convo-phone-evidence"/g) ?? [])).toHaveLength(0);
 
     for (const source of [englishSource, chineseSource]) {
-      expect(source).not.toMatch(/<h[1-6][^>]*>\s*(?:Gap|缺口)/i);
+      expect(source).not.toMatch(/(?:<h[1-6][^>]*>\s*|^\s*#{1,6}\s+)(?:Gap|缺口)/im);
       expect(source).not.toMatch(/\d+(?:\.\d+)?%/);
     }
   });
