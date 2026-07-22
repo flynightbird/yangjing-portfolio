@@ -22,7 +22,8 @@ class IntersectionObserverHarness {
   }
 }
 
-function installMediaEnvironment({ desktop = true, reducedMotion: initialReducedMotion = false, intersectionObserver = true } = {}) {
+function installMediaEnvironment({ desktop: initialDesktop = true, reducedMotion: initialReducedMotion = false, intersectionObserver = true } = {}) {
+  let desktop = initialDesktop;
   let reducedMotion = initialReducedMotion;
   const listeners = new Map<string, Set<(event: MediaQueryListEvent) => void>>();
   vi.stubGlobal('matchMedia', vi.fn((query: string) => ({
@@ -43,6 +44,10 @@ function installMediaEnvironment({ desktop = true, reducedMotion: initialReduced
   if (intersectionObserver) vi.stubGlobal('IntersectionObserver', IntersectionObserverHarness);
   else vi.stubGlobal('IntersectionObserver', undefined);
   return {
+    setDesktop(next: boolean) {
+      desktop = next;
+      listeners.get('(min-width: 801px)')?.forEach((listener) => listener({ matches: next, media: '(min-width: 801px)' } as MediaQueryListEvent));
+    },
     setReducedMotion(next: boolean) {
       reducedMotion = next;
       listeners.get('(prefers-reduced-motion: reduce)')?.forEach((listener) => listener({ matches: next, media: '(prefers-reduced-motion: reduce)' } as MediaQueryListEvent));
@@ -239,7 +244,7 @@ describe('ConvoAiAppShowcase', () => {
     const { container } = render(<ConvoAiAppShowcase locale="en" />);
     const observer = IntersectionObserverHarness.instances[0];
     const sceneIds = ['app-login', 'app-structure', 'app-profile-settings', 'app-hardware-device'] as const;
-    const initialCard = container.querySelector('[data-media-card="app-login"]') as HTMLElement;
+    const initialCard = container.querySelector('[data-app-showcase-placement="desktop"][data-media-card="app-login"]') as HTMLElement;
     const cardClass = initialCard.className;
     const phoneShellClass = initialCard.firstElementChild?.className;
 
@@ -247,13 +252,38 @@ describe('ConvoAiAppShowcase', () => {
 
     sceneIds.forEach((id) => {
       act(() => { observer.trigger(id); });
-      const card = container.querySelector(`[data-media-card="${id}"]`) as HTMLElement;
+      const card = container.querySelector(`[data-app-showcase-placement="desktop"][data-media-card="${id}"]`) as HTMLElement;
 
       expect(card).toHaveClass(cardClass);
       expect(card.firstElementChild).toHaveClass(phoneShellClass ?? '');
       expect(card.firstElementChild).not.toHaveAttribute('style');
       expect(card.firstElementChild?.querySelector('video')).toBeInTheDocument();
     });
+  });
+
+  it('keeps both placement shells stable while a media-query change moves the single video', () => {
+    const media = installMediaEnvironment();
+    const { container } = render(<ConvoAiAppShowcase locale="en" />);
+    const desktopCard = container.querySelector('[data-app-showcase-placement="desktop"]') as HTMLElement;
+    const mobileCard = container.querySelector('[data-app-showcase-placement="mobile"]') as HTMLElement;
+    const desktopShellClass = desktopCard.firstElementChild?.className;
+    const mobileShellClass = mobileCard.firstElementChild?.className;
+
+    expect(desktopCard).toBeInTheDocument();
+    expect(mobileCard).toBeInTheDocument();
+    expect(container.querySelectorAll('[data-convo-ai-video="true"]')).toHaveLength(1);
+    expect(desktopCard.querySelector('video')).toBeInTheDocument();
+    expect(mobileCard.querySelector('img[alt=""]')).toBeInTheDocument();
+
+    act(() => { media.setDesktop(false); });
+
+    expect(container.querySelector('[data-app-showcase-placement="desktop"]')).toBe(desktopCard);
+    expect(container.querySelector('[data-app-showcase-placement="mobile"]')).toBe(mobileCard);
+    expect(desktopCard.firstElementChild).toHaveClass(desktopShellClass ?? '');
+    expect(mobileCard.firstElementChild).toHaveClass(mobileShellClass ?? '');
+    expect(container.querySelectorAll('[data-convo-ai-video="true"]')).toHaveLength(1);
+    expect(desktopCard.querySelector('img[alt=""]')).toBeInTheDocument();
+    expect(mobileCard.querySelector('video')).toBeInTheDocument();
   });
 
   it('accepts reverse observer activation without inferring scroll direction', () => {

@@ -35,22 +35,25 @@
 .queue button:focus-visible,.mediaError button:focus-visible,.stageControls button:focus-visible { outline: 2px solid var(--color-iris-luminous); outline-offset: 3px; }
 .appShowcase { display: grid; grid-template-columns: minmax(15rem,.72fr) minmax(22rem,1.28fr); align-items: start; gap: clamp(2rem,6vw,5rem); margin-block: 3rem; }
 .appShowcaseScenes { min-width: 0; }
-.appShowcaseStep { min-height: 60vh; padding-block: clamp(2rem,5vh,4rem); border-block-start: 1px solid rgba(15,23,24,.22); scroll-margin-top: 42vh; opacity: .42; transition: opacity 180ms ease; }
-.appShowcaseStep[data-active='true'] { opacity: 1; }
+.appShowcaseStep { min-height: 60vh; padding-block: clamp(2rem,5vh,4rem); padding-inline-start: .75rem; border-block-start: 1px solid rgba(15,23,24,.22); border-inline-start: 2px solid transparent; scroll-margin-top: 42vh; }
+.appShowcaseStep[data-active='true'] { border-inline-start-color: var(--color-iris-deep); }
 .appShowcaseStep button { display: grid; width: 100%; min-height: 44px; grid-template-columns: 2.75rem minmax(0,1fr); align-items: center; gap: .75rem; padding: 0; border: 0; border-radius: 0; background: transparent; color: inherit; font: inherit; text-align: start; cursor: pointer; }
-.appShowcaseStep button span { font-family: var(--font-mono); font-size: .75rem; }
+.appShowcaseStep button span { opacity: .58; font-family: var(--font-mono); font-size: .75rem; transition: opacity 180ms ease; }
+.appShowcaseStep[data-active='true'] button span { opacity: 1; }
 .appShowcaseStep button strong { font-size: 1rem; line-height: 1.35; }
-.appShowcaseStep button:focus-visible { outline: 2px solid var(--color-iris-luminous); outline-offset: 4px; }
+.appShowcaseStep button:hover strong,.appShowcaseStep button[aria-pressed='true'] strong { color: var(--color-iris-deep); }
+.appShowcaseStep button:focus-visible { outline: 2px solid var(--color-iris-deep); outline-offset: 4px; }
 .appShowcaseStep p { max-width: 30ch; margin: .8rem 0 0 3.5rem; font-size: .9375rem; line-height: 1.65; }
 .appShowcaseSticky { position: sticky; top: calc(var(--header-height) + 2rem); align-self: start; min-width: 0; }
-.appShowcaseMedia { display: grid; box-sizing: border-box; width: 100%; max-width: 100%; min-height: clamp(34rem,72vh,48rem); align-content: center; justify-items: center; gap: 1rem; margin: 0; padding: clamp(1rem,3vw,2rem); overflow: hidden; border-radius: 20px; background: #B8C7C9; color: #182020; }
+.appShowcaseMobileMedia { display: none; }
+.appShowcaseMedia { display: grid; box-sizing: border-box; width: 100%; max-width: 100%; block-size: min(48rem,max(18rem,calc(100svh - var(--header-height) - 4rem))); align-content: center; justify-items: center; gap: 1rem; margin: 0; padding: clamp(1rem,2vw,1.5rem); overflow: hidden; border-radius: 20px; background: #B8C7C9; color: #182020; container-type: size; }
 .appShowcaseMedia[data-media-card='app-login'] { background: #B8C7C9; }
 .appShowcaseMedia[data-media-card='app-structure'] { background: #BEC4B3; }
 .appShowcaseMedia[data-media-card='app-profile-settings'] { background: #CFB9B6; }
 .appShowcaseMedia[data-media-card='app-hardware-device'] { background: #C6BDAD; }
-.appShowcaseVideo { width: min(42%,17rem); aspect-ratio: 592 / 1280; padding: 8px; overflow: hidden; border-radius: 30px; background: #000; box-shadow: 0 1.25rem 2.5rem rgba(17,24,24,.22); }
-.appShowcaseVideo video { display: block; width: 100%; height: 100%; border-radius: 22px; background: #000; object-fit: contain; }
+.appShowcaseVideo { box-sizing: border-box; width: auto; max-width: 42%; height: min(36.75rem,calc(100% - 5rem)); aspect-ratio: 592 / 1280; padding: 8px; overflow: hidden; border-radius: 30px; background: #000; box-shadow: 0 1.25rem 2.5rem rgba(17,24,24,.22); }
+.appShowcaseVideo video,.appShowcaseVideo img { display: block; width: 100%; height: 100%; border-radius: 22px; background: #000; object-fit: contain; }
 .appShowcaseMedia figcaption { color: #182020; font-size: .8125rem; line-height: 1.4; text-align: center; }
-@media (max-width: 800px) { .playlist { grid-template-columns: 1fr; } .cpdi { grid-column: 1; grid-template-columns: 1fr 1fr; } .stage { min-height: 680px; } .stageCopy { width: 100%; padding-block-start: 5.5rem; } .webPlane { inset: auto auto 15% 4%; width: 88%; transform: none; } .appDevice { right: 4%; bottom: 8%; width: 27%; transform: none; } .stageControls { right: 1rem; bottom: 1rem; flex-wrap: wrap; } .appShowcase { grid-template-columns: minmax(0,1fr); gap: 0; } .appShowcaseStep { min-height: 0; padding-block: 1.5rem; scroll-margin-top: 0; opacity: 1; } .appShowcaseSticky { position: static; } .appShowcaseMedia { margin-block-start: 1.5rem; } }
+@media (max-width: 800px) { .playlist { grid-template-columns: 1fr; } .cpdi { grid-column: 1; grid-template-columns: 1fr 1fr; } .stage { min-height: 680px; } .stageCopy { width: 100%; padding-block-start: 5.5rem; } .webPlane { inset: auto auto 15% 4%; width: 88%; transform: none; } .appDevice { right: 4%; bottom: 8%; width: 27%; transform: none; } .stageControls { right: 1rem; bottom: 1rem; flex-wrap: wrap; } .appShowcase { grid-template-columns: minmax(0,1fr); gap: 0; } .appShowcaseStep { min-height: 0; padding-block: 1.5rem; scroll-margin-top: 0; } .appShowcaseSticky { display: none; } .appShowcaseMobileMedia { display: block; margin-block-start: 1.5rem; } .appShowcaseMedia { block-size: auto; min-height: 0; padding: 1.25rem; gap: .75rem; container-type: normal; } .appShowcaseVideo { width: min(76vw,17rem); max-width: 100%; height: auto; } }
 @media (max-width: 520px) { .cpdi { grid-template-columns: 1fr; } .cpdi div { border-inline-end: 0; border-block-end: 1px solid var(--convo-border); } .evidence figcaption { grid-template-columns: 1fr; } .videoFrame { min-height: 14rem; } .stageCopy h1 { font-size: 4.5rem; } }
-@media (prefers-reduced-motion: reduce) { .webPlane,.appDevice { transform: none !important; transition: none; } .appShowcaseStep,.appShowcaseMedia { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .webPlane,.appDevice { transform: none !important; transition: none; } .appShowcaseStep,.appShowcaseMedia,.appShowcaseStep button span { transition: none; } }

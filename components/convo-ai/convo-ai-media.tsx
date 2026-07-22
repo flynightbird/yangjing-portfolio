@@ -171,11 +171,13 @@ export function ConvoAiAppShowcase({ locale }: { readonly locale: Locale }) {
     if (!isDesktop || !observerAvailable.current) activate(id);
   }, [activate, isDesktop, reducedMotion]);
 
-  const mediaCard = <figure className={styles.appShowcaseMedia} data-media-card={activeId}>
+  const renderMediaCard = (placement: 'desktop' | 'mobile', includeVideo: boolean) => <figure className={styles.appShowcaseMedia} data-app-showcase-placement={placement} data-media-card={activeId}>
     <div className={styles.appShowcaseVideo}>
-      <CompleteConvoAiVideo key={activeId} id={activeId} locale={locale} describedBy={descriptionId} autoPlay={autoplayAllowed} loop muted videoRef={videoRef} />
+      {includeVideo
+        ? <CompleteConvoAiVideo key={activeId} id={activeId} locale={locale} describedBy={`${descriptionId}-${placement}`} autoPlay={autoplayAllowed} loop muted videoRef={videoRef} />
+        : <img src={activeMedia.poster} alt="" />}
     </div>
-    <figcaption id={descriptionId} aria-live="polite">{activeMedia.copy[locale].title}</figcaption>
+    <figcaption id={`${descriptionId}-${placement}`} aria-live="polite">{activeMedia.copy[locale].title}</figcaption>
   </figure>;
 
   return <section className={styles.appShowcase} data-convo-app-showcase data-active-id={activeId}>
@@ -190,10 +192,10 @@ export function ConvoAiAppShowcase({ locale }: { readonly locale: Locale }) {
             <span>{step.index}</span><strong>{label}</strong>
           </button>
           <p id={stepSummaryId}>{summary}</p>
-          {!isDesktop && isActive ? mediaCard : null}
+          {isActive ? <div className={styles.appShowcaseMobileMedia}>{renderMediaCard('mobile', !isDesktop)}</div> : null}
         </article>;
       })}
     </div>
-    {isDesktop ? <div className={styles.appShowcaseSticky}>{mediaCard}</div> : null}
+    <div className={styles.appShowcaseSticky}>{renderMediaCard('desktop', isDesktop)}</div>
   </section>;
 }
