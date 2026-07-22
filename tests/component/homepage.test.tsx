@@ -440,24 +440,42 @@ describe('FeaturedWork', () => {
 
     expect(media).toBeInTheDocument();
     expect(browser).not.toHaveAttribute('aria-hidden');
+    const webSource = browser?.querySelector('source');
     const webImage = browser?.querySelector('img');
-    expect(webImage).toHaveAttribute(
-      'src',
+    expect(webSource).toHaveAttribute(
+      'srcset',
       '/images/convo-ai/figma/web-ready.png',
     );
+    expect(webSource).toHaveAttribute('media', '(min-width: 768px)');
+    expect(webImage?.getAttribute('src')).toMatch(/^data:image\/gif;base64,/);
     expect(webImage).toHaveAttribute('alt', 'ConvoAI web conversation ready state');
-    expect(media?.querySelector('[data-convo-phone] img')).toHaveAttribute(
-      'src',
+    const phone = media?.querySelector('[data-convo-phone]');
+    expect(phone?.querySelector('source')).toHaveAttribute(
+      'srcset',
       '/images/convo-ai/figma/avatar-video.png',
     );
-    expect(media?.querySelector('[data-convo-mobile-loop]')).toHaveAttribute(
-      'src',
+    expect(phone?.querySelector('source')).toHaveAttribute('media', '(min-width: 768px)');
+    expect(phone?.querySelector('img')?.getAttribute('src')).toMatch(/^data:image\/gif;base64,/);
+    const loop = media?.querySelector('[data-convo-mobile-loop]');
+    expect(loop?.querySelector('source')).toHaveAttribute(
+      'srcset',
       '/images/convo-ai/home-mobile-loop.gif',
     );
-    expect(media?.querySelector('[data-convo-mobile-poster]')).toHaveAttribute(
-      'src',
+    expect(loop?.querySelector('source')).toHaveAttribute(
+      'media',
+      '(max-width: 767px) and (prefers-reduced-motion: no-preference)',
+    );
+    expect(loop?.querySelector('img')?.getAttribute('src')).toMatch(/^data:image\/gif;base64,/);
+    const poster = media?.querySelector('[data-convo-mobile-poster]');
+    expect(poster?.querySelector('source')).toHaveAttribute(
+      'srcset',
       '/images/convo-ai/home-mobile-loop-poster.webp',
     );
+    expect(poster?.querySelector('source')).toHaveAttribute(
+      'media',
+      '(max-width: 767px) and (prefers-reduced-motion: reduce)',
+    );
+    expect(poster?.querySelector('img')?.getAttribute('src')).toMatch(/^data:image\/gif;base64,/);
   });
 
   it.each(['en', 'zh'] as const)(

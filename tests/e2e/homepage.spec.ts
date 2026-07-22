@@ -360,7 +360,21 @@ test.describe('portfolio homepage framework', () => {
       testInfo.project.name !== 'desktop',
       'Desktop expansion is disabled for compact viewports.',
     );
+    const convoAssetRequests: string[] = [];
+    page.on('request', (request) => {
+      const pathname = new URL(request.url()).pathname;
+      if (pathname.startsWith('/images/convo-ai/')) convoAssetRequests.push(pathname);
+    });
     await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    expect(convoAssetRequests).toEqual(
+      expect.arrayContaining([
+        '/images/convo-ai/figma/web-ready.png',
+        '/images/convo-ai/figma/avatar-video.png',
+      ]),
+    );
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop.gif');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop-poster.webp');
 
     const stage = page.locator('[data-flagship-focus]');
     const callMedia = page.locator('[data-project-id="call-agent"] [data-media-radius="20"]');
@@ -463,7 +477,17 @@ test.describe('portfolio homepage framework', () => {
 
   test('stacks flagship media without transforms on mobile', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'mobile', 'Mobile-only fallback contract.');
+    const convoAssetRequests: string[] = [];
+    page.on('request', (request) => {
+      const pathname = new URL(request.url()).pathname;
+      if (pathname.startsWith('/images/convo-ai/')) convoAssetRequests.push(pathname);
+    });
     await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    expect(convoAssetRequests).toContain('/images/convo-ai/home-mobile-loop.gif');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop-poster.webp');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/web-ready.png');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/avatar-video.png');
 
     const call = page.locator('[data-project-id="call-agent"]');
     const convo = page.locator('[data-project-id="convo-ai"]');
@@ -482,8 +506,11 @@ test.describe('portfolio homepage framework', () => {
     await expect(convoMedia.locator('[data-convo-web-browser]')).toBeHidden();
     await expect(convoMedia.locator('[data-convo-phone]')).toBeHidden();
     await expect(convoLoop).toBeVisible();
-    await expect(convoLoop).toHaveAttribute('src', '/images/convo-ai/home-mobile-loop.gif');
-    await expect(convoLoop).toHaveCSS('object-fit', 'contain');
+    await expect(convoLoop.locator('source')).toHaveAttribute(
+      'srcset',
+      '/images/convo-ai/home-mobile-loop.gif',
+    );
+    await expect(convoLoop.locator('img')).toHaveCSS('object-fit', 'contain');
     await expect(convoMedia.locator('[data-convo-mobile-poster]')).toBeHidden();
     expect(convoMediaBox).not.toBeNull();
     expect(convoMediaBox?.height ?? 0).toBeGreaterThanOrEqual(320);
@@ -508,20 +535,33 @@ test.describe('portfolio homepage framework', () => {
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'mobile', 'Mobile reduced-motion contract.');
     await page.emulateMedia({ reducedMotion: 'reduce' });
+    const convoAssetRequests: string[] = [];
+    page.on('request', (request) => {
+      const pathname = new URL(request.url()).pathname;
+      if (pathname.startsWith('/images/convo-ai/')) convoAssetRequests.push(pathname);
+    });
     await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    expect(convoAssetRequests).toContain('/images/convo-ai/home-mobile-loop-poster.webp');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop.gif');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/web-ready.png');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/avatar-video.png');
 
     const convoMedia = page.locator('[data-project-id="convo-ai"] [data-convo-home-media]');
     await convoMedia.scrollIntoViewIfNeeded();
     const loop = convoMedia.locator('[data-convo-mobile-loop]');
     const poster = convoMedia.locator('[data-convo-mobile-poster]');
-    await expect(loop).toHaveAttribute('src', '/images/convo-ai/home-mobile-loop.gif');
-    await expect(poster).toHaveAttribute(
-      'src',
+    await expect(loop.locator('source')).toHaveAttribute(
+      'srcset',
+      '/images/convo-ai/home-mobile-loop.gif',
+    );
+    await expect(poster.locator('source')).toHaveAttribute(
+      'srcset',
       '/images/convo-ai/home-mobile-loop-poster.webp',
     );
     await expect(loop).toBeHidden();
     await expect(poster).toBeVisible();
-    await expect(poster).toHaveCSS('object-fit', 'contain');
+    await expect(poster.locator('img')).toHaveCSS('object-fit', 'contain');
   });
 
   test('uses a media-dominant STT stage with direct prototype actions', async ({
