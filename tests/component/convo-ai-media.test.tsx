@@ -215,6 +215,7 @@ describe('ConvoAiAvatarPair', () => {
   });
 
   it('allows either avatar recording to play without pausing the other', () => {
+    installMediaEnvironment({ reducedMotion: false });
     const { container } = render(<ConvoAiAvatarPair locale="en" />);
     const videos = [...container.querySelectorAll<HTMLVideoElement>('video')];
     const secondPause = vi.spyOn(videos[1], 'pause');
@@ -235,6 +236,19 @@ describe('ConvoAiAvatarPair', () => {
 
     expect(videos.every((video) => video.autoplay)).toBe(true);
     plays.forEach((play) => expect(play).toHaveBeenCalled());
+  });
+
+  it('pauses both avatar recordings when reduced motion becomes preferred', () => {
+    const media = installMediaEnvironment({ reducedMotion: false });
+    const play = vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
+    const { container } = render(<ConvoAiAvatarPair locale="en" />);
+    const videos = [...container.querySelectorAll<HTMLVideoElement>('video')];
+    const pauses = videos.map((video) => vi.spyOn(video, 'pause'));
+
+    expect(play.mock.instances).toEqual(videos);
+    act(() => { media.setReducedMotion(true); });
+
+    pauses.forEach((pause) => expect(pause).toHaveBeenCalled());
   });
 
   it('does not autoplay or explicitly play under reduced motion', () => {

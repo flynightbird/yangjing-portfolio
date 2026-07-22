@@ -118,7 +118,10 @@ export function ConvoAiAvatarPair({ locale }: { readonly locale: Locale }) {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   useEffect(() => {
-    if (!autoplayAllowed) return;
+    if (!autoplayAllowed) {
+      videoRefs.current.forEach((video) => video?.pause());
+      return;
+    }
     videoRefs.current.forEach((video) => {
       const playback = video?.play();
       void playback?.catch(() => undefined);
