@@ -34,11 +34,13 @@ test('root resolver and custom bilingual 404 remain static artifacts', () => {
   assert.match(notFound, /<a href="\/zh\/" lang="zh-CN">中文<\/a>/);
 });
 
-test('approved draft work routes are emitted for local framework review', () => {
+test('published work routes are emitted without draft markers', () => {
   for (const locale of ['en', 'zh']) {
     const routePath = path.join(outputPath, locale, 'work', 'meeting', 'index.html');
     assert.equal(fs.existsSync(routePath), true, `${locale}/work/meeting must be exported`);
-    assert.match(readOutput(`${locale}/work/meeting/index.html`), /data-publication-state="draft"/);
+    const meeting = readOutput(`${locale}/work/meeting/index.html`);
+    assert.doesNotMatch(meeting, /data-publication-state="draft"/);
+    assert.match(meeting, /data-meeting-case="true"/);
 
     const xuelang = readOutput(`${locale}/work/xuelang/index.html`);
     assert.doesNotMatch(xuelang, /data-publication-state="draft"/);
@@ -47,11 +49,11 @@ test('approved draft work routes are emitted for local framework review', () => 
   }
 });
 
-test('bilingual About framework routes are emitted without fake contacts', () => {
+test('published bilingual About routes are emitted without fake contacts', () => {
   for (const locale of ['en', 'zh']) {
     const about = readOutput(`${locale}/about/index.html`);
     const main = about.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1] ?? '';
-    assert.match(about, /data-publication-state="draft"/);
+    assert.doesNotMatch(about, /data-publication-state="draft"/);
     assert.doesNotMatch(main, /mailto:|linkedin\.com|wechat-qr|\.pdf/);
   }
 });

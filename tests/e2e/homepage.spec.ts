@@ -130,7 +130,7 @@ test.describe('portfolio homepage framework', () => {
       await expect(
         page.locator('[data-project-id="xuelang"] [data-project-media-frame]'),
       ).toHaveCSS('border-radius', '20px');
-      await expect(page.locator('[data-liquid-field="footer"]')).toHaveCount(1);
+      await expect(page.locator('[data-liquid-field="footer"]')).toHaveCount(0);
       await expect(page.locator('#archive')).toHaveCount(1);
       await expect(page.locator('[data-about-preview]')).toHaveCount(0);
       await expect(
@@ -647,10 +647,10 @@ test.describe('portfolio homepage framework', () => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
     const images = page.locator('main img:not([data-placeholder-media])');
-    await expect(images).toHaveCount(11);
+    await expect(images).toHaveCount(14);
     for (let index = 0; index < await images.count(); index += 1) {
       const image = images.nth(index);
-      await image.scrollIntoViewIfNeeded();
+      await image.evaluate((node) => node.scrollIntoView({ block: 'center' }));
       await expect
         .poll(() =>
           image.evaluate((node) => {
