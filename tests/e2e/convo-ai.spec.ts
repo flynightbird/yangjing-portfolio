@@ -88,6 +88,26 @@ async function activateMobileShowcaseScene(showcase: Locator, id: typeof showcas
   return sourceOf(video);
 }
 
+async function activateDesktopShowcaseScene(showcase: Locator, id: typeof showcaseIds[number]) {
+  const step = showcase.locator(`[data-app-showcase-step="${id}"]`);
+  await step.evaluate((element) => {
+    const root = document.documentElement;
+    const previousScrollBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    const targetTop = window.scrollY + element.getBoundingClientRect().top - window.innerHeight * 0.425;
+    window.scrollTo({ behavior: 'auto', top: Math.max(0, targetTop) });
+    root.style.scrollBehavior = previousScrollBehavior;
+  });
+  await expect(showcase).toHaveAttribute('data-active-id', id);
+  const card = showcase.locator('[data-app-showcase-placement="desktop"]');
+  await expect(card).toHaveAttribute('data-media-card', id);
+  await expect(card).toHaveCSS('border-radius', '20px');
+  const video = card.locator('video');
+  await expect(video).toHaveAttribute('src', `/videos/convo-ai/${id}.mp4`);
+  await expectCompleteVideo(video);
+  return sourceOf(video);
+}
+
 for (const locale of ['en', 'zh'] as const) {
   test.describe(`${locale} ConvoAI case`, () => {
     test.beforeEach(async ({ page }) => {
@@ -127,12 +147,11 @@ for (const locale of ['en', 'zh'] as const) {
       }
 
       const showcase = page.locator('[data-convo-app-showcase]');
-      const showcaseSources = sourcesFor(showcaseIds);
-      if (testInfo.project.name !== 'desktop') {
-        showcaseSources.clear();
-        for (const id of showcaseIds) {
-          showcaseSources.add(await activateMobileShowcaseScene(showcase, id));
-        }
+      const showcaseSources = new Set<string>();
+      for (const id of showcaseIds) {
+        showcaseSources.add(testInfo.project.name === 'desktop'
+          ? await activateDesktopShowcaseScene(showcase, id)
+          : await activateMobileShowcaseScene(showcase, id));
       }
 
       const avatars = page.locator('[data-convo-ai-avatar-pair] video');

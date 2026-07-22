@@ -186,24 +186,35 @@ export function ConvoAiAppShowcase({ locale }: { readonly locale: Locale }) {
       : window.innerHeight * 0.425;
     const candidate = intersectingEntries
       .sort((first, second) => (
-        Math.abs(first.boundingClientRect.top - activationLine)
-        - Math.abs(second.boundingClientRect.top - activationLine)
+        Math.abs(first.target.getBoundingClientRect().top - activationLine)
+        - Math.abs(second.target.getBoundingClientRect().top - activationLine)
       ))[0];
     const id = candidate?.target.getAttribute('data-app-showcase-step') as AppShowcaseId | null;
     if (id) activate(id);
   }, [activate]);
 
   useEffect(() => {
+    const intersectingEntries = intersectingEntriesRef.current;
     observerAvailable.current = false;
-    intersectingEntriesRef.current.clear();
+    intersectingEntries.clear();
     if (!isDesktop || typeof IntersectionObserver === 'undefined') return;
-    const observer = new IntersectionObserver(observerCallback, { rootMargin: '-42% 0px -57% 0px', threshold: 0 });
-    observerAvailable.current = true;
-    stepRefs.current.forEach((step) => observer.observe(step));
+    let observer: IntersectionObserver | undefined;
+    const observeAtViewportHeight = () => {
+      observer?.disconnect();
+      intersectingEntries.clear();
+      const viewportHeight = window.innerHeight;
+      const rootMargin = `-${Math.round(viewportHeight * 0.42)}px 0px -${Math.round(viewportHeight * 0.57)}px 0px`;
+      observer = new IntersectionObserver(observerCallback, { rootMargin, threshold: 0 });
+      observerAvailable.current = true;
+      stepRefs.current.forEach((step) => observer?.observe(step));
+    };
+    observeAtViewportHeight();
+    window.addEventListener('resize', observeAtViewportHeight);
     return () => {
       observerAvailable.current = false;
-      intersectingEntriesRef.current.clear();
-      observer.disconnect();
+      intersectingEntries.clear();
+      window.removeEventListener('resize', observeAtViewportHeight);
+      observer?.disconnect();
     };
   }, [isDesktop, observerCallback]);
 

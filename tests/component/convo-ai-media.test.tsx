@@ -280,9 +280,14 @@ describe('ConvoAiAppShowcase', () => {
     installMediaEnvironment();
     const { container } = render(<ConvoAiAppShowcase locale="zh" />);
     const observer = IntersectionObserverHarness.instances[0];
+    const activationTop = Math.round(window.innerHeight * 0.42);
+    const activationBottom = Math.round(window.innerHeight * 0.57);
 
     expect(container.querySelector('[data-convo-app-showcase]')).toHaveAttribute('data-active-id', 'app-login');
-    expect(observer.options).toMatchObject({ rootMargin: '-42% 0px -57% 0px', threshold: 0 });
+    expect(observer.options).toMatchObject({
+      rootMargin: `-${activationTop}px 0px -${activationBottom}px 0px`,
+      threshold: 0,
+    });
     expect(observer.observe).toHaveBeenCalledTimes(4);
     expect(observer.elements.map((element) => element.getAttribute('data-app-showcase-step'))).toEqual([
       'app-login', 'app-structure', 'app-profile-settings', 'app-hardware-device',
@@ -386,6 +391,10 @@ describe('ConvoAiAppShowcase', () => {
   it('selects the scene nearest the activation line when adjacent steps intersect together', () => {
     installMediaEnvironment();
     const { container } = render(<ConvoAiAppShowcase locale="en" />);
+    const structure = container.querySelector('[data-app-showcase-step="app-structure"]') as HTMLElement;
+    const profile = container.querySelector('[data-app-showcase-step="app-profile-settings"]') as HTMLElement;
+    vi.spyOn(structure, 'getBoundingClientRect').mockReturnValue({ top: -158 } as DOMRect);
+    vi.spyOn(profile, 'getBoundingClientRect').mockReturnValue({ top: 382 } as DOMRect);
 
     act(() => {
       IntersectionObserverHarness.instances[0].triggerAtActivationLine([
@@ -401,9 +410,15 @@ describe('ConvoAiAppShowcase', () => {
     installMediaEnvironment();
     const { container } = render(<ConvoAiAppShowcase locale="en" />);
     const observer = IntersectionObserverHarness.instances[0];
+    const login = container.querySelector('[data-app-showcase-step="app-login"]') as HTMLElement;
+    const structure = container.querySelector('[data-app-showcase-step="app-structure"]') as HTMLElement;
+    const loginBounds = vi.spyOn(login, 'getBoundingClientRect').mockReturnValue({ top: 382 } as DOMRect);
+    const structureBounds = vi.spyOn(structure, 'getBoundingClientRect').mockReturnValue({ top: 922 } as DOMRect);
 
+    act(() => { observer.triggerAtActivationLine([{ id: 'app-login', top: 382 }]); });
+    loginBounds.mockReturnValue({ top: -158 } as DOMRect);
+    structureBounds.mockReturnValue({ top: 382 } as DOMRect);
     act(() => { observer.triggerAtActivationLine([{ id: 'app-structure', top: 382 }]); });
-    act(() => { observer.triggerAtActivationLine([{ id: 'app-login', top: -158 }]); });
 
     expect(container.querySelector('[data-convo-app-showcase]')).toHaveAttribute('data-active-id', 'app-structure');
   });
