@@ -131,6 +131,25 @@ describe('ScrollReveal', () => {
     expect(root).toHaveAttribute('data-scroll-reveal-state', 'revealed');
   });
 
+  it('cancels the fallback animation frame when unmounted', () => {
+    const frameId = 24;
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation(() => frameId);
+    const cancelFrame = vi
+      .spyOn(window, 'cancelAnimationFrame')
+      .mockImplementation(() => undefined);
+    vi.stubGlobal('IntersectionObserver', undefined);
+
+    const { unmount } = render(
+      <ScrollReveal>
+        <p data-scroll-reveal-group>Content</p>
+      </ScrollReveal>,
+    );
+
+    unmount();
+
+    expect(cancelFrame).toHaveBeenCalledWith(frameId);
+  });
+
   it('renders revealed immediately without observing when reduced motion is requested', () => {
     mockReducedMotion(true);
 
