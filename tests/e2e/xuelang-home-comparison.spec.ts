@@ -2,6 +2,11 @@ import { expect, test } from '@playwright/test';
 
 const comparisonSelector = '[data-xuelang-home-comparison]';
 
+async function openHomepage(page: import('@playwright/test').Page) {
+  await page.goto('/en/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
+  await expect(page.locator(comparisonSelector)).toBeAttached({ timeout: 30_000 });
+}
+
 async function centerComparison(page: import('@playwright/test').Page) {
   await page.locator(comparisonSelector).evaluate((element) => {
     const rect = element.getBoundingClientRect();
@@ -15,30 +20,46 @@ async function centerComparison(page: import('@playwright/test').Page) {
 test.describe('Xuelang homepage comparison', () => {
   test('runs four auto legs once and returns to its initial position', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'Canonical desktop motion contract.');
-    await page.goto('/en/', { waitUntil: 'networkidle' });
+    await openHomepage(page);
 
     const comparison = page.locator(comparisonSelector);
-    const observedLegs = await comparison.evaluate((element) => {
-      const legs: string[] = [];
-      (window as typeof window & { __xuelangLegs?: string[] }).__xuelangLegs = legs;
+    await comparison.evaluate((element) => {
+      const trace: Array<{ leg: number; state: string; value: number; time: number }> = [];
+      const slider = element.querySelector<HTMLInputElement>('input[type="range"]');
+      (window as typeof window & { __xuelangTrace?: typeof trace }).__xuelangTrace = trace;
       new MutationObserver(() => {
-        const leg = element.getAttribute('data-auto-leg');
-        if (leg && legs.at(-1) !== leg) legs.push(leg);
-      }).observe(element, { attributes: true, attributeFilter: ['data-auto-leg'] });
-      return legs;
+        const leg = Number(element.getAttribute('data-auto-leg'));
+        const state = element.getAttribute('data-auto-state') ?? '';
+        const previous = trace.at(-1);
+        const isNewLeg = state === 'running' && previous?.leg !== leg;
+        const isCompletion = state === 'complete' && previous?.state !== 'complete';
+        if ((isNewLeg || isCompletion) && slider) {
+          trace.push({ leg, state, value: Number(slider.value), time: performance.now() });
+        }
+      }).observe(element, {
+        attributes: true,
+        attributeFilter: ['data-auto-leg', 'data-auto-state'],
+      });
     });
-    expect(observedLegs).toEqual([]);
 
     await centerComparison(page);
     await expect(comparison).toHaveAttribute('data-auto-state', 'running');
     await expect(comparison).toHaveAttribute('data-auto-state', 'complete', { timeout: 5000 });
     await expect(comparison).toHaveAttribute('data-auto-leg', '4');
     await expect(comparison.getByRole('slider')).toHaveValue('38');
-    expect(
-      await page.evaluate(() =>
-        (window as typeof window & { __xuelangLegs?: string[] }).__xuelangLegs,
-      ),
-    ).toEqual(['1', '2', '3', '4']);
+    const trace = await page.evaluate(() =>
+      (window as typeof window & {
+        __xuelangTrace?: Array<{ leg: number; state: string; value: number; time: number }>;
+      }).__xuelangTrace,
+    );
+    expect(trace?.map(({ value }) => value)).toEqual([38, 82, 18, 82, 38]);
+    expect(trace?.map(({ leg }) => leg)).toEqual([1, 2, 3, 4, 4]);
+    const durations = trace?.slice(1).map((entry, index) => entry.time - trace[index].time) ?? [];
+    expect(durations).toHaveLength(4);
+    for (const duration of durations) {
+      expect(duration).toBeGreaterThanOrEqual(500);
+      expect(duration).toBeLessThanOrEqual(850);
+    }
 
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
     await centerComparison(page);
@@ -49,7 +70,7 @@ test.describe('Xuelang homepage comparison', () => {
 
   test('deliberate pointer and keyboard input cancel auto motion and remain usable', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'Canonical desktop input contract.');
-    await page.goto('/en/', { waitUntil: 'networkidle' });
+    await openHomepage(page);
     await centerComparison(page);
 
     const comparison = page.locator(comparisonSelector);
@@ -75,7 +96,7 @@ test.describe('Xuelang homepage comparison', () => {
   test('allows a vertical touch gesture without moving the divider or overflowing', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'mobile', 'Real touch input contract.');
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto('/en/', { waitUntil: 'networkidle' });
+    await openHomepage(page);
 
     const comparison = page.locator(comparisonSelector);
     await comparison.evaluate((element) => {
@@ -115,10 +136,22 @@ test.describe('Xuelang homepage comparison', () => {
       type: 'touchStart',
       touchPoints: [{ x: dragStartX, y: dragY }],
     });
-    await session.send('Input.dispatchTouchEvent', {
-      type: 'touchMove',
-      touchPoints: [{ x: dragStartX + 90, y: dragY }],
-    });
+    for (const offset of [10, 20, 30]) {
+      await session.send('Input.dispatchTouchEvent', {
+        type: 'touchMove',
+        touchPoints: [{ x: dragStartX + offset, y: dragY + 1 }],
+      });
+      await page.waitForTimeout(20);
+    }
+    await expect.poll(async () => Number(await slider.inputValue())).toBeGreaterThan(38);
+    for (const offset of [60, 90]) {
+      await session.send('Input.dispatchTouchEvent', {
+        type: 'touchMove',
+        touchPoints: [{ x: dragStartX + offset, y: dragY + 1 }],
+      });
+      await page.waitForTimeout(20);
+    }
+    await expect.poll(async () => Number(await slider.inputValue())).toBeGreaterThan(50);
     await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     expect(Number(await slider.inputValue())).toBeGreaterThan(50);
   });
@@ -126,7 +159,7 @@ test.describe('Xuelang homepage comparison', () => {
   test('disables auto motion for reduced motion', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'Canonical reduced-motion contract.');
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto('/en/', { waitUntil: 'networkidle' });
+    await openHomepage(page);
     await centerComparison(page);
 
     const comparison = page.locator(comparisonSelector);

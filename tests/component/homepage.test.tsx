@@ -112,6 +112,54 @@ describe('IntroStory', () => {
 });
 
 describe('FeaturedWork', () => {
+  it('maps an explicit horizontal touch drag without changing on vertical intent', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+    const comparison = container.querySelector<HTMLElement>('[data-xuelang-home-comparison]');
+    const slider = within(comparison as HTMLElement).getByRole('slider');
+    vi.spyOn(comparison as HTMLElement, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      top: 0,
+      right: 400,
+      bottom: 260,
+      left: 0,
+      width: 400,
+      height: 260,
+      toJSON: () => ({}),
+    });
+
+    fireEvent.pointerDown(slider, {
+      pointerType: 'touch',
+      pointerId: 7,
+      clientX: 100,
+      clientY: 100,
+    });
+    fireEvent.pointerMove(slider, {
+      pointerType: 'touch',
+      pointerId: 7,
+      clientX: 190,
+      clientY: 104,
+    });
+    expect(slider).toHaveValue('59');
+    fireEvent.pointerUp(slider, { pointerType: 'touch', pointerId: 7 });
+
+    fireEvent.pointerDown(slider, {
+      pointerType: 'touch',
+      pointerId: 8,
+      clientX: 190,
+      clientY: 100,
+    });
+    fireEvent.pointerMove(slider, {
+      pointerType: 'touch',
+      pointerId: 8,
+      clientX: 194,
+      clientY: 150,
+    });
+    expect(slider).toHaveValue('59');
+    fireEvent.pointerCancel(slider, { pointerType: 'touch', pointerId: 8 });
+    expect(slider).toHaveValue('59');
+  });
+
   it('renders the six approved project treatments in order', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const projectIds = Array.from(

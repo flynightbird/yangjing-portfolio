@@ -1,7 +1,7 @@
 'use client';
 
 import { MoveHorizontal } from 'lucide-react';
-import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react';
+import type { CSSProperties, KeyboardEvent, PointerEvent as ReactPointerEvent } from 'react';
 import { useEffect, useRef } from 'react';
 
 import type { Locale } from '@/content/types';
@@ -14,10 +14,21 @@ export const MAX_POSITION = 96;
 export const INITIAL_POSITION = 38;
 
 const KEYBOARD_STEP = 3;
+const TOUCH_INTENT_THRESHOLD = 8;
 const AUTO_KEYFRAMES = [INITIAL_POSITION, 82, 18, 82, INITIAL_POSITION] as const;
 const AUTO_LEG_DURATION = 650;
 
 type AutoState = 'idle' | 'running' | 'complete' | 'cancelled' | 'disabled';
+type TouchIntent = 'pending' | 'horizontal' | 'vertical';
+
+interface TouchGesture {
+  readonly pointerId: number;
+  readonly pointerType: string;
+  readonly startX: number;
+  readonly startY: number;
+  readonly startPosition: number;
+  intent: TouchIntent;
+}
 
 interface XuelangHomeComparisonProps {
   readonly locale: Locale;
@@ -46,7 +57,7 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const frameRef = useRef<number | null>(null);
   const autoStateRef = useRef<AutoState>('idle');
-  const touchStartPositionRef = useRef(INITIAL_POSITION);
+  const touchGestureRef = useRef<TouchGesture | null>(null);
   const labels = copy[locale];
 
   function setPosition(value: number) {
@@ -88,15 +99,69 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
     setPosition(nextPosition);
   }
 
-  function handlePointerDown(event: PointerEvent<HTMLInputElement>) {
-    if (event.pointerType === 'touch') {
-      touchStartPositionRef.current = Number(event.currentTarget.value);
-    }
-    cancelAutoMotion();
+  function positionFromClientX(clientX: number) {
+    const bounds = rootRef.current?.getBoundingClientRect();
+    if (!bounds?.width) return INITIAL_POSITION;
+    return Math.round(MIN_POSITION + ((clientX - bounds.left) / bounds.width) * (MAX_POSITION - MIN_POSITION));
   }
 
-  function handlePointerCancel(event: PointerEvent<HTMLInputElement>) {
-    if (event.pointerType === 'touch') setPosition(touchStartPositionRef.current);
+  function handlePointerDown(event: ReactPointerEvent<HTMLDivElement>) {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    controlRef.current?.focus({ preventScroll: true });
+    cancelAutoMotion();
+    const isTouch = event.pointerType === 'touch';
+    const startPosition = Number(controlRef.current?.value ?? INITIAL_POSITION);
+    touchGestureRef.current = {
+      pointerId: event.pointerId,
+      pointerType: event.pointerType,
+      startX: event.clientX,
+      startY: event.clientY,
+      startPosition,
+      intent: isTouch ? 'pending' : 'horizontal',
+    };
+    if (!isTouch) {
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+      setPosition(positionFromClientX(event.clientX));
+    }
+  }
+
+  function handlePointerMove(event: ReactPointerEvent<HTMLDivElement>) {
+    const gesture = touchGestureRef.current;
+    if (!gesture || gesture.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const deltaX = event.clientX - gesture.startX;
+    const deltaY = event.clientY - gesture.startY;
+    if (gesture.intent === 'pending') {
+      if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < TOUCH_INTENT_THRESHOLD) return;
+      gesture.intent = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+    }
+    if (gesture.intent !== 'horizontal') return;
+
+    if (gesture.pointerType === 'touch') {
+      const width = rootRef.current?.getBoundingClientRect().width ?? 0;
+      if (width <= 0) return;
+      setPosition(
+        Math.round(gesture.startPosition + (deltaX / width) * (MAX_POSITION - MIN_POSITION)),
+      );
+    } else {
+      setPosition(positionFromClientX(event.clientX));
+    }
+  }
+
+  function handlePointerUp(event: ReactPointerEvent<HTMLDivElement>) {
+    if (touchGestureRef.current?.pointerId === event.pointerId) {
+      touchGestureRef.current = null;
+      if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+    }
+  }
+
+  function handlePointerCancel(event: ReactPointerEvent<HTMLDivElement>) {
+    const gesture = touchGestureRef.current;
+    if (gesture?.pointerId === event.pointerId) touchGestureRef.current = null;
   }
 
   useEffect(() => {
@@ -162,6 +227,11 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
       data-xuelang-home-comparison
       data-auto-state="idle"
       data-auto-leg="0"
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
+      onLostPointerCapture={handlePointerCancel}
     >
       {/* Both layers must share exact geometry for the wipe boundary. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -198,8 +268,6 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
         defaultValue={INITIAL_POSITION}
         aria-label={labels.controlLabel}
         aria-valuenow={INITIAL_POSITION}
-        onPointerDown={handlePointerDown}
-        onPointerCancel={handlePointerCancel}
         onChange={(event) => {
           cancelAutoMotion();
           setPosition(Number(event.currentTarget.value));

@@ -6,6 +6,7 @@
   overflow: hidden;
   background: #323532;
   isolation: isolate;
+  cursor: ew-resize;
   touch-action: pan-y;
   user-select: none;
 }
@@ -90,17 +91,17 @@
   margin: 0;
   appearance: none;
   background: transparent;
-  cursor: ew-resize;
   opacity: 0;
+  pointer-events: none;
   touch-action: pan-y;
 }
 
-.root:has(.control:hover) .handle {
+.root:hover .handle {
   background: rgb(13 16 15 / 92%);
   transform: translate(-50%, -50%) scale(1.06);
 }
 
-.root:has(.control:active) .handle {
+.root:active .handle {
   transform: translate(-50%, -50%) scale(0.96);
 }
 
