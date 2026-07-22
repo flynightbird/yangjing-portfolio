@@ -365,15 +365,46 @@ test.describe('portfolio homepage framework', () => {
     const stage = page.locator('[data-flagship-focus]');
     const callMedia = page.locator('[data-project-id="call-agent"] [data-media-radius="20"]');
     const convoMedia = page.locator('[data-project-id="convo-ai"] [data-media-radius="20"]');
+    const convoBrowser = convoMedia.locator('[data-convo-web-browser]');
+    const convoViewport = convoBrowser.locator('[data-convo-web-viewport]');
+    const convoWebImage = convoViewport.locator('img');
+    const convoPhone = convoMedia.locator('[data-convo-phone]');
+    const convoPhoneImage = convoPhone.locator('img');
 
     await callMedia.scrollIntoViewIfNeeded();
     await expect(stage).toHaveAttribute('data-flagship-focus', 'call-agent');
     await expect(callMedia).toHaveCSS('border-radius', '20px');
     await expect(convoMedia).toHaveCSS('border-radius', '20px');
     await expect(callMedia).toHaveCSS('background-color', 'rgb(232, 221, 187)');
-    await expect(convoMedia).toHaveCSS('background-color', 'rgb(220, 233, 239)');
+    await expect(convoMedia).toHaveCSS('background-color', 'rgb(199, 199, 193)');
     await expect(callMedia).toHaveCSS('background-image', 'none');
-    await expect(convoMedia).toHaveCSS('background-image', 'none');
+    await expect(convoMedia).not.toHaveCSS('background-image', 'none');
+    await expect(convoBrowser).toBeVisible();
+    await expect(convoWebImage).toHaveCSS('object-position', '0% 0%');
+    await expect(convoPhone).toBeVisible();
+
+    const mediaBox = await convoMedia.boundingBox();
+    const viewportBox = await convoViewport.boundingBox();
+    const webImageBox = await convoWebImage.boundingBox();
+    const phoneBox = await convoPhone.boundingBox();
+    expect(mediaBox).not.toBeNull();
+    expect(viewportBox).not.toBeNull();
+    expect(webImageBox).not.toBeNull();
+    expect(phoneBox).not.toBeNull();
+    expect(Math.abs((webImageBox?.x ?? 0) - (viewportBox?.x ?? 0))).toBeLessThanOrEqual(1);
+    expect(phoneBox?.x ?? 0).toBeGreaterThan(mediaBox?.x ?? 0);
+    expect((phoneBox?.x ?? 0) + (phoneBox?.width ?? 0)).toBeLessThanOrEqual(
+      (mediaBox?.x ?? 0) + (mediaBox?.width ?? 0),
+    );
+    expect((phoneBox?.y ?? 0) + (phoneBox?.height ?? 0)).toBeLessThanOrEqual(
+      (mediaBox?.y ?? 0) + (mediaBox?.height ?? 0),
+    );
+    const [phoneRadius, phoneImageRadius] = await Promise.all([
+      convoPhone.evaluate((element) => getComputedStyle(element).borderRadius),
+      convoPhoneImage.evaluate((element) => getComputedStyle(element).borderRadius),
+    ]);
+    expect(phoneRadius).not.toBe('0px');
+    expect(phoneImageRadius).toBe(phoneRadius);
 
     const studioFrame = callMedia.locator('[data-convo-studio-frame]');
     await expect(studioFrame).toHaveAttribute(
@@ -443,6 +474,10 @@ test.describe('portfolio homepage framework', () => {
     expect(convoBox?.y ?? 0).toBeGreaterThan((callBox?.y ?? 0) + (callBox?.height ?? 0));
     await expect(callMedia).toHaveCSS('transform', 'none');
     await expect(convoMedia).toHaveCSS('transform', 'none');
+    await expect(convoMedia.locator('[data-convo-web-browser]')).toBeHidden();
+    await expect(convoMedia.locator('[data-convo-phone]')).toBeHidden();
+    await expect(convoMedia.locator('[data-convo-mobile-loop]')).toBeVisible();
+    await expect(convoMedia.locator('[data-convo-mobile-poster]')).toBeHidden();
     await expect(callMedia.locator('[data-convo-studio-window]')).toHaveCSS(
       'transform',
       'none',
@@ -456,6 +491,19 @@ test.describe('portfolio homepage framework', () => {
     await expect
       .poll(() => scrollPanel.evaluate((element) => getComputedStyle(element).transform))
       .toBe(transformStart);
+  });
+
+  test('uses the static ConvoAI poster on mobile with reduced motion', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'mobile', 'Mobile reduced-motion contract.');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const convoMedia = page.locator('[data-project-id="convo-ai"] [data-convo-home-media]');
+    await convoMedia.scrollIntoViewIfNeeded();
+    await expect(convoMedia.locator('[data-convo-mobile-loop]')).toBeHidden();
+    await expect(convoMedia.locator('[data-convo-mobile-poster]')).toBeVisible();
   });
 
   test('uses a media-dominant STT stage with direct prototype actions', async ({

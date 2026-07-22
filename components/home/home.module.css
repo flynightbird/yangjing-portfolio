@@ -912,39 +912,136 @@ a.whiteCta:focus-visible {
 
 .flagshipConvoMedia {
   z-index: 1;
-  background: #dce9ef;
+  background-color: #c7c7c1;
+  background-image:
+    linear-gradient(
+      138deg,
+      rgba(154, 145, 173, 0.72) 0%,
+      rgba(169, 177, 165, 0.68) 52%,
+      rgba(205, 199, 190, 0.82) 100%
+    );
   transform-origin: right center;
 }
 
-.flagshipMedia img {
-  transition: transform 700ms var(--ease-out);
-}
-
-.flagshipConvoWeb {
+.convoHomeMedia {
   position: absolute;
-  right: -16%;
-  bottom: -1px;
-  width: 105%;
-  height: 86%;
-  object-fit: cover;
-  object-position: 54% center;
-  transform-origin: bottom right;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
 }
 
-.flagshipConvoPhone {
+.convoWebBrowser {
+  position: absolute;
+  inset: 1.75rem 1.5rem -1rem;
+  overflow: hidden;
+  border: 1px solid rgba(32, 36, 35, 0.16);
+  border-radius: 18px 18px 0 0;
+  background: #f4f5f3;
+  box-shadow:
+    0 2rem 4.5rem rgba(52, 49, 58, 0.2),
+    0 0.4rem 1.2rem rgba(52, 49, 58, 0.1);
+}
+
+.convoBrowserBar {
+  display: grid;
+  height: 38px;
+  grid-template-columns: 4.5rem minmax(0, 1fr) 4.5rem;
+  align-items: center;
+  border-bottom: 1px solid #e3e5e3;
+  background: rgba(250, 250, 249, 0.97);
+  color: #777d7a;
+}
+
+.convoTrafficLights {
+  display: flex;
+  gap: 5px;
+  padding-left: 14px;
+}
+
+.convoTrafficLights i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d0d3d1;
+}
+
+.convoTrafficLights i:first-child {
+  background: #ed766f;
+}
+
+.convoTrafficLights i:nth-child(2) {
+  background: #e4bd5d;
+}
+
+.convoTrafficLights i:last-child {
+  background: #69b977;
+}
+
+.convoAddress {
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px 1rem;
+  border: 1px solid #e2e4e2;
+  border-radius: 999px;
+  background: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.convoBrowserAction {
+  justify-self: end;
+  padding-right: 15px;
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+}
+
+.convoWebViewport {
+  position: absolute;
+  inset: 38px 0 0;
+  overflow: hidden;
+  background: #f1f2f0;
+}
+
+.convoWebImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: left top;
+}
+
+.convoPhone {
   position: absolute;
   z-index: 2;
-  right: 7%;
-  bottom: 1.25rem;
-  width: 8.25rem;
-  height: 16.875rem;
-  object-fit: cover;
-  object-position: 68% center;
-  border: 5px solid #222428;
-  border-radius: 1.875rem;
-  box-shadow: 0 1.75rem 4.375rem rgba(0, 0, 0, 0.36);
+  right: 1.25rem;
+  bottom: 1rem;
+  width: clamp(6.75rem, 9.2vw, 8.25rem);
+  aspect-ratio: 375 / 812;
+  overflow: hidden;
+  border: 4px solid #222428;
+  border-radius: 26px;
+  background: #222428;
+  box-shadow: 0 1.5rem 3.5rem rgba(0, 0, 0, 0.34);
   transform: rotate(2deg);
   transform-origin: bottom center;
+}
+
+.convoPhoneImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 26px;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.convoMobileLoop,
+.convoMobilePoster {
+  display: none;
 }
 
 .flagshipStage[data-flagship-focus='call-agent'] .flagshipCallMedia {
@@ -969,15 +1066,6 @@ a.whiteCta:focus-visible {
 .flagshipStage[data-flagship-focus='convo-ai'] .flagshipConvoMedia {
   z-index: 3;
   transform: translateX(-7px) scaleX(1.055) scaleY(1.018);
-}
-
-.flagshipStage[data-flagship-focus='convo-ai'] .flagshipConvoWeb,
-.flagshipStage[data-flagship-focus='convo-ai'] .flagshipConvoPhone {
-  transform: scale(1.025);
-}
-
-.flagshipStage[data-flagship-focus='convo-ai'] .flagshipConvoPhone {
-  transform: rotate(2deg) scale(1.025);
 }
 
 .flagshipRole {
@@ -1011,24 +1099,27 @@ a.whiteCta:focus-visible {
     min-height: 20rem;
   }
 
-  .flagshipStage[data-flagship-focus] .flagshipMedia,
-  .flagshipStage[data-flagship-focus] .flagshipMedia img {
+  .flagshipStage[data-flagship-focus] .flagshipMedia {
     transform: none;
     opacity: 1;
   }
 
-  .flagshipStage[data-flagship-focus] .flagshipConvoPhone {
-    transform: rotate(2deg);
+  .flagshipConvoMedia {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 540 / 1168;
   }
 
-  .flagshipConvoWeb {
-    right: -8%;
+  .convoWebBrowser,
+  .convoPhone {
+    display: none;
+  }
+
+  .convoMobileLoop {
+    display: block;
     width: 100%;
-  }
-
-  .flagshipConvoPhone {
-    width: 7rem;
-    height: 14.375rem;
+    height: 100%;
+    object-fit: cover;
   }
 
   .studioWindow {
@@ -1046,18 +1137,17 @@ a.whiteCta:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   .flagshipMedia,
-  .flagshipMedia img,
+  .convoMobileLoop,
   .flagshipCta svg {
     transition: none;
   }
 
-  .flagshipStage[data-flagship-focus] .flagshipMedia,
-  .flagshipStage[data-flagship-focus] .flagshipMedia img {
+  .flagshipStage[data-flagship-focus] .flagshipMedia {
     transform: none;
     opacity: 1;
   }
 
-  .flagshipStage[data-flagship-focus] .flagshipConvoPhone {
+  .convoPhone {
     transform: rotate(2deg);
   }
 
@@ -1065,6 +1155,19 @@ a.whiteCta:focus-visible {
   .flagshipStage[data-flagship-focus='call-agent'] .studioWindow {
     transform: none;
     transition: none;
+  }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .convoMobileLoop {
+    display: none;
+  }
+
+  .convoMobilePoster {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 }
 

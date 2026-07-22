@@ -432,16 +432,32 @@ describe('FeaturedWork', () => {
     expect.soft(sttScope.queryByText(status)).toBeVisible();
   });
 
-  it('uses Figma-derived ConvoAI project media', () => {
+  it('publishes the responsive ConvoAI homepage media sources', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const convoAi = container.querySelector<HTMLElement>('[data-project-id="convo-ai"]');
+    const media = convoAi?.querySelector<HTMLElement>('[data-convo-home-media]');
+    const browser = media?.querySelector('[data-convo-web-browser]');
 
-    expect(
-      within(convoAi as HTMLElement).getByRole('img', { name: /ConvoAI web conversation ready/i }),
-    ).toHaveAttribute('src', '/images/convo-ai/figma/web-ready.png');
-    expect(
-      within(convoAi as HTMLElement).getByRole('img', { name: /ConvoAI app avatar and live video/i }),
-    ).toHaveAttribute('src', '/images/convo-ai/figma/avatar-video.png');
+    expect(media).toBeInTheDocument();
+    expect(browser).not.toHaveAttribute('aria-hidden');
+    const webImage = browser?.querySelector('img');
+    expect(webImage).toHaveAttribute(
+      'src',
+      '/images/convo-ai/figma/web-ready.png',
+    );
+    expect(webImage).toHaveAttribute('alt', 'ConvoAI web conversation ready state');
+    expect(media?.querySelector('[data-convo-phone] img')).toHaveAttribute(
+      'src',
+      '/images/convo-ai/figma/avatar-video.png',
+    );
+    expect(media?.querySelector('[data-convo-mobile-loop]')).toHaveAttribute(
+      'src',
+      '/images/convo-ai/home-mobile-loop.gif',
+    );
+    expect(media?.querySelector('[data-convo-mobile-poster]')).toHaveAttribute(
+      'src',
+      '/images/convo-ai/home-mobile-loop-poster.webp',
+    );
   });
 
   it.each(['en', 'zh'] as const)(
@@ -474,7 +490,7 @@ describe('FeaturedWork', () => {
         expect.soft(callAgent.queryByText(removed, { exact: false })).not.toBeInTheDocument();
         expect.soft(convoAi.queryByText(removed, { exact: false })).not.toBeInTheDocument();
       }
-      expect.soft(convoAi.queryAllByRole('img')).toHaveLength(2);
+      expect.soft(convoAi.queryAllByRole('img')).toHaveLength(3);
     },
   );
 });
