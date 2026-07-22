@@ -185,8 +185,9 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
+    const observerRoot: HTMLDivElement = root;
     const markInteractionReady = () => {
-      root.dataset.interactionReady = 'true';
+      observerRoot.dataset.interactionReady = 'true';
     };
 
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
@@ -235,7 +236,7 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
 
       const inset = Math.round(window.innerHeight * 0.3);
       const rootMargin = `-${inset}px 0px -${inset}px 0px`;
-      root.dataset.observerRootMargin = rootMargin;
+      observerRoot.dataset.observerRootMargin = rootMargin;
       const observer = new IntersectionObserver(
         (entries) => {
           if (
@@ -254,7 +255,7 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
         { rootMargin, threshold: 0.01 },
       );
       observerRef.current = observer;
-      observer.observe(root);
+      observer.observe(observerRoot);
     }
 
     function scheduleObserverRebuild() {
