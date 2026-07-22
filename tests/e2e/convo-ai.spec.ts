@@ -128,7 +128,7 @@ for (const locale of ['en', 'zh'] as const) {
 
       const showcase = page.locator('[data-convo-app-showcase]');
       const showcaseSources = sourcesFor(showcaseIds);
-      if (testInfo.project.name === 'mobile') {
+      if (testInfo.project.name !== 'desktop') {
         showcaseSources.clear();
         for (const id of showcaseIds) {
           showcaseSources.add(await activateMobileShowcaseScene(showcase, id));
@@ -160,10 +160,10 @@ for (const locale of ['en', 'zh'] as const) {
       expect(first).not.toBeNull();
       expect(second).not.toBeNull();
 
-      if (testInfo.project.name === 'mobile') {
+      if (testInfo.project.name !== 'desktop') {
         expect(Math.abs(first!.x - second!.x)).toBeLessThanOrEqual(1);
         expect(first!.y + first!.height).toBeLessThanOrEqual(second!.y + 1);
-        await page.screenshot({ path: `test-results/convo-ai-zh-mobile.png`, fullPage: true });
+        await page.screenshot({ path: `test-results/convo-ai-zh-${testInfo.project.name}.png`, fullPage: true });
         return;
       }
 
@@ -185,7 +185,7 @@ for (const locale of ['en', 'zh'] as const) {
     });
 
     test('uses desktop scene commands to update the Chinese showcase forward and backward', async ({ page }, testInfo) => {
-      test.skip(locale !== 'zh' || testInfo.project.name === 'mobile', 'Showcase scroll commands are desktop-only.');
+      test.skip(locale !== 'zh' || testInfo.project.name !== 'desktop', 'Showcase scroll commands are desktop-only.');
       const showcase = page.locator('[data-convo-app-showcase]');
       const card = showcase.locator('[data-app-showcase-placement="desktop"]');
 
