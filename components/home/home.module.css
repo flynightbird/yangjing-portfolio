@@ -1549,7 +1549,10 @@ a.whiteCta:focus-visible {
   position: absolute;
   top: 4%;
   right: 4%;
+  bottom: 0;
+  display: flex;
   width: 92%;
+  flex-direction: column;
   overflow: hidden;
   border: 1px solid rgba(18, 24, 42, 0.14);
   border-radius: 18px 18px 0 0;
@@ -2228,6 +2231,7 @@ a.whiteCta:focus-visible {
 
   .buildMedia {
     order: 0;
+    aspect-ratio: 4 / 3;
   }
 
   .buildCopy {
