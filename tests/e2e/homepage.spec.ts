@@ -77,6 +77,24 @@ test.describe('portfolio homepage framework', () => {
         'xuelang',
       ]);
 
+      const callAgent = page.locator('[data-project-id="call-agent"]');
+      const convoAi = page.locator('[data-project-id="convo-ai"]');
+      await expect(callAgent).not.toContainText(
+        /Limited beta|Real product evidence|有限客户测试|真实产品证据/,
+      );
+      await expect(convoAi).not.toContainText(
+        /temporary third-party|media replacement|temporary web and app|临时第三方|等待替换|临时 Web 与 App/i,
+      );
+      await expect(page.locator('[data-project-id="meeting"]')).toContainText(
+        locale === 'zh' ? '已在四类终端上线' : 'Shipped across four platforms',
+      );
+      await expect(page.locator('[data-project-id="aidx"]')).toContainText(
+        locale === 'zh' ? '网站已上线' : 'Live website',
+      );
+      await expect(page.locator('[data-project-id="stt-demo"]')).toContainText(
+        locale === 'zh' ? 'Agora RTE 2026 大会发布' : 'Pinned static prototype',
+      );
+
       await expect(page.locator('[data-company-mark]')).toHaveCount(6);
       await expect(page.locator('[data-project-meta]')).toHaveCount(6);
       await expect(page.locator('[data-cta-treatment="white"]')).toHaveCount(3);
@@ -117,7 +135,7 @@ test.describe('portfolio homepage framework', () => {
       await expect(page.locator('[data-about-preview]')).toHaveCount(0);
       await expect(
         page.getByRole('heading', {
-          name: locale === 'zh' ? 'More C端用户设计作品' : 'More Consumer Product Work',
+          name: locale === 'zh' ? 'More C 端产品作品' : 'More Consumer Product Work',
         }),
       ).toBeVisible();
       await expect(
