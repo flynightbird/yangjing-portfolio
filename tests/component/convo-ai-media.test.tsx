@@ -14,6 +14,7 @@ describe('ConvoAiPlaylist', () => {
     expect(video).toHaveAttribute('src', '/videos/convo-ai/app-login.mp4');
     expect(video).toHaveAttribute('poster', '/images/convo-ai/posters/app-login.webp');
     expect(video).toHaveAttribute('preload', 'metadata');
+    expect(video).not.toHaveAttribute('autoplay');
     expect(video).not.toHaveAttribute('loop');
     expect(screen.getAllByText('00:03.200').length).toBeGreaterThan(0);
 
@@ -49,6 +50,30 @@ describe('ConvoAiPlaylist', () => {
     expect(screen.getByText('作用')).toBeInTheDocument();
     expect(screen.queryByText('context')).not.toBeInTheDocument();
   });
+
+  it('clears an error before reloading the active video', () => {
+    render(<ConvoAiPlaylist ids={['app-login']} locale="en" />);
+    const video = screen.getByLabelText('App entry and sign in') as HTMLVideoElement;
+    const load = vi.spyOn(video, 'load').mockImplementation(() => undefined);
+
+    fireEvent.error(video);
+    expect(screen.getByRole('status')).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Reload' }));
+
+    expect(load).toHaveBeenCalledOnce();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+
+  it('clears an error after the active video successfully loads', () => {
+    render(<ConvoAiPlaylist ids={['app-login']} locale="en" />);
+    const video = screen.getByLabelText('App entry and sign in');
+
+    fireEvent.error(video);
+    expect(screen.getByRole('status')).toBeVisible();
+    fireEvent.loadedData(video);
+
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
 });
 
 describe('CompleteConvoAiVideo', () => {
@@ -57,11 +82,34 @@ describe('CompleteConvoAiVideo', () => {
     const video = screen.getByLabelText('App 登录与进入') as HTMLVideoElement;
 
     expect(video).toHaveAttribute('src', '/videos/convo-ai/app-login.mp4');
+    expect(video).toHaveAttribute('autoplay');
     expect(video).toHaveAttribute('loop');
     expect(video.muted).toBe(true);
     Object.defineProperty(video, 'playbackRate', { value: 1.5, writable: true });
     fireEvent.rateChange(video);
     expect(video.playbackRate).toBe(1);
+  });
+
+  it('pauses other marked media by default', () => {
+    render(<><CompleteConvoAiVideo id="app-login" locale="en" /><video data-convo-ai-video="true" /></>);
+    const current = screen.getByLabelText('App entry and sign in');
+    const other = document.querySelectorAll<HTMLVideoElement>('video[data-convo-ai-video="true"]')[1];
+    other.pause = vi.fn();
+
+    fireEvent.play(current);
+
+    expect(other.pause).toHaveBeenCalledOnce();
+  });
+
+  it('does not pause other marked media when exclusivity is disabled', () => {
+    render(<><CompleteConvoAiVideo id="app-login" locale="en" exclusive={false} /><video data-convo-ai-video="true" /></>);
+    const current = screen.getByLabelText('App entry and sign in');
+    const other = document.querySelectorAll<HTMLVideoElement>('video[data-convo-ai-video="true"]')[1];
+    other.pause = vi.fn();
+
+    fireEvent.play(current);
+
+    expect(other.pause).not.toHaveBeenCalled();
   });
 });
 

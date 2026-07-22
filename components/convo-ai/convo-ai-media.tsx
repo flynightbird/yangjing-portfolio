@@ -19,9 +19,9 @@ function formatDuration(seconds: number) {
   return `${String(minutes).padStart(2, '0')}:${remaining}`;
 }
 
-export function CompleteConvoAiVideo({ id, locale, describedBy, autoPlay = false, loop = false, muted = false, videoRef }: { readonly id: ConvoAiMediaId; readonly locale: Locale; readonly describedBy?: string; readonly autoPlay?: boolean; readonly loop?: boolean; readonly muted?: boolean; readonly videoRef?: Ref<HTMLVideoElement> }) {
+export function CompleteConvoAiVideo({ id, locale, describedBy, autoPlay = false, loop = false, muted = false, exclusive = true, videoRef }: { readonly id: ConvoAiMediaId; readonly locale: Locale; readonly describedBy?: string; readonly autoPlay?: boolean; readonly loop?: boolean; readonly muted?: boolean; readonly exclusive?: boolean; readonly videoRef?: Ref<HTMLVideoElement> }) {
   const media = getConvoAiMedia(id);
-  return <video ref={videoRef} data-convo-ai-video="true" src={media.src} poster={media.poster} controls playsInline preload="metadata" autoPlay={autoPlay} loop={loop} muted={muted} aria-label={media.copy[locale].title} aria-describedby={describedBy} onPlay={(event) => pauseOtherMedia(event.currentTarget)} onRateChange={(event) => { if (event.currentTarget.playbackRate !== 1) event.currentTarget.playbackRate = 1; }} />;
+  return <video ref={videoRef} data-convo-ai-video="true" src={media.src} poster={media.poster} controls playsInline preload="metadata" autoPlay={autoPlay} loop={loop} muted={muted} aria-label={media.copy[locale].title} aria-describedby={describedBy} onPlay={(event) => { if (exclusive) pauseOtherMedia(event.currentTarget); }} onRateChange={(event) => { if (event.currentTarget.playbackRate !== 1) event.currentTarget.playbackRate = 1; }} />;
 }
 
 const cpdiLabels: Record<Locale, Record<'context' | 'problem' | 'decision' | 'impact', string>> = {
@@ -43,8 +43,8 @@ export function ConvoAiPlaylist({ ids, locale }: { readonly ids: readonly ConvoA
     </div>
     <figure className={styles.evidence} data-platform={active.platform}>
       <div className={styles.videoFrame} style={{ aspectRatio: `${active.width} / ${active.height}` }}>
-        <video key={active.id} ref={videoRef} data-convo-ai-video="true" src={active.src} poster={active.poster} controls playsInline preload="metadata" aria-label={copy.title} aria-describedby={descriptionId} onPlay={(event) => pauseOtherMedia(event.currentTarget)} onRateChange={(event) => { if (event.currentTarget.playbackRate !== 1) event.currentTarget.playbackRate = 1; }} onError={() => setFailed(true)} />
-        {failed ? <div className={styles.mediaError} role="status" aria-live="polite"><AlertCircle aria-hidden="true" size={18} /><span>{locale === 'zh' ? '媒体暂时无法加载' : 'Media unavailable'}</span><button type="button" onClick={() => videoRef.current?.load()}><RotateCcw aria-hidden="true" size={16} />{locale === 'zh' ? '重新加载' : 'Reload'}</button></div> : null}
+        <video key={active.id} ref={videoRef} data-convo-ai-video="true" src={active.src} poster={active.poster} controls playsInline preload="metadata" aria-label={copy.title} aria-describedby={descriptionId} onPlay={(event) => pauseOtherMedia(event.currentTarget)} onRateChange={(event) => { if (event.currentTarget.playbackRate !== 1) event.currentTarget.playbackRate = 1; }} onError={() => setFailed(true)} onLoadedData={() => setFailed(false)} />
+        {failed ? <div className={styles.mediaError} role="status" aria-live="polite"><AlertCircle aria-hidden="true" size={18} /><span>{locale === 'zh' ? '媒体暂时无法加载' : 'Media unavailable'}</span><button type="button" onClick={() => { setFailed(false); videoRef.current?.load(); }}><RotateCcw aria-hidden="true" size={16} />{locale === 'zh' ? '重新加载' : 'Reload'}</button></div> : null}
       </div>
       <figcaption id={descriptionId}><span>{active.platform.toUpperCase()} / {formatDuration(active.duration)}</span><p>{copy.description}</p></figcaption>
     </figure>
