@@ -130,7 +130,7 @@ test.describe('portfolio homepage framework', () => {
       await expect(
         page.locator('[data-project-id="xuelang"] [data-project-media-frame]'),
       ).toHaveCSS('border-radius', '20px');
-      await expect(page.locator('[data-liquid-field="footer"]')).toHaveCount(1);
+      await expect(page.locator('[data-liquid-field="footer"]')).toHaveCount(0);
       await expect(page.locator('#archive')).toHaveCount(1);
       await expect(page.locator('[data-about-preview]')).toHaveCount(0);
       await expect(
@@ -432,7 +432,21 @@ test.describe('portfolio homepage framework', () => {
       testInfo.project.name !== 'desktop',
       'Desktop expansion is disabled for compact viewports.',
     );
+    const convoAssetRequests: string[] = [];
+    page.on('request', (request) => {
+      const pathname = new URL(request.url()).pathname;
+      if (pathname.startsWith('/images/convo-ai/')) convoAssetRequests.push(pathname);
+    });
     await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    expect(convoAssetRequests).toEqual(
+      expect.arrayContaining([
+        '/images/convo-ai/figma/web-ready.png',
+        '/images/convo-ai/figma/avatar-video.png',
+      ]),
+    );
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop.gif');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop-poster.webp');
 
     const stage = page.locator('[data-flagship-focus]');
     const reveal = page.locator('[data-scroll-reveal]:has([data-flagship-focus])');
@@ -442,6 +456,11 @@ test.describe('portfolio homepage framework', () => {
     const convoMedia = page.locator('[data-project-id="convo-ai"] [data-media-radius="20"]');
     const callMediaReveal = callProject.locator('[data-flagship-media-reveal]');
     const convoMediaReveal = convoProject.locator('[data-flagship-media-reveal]');
+    const convoBrowser = convoMedia.locator('[data-convo-web-browser]');
+    const convoViewport = convoBrowser.locator('[data-convo-web-viewport]');
+    const convoWebImage = convoViewport.locator('img');
+    const convoPhone = convoMedia.locator('[data-convo-phone]');
+    const convoPhoneImage = convoPhone.locator('img');
 
     await callMedia.scrollIntoViewIfNeeded();
     await expect(reveal).toHaveAttribute('data-scroll-reveal-state', 'revealed');
@@ -449,9 +468,38 @@ test.describe('portfolio homepage framework', () => {
     await expect(callMedia).toHaveCSS('border-radius', '20px');
     await expect(convoMedia).toHaveCSS('border-radius', '20px');
     await expect(callMedia).toHaveCSS('background-color', 'rgb(232, 221, 187)');
-    await expect(convoMedia).toHaveCSS('background-color', 'rgb(220, 233, 239)');
+    await expect(convoMedia).toHaveCSS('background-color', 'rgb(199, 199, 193)');
     await expect(callMedia).toHaveCSS('background-image', 'none');
-    await expect(convoMedia).toHaveCSS('background-image', 'none');
+    await expect(convoMedia).not.toHaveCSS('background-image', 'none');
+    await expect(convoBrowser).toBeVisible();
+    await expect(convoBrowser).toHaveCSS('left', '28px');
+    await expect(convoBrowser).toHaveCSS('right', '28px');
+    await expect(convoBrowser).toHaveCSS('border-radius', '15px 15px 18px 18px');
+    await expect(convoWebImage).toHaveCSS('object-position', '0% 0%');
+    await expect(convoPhone).toBeVisible();
+
+    const mediaBox = await convoMedia.boundingBox();
+    const viewportBox = await convoViewport.boundingBox();
+    const webImageBox = await convoWebImage.boundingBox();
+    const phoneBox = await convoPhone.boundingBox();
+    expect(mediaBox).not.toBeNull();
+    expect(viewportBox).not.toBeNull();
+    expect(webImageBox).not.toBeNull();
+    expect(phoneBox).not.toBeNull();
+    expect(Math.abs((webImageBox?.x ?? 0) - (viewportBox?.x ?? 0))).toBeLessThanOrEqual(1);
+    expect(phoneBox?.x ?? 0).toBeGreaterThan(mediaBox?.x ?? 0);
+    expect((phoneBox?.x ?? 0) + (phoneBox?.width ?? 0)).toBeLessThanOrEqual(
+      (mediaBox?.x ?? 0) + (mediaBox?.width ?? 0),
+    );
+    expect((phoneBox?.y ?? 0) + (phoneBox?.height ?? 0)).toBeLessThanOrEqual(
+      (mediaBox?.y ?? 0) + (mediaBox?.height ?? 0),
+    );
+    const [phoneRadius, phoneImageRadius] = await Promise.all([
+      convoPhone.evaluate((element) => getComputedStyle(element).borderRadius),
+      convoPhoneImage.evaluate((element) => getComputedStyle(element).borderRadius),
+    ]);
+    expect(phoneRadius).not.toBe('0px');
+    expect(phoneImageRadius).toBe(phoneRadius);
 
     const callProjectBox = await callProject.boundingBox();
     const convoProjectBox = await convoProject.boundingBox();
@@ -523,7 +571,17 @@ test.describe('portfolio homepage framework', () => {
 
   test('stacks flagship media without transforms on mobile', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'mobile', 'Mobile-only fallback contract.');
+    const convoAssetRequests: string[] = [];
+    page.on('request', (request) => {
+      const pathname = new URL(request.url()).pathname;
+      if (pathname.startsWith('/images/convo-ai/')) convoAssetRequests.push(pathname);
+    });
     await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    expect(convoAssetRequests).toContain('/images/convo-ai/home-mobile-loop.gif');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop-poster.webp');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/web-ready.png');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/avatar-video.png');
 
     const call = page.locator('[data-project-id="call-agent"]');
     const convo = page.locator('[data-project-id="convo-ai"]');
@@ -531,6 +589,7 @@ test.describe('portfolio homepage framework', () => {
     const convoMedia = convo.locator('[data-media-radius="20"]');
     const callMediaReveal = call.locator('[data-flagship-media-reveal]');
     const convoMediaReveal = convo.locator('[data-flagship-media-reveal]');
+    const convoLoop = convoMedia.locator('[data-convo-mobile-loop]');
     const callBox = await call.boundingBox();
     const convoBox = await convo.boundingBox();
     const callMediaBox = await callMedia.boundingBox();
@@ -545,6 +604,18 @@ test.describe('portfolio homepage framework', () => {
     expect(convoBox?.y ?? 0).toBeGreaterThan((callBox?.y ?? 0) + (callBox?.height ?? 0));
     await expect(callMedia).toHaveCSS('transform', 'none');
     await expect(convoMedia).toHaveCSS('transform', 'none');
+    await expect(convoMedia.locator('[data-convo-web-browser]')).toBeHidden();
+    await expect(convoMedia.locator('[data-convo-phone]')).toBeHidden();
+    await expect(convoLoop).toBeVisible();
+    await expect(convoLoop.locator('source')).toHaveAttribute(
+      'srcset',
+      '/images/convo-ai/home-mobile-loop.gif',
+    );
+    await expect(convoLoop.locator('img')).toHaveCSS('object-fit', 'contain');
+    await expect(convoMedia.locator('[data-convo-mobile-poster]')).toBeHidden();
+    expect(convoMediaBox).not.toBeNull();
+    expect(convoMediaBox?.height ?? 0).toBeGreaterThanOrEqual(320);
+    expect(convoMediaBox?.height ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(420);
     await expect(callMedia.locator('[data-convo-studio-window]')).toHaveCSS(
       'transform',
       'none',
@@ -558,6 +629,40 @@ test.describe('portfolio homepage framework', () => {
     await expect
       .poll(() => scrollPanel.evaluate((element) => getComputedStyle(element).transform))
       .toBe(transformStart);
+  });
+
+  test('uses the static ConvoAI poster on mobile with reduced motion', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'mobile', 'Mobile reduced-motion contract.');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const convoAssetRequests: string[] = [];
+    page.on('request', (request) => {
+      const pathname = new URL(request.url()).pathname;
+      if (pathname.startsWith('/images/convo-ai/')) convoAssetRequests.push(pathname);
+    });
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    expect(convoAssetRequests).toContain('/images/convo-ai/home-mobile-loop-poster.webp');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop.gif');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/web-ready.png');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/avatar-video.png');
+
+    const convoMedia = page.locator('[data-project-id="convo-ai"] [data-convo-home-media]');
+    await convoMedia.scrollIntoViewIfNeeded();
+    const loop = convoMedia.locator('[data-convo-mobile-loop]');
+    const poster = convoMedia.locator('[data-convo-mobile-poster]');
+    await expect(loop.locator('source')).toHaveAttribute(
+      'srcset',
+      '/images/convo-ai/home-mobile-loop.gif',
+    );
+    await expect(poster.locator('source')).toHaveAttribute(
+      'srcset',
+      '/images/convo-ai/home-mobile-loop-poster.webp',
+    );
+    await expect(loop).toBeHidden();
+    await expect(poster).toBeVisible();
+    await expect(poster.locator('img')).toHaveCSS('object-fit', 'contain');
   });
 
   test('uses a media-dominant STT stage with direct prototype actions', async ({
@@ -639,27 +744,130 @@ test.describe('portfolio homepage framework', () => {
     }
   });
 
-  test('loads every real homepage image and has no horizontal overflow', async ({ page }) => {
+  test('loads every rendered homepage image and has no horizontal overflow', async ({
+    page,
+  }, testInfo) => {
+    testInfo.setTimeout(90_000);
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
-    const images = page.locator('main img:not([data-placeholder-media])');
-    await expect(images).toHaveCount(11);
-    for (let index = 0; index < await images.count(); index += 1) {
-      const image = images.nth(index);
-      await image.scrollIntoViewIfNeeded();
-      await expect
-        .poll(() =>
-          image.evaluate((node) => {
-            const rendered = node as HTMLImageElement;
+    const imageCandidates = page.locator('main img:not([data-placeholder-media])');
+    await imageCandidates.evaluateAll(async (nodes) => {
+      for (const node of nodes) {
+        const image = node as HTMLImageElement;
+        const bounds = node.getBoundingClientRect();
+        if (
+          image.src === '' ||
+          image.src.startsWith('data:') ||
+          node.getClientRects().length === 0 ||
+          bounds.width <= 0 ||
+          bounds.height <= 0
+        ) {
+          continue;
+        }
+        node.scrollIntoView({ block: 'center' });
+        await new Promise<void>((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+        );
+      }
+    });
+
+    const comparisonImages = page.locator('[data-xuelang-home-comparison] img');
+    await expect(comparisonImages).toHaveCount(2);
+    await expect
+      .poll(() =>
+        comparisonImages.evaluateAll((nodes) =>
+          nodes.every((node) => {
+            const image = node as HTMLImageElement;
+            const bounds = image.getBoundingClientRect();
             return (
-              rendered.complete &&
-              rendered.naturalWidth > 0 &&
-              rendered.naturalHeight > 0
+              image.currentSrc !== '' &&
+              !image.currentSrc.startsWith('data:') &&
+              image.complete &&
+              image.naturalWidth > 0 &&
+              image.naturalHeight > 0 &&
+              image.getClientRects().length > 0 &&
+              bounds.width > 0 &&
+              bounds.height > 0
             );
           }),
+        ),
+      )
+      .toBe(true);
+
+    for (const group of [
+      page.locator('[data-media="portrait"] img'),
+      page.locator('[data-project-id] img:not([data-placeholder-media])'),
+      page.locator('[data-archive-card] img:not([data-placeholder-media])'),
+    ]) {
+      await expect
+        .poll(() =>
+          group.evaluateAll((nodes) =>
+            nodes.filter((node) => {
+              const image = node as HTMLImageElement;
+              const bounds = image.getBoundingClientRect();
+              return (
+                image.currentSrc !== '' &&
+                !image.currentSrc.startsWith('data:') &&
+                image.getClientRects().length > 0 &&
+                bounds.width > 0 &&
+                bounds.height > 0
+              );
+            }).length,
+          ),
         )
-        .toBe(true);
+        .toBeGreaterThan(0);
     }
+
+    const renderedImageCount = await imageCandidates.evaluateAll((nodes) =>
+      nodes.filter((node) => {
+        const image = node as HTMLImageElement;
+        const bounds = image.getBoundingClientRect();
+        return (
+          image.currentSrc !== '' &&
+          !image.currentSrc.startsWith('data:') &&
+          image.getClientRects().length > 0 &&
+          bounds.width > 0 &&
+          bounds.height > 0
+        );
+      }).length,
+    );
+    expect(renderedImageCount).toBeGreaterThan(0);
+    await expect
+      .poll(
+        () =>
+          imageCandidates.evaluateAll((nodes) =>
+            nodes
+              .filter((node) => {
+                const image = node as HTMLImageElement;
+                const bounds = image.getBoundingClientRect();
+                return (
+                  image.currentSrc !== '' &&
+                  !image.currentSrc.startsWith('data:') &&
+                  image.getClientRects().length > 0 &&
+                  bounds.width > 0 &&
+                  bounds.height > 0
+                );
+              })
+              .map((node) => {
+                const image = node as HTMLImageElement;
+                return {
+                  alt: image.alt,
+                  complete: image.complete,
+                  currentSrc: image.currentSrc,
+                  naturalHeight: image.naturalHeight,
+                  naturalWidth: image.naturalWidth,
+                };
+              })
+              .filter(
+                (image) =>
+                  !image.complete ||
+                  image.naturalWidth <= 0 ||
+                  image.naturalHeight <= 0,
+              ),
+          ),
+        { timeout: 15_000 },
+      )
+      .toEqual([]);
 
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,

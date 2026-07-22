@@ -21,7 +21,7 @@ function resolvePdfToText() {
   }
 }
 
-test('localized Xuelang routes link verified A4 case-study PDFs', () => {
+test('localized Xuelang PDFs remain verified but are not linked from published routes', () => {
   const pdftotext = resolvePdfToText();
   const expectations = {
     zh: ['学浪商业化体验升级', '11.75%', '14 天累计相对值'],
@@ -36,7 +36,7 @@ test('localized Xuelang routes link verified A4 case-study PDFs', () => {
       'utf8',
     );
 
-    assert.match(html, new RegExp(`/files/${name}`));
+    assert.doesNotMatch(html, new RegExp(`<a\\b[^>]*href="[^"]*/files/${name}"`, 'i'));
     assert.match(readFileSync(pdfPath).subarray(0, 5).toString(), /^%PDF-/);
     assert.ok(statSync(pdfPath).size > 500_000, `${locale} PDF must exceed 500 KB`);
 

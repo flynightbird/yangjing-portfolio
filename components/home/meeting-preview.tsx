@@ -35,7 +35,9 @@ export function MeetingPreview({ copy, href }: MeetingPreviewProps) {
       <div className={styles.meetingInner}>
         <div className={styles.meetingHeading} data-scroll-reveal-group="text">
           <ProjectMeta companyId="agora" company={copy.company} kind={copy.kind} />
-          <h2>{copy.title}</h2>
+          <h2 className={styles.coreProjectTitle} data-core-project-title>
+            {copy.title}
+          </h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
           <p className={styles.meetingStatus}>{copy.status}</p>
         </div>

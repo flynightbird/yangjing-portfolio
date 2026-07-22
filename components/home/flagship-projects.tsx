@@ -4,8 +4,8 @@ import { useEffect, useRef, useState, type PointerEvent } from 'react';
 
 import { ActionLink } from '@/components/ui/action-link';
 import type { Locale } from '@/content/types';
-import { withBasePath } from '@/lib/i18n/locales';
 
+import { ConvoAiMedia } from './convo-ai-media';
 import { ConvoAiStudioWindow } from './convo-ai-studio-window';
 import { ProjectMeta } from './project-meta';
 import styles from './home.module.css';
@@ -98,7 +98,9 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
               aria-label={`View ${callAgent.copy.title} case study`}
               data-page-transition-tone="dark"
             >
-              <h2>{callAgent.copy.title}</h2>
+              <h2 className={styles.coreProjectTitle} data-core-project-title>
+                {callAgent.copy.title}
+              </h2>
             </a>
             <p className={styles.flagshipSummary}>{callAgent.copy.proposition}</p>
             <p className={styles.flagshipRole}>{callAgent.copy.role}</p>
@@ -156,7 +158,9 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
               aria-label={`View ${convoAi.copy.title} project`}
               data-page-transition-tone="dark"
             >
-              <h2>{convoAi.copy.title}</h2>
+              <h2 className={styles.coreProjectTitle} data-core-project-title>
+                {convoAi.copy.title}
+              </h2>
             </a>
             <p className={styles.flagshipSummary}>{convoAi.copy.proposition}</p>
             <p className={styles.flagshipRole}>{convoAi.copy.role}</p>
@@ -185,18 +189,7 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
               data-media-radius="20"
               data-page-transition-tone="dark"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                className={styles.flagshipConvoWeb}
-                src={withBasePath('/images/convo-ai/figma/web-ready.png')}
-                alt="ConvoAI web conversation ready state"
-              />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                className={styles.flagshipConvoPhone}
-                src={withBasePath('/images/convo-ai/figma/avatar-video.png')}
-                alt="ConvoAI app avatar and live video state"
-              />
+              <ConvoAiMedia />
             </a>
           </div>
         </article>

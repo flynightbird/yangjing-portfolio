@@ -44,6 +44,13 @@ describe('AboutPage', () => {
       'Design value, beyond the screen',
       'Step by step, to where I am now',
     ]);
+    const capabilityOrbit = container.querySelector('[data-about-orbit-background]');
+    expect(capabilityOrbit).toHaveAttribute(
+      'data-about-orbit-background',
+      '/images/about/about-hero-blue-bg.png',
+    );
+    expect(capabilityOrbit).toHaveAttribute('data-orbit-material', 'ice-glass');
+
     expect(
       screen.getByRole('heading', {
         level: 1,
@@ -60,11 +67,11 @@ describe('AboutPage', () => {
       expect(card.querySelector('svg')).not.toBeNull();
       expect(card.querySelectorAll('[data-card-corner]')).toHaveLength(2);
     });
-    expect(capabilitySection?.querySelector('[data-transform-arrow]')).toHaveAttribute(
-      'd',
-      'M106 55h37m-5-4.5 5 4.5-5 4.5',
-    );
-    expect(capabilitySection?.querySelector('[data-transform-spark]')).not.toBeNull();
+    const aiWorkflow = capabilitySection?.querySelector('[data-ai-workflow="continuous-signal"]');
+    expect(aiWorkflow).not.toBeNull();
+    expect(aiWorkflow?.querySelectorAll('[data-workflow-system]')).toHaveLength(2);
+    expect(aiWorkflow?.querySelector('[data-workflow-path]')).not.toBeNull();
+    expect(capabilitySection?.querySelector('[data-transform-spark]')).toBeNull();
     expect(screen.getByText('Make complexity feel clear')).toBeVisible();
     expect(screen.getByText('Expressive interfaces')).toBeVisible();
     expect(screen.getByText('Design and build, as one workflow.')).toBeVisible();

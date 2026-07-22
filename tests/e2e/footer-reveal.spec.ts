@@ -16,6 +16,32 @@ test.describe('homepage Footer reveal', () => {
       const footer = page.locator('[data-site-footer]');
       const layer = footer.locator('[data-footer-reveal-layer]');
 
+      await expect(footer).toHaveCount(1);
+      await expect(page.locator('[data-footer-reveal-layer]')).toHaveCount(1);
+      await expect(page.locator('[data-footer-email-actions]')).toHaveCount(1);
+      await expect(homepage.locator('[data-site-footer]')).toHaveCount(0);
+      await expect(
+        footer.getByText(
+          locale === 'zh' ? '有一个值得实现的想法？' : 'Have an idea worth making real?',
+          { exact: true },
+        ),
+      ).toBeVisible();
+      await expect(
+        footer.getByRole('heading', {
+          name: locale === 'zh'
+            ? '让我们一起把它变成真实体验。'
+            : "Let's turn it into an experience.",
+        }),
+      ).toBeVisible();
+      await expect(
+        footer.locator('a[href="mailto:amanda.yangj@gmail.com"]'),
+      ).toHaveCount(2);
+      await expect(
+        footer.getByRole('button', {
+          name: locale === 'zh' ? '复制邮箱' : 'Copy email address',
+        }),
+      ).toBeVisible();
+
       await expect(homepage).toHaveCSS('border-bottom-left-radius', '32px');
       await expect(homepage).toHaveCSS('border-bottom-right-radius', '32px');
       await expect(footer).toHaveCSS('position', 'sticky');

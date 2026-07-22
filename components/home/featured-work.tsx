@@ -2,6 +2,7 @@ import { CommunicationProjects } from '@/components/home/communication-projects'
 import { FeaturedProject } from '@/components/home/featured-project';
 import { FlagshipProjects } from '@/components/home/flagship-projects';
 import { LiveWebsiteProject } from '@/components/home/live-website-project';
+import { XuelangHomeComparison } from '@/components/home/xuelang-home-comparison';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
@@ -61,15 +62,7 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
             companyId="bytedance"
             order="06"
             variant="evidence"
-            media={{
-              src: withBasePath('/images/xuelang/hero-panorama.webp'),
-              width: 3000,
-              height: 1500,
-              alt:
-                locale === 'zh'
-                  ? '学浪产品体验全景，呈现发现、决策与学习的关键界面'
-                  : 'Xuelang product panorama showing key discovery, purchase, and learning interfaces',
-            }}
+            mediaContent={<XuelangHomeComparison locale={locale} />}
             transitionTone="light"
           />
         </section>

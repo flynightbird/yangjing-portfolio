@@ -215,7 +215,12 @@ const copy = {
 
 function CapabilityOrbit() {
   return (
-    <div className={styles.orbitFrame} aria-hidden="true">
+    <div
+      className={styles.orbitFrame}
+      aria-hidden="true"
+      data-about-orbit-background="/images/about/about-hero-blue-bg.png"
+      data-orbit-material="ice-glass"
+    >
       <svg className={styles.orbit} viewBox="0 0 440 440" role="presentation">
         <circle className={styles.orbitRing} cx="220" cy="220" r="162" />
         <g className={styles.orbitMarker}>
@@ -304,26 +309,49 @@ function CapabilityGraphic({ tone }: { readonly tone: Capability['tone'] }) {
 
   if (tone === 'ai') {
     return (
-      <svg viewBox="0 0 260 110" role="presentation">
-        <rect className={styles.graphMuted} x="6" y="34" width="92" height="42" rx="8" />
-        <text x="18" y="59">design ui...</text>
-        <circle className={styles.graphSolid} cx="82" cy="59" r="2" />
-        <circle className={styles.graphSolidSoft} cx="88" cy="59" r="2" />
+      <svg viewBox="0 0 260 110" role="presentation" data-ai-workflow="continuous-signal">
+        <g className={styles.workflowSystem} data-workflow-system="judgment">
+          <rect className={styles.workflowSystemFrame} x="6" y="21" width="60" height="68" rx="9" />
+          <path className={styles.workflowSystemGrid} d="M6 39h60M26 21v68" />
+          <rect className={styles.workflowModuleSoft} x="34" y="49" width="22" height="6" rx="3" />
+          <rect className={styles.workflowModule} x="34" y="61" width="14" height="6" rx="3" />
+          <circle className={styles.workflowModule} cx="55" cy="64" r="3" />
+        </g>
+
         <path
-          className={styles.graphTransformArrow}
-          d="M106 55h37m-5-4.5 5 4.5-5 4.5"
-          data-transform-arrow
+          className={styles.workflowReturn}
+          d="M194 77C171 101 89 101 66 77"
         />
         <path
-          className={styles.graphTransformSpark}
-          d="M124 31c1.45 4.9 2.55 6.9 7.4 9-4.85 2.1-5.95 4.1-7.4 9-1.45-4.9-2.55-6.9-7.4-9 4.85-2.1 5.95-4.1 7.4-9Z"
-          data-transform-spark
+          className={styles.workflowTrack}
+          d="M66 55C83 55 87 31 104 31S128 79 146 79 170 55 194 55"
         />
-        <rect className={styles.graphPanel} x="150" y="24" width="104" height="62" rx="8" />
-        <rect className={styles.graphFillStrong} x="160" y="36" width="60" height="8" rx="3" />
-        <rect className={styles.graphFillMuted} x="160" y="50" width="84" height="6" rx="3" />
-        <rect className={styles.graphFillMuted} x="160" y="60" width="70" height="6" rx="3" />
-        <rect className={styles.graphFillStrong} x="160" y="72" width="40" height="8" rx="4" />
+        <path
+          className={styles.workflowSignal}
+          d="M66 55C83 55 87 31 104 31S128 79 146 79 170 55 194 55"
+          data-workflow-path
+        />
+
+        {[
+          [66, 55],
+          [104, 31],
+          [146, 79],
+          [194, 55],
+        ].map(([x, y], index) => (
+          <g className={styles.workflowNode} key={`${x}-${y}`} style={{ animationDelay: `${index * 0.34}s` }}>
+            <circle cx={x} cy={y} r="5.5" />
+            <circle className={styles.workflowNodeCore} cx={x} cy={y} r="1.8" />
+          </g>
+        ))}
+
+        <g className={styles.workflowSystem} data-workflow-system="resolved">
+          <rect className={styles.workflowSystemFrame} x="194" y="21" width="60" height="68" rx="9" />
+          <path className={styles.workflowSystemGrid} d="M194 39h60M214 21v68" />
+          <rect className={styles.workflowModule} x="222" y="49" width="22" height="6" rx="3" />
+          <rect className={styles.workflowModuleSoft} x="222" y="61" width="14" height="6" rx="3" />
+          <circle className={styles.workflowModuleSoft} cx="243" cy="64" r="3" />
+          <rect className={styles.workflowModule} x="222" y="73" width="10" height="6" rx="3" />
+        </g>
       </svg>
     );
   }

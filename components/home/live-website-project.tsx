@@ -28,8 +28,15 @@ export function LiveWebsiteProject({ copy, href }: LiveWebsiteProjectProps) {
     >
       <div className={styles.liveInner}>
         <div className={styles.liveCopy} data-scroll-reveal-group="text">
-          <ProjectMeta companyId="aidx" company={copy.company} kind={copy.kind} />
-          <h2>{copy.title}</h2>
+          <ProjectMeta
+            companyId="aidx"
+            company={copy.company}
+            kind={copy.kind}
+            variant="company-only"
+          />
+          <h2 className={styles.coreProjectTitle} data-core-project-title>
+            {copy.title}
+          </h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
           <ul className={styles.scopeList} aria-label={copy.role}>
             {copy.scope.map((item) => (

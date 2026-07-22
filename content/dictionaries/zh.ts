@@ -98,7 +98,7 @@ export const zhDictionary = {
         ],
       },
       aidx: {
-        company: '新加坡 AIDX',
+        company: '新加坡 AI 公司',
         kind: '新加坡 AI 安全公司官网',
         title: 'AIDX',
         proposition: '通过界面、信息架构与动效，为 AIDX 打造清晰、可信的品牌官网。',
