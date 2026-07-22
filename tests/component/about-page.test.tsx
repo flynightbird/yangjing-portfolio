@@ -9,10 +9,12 @@ describe('AboutPage', () => {
   it('presents the approved English capability and career structure', () => {
     const { container } = render(<AboutPage locale="en" />);
 
-    expect(container.querySelector('[data-about-orbit-background]')).toHaveAttribute(
+    const capabilityOrbit = container.querySelector('[data-about-orbit-background]');
+    expect(capabilityOrbit).toHaveAttribute(
       'data-about-orbit-background',
       '/images/about/about-hero-blue-bg.png',
     );
+    expect(capabilityOrbit).toHaveAttribute('data-orbit-material', 'ice-glass');
 
     expect(
       screen.getByRole('heading', {

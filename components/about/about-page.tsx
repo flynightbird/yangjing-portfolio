@@ -218,6 +218,7 @@ function CapabilityOrbit() {
       className={styles.orbitFrame}
       aria-hidden="true"
       data-about-orbit-background="/images/about/about-hero-blue-bg.png"
+      data-orbit-material="ice-glass"
     >
       <svg className={styles.orbit} viewBox="0 0 440 440" role="presentation">
         <circle className={styles.orbitRing} cx="220" cy="220" r="162" />
