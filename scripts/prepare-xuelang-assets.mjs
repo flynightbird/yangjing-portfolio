@@ -130,8 +130,10 @@ export async function prepareXuelangInteractionWebp(input) {
     .toBuffer();
 }
 
-async function prepareAsset(asset) {
-  const outputPath = path.resolve(projectRoot, asset.output);
+export async function prepareXuelangAsset(
+  asset,
+  { outputPath = path.resolve(projectRoot, asset.output) } = {},
+) {
   const sourcePaths = asset.sourcePaths.map((sourcePath) =>
     resolveXuelangSourcePath(sourcePath, asset.id));
 
@@ -183,7 +185,7 @@ export async function prepareXuelangAssets({ rootDir = projectRoot } = {}) {
   const manifest = validateXuelangManifest(
     JSON.parse(await fs.readFile(manifestPath, 'utf8')),
   );
-  for (const asset of manifest.assets) await prepareAsset(asset);
+  for (const asset of manifest.assets) await prepareXuelangAsset(asset);
   return manifest.assets.map((asset) => asset.output);
 }
 
