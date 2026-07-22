@@ -1,5 +1,4 @@
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { act, cleanup, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SiteHeader } from '@/components/shell/site-header';
@@ -14,98 +13,68 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ replace: navigationMocks.replace }),
 }));
 
-function navigationDetails(): HTMLDetailsElement {
-  const details = screen.getByText('Menu').closest('details');
-
-  if (!details) {
-    throw new Error('Expected the navigation summary to belong to details');
-  }
-
-  return details;
-}
-
-async function openNavigation(user: ReturnType<typeof userEvent.setup>) {
-  const summary = screen.getByText('Menu').closest('summary');
-
-  if (!summary) {
-    throw new Error('Expected a navigation summary');
-  }
-
-  await user.click(summary);
-  await waitFor(() => expect(navigationDetails()).toHaveAttribute('open'));
-}
-
-async function openLocaleChoices(user: ReturnType<typeof userEvent.setup>) {
-  await user.click(screen.getByRole('button', { name: 'Select language' }));
-  expect(
-    screen.getByRole('button', { name: 'Simplified Chinese' }),
-  ).toBeVisible();
-}
-
 afterEach(cleanup);
 
-describe('SiteHeader panel coordination', () => {
+describe('SiteHeader', () => {
+  let intersectionCallback: IntersectionObserverCallback;
+
   beforeEach(() => {
     navigationMocks.pathname = '/en/';
     navigationMocks.replace.mockReset();
-  });
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        constructor(callback: IntersectionObserverCallback) {
+          intersectionCallback = callback;
+        }
 
-  it('closes navigation when locale choices open', async () => {
-    const user = userEvent.setup();
-    render(<SiteHeader locale="en" />);
-
-    await openNavigation(user);
-    await openLocaleChoices(user);
-
-    expect(navigationDetails()).not.toHaveAttribute('open');
-  });
-
-  it('closes locale choices when navigation opens', async () => {
-    const user = userEvent.setup();
-    render(<SiteHeader locale="en" />);
-
-    await openLocaleChoices(user);
-    await openNavigation(user);
-
-    expect(
-      screen.queryByRole('button', { name: 'Simplified Chinese' }),
-    ).not.toBeInTheDocument();
-  });
-
-  it('hides locale choices while fallback confirmation is pending', async () => {
-    navigationMocks.pathname = '/en/private-preview/';
-    const user = userEvent.setup();
-    render(<SiteHeader locale="en" />);
-
-    await openLocaleChoices(user);
-    await user.click(
-      screen.getByRole('button', { name: 'Simplified Chinese' }),
+        observe = vi.fn();
+        disconnect = vi.fn();
+        unobserve = vi.fn();
+        takeRecords = vi.fn(() => []);
+        root = null;
+        rootMargin = '0px';
+        thresholds = [0];
+      },
     );
-
-    expect(screen.getByRole('status')).toBeVisible();
-    expect(
-      screen.queryByRole('button', { name: 'Simplified Chinese' }),
-    ).not.toBeInTheDocument();
   });
 
-  it('clears fallback confirmation when navigation opens', async () => {
-    navigationMocks.pathname = '/en/private-preview/';
-    const user = userEvent.setup();
+  it('renders only Work, Archive, About, and the direct language control', () => {
     render(<SiteHeader locale="en" />);
 
-    await openLocaleChoices(user);
-    await user.click(
-      screen.getByRole('button', { name: 'Simplified Chinese' }),
-    );
-    expect(screen.getByRole('status')).toBeVisible();
+    expect(screen.getAllByRole('link', { name: 'Work' })[0]).toHaveAttribute('href', '/en/#work');
+    expect(screen.getAllByRole('link', { name: 'Archive' })[0]).toHaveAttribute('href', '/en/#archive');
+    expect(screen.getAllByRole('link', { name: 'About' })[0]).toHaveAttribute('href', '/en/about/');
+    expect(screen.queryByText('Resume')).not.toBeInTheDocument();
+    expect(screen.queryByText('Contact')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Switch to Simplified Chinese' })).toBeVisible();
+  });
 
-    await openNavigation(user);
+  it('uses the full name and exposes a top-state observer sentinel', () => {
+    const { container } = render(<SiteHeader locale="en" />);
 
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', {
-        name: 'Open the Simplified Chinese homepage',
-      }),
-    ).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Yang Jing home' })).toHaveTextContent('Yang Jing');
+    expect(container.querySelector('[data-header-top-sentinel]')).toBeInTheDocument();
+    expect(screen.getByRole('banner')).toHaveAttribute('data-scrolled', 'false');
+  });
+
+  it('morphs into the capsule when the page top leaves the viewport', () => {
+    render(<SiteHeader locale="en" />);
+
+    act(() => {
+      intersectionCallback(
+        [{ isIntersecting: false } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+    });
+
+    expect(screen.getByRole('banner')).toHaveAttribute('data-scrolled', 'true');
+  });
+
+  it('marks the Xuelang detail route as a light surface', () => {
+    navigationMocks.pathname = '/zh/work/xuelang/';
+    render(<SiteHeader locale="zh" />);
+
+    expect(screen.getByRole('banner')).toHaveAttribute('data-surface', 'light');
   });
 });

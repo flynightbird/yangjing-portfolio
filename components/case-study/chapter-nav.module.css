@@ -1,23 +1,26 @@
 .root {
+  --chapter-ink: var(--theme-dark-ink);
+  --chapter-accent: var(--color-iris-luminous);
+  --chapter-surface: var(--theme-dark-canvas);
+  --chapter-border: var(--theme-dark-border);
+  --chapter-border-strong: var(--theme-dark-border-strong);
   position: sticky;
   inset-block-start: calc(var(--header-height) + var(--space-5));
   z-index: 10;
   align-self: start;
 }
 
-.toggle {
-  display: none;
+.root[data-surface='light'] {
+  --chapter-ink: var(--theme-light-ink);
+  --chapter-accent: var(--color-iris-deep);
+  --chapter-surface: var(--theme-light-surface);
+  --chapter-border: var(--theme-light-border);
+  --chapter-border-strong: var(--theme-light-border-strong);
 }
 
-.navigation {
-  border-block-start: 1px solid var(--color-border-strong);
-}
-
-.navigation ol {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
+.toggle { display: none; }
+.navigation { border: 0; }
+.navigation ol { padding: 0; margin: 0; list-style: none; }
 
 .navigation a {
   display: grid;
@@ -25,48 +28,28 @@
   grid-template-columns: 2rem minmax(0, 1fr);
   align-items: center;
   padding-block: var(--space-2);
-  border-block-end: 1px solid var(--color-border);
-  color: var(--color-ink-muted);
+  border: 0;
+  color: var(--chapter-ink);
   font-size: 0.8125rem;
   line-height: 1.35;
+  opacity: 0.48;
   text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
 }
 
-.navigation a span {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-}
-
+.navigation a span { font-family: var(--font-mono); font-size: 0.6875rem; }
+.navigation a[aria-current='location'] { color: var(--chapter-ink); font-weight: 600; opacity: 1; }
 .navigation a:hover,
-.navigation a:focus-visible {
-  color: var(--color-cobalt);
-}
-
-.navigation a[aria-current='location'] {
-  box-shadow: inset 2px 0 0 #466b52;
-  color: #111512;
-}
-
-.root[data-chapter-variant='xuelang'] .navigation a:hover,
-.root[data-chapter-variant='xuelang'] .navigation a:focus-visible {
-  color: #466b52;
-}
-
-.root[data-chapter-variant='xuelang'] .navigation a:focus-visible {
-  outline-color: #466b52;
-}
-
-.root[data-chapter-variant='xuelang'] .navigation a[aria-current='location'] {
-  box-shadow: none;
-}
+.navigation a:focus-visible { color: var(--chapter-accent); opacity: 1; }
+.navigation a:focus-visible { outline: 2px solid var(--chapter-accent); outline-offset: 2px; }
 
 @media (max-width: 1100px) {
   .root {
     position: relative;
     inset-block-start: auto;
     padding-block: var(--space-2);
-    border-block: 1px solid var(--color-border);
-    background: var(--color-paper);
+    border-block: 1px solid var(--chapter-border);
+    background: var(--chapter-surface);
   }
 
   .toggle {
@@ -76,8 +59,8 @@
     align-items: center;
     gap: var(--space-2);
     padding-inline: var(--space-3);
-    border: 1px solid var(--color-border-strong);
-    background: var(--color-paper);
+    border: 1px solid var(--chapter-border-strong);
+    background: var(--chapter-surface);
     cursor: pointer;
   }
 
@@ -85,12 +68,10 @@
     display: none;
     max-height: calc(100vh - var(--header-height) - 4.5rem);
     overflow-y: auto;
-    border-block-end: 1px solid var(--color-border-strong);
+    border-block-end: 1px solid var(--chapter-border-strong);
   }
 
-  .navigation[data-open='true'] {
-    display: block;
-  }
+  .navigation[data-open='true'] { display: block; }
 
   .root[data-compact-at='wide'] .navigation[data-open='true'] {
     position: absolute;
@@ -98,8 +79,8 @@
     inset-inline: 0;
     z-index: 30;
     padding-inline: var(--space-3);
-    border: 1px solid var(--color-border-strong);
-    background: var(--color-paper);
+    border: 1px solid var(--chapter-border-strong);
+    background: var(--chapter-surface);
     box-shadow: 0 1.25rem 2.5rem rgba(16, 17, 15, 0.16);
   }
 }
@@ -112,10 +93,7 @@
     background: transparent;
   }
 
-  .root[data-compact-at='default'] .toggle {
-    display: none;
-  }
-
+  .root[data-compact-at='default'] .toggle { display: none; }
   .root[data-compact-at='default'] .navigation,
   .root[data-compact-at='default'] .navigation[data-open='true'] {
     display: block;
@@ -125,8 +103,4 @@
   }
 }
 
-@media print {
-  .root {
-    display: none !important;
-  }
-}
+@media print { .root { display: none !important; } }

@@ -95,6 +95,7 @@ export function XuelangLayout({
             compactAt="wide"
             indexStart={0}
             variant="xuelang"
+            surface="light"
           />
         </aside>
 

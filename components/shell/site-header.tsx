@@ -1,92 +1,84 @@
 'use client';
 
 import { Menu } from 'lucide-react';
-import { type SyntheticEvent, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { Fragment, useEffect, useRef, useState } from 'react';
 
 import { LocaleSwitcher } from '@/components/shell/locale-switcher';
-import { ResumeMenu } from '@/components/shell/resume-menu';
 import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
 import type { Locale } from '@/content/types';
 
 import styles from './site-header.module.css';
 
-interface SiteHeaderProps {
-  readonly locale: Locale;
+function resolveHeaderSurface(pathname: string): 'light' | 'dark' {
+  return /^\/(?:en|zh)\/work\/(?:call-agent|convo-ai|meeting|xuelang)\/?$/.test(pathname)
+    ? 'light'
+    : 'dark';
 }
 
-type ActivePanel = 'navigation' | 'locale' | null;
-
-export function SiteHeader({ locale }: SiteHeaderProps) {
+export function SiteHeader({ locale }: { readonly locale: Locale }) {
   const dictionary = locale === 'zh' ? zhDictionary : enDictionary;
   const localeRoot = `/${locale}/`;
-  const [activePanel, setActivePanel] = useState<ActivePanel>(null);
+  const pathname = usePathname();
+  const [scrolled, setScrolled] = useState(false);
+  const topSentinelRef = useRef<HTMLSpanElement>(null);
 
-  const handleNavigationToggle = (
-    event: SyntheticEvent<HTMLDetailsElement>,
-  ) => {
-    const isOpen = event.currentTarget.open;
+  useEffect(() => {
+    const sentinel = topSentinelRef.current;
+    if (!sentinel || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setScrolled(!(entry?.isIntersecting ?? true)),
+      { threshold: 0 },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
 
-    setActivePanel((currentPanel) => {
-      if (isOpen) {
-        return 'navigation';
-      }
-
-      return currentPanel === 'navigation' ? null : currentPanel;
-    });
-  };
-
-  const handleLocaleActiveChange = (isActive: boolean) => {
-    setActivePanel((currentPanel) => {
-      if (isActive) {
-        return 'locale';
-      }
-
-      return currentPanel === 'locale' ? null : currentPanel;
-    });
-  };
+  const links = (
+    <>
+      <a href={`${localeRoot}#work`}>{dictionary.navigation.work}</a>
+      <a href={`${localeRoot}#archive`}>{dictionary.navigation.archive}</a>
+      <a href={`${localeRoot}about/`}>{dictionary.navigation.about}</a>
+    </>
+  );
 
   return (
-    <header className={styles.root}>
-      <a
-        className={styles.home}
-        href={localeRoot}
-        aria-label={dictionary.site.homeLabel}
-      >
-        {dictionary.site.name}
-      </a>
-      <details
-        open={activePanel === 'navigation'}
-        onToggle={handleNavigationToggle}
-      >
-        <summary>
-          <Menu aria-hidden="true" size={20} />
-          <span>{dictionary.menu.label}</span>
-        </summary>
-        <nav>
-          <ul>
-            <li>
-              <a href={`${localeRoot}#work`}>{dictionary.navigation.work}</a>
-            </li>
-            <li>
-              <a href={`${localeRoot}about/`}>{dictionary.navigation.about}</a>
-            </li>
-            <li>
-              <ResumeMenu locale={locale} />
-            </li>
-            <li>
-              <a href={`${localeRoot}about/#contact`}>
-                {dictionary.navigation.contact}
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </details>
-      <LocaleSwitcher
-        locale={locale}
-        active={activePanel === 'locale'}
-        onActiveChange={handleLocaleActiveChange}
+    <Fragment>
+      <span
+        ref={topSentinelRef}
+        className={styles.topSentinel}
+        data-header-top-sentinel
+        aria-hidden="true"
       />
-    </header>
+      <header
+        className={styles.root}
+        data-scrolled={scrolled ? 'true' : 'false'}
+        data-surface={resolveHeaderSurface(pathname)}
+      >
+        <div className={styles.capsule}>
+          <a
+            className={styles.home}
+            href={localeRoot}
+            aria-label={dictionary.site.homeLabel}
+          >
+            Yang Jing
+          </a>
+          <nav className={styles.desktopNav} aria-label={dictionary.menu.label}>
+            {links}
+          </nav>
+          <div className={styles.actions}>
+            <details className={styles.mobileMenu}>
+              <summary aria-label={dictionary.menu.open}>
+                <Menu aria-hidden="true" size={20} />
+              </summary>
+              <nav aria-label={dictionary.menu.label}>{links}</nav>
+            </details>
+            <span className={styles.separator} aria-hidden="true" />
+            <LocaleSwitcher locale={locale} />
+          </div>
+        </div>
+      </header>
+    </Fragment>
   );
 }

@@ -11,7 +11,10 @@ const testStorage = {
   setItem: (key: string, value: string) => storedValues.set(key, value),
 } as unknown as Storage;
 
-afterEach(cleanup);
+afterEach(() => {
+  window.history.replaceState(null, '', '/');
+  cleanup();
+});
 
 describe('LocaleSwitcherControl', () => {
   beforeEach(() => {
@@ -22,80 +25,39 @@ describe('LocaleSwitcherControl', () => {
     window.localStorage.clear();
   });
 
-  it('preserves route identity and persists the selected locale before navigation', async () => {
+  it('switches to the opposite locale immediately and preserves the hash', async () => {
     const replace = vi.fn();
-    const user = userEvent.setup();
+    window.history.replaceState(null, '', '/en/#archive');
+    render(<LocaleSwitcherControl locale="en" pathname="/en/" replace={replace} />);
 
-    render(
-      <LocaleSwitcherControl
-        locale="en"
-        pathname="/en/work/call-agent/"
-        replace={replace}
-      />,
-    );
-
-    await user.click(screen.getByRole('button', { name: 'Select language' }));
-    await user.click(
-      screen.getByRole('button', { name: 'Simplified Chinese' }),
-    );
+    await userEvent.click(screen.getByRole('button', { name: 'Switch to Simplified Chinese' }));
 
     expect(window.localStorage.getItem('yj-locale')).toBe('zh');
-    expect(replace).toHaveBeenCalledWith('/zh/work/call-agent/');
+    expect(replace).toHaveBeenCalledWith('/zh/#archive');
+    expect(screen.queryByRole('list')).not.toBeInTheDocument();
   });
 
-  it('discloses an unknown-route fallback before opening the locale homepage', async () => {
+  it('falls back directly to the target homepage for an unknown route', async () => {
     const replace = vi.fn();
-    const user = userEvent.setup();
-
     render(
-      <LocaleSwitcherControl
-        locale="en"
-        pathname="/en/private-preview/"
-        replace={replace}
-      />,
+      <LocaleSwitcherControl locale="en" pathname="/en/private-preview/" replace={replace} />,
     );
 
-    await user.click(screen.getByRole('button', { name: 'Select language' }));
-    await user.click(
-      screen.getByRole('button', { name: 'Simplified Chinese' }),
-    );
+    await userEvent.click(screen.getByRole('button', { name: 'Switch to Simplified Chinese' }));
 
-    expect(replace).not.toHaveBeenCalled();
-    expect(screen.getByRole('status')).toHaveTextContent(
-      'This page is not available in Simplified Chinese.',
-    );
-
-    await user.click(
-      screen.getByRole('button', {
-        name: 'Open the Simplified Chinese homepage',
-      }),
-    );
-
-    expect(window.localStorage.getItem('yj-locale')).toBe('zh');
     expect(replace).toHaveBeenCalledWith('/zh/');
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
-  it('opens the language choices from the keyboard', async () => {
+  it('is directly operable from the keyboard', async () => {
+    const replace = vi.fn();
     const user = userEvent.setup();
-
-    render(
-      <LocaleSwitcherControl
-        locale="en"
-        pathname="/en/"
-        replace={vi.fn()}
-      />,
-    );
+    render(<LocaleSwitcherControl locale="zh" pathname="/zh/" replace={replace} />);
 
     await user.tab();
-    expect(screen.getByRole('button', { name: 'Select language' })).toHaveFocus();
-
+    const control = screen.getByRole('button', { name: '切换至英语' });
+    expect(control).toHaveFocus();
     await user.keyboard('{Enter}');
-
-    expect(
-      screen.getByRole('button', { name: 'Select language' }),
-    ).toHaveAttribute('aria-expanded', 'true');
-    expect(
-      screen.getByRole('button', { name: 'Simplified Chinese' }),
-    ).toBeVisible();
+    expect(replace).toHaveBeenCalledWith('/en/');
   });
 });

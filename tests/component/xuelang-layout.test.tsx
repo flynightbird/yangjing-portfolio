@@ -99,6 +99,7 @@ describe('XuelangLayout', () => {
       'location',
     );
     expect(container.querySelector('[data-chapter-variant="xuelang"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-surface="light"]')).toBeInTheDocument();
     expect(container.querySelector('[data-chapter-index="00"]')).toHaveTextContent('00');
     expect(container.querySelectorAll('[data-chapter-index]')).toHaveLength(8);
     expect(screen.queryByRole('navigation', { name: projectNav })).not.toBeInTheDocument();

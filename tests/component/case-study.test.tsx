@@ -26,10 +26,12 @@ describe('ChapterNav', () => {
         locale="en"
         indexStart={0}
         variant="xuelang"
+        surface="light"
       />,
     );
 
     expect(container.querySelector('[data-chapter-variant="xuelang"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-surface="light"]')).toBeInTheDocument();
     expect(container.querySelector('[data-chapter-index="00"]')).toHaveTextContent('00');
     expect(container.querySelector('[data-chapter-index="01"]')).toHaveTextContent('01');
     expect(screen.getByRole('link', { name: 'Overview' })).toBeVisible();

@@ -8,6 +8,7 @@ export const zhDictionary = {
   },
   navigation: {
     work: '作品',
+    archive: '视觉档案',
     about: '关于',
     resume: '简历',
     contact: '联系',

@@ -24,6 +24,15 @@ describe('Interface X-Ray design tokens', () => {
     );
   });
 
+  it.each([
+    ['iris-luminous', '#C8B9FF'],
+    ['iris-deep', '#5F4B86'],
+  ])('defines the shared navigation %s color', (name, value) => {
+    expect(globalsCss).toMatch(
+      new RegExp(`--color-${name}:\\s*${value}`, 'i'),
+    );
+  });
+
   it('caps shared geometry at a six pixel radius', () => {
     expect(globalsCss).toMatch(/--radius-max:\s*6px/i);
   });

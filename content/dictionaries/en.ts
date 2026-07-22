@@ -6,6 +6,7 @@ export interface Dictionary {
   };
   navigation: {
     work: string;
+    archive: string;
     about: string;
     resume: string;
     contact: string;
@@ -152,6 +153,7 @@ export const enDictionary = {
   },
   navigation: {
     work: 'Work',
+    archive: 'Archive',
     about: 'About',
     resume: 'Resume',
     contact: 'Contact',
