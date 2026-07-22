@@ -185,13 +185,20 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
+    const markInteractionReady = () => {
+      root.dataset.interactionReady = 'true';
+    };
 
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
       setAutoState('disabled', 0);
+      markInteractionReady();
       return;
     }
 
-    if (!('IntersectionObserver' in window)) return;
+    if (!('IntersectionObserver' in window)) {
+      markInteractionReady();
+      return;
+    }
 
     function runLeg(leg: number) {
       const from = AUTO_KEYFRAMES[leg - 1];
@@ -228,6 +235,7 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
       { rootMargin: '-30% 0px -30% 0px', threshold: 0.01 },
     );
     observerRef.current.observe(root);
+    markInteractionReady();
 
     return () => {
       observerRef.current?.disconnect();

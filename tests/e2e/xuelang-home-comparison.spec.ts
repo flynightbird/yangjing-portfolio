@@ -4,7 +4,9 @@ const comparisonSelector = '[data-xuelang-home-comparison]';
 
 async function openHomepage(page: import('@playwright/test').Page) {
   await page.goto('/en/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
-  await expect(page.locator(comparisonSelector)).toBeAttached({ timeout: 30_000 });
+  const comparison = page.locator(comparisonSelector);
+  await expect(comparison).toBeAttached({ timeout: 30_000 });
+  await expect(comparison).toHaveAttribute('data-interaction-ready', 'true', { timeout: 30_000 });
 }
 
 async function centerComparison(page: import('@playwright/test').Page) {
@@ -145,6 +147,7 @@ test.describe('Xuelang homepage comparison', () => {
       await page.evaluate(() => document.documentElement.clientWidth),
     );
 
+    await centerComparison(page);
     const updatedBox = await comparison.boundingBox();
     if (!updatedBox) throw new Error('Missing comparison bounds after scroll');
     const dragY = updatedBox.y + updatedBox.height / 2;
