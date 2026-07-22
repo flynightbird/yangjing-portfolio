@@ -27,6 +27,7 @@ interface TouchGesture {
   readonly startX: number;
   readonly startY: number;
   readonly startPosition: number;
+  captured: boolean;
   intent: TouchIntent;
 }
 
@@ -38,11 +39,17 @@ const copy = {
   en: {
     before: 'Before',
     after: 'After',
+    beforeAlt:
+      'Xuelang before redesign: product interfaces centered on content delivery with disconnected learning actions',
+    afterAlt:
+      'Xuelang after redesign: interfaces connecting viewing, interaction, notes, and accumulated learning into one continuous experience',
     controlLabel: 'Compare the old and new Xuelang learning experience',
   },
   zh: {
     before: '旧版',
     after: '新版',
+    beforeAlt: '改版前以内容交付为主、学习动作彼此分离的学浪产品界面集合',
+    afterAlt: '改版后连接观看、互动、笔记与学习沉淀的连续学习体验界面集合',
     controlLabel: '对比学浪旧版与新版学习体验',
   },
 } as const;
@@ -117,10 +124,12 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
       startX: event.clientX,
       startY: event.clientY,
       startPosition,
+      captured: false,
       intent: isTouch ? 'pending' : 'horizontal',
     };
     if (!isTouch) {
       event.currentTarget.setPointerCapture?.(event.pointerId);
+      touchGestureRef.current.captured = true;
       setPosition(positionFromClientX(event.clientX));
     }
   }
@@ -136,6 +145,10 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
     if (gesture.intent === 'pending') {
       if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < TOUCH_INTENT_THRESHOLD) return;
       gesture.intent = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+      if (gesture.intent === 'horizontal' && event.currentTarget.setPointerCapture) {
+        event.currentTarget.setPointerCapture(event.pointerId);
+        gesture.captured = true;
+      }
     }
     if (gesture.intent !== 'horizontal') return;
 
@@ -151,17 +164,22 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
   }
 
   function handlePointerUp(event: ReactPointerEvent<HTMLDivElement>) {
-    if (touchGestureRef.current?.pointerId === event.pointerId) {
-      touchGestureRef.current = null;
-      if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
-        event.currentTarget.releasePointerCapture(event.pointerId);
-      }
-    }
+    clearPointerGesture(event);
   }
 
   function handlePointerCancel(event: ReactPointerEvent<HTMLDivElement>) {
     const gesture = touchGestureRef.current;
-    if (gesture?.pointerId === event.pointerId) touchGestureRef.current = null;
+    if (gesture?.pointerId !== event.pointerId) return;
+    clearPointerGesture(event);
+  }
+
+  function clearPointerGesture(event: ReactPointerEvent<HTMLDivElement>) {
+    const gesture = touchGestureRef.current;
+    if (gesture?.pointerId !== event.pointerId) return;
+    touchGestureRef.current = null;
+    if (gesture.captured && event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
   }
 
   useEffect(() => {
@@ -240,7 +258,9 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
         src={withBasePath('/images/xuelang/learning-after-board.webp')}
         width={1662}
         height={1080}
-        alt={labels.after}
+        alt={labels.afterAlt}
+        loading="lazy"
+        decoding="async"
         draggable={false}
       />
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -249,7 +269,9 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
         src={withBasePath('/images/xuelang/learning-before-board.webp')}
         width={1662}
         height={1080}
-        alt={labels.before}
+        alt={labels.beforeAlt}
+        loading="lazy"
+        decoding="async"
         draggable={false}
       />
       <span className={`${styles.label} ${styles.beforeLabel}`}>{labels.before}</span>
@@ -268,6 +290,7 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
         defaultValue={INITIAL_POSITION}
         aria-label={labels.controlLabel}
         aria-valuenow={INITIAL_POSITION}
+        onFocus={cancelAutoMotion}
         onChange={(event) => {
           cancelAutoMotion();
           setPosition(Number(event.currentTarget.value));

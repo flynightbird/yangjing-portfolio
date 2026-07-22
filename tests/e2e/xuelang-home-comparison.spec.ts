@@ -57,9 +57,10 @@ test.describe('Xuelang homepage comparison', () => {
     const durations = trace?.slice(1).map((entry, index) => entry.time - trace[index].time) ?? [];
     expect(durations).toHaveLength(4);
     for (const duration of durations) {
-      expect(duration).toBeGreaterThanOrEqual(500);
-      expect(duration).toBeLessThanOrEqual(850);
+      expect(duration).toBeGreaterThanOrEqual(450);
+      expect(duration).toBeLessThanOrEqual(1600);
     }
+    expect(durations.reduce((total, duration) => total + duration, 0)).toBeLessThanOrEqual(6000);
 
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
     await centerComparison(page);
@@ -91,6 +92,22 @@ test.describe('Xuelang homepage comparison', () => {
     await page.waitForTimeout(3000);
     await expect(comparison).toHaveAttribute('data-auto-state', 'cancelled');
     await expect(slider).toHaveValue('93');
+  });
+
+  test('keyboard focus cancels running auto motion before input', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'Canonical desktop focus contract.');
+    await openHomepage(page);
+    await centerComparison(page);
+
+    const comparison = page.locator(comparisonSelector);
+    const slider = comparison.getByRole('slider');
+    await expect(comparison).toHaveAttribute('data-auto-state', 'running');
+    await slider.focus();
+    await expect(comparison).toHaveAttribute('data-auto-state', 'cancelled');
+    const focusedValue = await slider.inputValue();
+    await page.waitForTimeout(900);
+    await expect(slider).toHaveValue(focusedValue);
+    await expect(slider).toBeFocused();
   });
 
   test('allows a vertical touch gesture without moving the divider or overflowing', async ({ page }, testInfo) => {

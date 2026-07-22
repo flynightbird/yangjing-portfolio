@@ -426,18 +426,26 @@ describe('FeaturedWork', () => {
       locale: 'en' as const,
       beforeLabel: 'Before',
       afterLabel: 'After',
+      beforeAlt:
+        'Xuelang before redesign: product interfaces centered on content delivery with disconnected learning actions',
+      afterAlt:
+        'Xuelang after redesign: interfaces connecting viewing, interaction, notes, and accumulated learning into one continuous experience',
       controlLabel: 'Compare the old and new Xuelang learning experience',
     },
     {
       locale: 'zh' as const,
       beforeLabel: '旧版',
       afterLabel: '新版',
+      beforeAlt: '改版前以内容交付为主、学习动作彼此分离的学浪产品界面集合',
+      afterAlt: '改版后连接观看、互动、笔记与学习沉淀的连续学习体验界面集合',
       controlLabel: '对比学浪旧版与新版学习体验',
     },
   ])('renders localized Xuelang wipe media in $locale', ({
     locale,
     beforeLabel,
     afterLabel,
+    beforeAlt,
+    afterAlt,
     controlLabel,
   }) => {
     const { container } = render(<FeaturedWork locale={locale} />);
@@ -447,12 +455,14 @@ describe('FeaturedWork', () => {
     expect(comparison).toBeInTheDocument();
     expect(within(comparison as HTMLElement).getByText(beforeLabel)).toBeVisible();
     expect(within(comparison as HTMLElement).getByText(afterLabel)).toBeVisible();
-    expect(
-      within(comparison as HTMLElement).getByRole('img', { name: beforeLabel }),
-    ).toHaveAttribute('src', '/images/xuelang/learning-before-board.webp');
-    expect(
-      within(comparison as HTMLElement).getByRole('img', { name: afterLabel }),
-    ).toHaveAttribute('src', '/images/xuelang/learning-after-board.webp');
+    const beforeImage = within(comparison as HTMLElement).getByRole('img', { name: beforeAlt });
+    const afterImage = within(comparison as HTMLElement).getByRole('img', { name: afterAlt });
+    expect(beforeImage).toHaveAttribute('src', '/images/xuelang/learning-before-board.webp');
+    expect(afterImage).toHaveAttribute('src', '/images/xuelang/learning-after-board.webp');
+    for (const image of [beforeImage, afterImage]) {
+      expect(image).toHaveAttribute('loading', 'lazy');
+      expect(image).toHaveAttribute('decoding', 'async');
+    }
     expect(xuelang?.querySelector('img[src*="hero-panorama"]')).not.toBeInTheDocument();
 
     const slider = within(comparison as HTMLElement).getByRole('slider', {
