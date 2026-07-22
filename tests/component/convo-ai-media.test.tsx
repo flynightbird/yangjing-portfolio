@@ -1,4 +1,5 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { StrictMode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { CompleteConvoAiVideo, ConvoAiAppShowcase, ConvoAiPlaylist, ConvoAiStage } from '@/components/convo-ai/convo-ai-media';
@@ -21,7 +22,8 @@ class IntersectionObserverHarness {
   }
 }
 
-function installMediaEnvironment({ desktop = true, reducedMotion = false, intersectionObserver = true } = {}) {
+function installMediaEnvironment({ desktop = true, reducedMotion: initialReducedMotion = false, intersectionObserver = true } = {}) {
+  let reducedMotion = initialReducedMotion;
   const listeners = new Map<string, Set<(event: MediaQueryListEvent) => void>>();
   vi.stubGlobal('matchMedia', vi.fn((query: string) => ({
     matches: query === '(min-width: 801px)' ? desktop : query === '(prefers-reduced-motion: reduce)' ? reducedMotion : false,
@@ -40,10 +42,19 @@ function installMediaEnvironment({ desktop = true, reducedMotion = false, inters
   IntersectionObserverHarness.instances = [];
   if (intersectionObserver) vi.stubGlobal('IntersectionObserver', IntersectionObserverHarness);
   else vi.stubGlobal('IntersectionObserver', undefined);
+  return {
+    setReducedMotion(next: boolean) {
+      reducedMotion = next;
+      listeners.get('(prefers-reduced-motion: reduce)')?.forEach((listener) => listener({ matches: next, media: '(prefers-reduced-motion: reduce)' } as MediaQueryListEvent));
+    },
+  };
 }
 
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
-beforeEach(() => { vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => undefined); });
+beforeEach(() => {
+  vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => undefined);
+  vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
+});
 
 describe('ConvoAiPlaylist', () => {
   it('renders one stable complete player and switches evidence by explicit command', () => {
@@ -191,19 +202,32 @@ describe('ConvoAiAppShowcase', () => {
     expect(screen.getByText('用短入口建立产品身份和移动端旅程起点。')).toBeVisible();
   });
 
-  it('hands media to an observer-selected scene and resets the prior video', () => {
+  it('uses semantic scenes and describes each button with its adjacent summary', () => {
     installMediaEnvironment();
-    const { container } = render(<ConvoAiAppShowcase locale="zh" />);
-    const initialVideo = screen.getByLabelText('App 登录与进入') as HTMLVideoElement;
+    render(<ConvoAiAppShowcase locale="zh" />);
+    const button = screen.getByRole('button', { name: '登录与进入' });
+    const descriptionId = button.getAttribute('aria-describedby');
+
+    expect(screen.getByRole('list', { name: 'App 产品场景' })).toBeInTheDocument();
+    expect(screen.getAllByRole('listitem')).toHaveLength(4);
+    expect(button.querySelector('p')).toBeNull();
+    expect(descriptionId).toBeTruthy();
+    expect(document.getElementById(descriptionId ?? '')).toHaveTextContent('用短入口建立产品身份和移动端旅程起点。');
+  });
+
+  it('hands media to an observer-selected scene and resets the prior video exactly once in StrictMode', () => {
+    installMediaEnvironment();
+    const { container } = render(<StrictMode><ConvoAiAppShowcase locale="zh" /></StrictMode>);
+    const initialVideo = container.querySelector('video[aria-label="App 登录与进入"]') as HTMLVideoElement;
     const pause = vi.spyOn(initialVideo, 'pause');
     Object.defineProperty(initialVideo, 'currentTime', { value: 8, writable: true, configurable: true });
 
-    act(() => { IntersectionObserverHarness.instances[0].trigger('app-profile-settings'); });
+    act(() => { IntersectionObserverHarness.instances.at(-1)?.trigger('app-profile-settings'); });
 
     expect(pause).toHaveBeenCalledOnce();
     expect(initialVideo.currentTime).toBe(0);
     expect(container.querySelector('[data-convo-app-showcase]')).toHaveAttribute('data-active-id', 'app-profile-settings');
-    const current = screen.getByLabelText('个人设置');
+    const current = container.querySelector('video[aria-label="个人设置"]') as HTMLVideoElement;
     expect(current).toHaveAttribute('src', '/videos/convo-ai/app-profile-settings.mp4');
     expect(current).toHaveAttribute('loop');
     expect((current as HTMLVideoElement).muted).toBe(true);
@@ -245,9 +269,24 @@ describe('ConvoAiAppShowcase', () => {
     const scrollIntoView = vi.fn();
     structure.scrollIntoView = scrollIntoView;
 
-    expect(screen.getByLabelText('App entry and sign in')).not.toHaveAttribute('autoplay');
+    expect(container.querySelector('video[aria-label="App entry and sign in"]')).not.toHaveAttribute('autoplay');
     fireEvent.click(screen.getByRole('button', { name: /Product structure/i }));
     expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'auto', block: 'start' });
+  });
+
+  it('starts the initial video when autoplay becomes allowed without remounting it', () => {
+    const media = installMediaEnvironment({ reducedMotion: true });
+    const { container } = render(<ConvoAiAppShowcase locale="en" />);
+    const video = container.querySelector('video[aria-label="App entry and sign in"]') as HTMLVideoElement;
+    const play = vi.spyOn(video, 'play').mockResolvedValue(undefined);
+
+    expect(video).not.toHaveAttribute('autoplay');
+    expect(play).not.toHaveBeenCalled();
+    act(() => { media.setReducedMotion(false); });
+
+    expect(container.querySelector('video[aria-label="App entry and sign in"]')).toBe(video);
+    expect(video).toHaveAttribute('autoplay');
+    expect(play).toHaveBeenCalledOnce();
   });
 
   it('keeps mobile media inline, activates by click, and mounts one video', () => {

@@ -116,20 +116,27 @@ export function ConvoAiAppShowcase({ locale }: { readonly locale: Locale }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const stepRefs = useRef(new Map<AppShowcaseId, HTMLElement>());
   const observerAvailable = useRef(false);
+  const activeIdRef = useRef<AppShowcaseId>('app-login');
   const descriptionId = useId();
+  const summaryId = useId();
   const activeMedia = getConvoAiMedia(activeId);
 
   const activate = useCallback((id: AppShowcaseId) => {
-    setActiveId((currentId) => {
-      if (currentId === id) return currentId;
-      const currentVideo = videoRef.current;
-      currentVideo?.pause();
-      if (currentVideo) {
-        try { currentVideo.currentTime = 0; } catch { /* Some streams cannot seek until metadata loads. */ }
-      }
-      return id;
-    });
+    if (activeIdRef.current === id) return;
+    const currentVideo = videoRef.current;
+    currentVideo?.pause();
+    if (currentVideo) {
+      try { currentVideo.currentTime = 0; } catch { /* Some streams cannot seek until metadata loads. */ }
+    }
+    activeIdRef.current = id;
+    setActiveId(id);
   }, []);
+
+  useEffect(() => {
+    if (!autoplayAllowed) return;
+    const playback = videoRef.current?.play();
+    void playback?.catch(() => undefined);
+  }, [activeId, autoplayAllowed]);
 
   const observerCallback = useCallback((entries: IntersectionObserverEntry[]) => {
     const candidate = entries
@@ -172,15 +179,17 @@ export function ConvoAiAppShowcase({ locale }: { readonly locale: Locale }) {
   </figure>;
 
   return <section className={styles.appShowcase} data-convo-app-showcase data-active-id={activeId}>
-    <div className={styles.appShowcaseScenes} aria-label={locale === 'zh' ? 'App 产品场景' : 'App product scenes'}>
+    <div className={styles.appShowcaseScenes} role="list" aria-label={locale === 'zh' ? 'App 产品场景' : 'App product scenes'}>
       {appShowcaseSteps.map((step) => {
         const isActive = step.id === activeId;
         const label = locale === 'zh' ? step.label : step.enLabel;
         const summary = locale === 'zh' ? step.summary : step.enSummary;
-        return <article key={step.id} ref={(element) => registerStep(step.id, element)} className={styles.appShowcaseStep} data-app-showcase-step={step.id} data-active={isActive ? 'true' : 'false'}>
-          <button type="button" aria-pressed={isActive} onClick={() => navigateToStep(step.id)}>
-            <span>{step.index}</span><strong>{label}</strong><p>{summary}</p>
+        const stepSummaryId = `${summaryId}-${step.id}`;
+        return <article key={step.id} ref={(element) => registerStep(step.id, element)} className={styles.appShowcaseStep} role="listitem" data-app-showcase-step={step.id} data-active={isActive ? 'true' : 'false'}>
+          <button type="button" aria-label={label} aria-pressed={isActive} aria-describedby={stepSummaryId} onClick={() => navigateToStep(step.id)}>
+            <span>{step.index}</span><strong>{label}</strong>
           </button>
+          <p id={stepSummaryId}>{summary}</p>
           {!isDesktop && isActive ? mediaCard : null}
         </article>;
       })}
