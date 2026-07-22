@@ -272,9 +272,12 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
 
     return () => {
       window.removeEventListener('resize', scheduleObserverRebuild);
-      if (resizeFrame !== null) cancelAnimationFrame(resizeFrame);
       observerRef.current?.disconnect();
+      observerRef.current = null;
+      if (resizeFrame !== null) cancelAnimationFrame(resizeFrame);
+      resizeFrame = null;
       if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
     };
   }, []);
 

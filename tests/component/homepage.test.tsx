@@ -6,6 +6,7 @@ import { DualIdentityHero } from '@/components/home/dual-identity-hero';
 import { FeaturedWork } from '@/components/home/featured-work';
 import { IntroStory } from '@/components/home/intro-story';
 import { VisualArchive } from '@/components/home/visual-archive';
+import { XuelangHomeComparison } from '@/components/home/xuelang-home-comparison';
 
 afterEach(cleanup);
 
@@ -112,6 +113,37 @@ describe('IntroStory', () => {
 });
 
 describe('FeaturedWork', () => {
+  it('invalidates queued Xuelang observer callbacks on unmount', () => {
+    let observerCallback: IntersectionObserverCallback | undefined;
+    const disconnect = vi.fn();
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false })));
+    vi.stubGlobal('IntersectionObserver', class {
+      constructor(callback: IntersectionObserverCallback) {
+        observerCallback = callback;
+      }
+
+      observe = vi.fn();
+      disconnect = disconnect;
+    });
+    const requestFrame = vi.spyOn(window, 'requestAnimationFrame').mockReturnValue(1);
+
+    try {
+      const { unmount } = render(<XuelangHomeComparison locale="en" />);
+      expect(observerCallback).toBeTypeOf('function');
+      unmount();
+      expect(disconnect).toHaveBeenCalled();
+
+      observerCallback?.(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+      expect(requestFrame).not.toHaveBeenCalled();
+    } finally {
+      requestFrame.mockRestore();
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('maps an explicit horizontal touch drag without changing on vertical intent', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const comparison = container.querySelector<HTMLElement>('[data-xuelang-home-comparison]');
