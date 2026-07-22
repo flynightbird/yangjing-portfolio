@@ -308,26 +308,49 @@ function CapabilityGraphic({ tone }: { readonly tone: Capability['tone'] }) {
 
   if (tone === 'ai') {
     return (
-      <svg viewBox="0 0 260 110" role="presentation">
-        <rect className={styles.graphMuted} x="6" y="34" width="92" height="42" rx="8" />
-        <text x="18" y="59">design ui...</text>
-        <circle className={styles.graphSolid} cx="82" cy="59" r="2" />
-        <circle className={styles.graphSolidSoft} cx="88" cy="59" r="2" />
+      <svg viewBox="0 0 260 110" role="presentation" data-ai-workflow="continuous-signal">
+        <g className={styles.workflowSystem} data-workflow-system="judgment">
+          <rect className={styles.workflowSystemFrame} x="7" y="23" width="58" height="64" rx="8" />
+          <path className={styles.workflowSystemGrid} d="M7 40h58M27 23v64" />
+          <rect className={styles.workflowModuleSoft} x="34" y="49" width="22" height="7" rx="3.5" />
+          <rect className={styles.workflowModule} x="34" y="62" width="14" height="7" rx="3.5" />
+          <circle className={styles.workflowModule} cx="55" cy="65.5" r="3.5" />
+        </g>
+
         <path
-          className={styles.graphTransformArrow}
-          d="M106 55h37m-5-4.5 5 4.5-5 4.5"
-          data-transform-arrow
+          className={styles.workflowReturn}
+          d="M194 78C171 103 89 103 65 78"
         />
         <path
-          className={styles.graphTransformSpark}
-          d="M124 31c1.45 4.9 2.55 6.9 7.4 9-4.85 2.1-5.95 4.1-7.4 9-1.45-4.9-2.55-6.9-7.4-9 4.85-2.1 5.95-4.1 7.4-9Z"
-          data-transform-spark
+          className={styles.workflowTrack}
+          d="M65 55C82 55 87 31 104 31S128 79 146 79 170 55 195 55"
         />
-        <rect className={styles.graphPanel} x="150" y="24" width="104" height="62" rx="8" />
-        <rect className={styles.graphFillStrong} x="160" y="36" width="60" height="8" rx="3" />
-        <rect className={styles.graphFillMuted} x="160" y="50" width="84" height="6" rx="3" />
-        <rect className={styles.graphFillMuted} x="160" y="60" width="70" height="6" rx="3" />
-        <rect className={styles.graphFillStrong} x="160" y="72" width="40" height="8" rx="4" />
+        <path
+          className={styles.workflowSignal}
+          d="M65 55C82 55 87 31 104 31S128 79 146 79 170 55 195 55"
+          data-workflow-path
+        />
+
+        {[
+          [65, 55],
+          [104, 31],
+          [146, 79],
+          [195, 55],
+        ].map(([x, y], index) => (
+          <g className={styles.workflowNode} key={`${x}-${y}`} style={{ animationDelay: `${index * 0.34}s` }}>
+            <circle cx={x} cy={y} r="5.5" />
+            <circle className={styles.workflowNodeCore} cx={x} cy={y} r="1.8" />
+          </g>
+        ))}
+
+        <g className={styles.workflowSystem} data-workflow-system="resolved">
+          <rect className={styles.workflowSystemFrame} x="195" y="18" width="58" height="74" rx="8" />
+          <path className={styles.workflowSystemGrid} d="M195 37h58M214 18v74" />
+          <rect className={styles.workflowModule} x="221" y="47" width="23" height="7" rx="3.5" />
+          <rect className={styles.workflowModuleSoft} x="221" y="60" width="15" height="7" rx="3.5" />
+          <circle className={styles.workflowModuleSoft} cx="244" cy="63.5" r="3.5" />
+          <rect className={styles.workflowModule} x="221" y="75" width="10" height="7" rx="3.5" />
+        </g>
       </svg>
     );
   }

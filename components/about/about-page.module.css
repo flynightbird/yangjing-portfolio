@@ -395,27 +395,67 @@
   opacity: 0.8;
 }
 
-.graphPanel {
-  fill: currentColor;
-  fill-opacity: 0.08;
-  stroke: currentColor;
-  stroke-width: 1;
-  stroke-opacity: 0.5;
-}
-
-.graphTransformArrow {
+.workflowTrack,
+.workflowSignal,
+.workflowReturn,
+.workflowSystemFrame,
+.workflowSystemGrid {
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.05;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0.72;
 }
 
-.graphTransformSpark {
+.workflowTrack {
+  opacity: 0.12;
+  stroke-width: 10;
+}
+
+.workflowSignal {
+  opacity: 0.9;
+  stroke-dasharray: 5 8;
+  stroke-width: 1.7;
+  animation: workflow-signal 4s linear infinite;
+}
+
+.workflowReturn {
+  opacity: 0.28;
+  stroke-dasharray: 1 5;
+  stroke-width: 1;
+}
+
+.workflowSystemFrame {
+  fill: color-mix(in srgb, currentColor 6%, transparent);
+  opacity: 0.82;
+  stroke-width: 1;
+}
+
+.workflowSystemGrid {
+  opacity: 0.28;
+  stroke-width: 0.8;
+}
+
+.workflowModule,
+.workflowModuleSoft {
   fill: currentColor;
   stroke: none;
-  opacity: 0.84;
+}
+
+.workflowModule { opacity: 0.54; }
+.workflowModuleSoft { opacity: 0.24; }
+
+.workflowNode {
+  fill: var(--about-card);
+  stroke: currentColor;
+  stroke-width: 1.2;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: workflow-node 3.2s ease-in-out infinite;
+}
+
+.workflowNodeCore {
+  fill: currentColor;
+  stroke: none;
 }
 
 .graphPulse {
@@ -597,6 +637,17 @@
   }
 }
 
+@keyframes workflow-signal {
+  to { stroke-dashoffset: -26; }
+}
+
+@keyframes workflow-node {
+  50% {
+    opacity: 0.56;
+    transform: scale(0.9);
+  }
+}
+
 @media (max-width: 900px) {
   .band {
     padding: 4rem 1.5rem;
@@ -754,7 +805,9 @@
 @media (prefers-reduced-motion: reduce) {
   .orbitRing,
   .orbitMarker,
-  .graphPulse {
+  .graphPulse,
+  .workflowSignal,
+  .workflowNode {
     animation: none;
   }
 
