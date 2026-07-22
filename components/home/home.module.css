@@ -1526,7 +1526,7 @@ a.whiteCta:focus-visible {
   display: block;
   order: -1;
   min-width: 0;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1.05 / 1;
   overflow: hidden;
   border: 1px solid rgba(236, 240, 255, 0.28);
   border-radius: 20px;
@@ -1546,9 +1546,9 @@ a.whiteCta:focus-visible {
 
 .buildBrowserWindow {
   position: absolute;
-  top: 13%;
-  right: -2%;
-  width: 94%;
+  top: 4%;
+  right: 4%;
+  width: 92%;
   overflow: hidden;
   border: 1px solid rgba(18, 24, 42, 0.14);
   border-radius: 18px 18px 0 0;
@@ -1579,9 +1579,6 @@ a.whiteCta:focus-visible {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 2 / 1;
-  object-fit: cover;
-  object-position: center 61%;
   transition: transform 700ms var(--ease-out);
 }
 

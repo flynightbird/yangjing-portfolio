@@ -1,6 +1,6 @@
 .stageViewport {
   position: relative;
-  aspect-ratio: 2 / 1;
+  aspect-ratio: 633 / 560;
   overflow: hidden;
   background: #08090b;
 }
@@ -16,8 +16,8 @@
 }
 
 [data-stt-stage-viewport].stageViewport > img.stageFallback {
-  object-fit: cover;
-  object-position: center 61%;
+  object-fit: contain;
+  object-position: center top;
   opacity: 1;
   transform: none;
   transition: opacity 500ms var(--ease-out);

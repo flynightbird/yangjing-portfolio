@@ -125,12 +125,30 @@ test.describe('STT homepage live-stage presentation', () => {
         await fallback.evaluate((image) => (image as HTMLImageElement).naturalWidth),
       ).toBeGreaterThan(0);
       await page.evaluate(() => document.fonts.ready.then(() => undefined));
+      const mediaBox = await media.boundingBox();
       const browserBoxBefore = await browserWindow.boundingBox();
       const viewportBox = await viewport.boundingBox();
       const browserOffsetsBefore = await offsetBox(browserWindow);
       const viewportOffsetsBefore = await offsetBox(viewport);
+      expect(mediaBox).not.toBeNull();
+      expect(browserBoxBefore).not.toBeNull();
       expect(viewportBox).not.toBeNull();
-      expect((viewportBox?.width ?? 0) / (viewportBox?.height ?? 1)).toBeCloseTo(2, 2);
+      await expect(viewport).toHaveCSS('aspect-ratio', '633 / 560');
+      await expect(fallback).toHaveCSS('object-fit', 'contain');
+      await expect(fallback).toHaveCSS('object-position', '50% 0%');
+      expect((viewportBox?.width ?? 0) / (viewportBox?.height ?? 1)).toBeCloseTo(
+        633 / 560,
+        2,
+      );
+      expect(
+        (browserBoxBefore?.y ?? 0) + (browserBoxBefore?.height ?? 0),
+      ).toBeLessThanOrEqual((mediaBox?.y ?? 0) + (mediaBox?.height ?? 0) + 1);
+      expect(
+        await fallback.evaluate((image) => {
+          const rendered = image as HTMLImageElement;
+          return rendered.naturalWidth / rendered.naturalHeight;
+        }),
+      ).toBeCloseTo(633 / 560, 5);
       const relativeViewportBefore = relativeBox(viewportBox, browserBoxBefore);
 
       releaseRequest();
