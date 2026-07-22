@@ -16,11 +16,8 @@ interface FlagshipCopy {
   readonly kind: string;
   readonly title: string;
   readonly proposition: string;
+  readonly role: string;
   readonly action: string;
-}
-
-interface ConvoAiCopy extends FlagshipCopy {
-  readonly temporaryNotice: string;
 }
 
 interface FlagshipProjectsProps {
@@ -30,7 +27,7 @@ interface FlagshipProjectsProps {
     readonly href: string;
   };
   readonly convoAi: {
-    readonly copy: ConvoAiCopy;
+    readonly copy: FlagshipCopy;
     readonly href: string;
   };
 }
@@ -108,6 +105,7 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
               <h2>{callAgent.copy.title}</h2>
             </a>
             <p className={styles.flagshipSummary}>{callAgent.copy.proposition}</p>
+            <p className={styles.flagshipRole}>{callAgent.copy.role}</p>
             <ActionLink
               className={`${styles.flagshipCta} ${styles.whiteCta} ${styles.homeProjectCta}`}
               href={callAgent.href}
@@ -160,6 +158,7 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
               <h2>{convoAi.copy.title}</h2>
             </a>
             <p className={styles.flagshipSummary}>{convoAi.copy.proposition}</p>
+            <p className={styles.flagshipRole}>{convoAi.copy.role}</p>
             <ActionLink
               className={`${styles.flagshipCta} ${styles.whiteCta} ${styles.homeProjectCta}`}
               href={convoAi.href}
@@ -188,16 +187,15 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
             <img
               className={styles.flagshipConvoWeb}
               src="/images/convo-ai/temporary-web.webp"
-              alt="Temporary ConvoAI web interface placeholder"
+              alt=""
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className={styles.flagshipConvoPhone}
               src="/images/convo-ai/temporary-app.webp"
-              alt="Temporary ConvoAI app interface placeholder"
+              alt=""
             />
           </a>
-          <p className={styles.flagshipSource}>{convoAi.copy.temporaryNotice}</p>
         </article>
       </div>
     </div>

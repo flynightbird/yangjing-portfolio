@@ -36,6 +36,7 @@ export function LiveWebsiteProject({ copy, href }: LiveWebsiteProjectProps) {
               <li key={item}>{item}</li>
             ))}
           </ul>
+          <p className={styles.liveStatus}>{copy.status}</p>
           <ActionLink
             className={styles.homeProjectCta}
             href={href}
