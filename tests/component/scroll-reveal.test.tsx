@@ -247,4 +247,22 @@ describe('ScrollReveal', () => {
     expect(boundary).toHaveAttribute('data-scroll-reveal-state', 'revealed');
     expect(observer.disconnect).toHaveBeenCalledTimes(1);
   });
+
+  it('does not observe again after revealing when reduced motion switches on and off', () => {
+    const { container } = render(
+      <ScrollReveal>
+        <p data-scroll-reveal-group>Content</p>
+      </ScrollReveal>,
+    );
+    const boundary = container.querySelector('[data-scroll-reveal]');
+    const observer = ControllableIntersectionObserver.instances[0];
+
+    act(() => observer.trigger(true));
+    act(() => setReducedMotionPreference(true));
+    act(() => setReducedMotionPreference(false));
+
+    expect(boundary).toHaveAttribute('data-scroll-reveal-state', 'revealed');
+    expect(ControllableIntersectionObserver.instances).toHaveLength(1);
+    expect(observer.observe).toHaveBeenCalledTimes(1);
+  });
 });

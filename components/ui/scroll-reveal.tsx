@@ -13,22 +13,27 @@ interface ScrollRevealProps {
 
 export function ScrollReveal({ children, className }: ScrollRevealProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const revealedRef = useRef(false);
   const reducedMotion = useReducedMotionPreference();
   const [revealed, setRevealed] = useState(false);
   const isRevealed = reducedMotion || revealed;
 
   useEffect(() => {
     const root = rootRef.current;
-    if (!root || reducedMotion) return;
+    if (!root || reducedMotion || revealedRef.current) return;
 
     if (typeof IntersectionObserver === 'undefined') {
-      const frame = requestAnimationFrame(() => setRevealed(true));
+      const frame = requestAnimationFrame(() => {
+        revealedRef.current = true;
+        setRevealed(true);
+      });
       return () => cancelAnimationFrame(frame);
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting) return;
+        revealedRef.current = true;
         setRevealed(true);
         observer.disconnect();
       },
