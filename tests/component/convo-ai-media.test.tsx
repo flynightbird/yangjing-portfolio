@@ -2,7 +2,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { StrictMode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { CompleteConvoAiVideo, ConvoAiAppShowcase, ConvoAiPlaylist, ConvoAiStage } from '@/components/convo-ai/convo-ai-media';
+import { CompleteConvoAiVideo, ConvoAiAppShowcase, ConvoAiAvatarPair, ConvoAiPlaylist, ConvoAiStage } from '@/components/convo-ai/convo-ai-media';
 
 class IntersectionObserverHarness {
   static instances: IntersectionObserverHarness[] = [];
@@ -188,6 +188,62 @@ describe('ConvoAiStage', () => {
     expect(container.querySelector('[data-convo-ai-stage]')).toHaveAttribute('data-active-platform', 'app');
     expect(container.querySelector('[data-convo-web-plane] video')).toBeNull();
     expect(container.querySelector('[data-convo-app-device] video')).toBeInTheDocument();
+  });
+});
+
+describe('ConvoAiAvatarPair', () => {
+  it('renders the two complete avatar recordings in selection-to-interaction order', () => {
+    const { container } = render(<ConvoAiAvatarPair locale="zh" />);
+    const items = [...container.querySelectorAll<HTMLElement>('[data-convo-ai-avatar]')];
+    const videos = [...container.querySelectorAll<HTMLVideoElement>('video')];
+
+    expect(items.map((item) => item.dataset.convoAiAvatar)).toEqual(['app-avatar-select', 'app-avatar-interaction']);
+    expect(videos.map((video) => video.getAttribute('src'))).toEqual([
+      '/videos/convo-ai/app-avatar-select.mp4',
+      '/videos/convo-ai/app-avatar-interaction.mp4',
+    ]);
+    expect(videos).toHaveLength(2);
+    videos.forEach((video) => {
+      expect(video).toHaveAttribute('controls');
+      expect(video).toHaveAttribute('loop');
+      expect(video.muted).toBe(true);
+    });
+    expect(screen.getByText('选择数字人')).toBeVisible();
+    expect(screen.getByText('数字人互动')).toBeVisible();
+    expect(screen.getByText('完整的数字人选择录屏。')).toBeVisible();
+    expect(screen.getByText('完整的数字人连接、对话与摄像头过程。')).toBeVisible();
+  });
+
+  it('allows either avatar recording to play without pausing the other', () => {
+    const { container } = render(<ConvoAiAvatarPair locale="en" />);
+    const videos = [...container.querySelectorAll<HTMLVideoElement>('video')];
+    const secondPause = vi.spyOn(videos[1], 'pause');
+
+    fireEvent.play(videos[0]);
+
+    expect(secondPause).not.toHaveBeenCalled();
+  });
+
+  it('starts both recordings when normal motion becomes allowed after hydration', () => {
+    const media = installMediaEnvironment({ reducedMotion: true });
+    const { container } = render(<ConvoAiAvatarPair locale="en" />);
+    const videos = [...container.querySelectorAll<HTMLVideoElement>('video')];
+    const plays = videos.map((video) => vi.spyOn(video, 'play').mockResolvedValue(undefined));
+
+    expect(videos.every((video) => !video.autoplay)).toBe(true);
+    act(() => { media.setReducedMotion(false); });
+
+    expect(videos.every((video) => video.autoplay)).toBe(true);
+    plays.forEach((play) => expect(play).toHaveBeenCalled());
+  });
+
+  it('does not autoplay or explicitly play under reduced motion', () => {
+    installMediaEnvironment({ reducedMotion: true });
+    const play = vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
+    const { container } = render(<ConvoAiAvatarPair locale="en" />);
+
+    expect([...container.querySelectorAll<HTMLVideoElement>('video')].every((video) => !video.autoplay)).toBe(true);
+    expect(play).not.toHaveBeenCalled();
   });
 });
 

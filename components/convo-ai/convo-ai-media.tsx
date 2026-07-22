@@ -108,6 +108,38 @@ export function ConvoAiStage({ locale, eyebrow, title, description, webId, appId
   </div>;
 }
 
+const avatarPairItems = [
+  { id: 'app-avatar-select', index: '01' },
+  { id: 'app-avatar-interaction', index: '02' },
+] as const satisfies readonly { readonly id: ConvoAiMediaId; readonly index: string }[];
+
+export function ConvoAiAvatarPair({ locale }: { readonly locale: Locale }) {
+  const autoplayAllowed = useAutoplayAllowed();
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+
+  useEffect(() => {
+    if (!autoplayAllowed) return;
+    videoRefs.current.forEach((video) => {
+      const playback = video?.play();
+      void playback?.catch(() => undefined);
+    });
+  }, [autoplayAllowed]);
+
+  return <div className={styles.avatarPair} data-convo-ai-avatar-pair>
+    {avatarPairItems.map(({ id, index }, position) => {
+      const media = getConvoAiMedia(id);
+      const copy = media.copy[locale];
+      const captionId = `convo-ai-avatar-${id}`;
+      return <figure key={id} className={styles.avatarFigure} data-convo-ai-avatar={id}>
+        <div className={styles.avatarPhone}>
+          <CompleteConvoAiVideo id={id} locale={locale} describedBy={captionId} autoPlay={autoplayAllowed} loop muted exclusive={false} videoRef={(element) => { videoRefs.current[position] = element; }} />
+        </div>
+        <figcaption id={captionId}><span>{index}</span><strong>{copy.title}</strong><p>{copy.description}</p></figcaption>
+      </figure>;
+    })}
+  </div>;
+}
+
 export function ConvoAiAppShowcase({ locale }: { readonly locale: Locale }) {
   const [activeId, setActiveId] = useState<AppShowcaseId>('app-login');
   const isDesktop = useMediaQuery('(min-width: 801px)');

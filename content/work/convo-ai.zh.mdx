@@ -1,93 +1,66 @@
-import { EvidenceFigure } from '@/components/case-study/evidence-figure'
+import { ConvoAiAppShowcase, ConvoAiAvatarPair, ConvoAiPlaylist } from '@/components/convo-ai/convo-ai-media'
 
 export const metadata = {
-  type: 'work',
-  slug: 'convo-ai',
-  locale: 'zh',
-  translationKey: 'work.convo-ai',
+  type: 'work', slug: 'convo-ai', locale: 'zh', translationKey: 'work.convo-ai',
   title: 'ConvoAI：让实时 AI 对话可感知、可介入、可恢复',
   proposition: '把不可见的连接、聆听、回答与打断状态，转化为 App 与 Web 上连续、可理解的 1 对 1 AI 互动。',
-  role: '独立负责产品设计（Designer-reported）',
-  duration: '未公开',
+  role: '独立负责产品设计（Designer-reported）', duration: '未公开',
   status: '已上线（Designer-reported）',
   disclosure: '界面与交互证据来自项目 Figma 设计文件；职责与上线状态为设计师口述。本案例不声明未获得证据的用户研究、使用数据或业务结果。',
-  heroMedia: '/images/convo-ai/figma/web-ready.png',
-  evidenceLevel: 'delivered',
-  featuredOrder: 3,
-  previousSlug: 'call-agent',
-  nextSlug: 'meeting',
-  caseLabel: 'AGORA CONVOAI / APP + WEB',
+  heroMedia: '/images/convo-ai/figma/web-ready.png', evidenceLevel: 'delivered', featuredOrder: 3,
+  previousSlug: 'call-agent', nextSlug: 'meeting', caseLabel: 'AGORA CONVOAI / APP + WEB',
   facts: [
     { label: '终端', value: 'App + Web' },
     { label: '场景', value: '1 对 1 实时 AI 对话' },
   ],
   chapters: [
-    { id: 'context', label: '项目背景' },
-    { id: 'challenge', label: '设计挑战' },
-    { id: 'strategy', label: '设计策略' },
-    { id: 'system', label: '话轮系统' },
-    { id: 'interrupt', label: '打断与恢复' },
-    { id: 'multimodal', label: '多模态互动' },
-    { id: 'impact-reflection', label: '交付与反思' },
+    { id: 'context-challenge', label: '背景与挑战' }, { id: 'app-product-structure', label: 'App 产品结构' },
+    { id: 'start-conversation', label: '开始实时对话' }, { id: 'conversation-control', label: '对话控制' },
+    { id: 'digital-human', label: '数字人互动' }, { id: 'realtime-chain', label: '实时链路' },
+    { id: 'delivery', label: '交付范围' },
   ],
 }
 
-<section id="context">
-  <header className="section-heading"><p className="section-index">01 / CONTEXT</p><h2>一个需要在当下建立信任的 AI 对话产品</h2></header>
-  <div className="reading">
-    <p className="lead">ConvoAI 是一个覆盖 App 与 Web 的 1 对 1 实时 AI 互动产品，用于让客户直接体验语音、视频、字幕与数字人能力。</p>
-    <p>我独立负责产品设计（Designer-reported），作用域包括产品结构、核心交互、跨端体验与实时状态的界面表达；RTC / RTM 基础设施、AI 模型、数字人驱动与生产代码不属于个人设计产出。</p>
-  </div>
-  <EvidenceFigure src="/images/convo-ai/figma/web-ready.png" width={1440} height={800} alt="ConvoAI Web 在 AI 就绪后显示对话界面与开始说话提示" label="SHIPPED DESIGN / WEB READY" caption="Web 端用中央对话舞台、文本记录和通话控件共同建立当前状态。" locale="zh" className="convo-hero-evidence" />
+<section id="context-challenge" data-convo-nav-tone="light">
+  <header className="section-heading"><p className="section-index">00 / CONTEXT</p><h2>实时 AI 对话，不只是把聊天界面换成语音</h2></header>
+  <div className="reading"><p className="lead">ConvoAI 是面向客户体验演示的 1 对 1 AI 对话产品，同时覆盖 App 与 Web。连接、聆听、生成和播放连续发生，字幕、摄像头、球体与数字人则把这些变化带到界面上。</p><p>我独立负责产品设计（Designer-reported），包括产品结构、核心交互、跨端体验与实时状态的界面表达；RTC / RTM 基础设施、AI 模型、数字人驱动与生产代码不属于个人设计产出。</p></div>
+  <div className="state-flow" aria-label="对话状态链"><div><span>01</span><strong>Connecting</strong></div><div><span>02</span><strong>Ready</strong></div><div><span>03</span><strong>Listening</strong></div><div><span>04</span><strong>Thinking</strong></div><div><span>05</span><strong>Speaking</strong></div><div><span>06</span><strong>Interrupted</strong></div><div><span>07</span><strong>Recovery</strong></div></div>
 </section>
 
-<section id="challenge">
-  <header className="section-heading"><p className="section-index">02 / CHALLENGE</p><h2>实时 AI 不是一个普通聊天页</h2></header>
-  <div className="reading">
-    <p className="lead">用户看不见连接、语音识别、模型生成与音频播放的内部过程，却需要随时判断 AI 是否听见、谁在说话，以及自己能否介入。</p>
-    <p>Figma 文件中可见的就绪、聆听、回答、静音、打断、摄像头与数字人状态，证明设计对象是一个持续变化的会话系统，而不是一组静态页面。</p>
-  </div>
+<section id="app-product-structure" data-convo-nav-tone="light">
+  <header className="section-heading"><p className="section-index">01 / APP STRUCTURE</p><h2>核心通话之外，App 仍要成为一个完整产品</h2></header>
+  <div className="reading"><p className="lead">登录、首页结构、个人设置与设备连接共同建立移动端产品骨架。向下滚动四个场景，右侧手机在固定位置切换完整录屏。</p></div>
+  <ConvoAiAppShowcase locale="zh" />
 </section>
 
-<section id="strategy">
-  <header className="section-heading"><p className="section-index">03 / STRATEGY</p><h2>用三条原则维持对话的连续性</h2></header>
-  <div className="convo-thesis">
-    <article><span>01 / PERCEIVABLE</span><h3>状态可感知</h3><p>用文字、动效、时间与控件反馈，明确表达连接、聆听与回答。</p></article>
-    <article><span>02 / INTERRUPTIBLE</span><h3>用户可介入</h3><p>打断不只是停止声音，还要让界面、字幕与新意图同步转换。</p></article>
-    <article><span>03 / RECOVERABLE</span><h3>对话可恢复</h3><p>保留已发生的内容与当前转态，避免打断或切换模式后丢失上下文。</p></article>
-  </div>
+<section id="start-conversation" data-convo-nav-tone="dark">
+  <header className="section-heading"><p className="section-index">02 / START</p><h2>从进入产品，到开始一段实时对话</h2></header>
+  <div className="reading"><p className="lead">App 把权限、连接和就绪压缩为一条短路径；Web 展开 Agent、号码、布局和加入退出。两端共享状态语义，但不强行共享同一种布局。</p></div>
+  <ConvoAiPlaylist locale="zh" ids={['app-conversation-start', 'web-login', 'web-preflight', 'web-preflight-layout', 'web-join-exit']} />
 </section>
 
-<section id="system" className="convo-dark-band">
-  <header className="section-heading"><p className="section-index">04 / CONVERSATION SYSTEM</p><h2>把系统事件翻译为用户能读懂的话轮</h2></header>
-  <div className="reading"><p className="lead">设计以一条连续状态链组织跨端反馈。这是对 Figma 中可见状态的案例归纳，不是用户研究结论。</p></div>
-  <div className="state-flow" aria-label="对话状态链">
-    <div><span>01</span><strong>Connecting</strong></div><div><span>02</span><strong>Ready</strong></div><div><span>03</span><strong>Listening</strong></div><div><span>04</span><strong>Speaking</strong></div><div><span>05</span><strong>Interrupted</strong></div><div><span>06</span><strong>Recovery</strong></div>
-  </div>
-  <EvidenceFigure src="/images/convo-ai/figma/ready.png" width={375} height={812} alt="ConvoAI App 显示你可以开始说话的就绪状态" label="STATE / READY" caption="简短的状态语言与稳定控件位置，帮助用户判断开口时机。" locale="zh" />
+<section id="conversation-control" data-convo-nav-tone="light">
+  <header className="section-heading"><p className="section-index">03 / CONTROL</p><h2>对话中的控制权</h2></header>
+  <div className="reading"><p className="lead">连续对话中，用户既要看懂声音、字幕、摄像头和球体如何同步，也要能够打断 AI、恢复新话轮，并决定哪些声音能够触发 Agent。</p></div>
+  <div className="voiceprint-modes"><article><h3>Off</h3><p>关闭声纹限制，减少准备步骤。</p></article><article><h3>Seamless</h3><p>以更少打扰学习说话人。</p></article><article><h3>Personalized</h3><p>通过明确录入获得更强身份控制。</p></article></div>
+  <ConvoAiPlaylist locale="zh" ids={['app-caption-camera', 'web-conversation', 'web-interrupt', 'app-voiceprint-lock']} />
 </section>
 
-<section id="interrupt">
-  <header className="section-heading"><p className="section-index">05 / KEY EXPERIENCE</p><h2>打断是用户夺回话轮的交互权</h2></header>
-  <div className="reading"><p className="lead">当 AI 正在回答，系统需要同时处理声音停止、状态变化与新用户意图。设计用明确的“说话或点击打断”给出行动入口，并保留会话上下文。</p></div>
-  <div className="convo-screen-pair">
-    <EvidenceFigure src="/images/convo-ai/figma/web-interrupt.png" width={1440} height={800} alt="ConvoAI Web 展示 AI 回答中的打断提示" label="WEB / INTERRUPT" caption="大屏保留对话记录和中央状态，让介入动作不丢失语境。" locale="zh" />
-    <EvidenceFigure src="/images/convo-ai/figma/interrupt.png" width={375} height={812} alt="ConvoAI App 展示说话或点击打断状态" label="APP / INTERRUPT" caption="在手机上，打断被放在主操作区上方，保持短路径与明确反馈。" locale="zh" />
-  </div>
+<section id="digital-human" data-convo-nav-tone="light">
+  <header className="section-heading"><p className="section-index">04 / DIGITAL HUMAN</p><h2>从选择数字人，到进入实时互动</h2></header>
+  <div className="reading"><p className="lead">角色选择建立互动预期；进入通话后，音画同步、摄像头与画中画共同塑造临场感。两个场景并排呈现，保留选择与互动的前后关系。</p></div>
+  <ConvoAiAvatarPair locale="zh" />
 </section>
 
-<section id="multimodal" className="convo-dark-band">
-  <header className="section-heading"><p className="section-index">06 / MULTIMODAL EXPERIENCE</p><h2>在照片、视频与数字人之间，保留同一套对话逻辑</h2></header>
-  <div className="reading"><p className="lead">多模态不能只增加更多入口。Figma 中的规则区分了照片 / 拍摄、数字人 + 视频流以及设备准备等情境，并保持话轮提示和通话控件的稳定性。</p></div>
-  <div className="convo-screen-trio">
-    <EvidenceFigure src="/images/convo-ai/figma/photo-entry.png" width={375} height={812} alt="ConvoAI App 中选择照片或拍摄的底部面板" label="INPUT / PHOTO" caption="照片与拍摄使用并列选择，不打断当前通话上下文。" locale="zh" />
-    <EvidenceFigure src="/images/convo-ai/figma/avatar-video.png" width={375} height={812} alt="ConvoAI App 同时显示数字人、视频流与小窗口" label="MODE / AVATAR + VIDEO" caption="视频流保持主视图，小窗口承载辅助视角，避免视觉层级频繁翻转。" locale="zh" />
-    <EvidenceFigure src="/images/convo-ai/figma/settings.png" width={375} height={813} alt="ConvoAI App 的会话设置与设备面板" label="PREP / SETTINGS" caption="设置与设备准备被视为对话条件，而不是与核心体验割裂的杂项。" locale="zh" />
-  </div>
+<section id="realtime-chain" data-convo-nav-tone="dark">
+  <header className="section-heading"><p className="section-index">05 / REAL-TIME CHAIN</p><h2>一次回答背后的实时链路</h2></header>
+  <div className="reading"><p className="lead">用户听到的是一段连续回答，背后却依次经过媒体传输、语音识别、模型生成、语音合成与声纹状态。实时数据与正在发生的对话并置，让处理过程能够被看见。</p></div>
+  <div className="realtime-map"><article><strong>E2E</strong><p>端到端过程</p></article><article><strong>RTC</strong><p>媒体传输</p></article><article><strong>ASR</strong><p>语音识别</p></article><article><strong>LLM</strong><p>生成回答</p></article><article><strong>TTS</strong><p>语音合成</p></article><article><strong>Voiceprint</strong><p>说话人状态</p></article></div>
+  <ConvoAiPlaylist locale="zh" ids={['web-realtime-data']} />
 </section>
 
-<section id="impact-reflection">
-  <header className="section-heading"><p className="section-index">07 / DELIVERY &amp; REFLECTION</p><h2>交付一套跨端、多模态的实时对话体验</h2></header>
-  <p className="convo-outcome">产品已正式上线（Designer-reported）。当前能被证据支持的结果，是 App 与 Web 上完整的产品结构、话轮状态、打断机制和多模态交互设计；不将它延伸为未经验证的转化、满意度或业务增长。</p>
-  <div className="convo-decision"><p className="section-index">REFLECTION</p><p>这个项目让我更确定：AI 产品的控制感，不来自更多控件，而来自对当前状态、可用行动和恢复路径的一致表达。下一步最值得补充的证据，是真实使用中的打断成功率、延迟感受与模式切换反馈。</p></div>
+<section id="delivery" data-convo-nav-tone="light">
+  <header className="section-heading"><p className="section-index">06 / DELIVERY</p><h2>交付范围</h2></header>
+  <div className="reading"><p className="lead">产品已正式上线（Designer-reported）。现有证据支持 App 与 Web 的产品结构、话轮状态、字幕与摄像头、打断、声纹、硬件、数字人与实时数据设计，不延伸为未经验证的业务指标。</p></div>
+  <p className="evidence-note">9 段 App 与 7 段 Web 录屏均保留完整时长；作品集的编辑只发生在视频之外。</p>
 </section>
