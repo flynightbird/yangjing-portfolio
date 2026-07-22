@@ -28,9 +28,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .root :global([data-scroll-reveal-group]) {
-    opacity: 1;
-    filter: none;
-    transform: none;
-    transition: none;
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    transition: none !important;
   }
 }

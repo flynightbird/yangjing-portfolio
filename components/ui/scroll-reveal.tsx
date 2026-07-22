@@ -14,7 +14,8 @@ interface ScrollRevealProps {
 export function ScrollReveal({ children, className }: ScrollRevealProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotionPreference();
-  const [revealed, setRevealed] = useState(reducedMotion);
+  const [revealed, setRevealed] = useState(false);
+  const isRevealed = reducedMotion || revealed;
 
   useEffect(() => {
     const root = rootRef.current;
@@ -43,7 +44,7 @@ export function ScrollReveal({ children, className }: ScrollRevealProps) {
       ref={rootRef}
       className={[styles.root, className].filter(Boolean).join(' ')}
       data-scroll-reveal
-      data-scroll-reveal-state={revealed ? 'revealed' : 'pending'}
+      data-scroll-reveal-state={isRevealed ? 'revealed' : 'pending'}
     >
       {children}
     </div>

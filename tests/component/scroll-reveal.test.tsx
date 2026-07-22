@@ -1,4 +1,6 @@
 import { act, cleanup, render } from '@testing-library/react';
+import { hydrateRoot } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
@@ -9,6 +11,7 @@ class ControllableIntersectionObserver implements IntersectionObserver {
 
   readonly root: Element | Document | null;
   readonly rootMargin: string;
+  readonly scrollMargin = '0px';
   readonly thresholds: readonly number[];
   readonly observe = vi.fn((target: Element) => {
     this.observed.add(target);
@@ -45,17 +48,44 @@ class ControllableIntersectionObserver implements IntersectionObserver {
   }
 }
 
+type MediaChangeListener = EventListenerOrEventListenerObject;
+
+let reducedMotion = false;
+const mediaChangeListeners = new Set<MediaChangeListener>();
+
 function mockReducedMotion(matches: boolean) {
+  reducedMotion = matches;
+  mediaChangeListeners.clear();
+
   vi.stubGlobal('matchMedia', vi.fn((query: string) => ({
-    matches: query.includes('prefers-reduced-motion') && matches,
+    get matches() {
+      return query.includes('prefers-reduced-motion') && reducedMotion;
+    },
     media: query,
     onchange: null,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
+    addEventListener: (type: string, listener: MediaChangeListener | null) => {
+      if (type === 'change' && listener) mediaChangeListeners.add(listener);
+    },
+    removeEventListener: (type: string, listener: MediaChangeListener | null) => {
+      if (type === 'change' && listener) mediaChangeListeners.delete(listener);
+    },
     addListener: vi.fn(),
     removeListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })));
+}
+
+function setReducedMotionPreference(matches: boolean) {
+  reducedMotion = matches;
+  const event = new Event('change');
+
+  for (const listener of mediaChangeListeners) {
+    if (typeof listener === 'function') {
+      listener(event);
+    } else {
+      listener.handleEvent(event);
+    }
+  }
 }
 
 describe('ScrollReveal', () => {
@@ -164,5 +194,57 @@ describe('ScrollReveal', () => {
       'revealed',
     );
     expect(ControllableIntersectionObserver.instances).toHaveLength(0);
+  });
+
+  it('hydrates normal-motion server markup to pending before revealing on intersection', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const markup = renderToString(
+      <ScrollReveal>
+        <p data-scroll-reveal-group>Content</p>
+      </ScrollReveal>,
+    );
+    const container = document.createElement('div');
+    container.innerHTML = markup;
+    document.body.append(container);
+
+    expect(markup).toContain('data-scroll-reveal-state="revealed"');
+
+    let hydratedRoot!: ReturnType<typeof hydrateRoot>;
+    await act(async () => {
+      hydratedRoot = hydrateRoot(
+        container,
+        <ScrollReveal>
+          <p data-scroll-reveal-group>Content</p>
+        </ScrollReveal>,
+      );
+    });
+
+    const boundary = container.querySelector('[data-scroll-reveal]');
+    const observer = ControllableIntersectionObserver.instances[0];
+
+    expect(boundary).toHaveAttribute('data-scroll-reveal-state', 'pending');
+    expect(observer.observe).toHaveBeenCalledWith(boundary);
+    expect(consoleError).not.toHaveBeenCalled();
+
+    act(() => observer.trigger(true));
+    expect(boundary).toHaveAttribute('data-scroll-reveal-state', 'revealed');
+
+    act(() => hydratedRoot.unmount());
+    container.remove();
+  });
+
+  it('renders a pending boundary as revealed and disconnects when reduced motion switches on', () => {
+    const { container } = render(
+      <ScrollReveal>
+        <p data-scroll-reveal-group>Content</p>
+      </ScrollReveal>,
+    );
+    const boundary = container.querySelector('[data-scroll-reveal]');
+    const observer = ControllableIntersectionObserver.instances[0];
+
+    act(() => setReducedMotionPreference(true));
+
+    expect(boundary).toHaveAttribute('data-scroll-reveal-state', 'revealed');
+    expect(observer.disconnect).toHaveBeenCalledTimes(1);
   });
 });
