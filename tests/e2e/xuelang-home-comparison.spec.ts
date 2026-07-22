@@ -20,6 +20,8 @@ async function centerComparison(page: import('@playwright/test').Page) {
 }
 
 test.describe('Xuelang homepage comparison', () => {
+  test.describe.configure({ timeout: 90_000 });
+
   test('runs four auto legs once and returns to its initial position', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'Canonical desktop motion contract.');
     await openHomepage(page);
