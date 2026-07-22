@@ -5,7 +5,10 @@ import { AboutPage } from '@/components/about/about-page';
 
 afterEach(cleanup);
 
-function expectAboutRevealStructure(container: HTMLElement) {
+function expectAboutRevealStructure(
+  container: HTMLElement,
+  sectionTitles: readonly [string, string, string],
+) {
   const aboutPage = container.querySelector('[data-about-page]');
   const hero = container.querySelector('[data-about-hero]');
   const revealBoundaries = container.querySelectorAll(
@@ -14,8 +17,17 @@ function expectAboutRevealStructure(container: HTMLElement) {
 
   expect(aboutPage).not.toBeNull();
   expect(hero).not.toBeNull();
+  expect(hero?.closest('[data-scroll-reveal]')).toBeNull();
   expect(hero?.querySelectorAll('[data-scroll-reveal]')).toHaveLength(0);
   expect(revealBoundaries).toHaveLength(3);
+
+  const sectionRevealBoundaries = sectionTitles.map((title) =>
+    within(aboutPage as HTMLElement)
+      .getByRole('heading', { level: 2, name: title })
+      .closest('[data-scroll-reveal]'),
+  );
+  sectionRevealBoundaries.forEach((boundary) => expect(boundary).not.toBeNull());
+  expect(new Set(sectionRevealBoundaries).size).toBe(3);
 
   revealBoundaries.forEach((boundary) => {
     expect(boundary.querySelectorAll('[data-scroll-reveal-group="text"]')).toHaveLength(1);
@@ -27,7 +39,11 @@ describe('AboutPage', () => {
   it('presents the approved English capability and career structure', () => {
     const { container } = render(<AboutPage locale="en" />);
 
-    expectAboutRevealStructure(container);
+    expectAboutRevealStructure(container, [
+      'The design problems I solve',
+      'Design value, beyond the screen',
+      'Step by step, to where I am now',
+    ]);
     expect(
       screen.getByRole('heading', {
         level: 1,
@@ -83,7 +99,11 @@ describe('AboutPage', () => {
   it('provides the approved Chinese evidence copy', () => {
     const { container } = render(<AboutPage locale="zh" />);
 
-    expectAboutRevealStructure(container);
+    expectAboutRevealStructure(container, [
+      '我解决的设计问题',
+      '设计价值，不止于屏幕',
+      '一步一步，走到现在',
+    ]);
     expect(
       screen.getByRole('heading', {
         level: 1,
