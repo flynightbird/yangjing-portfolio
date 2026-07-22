@@ -110,7 +110,10 @@
   overflow: hidden;
   border: 1px solid var(--about-line);
   border-radius: 18px;
-  background: var(--about-section);
+  background-color: var(--about-section);
+  background-image: url('/images/about/about-hero-blue-bg.png');
+  background-position: center;
+  background-size: cover;
 }
 
 .orbit {
@@ -148,7 +151,7 @@
 }
 
 .orbitHub {
-  fill: #191a18;
+  fill: rgb(5 7 9 / 78%);
   stroke: #5b5e58;
 }
 
@@ -179,10 +182,10 @@
   font-weight: 700;
 }
 
-.orbitNodeux circle { fill: #191a18; stroke: var(--about-ux); }
-.orbitNodeui circle { fill: #191a18; stroke: var(--about-ui); }
-.orbitNodeai circle { fill: #191a18; stroke: var(--about-ai); }
-.orbitNodeleadership circle { fill: #191a18; stroke: var(--about-leadership); }
+.orbitNodeux circle { fill: rgb(5 7 9 / 72%); stroke: var(--about-ux); }
+.orbitNodeui circle { fill: rgb(5 7 9 / 72%); stroke: var(--about-ui); }
+.orbitNodeai circle { fill: rgb(5 7 9 / 72%); stroke: var(--about-ai); }
+.orbitNodeleadership circle { fill: rgb(5 7 9 / 72%); stroke: var(--about-leadership); }
 .orbitNodeux .orbitNodeLabel { fill: var(--about-ux); }
 .orbitNodeui .orbitNodeLabel { fill: var(--about-ui); }
 .orbitNodeai .orbitNodeLabel { fill: var(--about-ai); }

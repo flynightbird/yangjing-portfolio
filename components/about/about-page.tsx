@@ -214,7 +214,11 @@ const copy = {
 
 function CapabilityOrbit() {
   return (
-    <div className={styles.orbitFrame} aria-hidden="true">
+    <div
+      className={styles.orbitFrame}
+      aria-hidden="true"
+      data-about-orbit-background="/images/about/about-hero-blue-bg.png"
+    >
       <svg className={styles.orbit} viewBox="0 0 440 440" role="presentation">
         <circle className={styles.orbitRing} cx="220" cy="220" r="162" />
         <g className={styles.orbitMarker}>

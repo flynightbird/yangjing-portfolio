@@ -9,6 +9,11 @@ describe('AboutPage', () => {
   it('presents the approved English capability and career structure', () => {
     const { container } = render(<AboutPage locale="en" />);
 
+    expect(container.querySelector('[data-about-orbit-background]')).toHaveAttribute(
+      'data-about-orbit-background',
+      '/images/about/about-hero-blue-bg.png',
+    );
+
     expect(
       screen.getByRole('heading', {
         level: 1,
