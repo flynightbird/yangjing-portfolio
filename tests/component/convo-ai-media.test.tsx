@@ -1,9 +1,48 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { CompleteConvoAiVideo, ConvoAiPlaylist, ConvoAiStage } from '@/components/convo-ai/convo-ai-media';
+import { CompleteConvoAiVideo, ConvoAiAppShowcase, ConvoAiPlaylist, ConvoAiStage } from '@/components/convo-ai/convo-ai-media';
 
-afterEach(() => { cleanup(); vi.restoreAllMocks(); });
+class IntersectionObserverHarness {
+  static instances: IntersectionObserverHarness[] = [];
+  readonly observe = vi.fn((element: Element) => { this.elements.push(element); });
+  readonly unobserve = vi.fn();
+  readonly disconnect = vi.fn();
+  readonly elements: Element[] = [];
+
+  constructor(readonly callback: IntersectionObserverCallback, readonly options?: IntersectionObserverInit) {
+    IntersectionObserverHarness.instances.push(this);
+  }
+
+  trigger(id: string) {
+    const target = this.elements.find((element) => element.getAttribute('data-app-showcase-step') === id);
+    if (!target) throw new Error(`Unknown observed step: ${id}`);
+    this.callback([{ target, isIntersecting: true, boundingClientRect: target.getBoundingClientRect(), intersectionRatio: 1, intersectionRect: target.getBoundingClientRect(), rootBounds: null, time: 0 } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
+  }
+}
+
+function installMediaEnvironment({ desktop = true, reducedMotion = false, intersectionObserver = true } = {}) {
+  const listeners = new Map<string, Set<(event: MediaQueryListEvent) => void>>();
+  vi.stubGlobal('matchMedia', vi.fn((query: string) => ({
+    matches: query === '(min-width: 801px)' ? desktop : query === '(prefers-reduced-motion: reduce)' ? reducedMotion : false,
+    media: query,
+    onchange: null,
+    addEventListener: (_: string, listener: (event: MediaQueryListEvent) => void) => {
+      const queryListeners = listeners.get(query) ?? new Set();
+      queryListeners.add(listener);
+      listeners.set(query, queryListeners);
+    },
+    removeEventListener: (_: string, listener: (event: MediaQueryListEvent) => void) => listeners.get(query)?.delete(listener),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })));
+  IntersectionObserverHarness.instances = [];
+  if (intersectionObserver) vi.stubGlobal('IntersectionObserver', IntersectionObserverHarness);
+  else vi.stubGlobal('IntersectionObserver', undefined);
+}
+
+afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 beforeEach(() => { vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => undefined); });
 
 describe('ConvoAiPlaylist', () => {
@@ -133,5 +172,104 @@ describe('ConvoAiStage', () => {
     expect(container.querySelector('[data-convo-ai-stage]')).toHaveAttribute('data-active-platform', 'app');
     expect(container.querySelector('[data-convo-web-plane] video')).toBeNull();
     expect(container.querySelector('[data-convo-app-device] video')).toBeInTheDocument();
+  });
+});
+
+describe('ConvoAiAppShowcase', () => {
+  it('observes all App scenes with the intended desktop activation band', () => {
+    installMediaEnvironment();
+    const { container } = render(<ConvoAiAppShowcase locale="zh" />);
+    const observer = IntersectionObserverHarness.instances[0];
+
+    expect(container.querySelector('[data-convo-app-showcase]')).toHaveAttribute('data-active-id', 'app-login');
+    expect(observer.options).toMatchObject({ rootMargin: '-42% 0px -57% 0px', threshold: 0 });
+    expect(observer.observe).toHaveBeenCalledTimes(4);
+    expect(observer.elements.map((element) => element.getAttribute('data-app-showcase-step'))).toEqual([
+      'app-login', 'app-structure', 'app-profile-settings', 'app-hardware-device',
+    ]);
+    expect(screen.getByText('登录与进入')).toBeVisible();
+    expect(screen.getByText('用短入口建立产品身份和移动端旅程起点。')).toBeVisible();
+  });
+
+  it('hands media to an observer-selected scene and resets the prior video', () => {
+    installMediaEnvironment();
+    const { container } = render(<ConvoAiAppShowcase locale="zh" />);
+    const initialVideo = screen.getByLabelText('App 登录与进入') as HTMLVideoElement;
+    const pause = vi.spyOn(initialVideo, 'pause');
+    Object.defineProperty(initialVideo, 'currentTime', { value: 8, writable: true, configurable: true });
+
+    act(() => { IntersectionObserverHarness.instances[0].trigger('app-profile-settings'); });
+
+    expect(pause).toHaveBeenCalledOnce();
+    expect(initialVideo.currentTime).toBe(0);
+    expect(container.querySelector('[data-convo-app-showcase]')).toHaveAttribute('data-active-id', 'app-profile-settings');
+    const current = screen.getByLabelText('个人设置');
+    expect(current).toHaveAttribute('src', '/videos/convo-ai/app-profile-settings.mp4');
+    expect(current).toHaveAttribute('loop');
+    expect((current as HTMLVideoElement).muted).toBe(true);
+    expect(current).toHaveAttribute('autoplay');
+  });
+
+  it('accepts reverse observer activation without inferring scroll direction', () => {
+    installMediaEnvironment();
+    const { container } = render(<ConvoAiAppShowcase locale="en" />);
+    const observer = IntersectionObserverHarness.instances[0];
+
+    act(() => { observer.trigger('app-profile-settings'); });
+    act(() => { observer.trigger('app-structure'); });
+
+    expect(container.querySelector('[data-convo-app-showcase]')).toHaveAttribute('data-active-id', 'app-structure');
+    expect(container.querySelector('[data-app-showcase-step="app-structure"]')).toHaveAttribute('data-active', 'true');
+    expect(container.querySelector('[data-app-showcase-step="app-profile-settings"]')).toHaveAttribute('data-active', 'false');
+  });
+
+  it('uses desktop buttons as scroll commands until the observer selects a scene', () => {
+    installMediaEnvironment();
+    const { container } = render(<ConvoAiAppShowcase locale="en" />);
+    const structure = container.querySelector('[data-app-showcase-step="app-structure"]') as HTMLElement;
+    const scrollIntoView = vi.fn();
+    structure.scrollIntoView = scrollIntoView;
+
+    fireEvent.click(screen.getByRole('button', { name: /Product structure/i }));
+
+    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+    expect(container.querySelector('[data-convo-app-showcase]')).toHaveAttribute('data-active-id', 'app-login');
+    act(() => { IntersectionObserverHarness.instances[0].trigger('app-structure'); });
+    expect(container.querySelector('[data-convo-app-showcase]')).toHaveAttribute('data-active-id', 'app-structure');
+  });
+
+  it('does not autoplay and uses instant navigation when reduced motion is preferred', () => {
+    installMediaEnvironment({ reducedMotion: true });
+    const { container } = render(<ConvoAiAppShowcase locale="en" />);
+    const structure = container.querySelector('[data-app-showcase-step="app-structure"]') as HTMLElement;
+    const scrollIntoView = vi.fn();
+    structure.scrollIntoView = scrollIntoView;
+
+    expect(screen.getByLabelText('App entry and sign in')).not.toHaveAttribute('autoplay');
+    fireEvent.click(screen.getByRole('button', { name: /Product structure/i }));
+    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'auto', block: 'start' });
+  });
+
+  it('keeps mobile media inline, activates by click, and mounts one video', () => {
+    installMediaEnvironment({ desktop: false });
+    const { container } = render(<ConvoAiAppShowcase locale="zh" />);
+
+    expect(IntersectionObserverHarness.instances).toHaveLength(0);
+    fireEvent.click(screen.getByRole('button', { name: /硬件设备/i }));
+
+    const hardware = container.querySelector('[data-app-showcase-step="app-hardware-device"]') as HTMLElement;
+    expect(container.querySelector('[data-convo-app-showcase]')).toHaveAttribute('data-active-id', 'app-hardware-device');
+    expect(hardware.querySelector('[data-media-card="app-hardware-device"]')).toBeInTheDocument();
+    expect(container.querySelectorAll('[data-convo-ai-video="true"]')).toHaveLength(1);
+  });
+
+  it('disconnects its observer when the showcase unmounts', () => {
+    installMediaEnvironment();
+    const { unmount } = render(<ConvoAiAppShowcase locale="en" />);
+    const observer = IntersectionObserverHarness.instances[0];
+
+    unmount();
+
+    expect(observer.disconnect).toHaveBeenCalledOnce();
   });
 });
