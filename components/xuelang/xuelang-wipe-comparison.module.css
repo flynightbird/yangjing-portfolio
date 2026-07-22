@@ -11,6 +11,7 @@
   width: 100%;
   aspect-ratio: 3324 / 2160;
   overflow: hidden;
+  border-radius: var(--xuelang-media-radius);
   border: 1px solid rgb(255 255 255 / 14%);
   background: #323532;
   isolation: isolate;

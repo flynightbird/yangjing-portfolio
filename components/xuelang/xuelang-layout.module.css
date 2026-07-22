@@ -10,6 +10,7 @@
   --xuelang-green: #466b52;
   --xuelang-line: #d8ded9;
   --xuelang-dark: #121614;
+  --xuelang-media-radius: 20px;
   border-block-end: 1px solid var(--xuelang-line);
   background: var(--xuelang-paper);
   color: var(--xuelang-ink);
@@ -136,7 +137,7 @@
   width: 100%;
   margin: clamp(3rem, 7vh, 6rem) 0 clamp(4rem, 10vh, 8rem);
   border: 1px solid #2f3732;
-  border-radius: 4px;
+  border-radius: var(--xuelang-media-radius);
   aspect-ratio: 2 / 1;
   background: #111512;
   box-shadow: 0 2rem 5rem rgb(17 21 18 / 14%);

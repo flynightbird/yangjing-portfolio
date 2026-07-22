@@ -167,5 +167,7 @@ describe('XuelangLayout', () => {
       .toBeInTheDocument();
     expect(container.querySelector('img[src="/images/xuelang/learning-entry-ui.webp"]'))
       .not.toBeInTheDocument();
+    expect(screen.queryByText('flydesigner_yangj')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '复制微信号' })).not.toBeInTheDocument();
   });
 });

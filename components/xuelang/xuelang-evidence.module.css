@@ -5,7 +5,7 @@
 
 .figure :global(button) {
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: var(--xuelang-media-radius);
 }
 
 .wide {
@@ -124,7 +124,7 @@
 .darkComparison {
   margin-block-start: 3rem;
   padding: clamp(1.25rem, 3vw, 3rem);
-  border-radius: 4px;
+  border-radius: var(--xuelang-media-radius);
   background: #121614;
   color: #f5f7f5;
 }
@@ -218,6 +218,7 @@
   align-items: end;
   padding: clamp(1.5rem, 3vw, 3rem);
   overflow: hidden;
+  border-radius: var(--xuelang-media-radius);
   background: #e4ebe6;
 }
 
@@ -258,6 +259,15 @@
 .story-standard .storyPrimary,
 .story-result .storyPrimary {
   width: min(100%, 24rem);
+}
+
+.story-result .storyPrimary {
+  width: 70%;
+  margin-inline: auto;
+}
+
+.story-result .storyPrimary :global(button) {
+  border: 0;
 }
 
 .story-experiment .storyMedia {

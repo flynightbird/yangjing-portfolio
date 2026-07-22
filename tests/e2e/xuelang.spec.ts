@@ -78,20 +78,21 @@ test.describe('Xuelang case study', () => {
       )).toBeVisible();
       await expect(page.locator('main')).not.toContainText(/灰度|gray release|long-term validated/i);
 
-      const email = locale === 'zh' ? 'yangux@qq.com' : 'amanda.yangj@gmail.com';
-      await expect(page.getByRole('link', { name: email })).toHaveAttribute(
-        'href',
-        `mailto:${email}`,
+      const siteFooter = page.locator('body > footer');
+      await expect(siteFooter).toBeVisible();
+      await expect(siteFooter.getByRole('link', {
+        name: locale === 'zh' ? '联系' : 'Contact',
+      })).toHaveAttribute('href', `/${locale}/about/#contact`);
+      await expect(page.locator('main')).not.toContainText(
+        /yangux@qq\.com|amanda\.yangj@gmail\.com|flydesigner_yangj/,
       );
     });
   }
 
-  test('desktop chapter rail, lightbox, and Chinese contact remain operable', async ({
-    context,
+  test('desktop chapter rail, lightbox, and global footer remain operable', async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'Interactions need one canonical viewport.');
-    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.goto('/zh/work/xuelang/', { waitUntil: 'networkidle' });
 
     for (const id of chapterIds) {
@@ -107,10 +108,13 @@ test.describe('Xuelang case study', () => {
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog', { name: '查看产品界面' })).toHaveCount(0);
 
-    await page.getByRole('button', { name: '复制微信号' }).click();
-    await expect(page.getByText('已复制微信号', { exact: true })).toBeVisible();
-    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText()))
-      .toBe('flydesigner_yangj');
+    const siteFooter = page.locator('body > footer');
+    await expect(siteFooter).toBeVisible();
+    await expect(siteFooter.getByRole('link', { name: '联系' })).toHaveAttribute(
+      'href',
+      '/zh/about/#contact',
+    );
+    await expect(siteFooter.getByText(/© \d{4} Yang Jing\./)).toBeVisible();
   });
 
   test('desktop creates one learning pin and reduced motion creates none', async ({
