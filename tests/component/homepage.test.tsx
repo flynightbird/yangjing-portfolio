@@ -373,13 +373,62 @@ describe('FeaturedWork', () => {
     expect(within(meeting as HTMLElement).queryByRole('img')).not.toBeInTheDocument();
   });
 
-  it('renders verified real media for Xuelang, Call Agent, AIDX, and STT Demo', () => {
+  it.each([
+    {
+      locale: 'en' as const,
+      beforeLabel: 'Before',
+      afterLabel: 'After',
+      controlLabel: 'Compare the old and new Xuelang learning experience',
+    },
+    {
+      locale: 'zh' as const,
+      beforeLabel: '旧版',
+      afterLabel: '新版',
+      controlLabel: '对比学浪旧版与新版学习体验',
+    },
+  ])('renders localized Xuelang wipe media in $locale', ({
+    locale,
+    beforeLabel,
+    afterLabel,
+    controlLabel,
+  }) => {
+    const { container } = render(<FeaturedWork locale={locale} />);
+    const xuelang = container.querySelector<HTMLElement>('[data-project-id="xuelang"]');
+    const comparison = xuelang?.querySelector<HTMLElement>('[data-xuelang-home-comparison]');
+
+    expect(comparison).toBeInTheDocument();
+    expect(within(comparison as HTMLElement).getByText(beforeLabel)).toBeVisible();
+    expect(within(comparison as HTMLElement).getByText(afterLabel)).toBeVisible();
+    expect(
+      within(comparison as HTMLElement).getByRole('img', { name: beforeLabel }),
+    ).toHaveAttribute('src', '/images/xuelang/learning-before-board.webp');
+    expect(
+      within(comparison as HTMLElement).getByRole('img', { name: afterLabel }),
+    ).toHaveAttribute('src', '/images/xuelang/learning-after-board.webp');
+    expect(xuelang?.querySelector('img[src*="hero-panorama"]')).not.toBeInTheDocument();
+
+    const slider = within(comparison as HTMLElement).getByRole('slider', {
+      name: controlLabel,
+    });
+    expect(slider).toHaveAttribute('min', '4');
+    expect(slider).toHaveAttribute('max', '96');
+    expect(slider).toHaveAttribute('step', '1');
+    expect(slider).toHaveValue('38');
+    expect(comparison).toHaveAttribute('data-auto-state', 'idle');
+    expect(comparison).toHaveAttribute('data-auto-leg', '0');
+
+    fireEvent.keyDown(slider, { key: 'ArrowRight' });
+    expect(slider).toHaveValue('41');
+    expect(comparison).toHaveAttribute('data-auto-state', 'cancelled');
+    fireEvent.keyDown(slider, { key: 'Home' });
+    expect(slider).toHaveValue('4');
+    fireEvent.keyDown(slider, { key: 'End' });
+    expect(slider).toHaveValue('96');
+  });
+
+  it('renders verified real media for Call Agent, AIDX, and STT Demo', () => {
     const { container } = render(<FeaturedWork locale="en" />);
 
-    expect(screen.getByRole('img', { name: /Xuelang product panorama/i })).toHaveAttribute(
-      'src',
-      '/images/xuelang/hero-panorama.webp',
-    );
     const callAgent = container.querySelector<HTMLElement>('[data-project-id="call-agent"]');
     const studioFrame = callAgent?.querySelector<HTMLIFrameElement>('[data-convo-studio-frame]');
     expect(callAgent?.querySelector('[data-convo-studio-window]')).toHaveAttribute(

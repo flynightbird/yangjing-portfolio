@@ -2,6 +2,7 @@ import { ActionLink } from '@/components/ui/action-link';
 import type { PageTransitionTone } from '@/components/shell/page-transition-layer';
 import type { HomepageCompanyId, ProjectAvailability } from '@/content/home';
 import { withBasePath } from '@/lib/i18n/locales';
+import type { ReactNode } from 'react';
 
 import { ProjectMeta } from './project-meta';
 import styles from './home.module.css';
@@ -30,6 +31,7 @@ interface FeaturedProjectProps {
   readonly href: string;
   readonly availability: ProjectAvailability;
   readonly media?: ProjectMedia;
+  readonly mediaContent?: ReactNode;
   readonly order: string;
   readonly transitionTone: PageTransitionTone;
   readonly variant: 'flagship' | 'evidence';
@@ -42,6 +44,7 @@ export function FeaturedProject({
   href,
   availability,
   media,
+  mediaContent,
   order,
   transitionTone,
   variant,
@@ -93,22 +96,24 @@ export function FeaturedProject({
           className={styles.projectMedia}
           data-project-media-frame
           data-media-radius="20"
+          data-custom-media={mediaContent ? '' : undefined}
         >
-          {media ? (
-            // The image is verified product evidence with preserved dimensions.
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={withBasePath(media.src)}
-              width={media.width}
-              height={media.height}
-              alt={media.alt}
-            />
-          ) : (
-            <div className={styles.draftMedia} role="status">
-              <span>{copy.mediaLabel}</span>
-              <b>Draft</b>
-            </div>
-          )}
+          {mediaContent ??
+            (media ? (
+              // The image is verified product evidence with preserved dimensions.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={withBasePath(media.src)}
+                width={media.width}
+                height={media.height}
+                alt={media.alt}
+              />
+            ) : (
+              <div className={styles.draftMedia} role="status">
+                <span>{copy.mediaLabel}</span>
+                <b>Draft</b>
+              </div>
+            ))}
         </div>
       </div>
     </article>
