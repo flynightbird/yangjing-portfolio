@@ -19,8 +19,81 @@ async function centerComparison(page: import('@playwright/test').Page) {
   });
 }
 
+async function placeComparisonBottomAt(page: import('@playwright/test').Page, bottom: number) {
+  const positionedBottom = await page.locator(comparisonSelector).evaluate((element, targetBottom) => {
+    const rect = element.getBoundingClientRect();
+    const documentTop = rect.top + window.scrollY;
+    window.scrollTo({
+      top: documentTop - (targetBottom - rect.height),
+      behavior: 'instant',
+    });
+    return element.getBoundingClientRect().bottom;
+  }, bottom);
+  expect(Math.abs(positionedBottom - bottom)).toBeLessThanOrEqual(1);
+}
+
 test.describe('Xuelang homepage comparison', () => {
   test.describe.configure({ timeout: 90_000 });
+
+  test('starts only when its edge enters the central viewport band after resize', async ({
+    page,
+  }) => {
+    await openHomepage(page);
+    const comparison = page.locator(comparisonSelector);
+    const viewport = page.viewportSize();
+    if (!viewport) throw new Error('Missing comparison viewport');
+    await page.evaluate(() => {
+      const spacer = document.createElement('div');
+      spacer.dataset.comparisonBoundarySpacer = 'true';
+      spacer.style.height = `${window.innerHeight * 2}px`;
+      spacer.setAttribute('aria-hidden', 'true');
+      document.body.append(spacer);
+    });
+
+    const initialHeight = await page.evaluate(() => window.innerHeight);
+    const initialInset = Math.round(initialHeight * 0.3);
+    await expect(comparison).toHaveAttribute(
+      'data-observer-root-margin',
+      `-${initialInset}px 0px -${initialInset}px 0px`,
+    );
+
+    await page.setViewportSize({ width: viewport.width, height: viewport.height - 120 });
+    const viewportHeight = await page.evaluate(() => window.innerHeight);
+    const inset = Math.round(viewportHeight * 0.3);
+    await expect(comparison).toHaveAttribute(
+      'data-observer-root-margin',
+      `-${inset}px 0px -${inset}px 0px`,
+    );
+
+    await placeComparisonBottomAt(page, inset - 20);
+    await page.waitForTimeout(300);
+    await expect(comparison).toHaveAttribute('data-auto-state', 'idle');
+
+    const observedState = await comparison.evaluate((element, targetBottom) => {
+      return new Promise<string>((resolve, reject) => {
+        const timeout = window.setTimeout(() => {
+          observer.disconnect();
+          reject(new Error('Comparison did not enter the running state'));
+        }, 5_000);
+        const observer = new MutationObserver(() => {
+          const state = element.getAttribute('data-auto-state');
+          if (state !== 'running') return;
+          window.clearTimeout(timeout);
+          observer.disconnect();
+          resolve(state);
+        });
+        observer.observe(element, { attributes: true, attributeFilter: ['data-auto-state'] });
+        const rect = element.getBoundingClientRect();
+        const documentTop = rect.top + window.scrollY;
+        window.scrollTo({
+          top: documentTop - (targetBottom - rect.height),
+          behavior: 'instant',
+        });
+      });
+    }, inset + 20);
+    expect(observedState).toBe('running');
+    await page.locator('[data-comparison-boundary-spacer]').evaluate((element) => element.remove());
+  });
 
   test('runs four auto legs once and returns to its initial position', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'Canonical desktop motion contract.');
@@ -76,14 +149,34 @@ test.describe('Xuelang homepage comparison', () => {
   test('deliberate pointer and keyboard input cancel auto motion and remain usable', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'Canonical desktop input contract.');
     await openHomepage(page);
-    await centerComparison(page);
 
     const comparison = page.locator(comparisonSelector);
     const slider = comparison.getByRole('slider');
-    await expect(comparison).toHaveAttribute('data-auto-state', 'running');
-    const box = await slider.boundingBox();
-    if (!box) throw new Error('Missing comparison control bounds');
-    await page.mouse.click(box.x + box.width * 0.75, box.y + box.height / 2);
+    const clickPoint = await comparison.evaluate((element) => {
+      return new Promise<{ x: number; y: number }>((resolve, reject) => {
+        const timeout = window.setTimeout(() => {
+          observer.disconnect();
+          reject(new Error('Comparison did not enter the running state'));
+        }, 5_000);
+        const capturePoint = () => {
+          if (element.getAttribute('data-auto-state') !== 'running') return false;
+          const rect = element.getBoundingClientRect();
+          window.clearTimeout(timeout);
+          observer.disconnect();
+          resolve({ x: rect.left + rect.width * 0.75, y: rect.top + rect.height / 2 });
+          return true;
+        };
+        const observer = new MutationObserver(capturePoint);
+        observer.observe(element, { attributes: true, attributeFilter: ['data-auto-state'] });
+        const rect = element.getBoundingClientRect();
+        window.scrollTo({
+          top: window.scrollY + rect.top + rect.height / 2 - window.innerHeight / 2,
+          behavior: 'instant',
+        });
+        capturePoint();
+      });
+    });
+    await page.mouse.click(clickPoint.x, clickPoint.y);
     await expect(comparison).toHaveAttribute('data-auto-state', 'cancelled');
     expect(Number(await slider.inputValue())).toBeGreaterThan(60);
 

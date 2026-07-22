@@ -200,6 +200,9 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
       return;
     }
 
+    let resizeFrame: number | null = null;
+    let triggerConsumed = false;
+
     function runLeg(leg: number) {
       const from = AUTO_KEYFRAMES[leg - 1];
       const to = AUTO_KEYFRAMES[leg];
@@ -226,18 +229,50 @@ export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
       frameRef.current = requestAnimationFrame(animate);
     }
 
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) return;
-        observerRef.current?.disconnect();
-        runLeg(1);
-      },
-      { rootMargin: '-30% 0px -30% 0px', threshold: 0.01 },
-    );
-    observerRef.current.observe(root);
+    function createObserver() {
+      if (triggerConsumed || autoStateRef.current !== 'idle') return;
+      observerRef.current?.disconnect();
+
+      const inset = Math.round(window.innerHeight * 0.3);
+      const rootMargin = `-${inset}px 0px -${inset}px 0px`;
+      root.dataset.observerRootMargin = rootMargin;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (
+            observerRef.current !== observer ||
+            triggerConsumed ||
+            autoStateRef.current !== 'idle' ||
+            !entries.some((entry) => entry.isIntersecting)
+          ) {
+            return;
+          }
+          triggerConsumed = true;
+          observer.disconnect();
+          observerRef.current = null;
+          runLeg(1);
+        },
+        { rootMargin, threshold: 0.01 },
+      );
+      observerRef.current = observer;
+      observer.observe(root);
+    }
+
+    function scheduleObserverRebuild() {
+      if (triggerConsumed || autoStateRef.current !== 'idle') return;
+      if (resizeFrame !== null) cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = null;
+        createObserver();
+      });
+    }
+
+    createObserver();
+    window.addEventListener('resize', scheduleObserverRebuild);
     markInteractionReady();
 
     return () => {
+      window.removeEventListener('resize', scheduleObserverRebuild);
+      if (resizeFrame !== null) cancelAnimationFrame(resizeFrame);
       observerRef.current?.disconnect();
       if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
     };
