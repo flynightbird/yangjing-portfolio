@@ -6,11 +6,11 @@
 .canvas {
   position: relative;
   overflow: hidden;
-  border: 1px solid #ccd3ce;
+  border: 0;
   border-radius: var(--xuelang-media-radius);
   aspect-ratio: 3840 / 1876;
   background: linear-gradient(145deg, #eef7f0 0%, #dfeee3 100%);
-  box-shadow: 0 1.5rem 4rem rgb(17 21 18 / 10%);
+  box-shadow: none;
 }
 
 .productImage {

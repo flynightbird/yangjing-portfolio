@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, statSync } from 'node:fs';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import path from 'node:path';
+import { tmpdir } from 'node:os';
 
 import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
@@ -34,6 +36,110 @@ function loadManifest(): XuelangManifest {
 }
 
 describe('Xuelang evidence manifest', () => {
+  it('prepares the manifest interaction asset through the production branch', async () => {
+    const prepareAsset = (
+      assetPreparation as typeof assetPreparation & {
+        prepareXuelangAsset?: (
+          asset: XuelangAsset,
+          options: { outputPath: string },
+        ) => Promise<void>;
+      }
+    ).prepareXuelangAsset;
+
+    expect(prepareAsset).toBeTypeOf('function');
+    if (!prepareAsset) return;
+
+    const interaction = loadManifest().assets.find((asset) => asset.id === 'learning-interaction');
+    expect(interaction).toBeDefined();
+    if (!interaction) return;
+
+    const tempRoot = await mkdtemp(path.join(tmpdir(), 'xuelang-interaction-'));
+    const outputPath = path.join(tempRoot, 'learning-interaction.webp');
+    try {
+      await prepareAsset(interaction, { outputPath });
+
+      const [generated, checkedIn] = await Promise.all([
+        readFile(outputPath),
+        readFile(path.join(root, interaction.output)),
+      ]);
+      expect(createHash('sha256').update(generated).digest('hex')).toBe(
+        createHash('sha256').update(checkedIn).digest('hex'),
+      );
+
+      const metadata = await sharp(generated).metadata();
+      expect(metadata).toMatchObject({ format: 'webp', width: 3840, height: 1876 });
+      const cornerCoordinates = [
+        [0, 0],
+        [3839, 0],
+        [0, 1875],
+        [3839, 1875],
+      ] as const;
+      const corners = await Promise.all(
+        cornerCoordinates.map(([left, top]) =>
+          sharp(generated).extract({ left, top, width: 1, height: 1 }).raw().toBuffer()),
+      );
+      expect(corners.map((corner) => Array.from(corner))).toEqual(
+        Array.from({ length: 4 }, () => [227, 236, 231]),
+      );
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+    expect(existsSync(tempRoot)).toBe(false);
+  }, 120_000);
+
+  it('prepares the interaction artwork with a lossless edge-connected green background', async () => {
+    const prepareInteraction = (
+      assetPreparation as typeof assetPreparation & {
+        prepareXuelangInteractionWebp?: (input: Buffer) => Promise<Buffer>;
+      }
+    ).prepareXuelangInteractionWebp;
+
+    expect(prepareInteraction).toBeTypeOf('function');
+    if (!prepareInteraction) return;
+
+    const width = 5;
+    const height = 5;
+    const background = [235, 237, 238];
+    const target = [227, 236, 231];
+    const pixels = Buffer.alloc(width * height * 3);
+    const setPixel = (buffer: Buffer, x: number, y: number, color: number[]) => {
+      const offset = (y * width + x) * 3;
+      buffer.set(color, offset);
+    };
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) setPixel(pixels, x, y, background);
+    }
+
+    const foregroundPixels = [
+      [2, 1, [13, 71, 219]],
+      [1, 2, [241, 143, 29]],
+      [3, 2, [44, 95, 52]],
+      [2, 3, [198, 32, 91]],
+    ] as const;
+    for (const [x, y, color] of foregroundPixels) setPixel(pixels, x, y, [...color]);
+    setPixel(pixels, 0, 2, [255, 237, 238]);
+    setPixel(pixels, 4, 2, [255, 238, 238]);
+
+    const source = await sharp(pixels, { raw: { width, height, channels: 3 } })
+      .png()
+      .toBuffer();
+    const output = await prepareInteraction(source);
+    const metadata = await sharp(output).metadata();
+    const { data, info } = await sharp(output).raw().toBuffer({ resolveWithObject: true });
+
+    const expected = Buffer.alloc(width * height * 3);
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) setPixel(expected, x, y, target);
+    }
+    for (const [x, y, color] of foregroundPixels) setPixel(expected, x, y, [...color]);
+    setPixel(expected, 2, 2, background);
+    setPixel(expected, 4, 2, [255, 238, 238]);
+
+    expect(metadata).toMatchObject({ format: 'webp', width, height });
+    expect(info).toMatchObject({ width, height, channels: 3 });
+    expect(Array.from(data)).toEqual(Array.from(expected));
+  });
+
   it('declares the supplied opening cover as a semantic asset', () => {
     const manifest = loadManifest();
     const cover = manifest.assets.find((asset) => asset.id === 'opening-cover');

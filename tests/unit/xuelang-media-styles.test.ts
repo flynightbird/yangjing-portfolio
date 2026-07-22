@@ -10,6 +10,7 @@ const evidenceCss = readCss('components/xuelang/xuelang-evidence.module.css');
 const wipeCss = readCss('components/xuelang/xuelang-wipe-comparison.module.css');
 const courseCss = readCss('components/xuelang/xuelang-course-entry.module.css');
 const interactionCss = readCss('components/xuelang/xuelang-interaction-board.module.css');
+const interactionDesktopCss = interactionCss.split('@media')[0];
 
 describe('Xuelang media styling', () => {
   it('defines one 20px media radius while leaving the opening cover square', () => {
@@ -41,6 +42,11 @@ describe('Xuelang media styling', () => {
     expect(interactionCss).toMatch(
       /\.canvas\s*{[^}]*background:\s*linear-gradient\(145deg,\s*#eef7f0\s*0%,\s*#dfeee3\s*100%\)/s,
     );
+  });
+
+  it('renders the interaction canvas without an outer border or shadow', () => {
+    expect(interactionDesktopCss).toMatch(/\.canvas\s*{[^}]*border:\s*0/s);
+    expect(interactionDesktopCss).toMatch(/\.canvas\s*{[^}]*box-shadow:\s*none/s);
   });
 
   it('centers the result phone at 70 percent without an outer media border', () => {
