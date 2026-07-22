@@ -285,19 +285,44 @@ test.describe('portfolio homepage framework', () => {
       'data-scroll-reveal-state',
       'pending',
     );
+    await expect
+      .poll(() => archiveBoundary.evaluate(
+        (element) => element.getBoundingClientRect().top >= window.innerHeight - 1,
+      ))
+      .toBe(true);
 
-    await archiveBoundary.scrollIntoViewIfNeeded();
+    await archiveBoundary.evaluate((element) => {
+      document.documentElement.style.scrollBehavior = 'auto';
+      element.scrollIntoView({ block: 'start', behavior: 'auto' });
+    });
+    await expect
+      .poll(() => archiveBoundary.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        const visibleHeight = Math.max(
+          0,
+          Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0),
+        );
+        return visibleHeight / rect.height;
+      }))
+      .toBeGreaterThanOrEqual(0.12);
     await expect(archiveBoundary).toHaveAttribute(
       'data-scroll-reveal-state',
       'revealed',
     );
 
-    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'auto' }));
+    await expect
+      .poll(() => archiveBoundary.evaluate(
+        (element) => element.getBoundingClientRect().top >= window.innerHeight - 1,
+      ))
+      .toBe(true);
     await expect(archiveBoundary).toHaveAttribute(
       'data-scroll-reveal-state',
       'revealed',
     );
-    await archiveBoundary.scrollIntoViewIfNeeded();
+    await archiveBoundary.evaluate((element) => {
+      element.scrollIntoView({ block: 'start', behavior: 'auto' });
+    });
     await expect(archiveBoundary).toHaveAttribute(
       'data-scroll-reveal-state',
       'revealed',

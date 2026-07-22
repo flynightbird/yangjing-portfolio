@@ -39,6 +39,11 @@ test.describe('localized About scroll reveals', () => {
         'data-scroll-reveal-state',
         'pending',
       );
+      await expect
+        .poll(() => careerBoundary.evaluate(
+          (element) => element.getBoundingClientRect().top >= window.innerHeight - 1,
+        ))
+        .toBe(true);
       await expect(text).toHaveCount(1);
       await expect(media).toHaveCount(1);
 
@@ -79,17 +84,37 @@ test.describe('localized About scroll reveals', () => {
           delay: '0.18s',
         });
 
-      await careerBoundary.scrollIntoViewIfNeeded();
+      await careerBoundary.evaluate((element) => {
+        document.documentElement.style.scrollBehavior = 'auto';
+        element.scrollIntoView({ block: 'start', behavior: 'auto' });
+      });
+      await expect
+        .poll(() => careerBoundary.evaluate((element) => {
+          const rect = element.getBoundingClientRect();
+          const visibleHeight = Math.max(
+            0,
+            Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0),
+          );
+          return visibleHeight / rect.height;
+        }))
+        .toBeGreaterThanOrEqual(0.12);
       await expect(careerBoundary).toHaveAttribute(
         'data-scroll-reveal-state',
         'revealed',
       );
-      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'auto' }));
+      await expect
+        .poll(() => careerBoundary.evaluate(
+          (element) => element.getBoundingClientRect().top >= window.innerHeight - 1,
+        ))
+        .toBe(true);
       await expect(careerBoundary).toHaveAttribute(
         'data-scroll-reveal-state',
         'revealed',
       );
-      await careerBoundary.scrollIntoViewIfNeeded();
+      await careerBoundary.evaluate((element) => {
+        element.scrollIntoView({ block: 'start', behavior: 'auto' });
+      });
       await expect(careerBoundary).toHaveAttribute(
         'data-scroll-reveal-state',
         'revealed',
