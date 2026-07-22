@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 
+import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import type { Locale } from '@/content/types';
 
 import styles from './about-page.module.css';
@@ -358,7 +359,7 @@ function SectionHeading({
   readonly intro: string;
 }) {
   return (
-    <header className={styles.sectionHeading}>
+    <header className={styles.sectionHeading} data-scroll-reveal-group="text">
       <p className={styles.eyebrow}>{eyebrow}</p>
       <h2>{title}</h2>
       <p className={styles.sectionIntro}>{intro}</p>
@@ -369,13 +370,17 @@ function SectionHeading({
 function SectionBand({
   className,
   children,
+  reveal = false,
 }: {
   readonly className?: string;
   readonly children: ReactNode;
+  readonly reveal?: boolean;
 }) {
+  const inner = <div className={styles.inner}>{children}</div>;
+
   return (
     <section className={[styles.band, className].filter(Boolean).join(' ')}>
-      <div className={styles.inner}>{children}</div>
+      {reveal ? <ScrollReveal>{inner}</ScrollReveal> : inner}
     </section>
   );
 }
@@ -387,7 +392,7 @@ export function AboutPage({ locale }: AboutPageProps) {
   return (
     <article className={styles.root} data-about-page data-locale={locale}>
       <SectionBand className={styles.heroBand}>
-        <div className={styles.hero}>
+        <div className={styles.hero} data-about-hero>
           <div className={styles.heroCopy}>
             <p className={styles.eyebrow}>{content.eyebrow}</p>
             <h1 aria-label={title}>
@@ -407,14 +412,14 @@ export function AboutPage({ locale }: AboutPageProps) {
         </div>
       </SectionBand>
 
-      <SectionBand>
+      <SectionBand reveal>
         <div data-about-capabilities>
           <SectionHeading
             eyebrow={content.capabilityEyebrow}
             title={content.capabilityTitle}
             intro={content.capabilityIntro}
           />
-          <div className={styles.capabilityGrid}>
+          <div className={styles.capabilityGrid} data-scroll-reveal-group="media">
             {content.capabilities.map((capability) => (
               <article
                 key={capability.tone}
@@ -446,13 +451,13 @@ export function AboutPage({ locale }: AboutPageProps) {
         </div>
       </SectionBand>
 
-      <SectionBand className={styles.evidenceBand}>
+      <SectionBand className={styles.evidenceBand} reveal>
         <SectionHeading
           eyebrow={content.evidenceEyebrow}
           title={content.evidenceTitle}
           intro={content.evidenceIntro}
         />
-        <div className={styles.evidenceGrid}>
+        <div className={styles.evidenceGrid} data-scroll-reveal-group="media">
           {content.evidence.map(([label, primary, secondary], index) => (
             <article key={label} data-index={index}>
               <span aria-hidden="true" />
@@ -464,26 +469,28 @@ export function AboutPage({ locale }: AboutPageProps) {
         </div>
       </SectionBand>
 
-      <SectionBand className={styles.careerBand}>
+      <SectionBand className={styles.careerBand} reveal>
         <SectionHeading
           eyebrow={content.careerEyebrow}
           title={content.careerTitle}
           intro={content.careerIntro}
         />
-        <ol className={styles.timeline} data-about-timeline>
-          {content.timeline.map((entry) => (
-            <li key={entry.date} data-tone={entry.tone}>
-              <span className={styles.timelineDot} aria-hidden="true" />
-              <time>{entry.date}</time>
-              <h3>{entry.title}</h3>
-              <p>{entry.company}</p>
-              <p>{entry.role}</p>
-            </li>
-          ))}
-        </ol>
-        <div className={styles.education}>
-          <p>{content.educationLabel}</p>
-          <p>{content.education}</p>
+        <div data-scroll-reveal-group="media">
+          <ol className={styles.timeline} data-about-timeline>
+            {content.timeline.map((entry) => (
+              <li key={entry.date} data-tone={entry.tone}>
+                <span className={styles.timelineDot} aria-hidden="true" />
+                <time>{entry.date}</time>
+                <h3>{entry.title}</h3>
+                <p>{entry.company}</p>
+                <p>{entry.role}</p>
+              </li>
+            ))}
+          </ol>
+          <div className={styles.education}>
+            <p>{content.educationLabel}</p>
+            <p>{content.education}</p>
+          </div>
         </div>
       </SectionBand>
     </article>
