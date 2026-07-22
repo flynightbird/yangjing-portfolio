@@ -310,32 +310,32 @@ function CapabilityGraphic({ tone }: { readonly tone: Capability['tone'] }) {
     return (
       <svg viewBox="0 0 260 110" role="presentation" data-ai-workflow="continuous-signal">
         <g className={styles.workflowSystem} data-workflow-system="judgment">
-          <rect className={styles.workflowSystemFrame} x="7" y="23" width="58" height="64" rx="8" />
-          <path className={styles.workflowSystemGrid} d="M7 40h58M27 23v64" />
-          <rect className={styles.workflowModuleSoft} x="34" y="49" width="22" height="7" rx="3.5" />
-          <rect className={styles.workflowModule} x="34" y="62" width="14" height="7" rx="3.5" />
-          <circle className={styles.workflowModule} cx="55" cy="65.5" r="3.5" />
+          <rect className={styles.workflowSystemFrame} x="6" y="21" width="60" height="68" rx="9" />
+          <path className={styles.workflowSystemGrid} d="M6 39h60M26 21v68" />
+          <rect className={styles.workflowModuleSoft} x="34" y="49" width="22" height="6" rx="3" />
+          <rect className={styles.workflowModule} x="34" y="61" width="14" height="6" rx="3" />
+          <circle className={styles.workflowModule} cx="55" cy="64" r="3" />
         </g>
 
         <path
           className={styles.workflowReturn}
-          d="M194 78C171 103 89 103 65 78"
+          d="M194 77C171 101 89 101 66 77"
         />
         <path
           className={styles.workflowTrack}
-          d="M65 55C82 55 87 31 104 31S128 79 146 79 170 55 195 55"
+          d="M66 55C83 55 87 31 104 31S128 79 146 79 170 55 194 55"
         />
         <path
           className={styles.workflowSignal}
-          d="M65 55C82 55 87 31 104 31S128 79 146 79 170 55 195 55"
+          d="M66 55C83 55 87 31 104 31S128 79 146 79 170 55 194 55"
           data-workflow-path
         />
 
         {[
-          [65, 55],
+          [66, 55],
           [104, 31],
           [146, 79],
-          [195, 55],
+          [194, 55],
         ].map(([x, y], index) => (
           <g className={styles.workflowNode} key={`${x}-${y}`} style={{ animationDelay: `${index * 0.34}s` }}>
             <circle cx={x} cy={y} r="5.5" />
@@ -344,12 +344,12 @@ function CapabilityGraphic({ tone }: { readonly tone: Capability['tone'] }) {
         ))}
 
         <g className={styles.workflowSystem} data-workflow-system="resolved">
-          <rect className={styles.workflowSystemFrame} x="195" y="18" width="58" height="74" rx="8" />
-          <path className={styles.workflowSystemGrid} d="M195 37h58M214 18v74" />
-          <rect className={styles.workflowModule} x="221" y="47" width="23" height="7" rx="3.5" />
-          <rect className={styles.workflowModuleSoft} x="221" y="60" width="15" height="7" rx="3.5" />
-          <circle className={styles.workflowModuleSoft} cx="244" cy="63.5" r="3.5" />
-          <rect className={styles.workflowModule} x="221" y="75" width="10" height="7" rx="3.5" />
+          <rect className={styles.workflowSystemFrame} x="194" y="21" width="60" height="68" rx="9" />
+          <path className={styles.workflowSystemGrid} d="M194 39h60M214 21v68" />
+          <rect className={styles.workflowModule} x="222" y="49" width="22" height="6" rx="3" />
+          <rect className={styles.workflowModuleSoft} x="222" y="61" width="14" height="6" rx="3" />
+          <circle className={styles.workflowModuleSoft} cx="243" cy="64" r="3" />
+          <rect className={styles.workflowModule} x="222" y="73" width="10" height="6" rx="3" />
         </g>
       </svg>
     );
