@@ -162,7 +162,7 @@ const archiveCoverVariantSchema = z.enum([
   'mr-chong',
 ]);
 
-const realArchiveEntryBaseSchema = z.object({
+export const realArchiveEntrySchema = z.object({
   key: nonEmptyString,
   kind: z.literal('real-entry'),
   company: localizedStringSchema,
@@ -172,24 +172,8 @@ const realArchiveEntryBaseSchema = z.object({
   skills: z.array(nonEmptyString).min(1),
   coverVariant: archiveCoverVariantSchema,
   image: archiveImageSchema,
-  gallery: z.array(archiveImageSchema).min(2).optional(),
   externalUrl: z.string().url().startsWith('https://').optional(),
 });
-
-const lightboxArchiveEntrySchema = realArchiveEntryBaseSchema.extend({
-  destination: z.literal('lightbox-only'),
-  href: z.never().optional(),
-});
-
-const internalArchiveEntrySchema = realArchiveEntryBaseSchema.extend({
-  destination: z.literal('internal-case'),
-  href: nonEmptyString.regex(/^work\/[a-z0-9-]+\/$/),
-});
-
-export const realArchiveEntrySchema = z.discriminatedUnion('destination', [
-  lightboxArchiveEntrySchema,
-  internalArchiveEntrySchema,
-]);
 
 export const draftArchiveSlotSchema = z.object({
   key: nonEmptyString,
@@ -197,7 +181,7 @@ export const draftArchiveSlotSchema = z.object({
   layoutIndex: z.number().int().min(0).max(7),
 });
 
-export const archiveEntrySchema = z.union([
+export const archiveEntrySchema = z.discriminatedUnion('kind', [
   realArchiveEntrySchema,
   draftArchiveSlotSchema,
 ]);
@@ -210,8 +194,6 @@ export const archiveProjects = [
   {
     key: 'alibaba-meipingmeiwu',
     kind: 'real-entry',
-    destination: 'internal-case',
-    href: 'work/tangping/',
     company: { en: 'Alibaba', zh: '阿里巴巴' },
     period: {
       start: { dateTime: '2019', label: { en: '2019', zh: '2019' } },
@@ -221,8 +203,8 @@ export const archiveProjects = [
       },
     },
     title: {
-      primary: { en: 'Tangping', zh: '躺平' },
-      secondary: { en: 'Designer', zh: '设计家' },
+      primary: { en: 'Mei Ping Mei Wu', zh: '每平每屋' },
+      secondary: { en: 'Design', zh: '设计家' },
       supporting: {
         en: 'App & Main Website',
         zh: 'APP & 官网主站',
@@ -239,15 +221,14 @@ export const archiveProjects = [
       width: 2880,
       height: 1620,
       alt: {
-        en: 'Tangping Designer app and website interface system',
-        zh: '躺平设计家 APP 与官网界面系统',
+        en: 'Mei Ping Mei Wu app and website interface system',
+        zh: '每平每屋设计家 APP 与官网界面系统',
       },
     },
   },
   {
     key: 'bytedance-open-language',
     kind: 'real-entry',
-    destination: 'lightbox-only',
     company: { en: 'ByteDance', zh: '字节跳动' },
     period: {
       start: { dateTime: '2021', label: { en: '2021', zh: '2021' } },
@@ -276,7 +257,6 @@ export const archiveProjects = [
   {
     key: 'bytedance-doudou-fox',
     kind: 'real-entry',
-    destination: 'lightbox-only',
     company: { en: 'ByteDance', zh: '字节跳动' },
     period: {
       start: {
@@ -304,76 +284,10 @@ export const archiveProjects = [
         zh: '手机上的豆豆狐英语大闯关体验',
       },
     },
-    gallery: [
-      {
-        src: '/images/archive/details/doudou-fox/01-goal.webp',
-        width: 2880,
-        height: 1620,
-        alt: {
-          en: 'Doudou Fox learning goal and motivation diagram',
-          zh: '豆豆狐学习目标与动力机制示意',
-        },
-      },
-      {
-        src: '/images/archive/details/doudou-fox/02-framework.webp',
-        width: 2880,
-        height: 1620,
-        alt: {
-          en: 'Doudou Fox task and reward framework',
-          zh: '豆豆狐任务与激励框架',
-        },
-      },
-      {
-        src: '/images/archive/details/doudou-fox/03-task-system.webp',
-        width: 2880,
-        height: 1620,
-        alt: {
-          en: 'Doudou Fox task system across mobile screens and game world',
-          zh: '豆豆狐任务系统与手机界面、游戏地图',
-        },
-      },
-      {
-        src: '/images/archive/details/doudou-fox/04-reward-spectrum.webp',
-        width: 2880,
-        height: 1620,
-        alt: {
-          en: 'Doudou Fox reward spectrum with character and treasure chest',
-          zh: '豆豆狐奖励层级、角色与宝箱',
-        },
-      },
-      {
-        src: '/images/archive/details/doudou-fox/05-world-progression.webp',
-        width: 2880,
-        height: 1620,
-        alt: {
-          en: 'Doudou Fox world progression across themed game scenes',
-          zh: '豆豆狐主题游戏场景中的世界进程',
-        },
-      },
-      {
-        src: '/images/archive/details/doudou-fox/06-entry-and-stop.webp',
-        width: 2880,
-        height: 1620,
-        alt: {
-          en: 'Doudou Fox task entry and challenge-ended stop state',
-          zh: '豆豆狐任务入口与挑战结束状态',
-        },
-      },
-      {
-        src: '/images/archive/details/doudou-fox/07-end-to-end.webp',
-        width: 2880,
-        height: 1620,
-        alt: {
-          en: 'Doudou Fox end-to-end learning adventure flow',
-          zh: '豆豆狐完整学习闯关流程',
-        },
-      },
-    ],
   },
   {
     key: 'tongcheng-mr-chong',
     kind: 'real-entry',
-    destination: 'lightbox-only',
     company: { en: 'Tongcheng Travel', zh: '同程旅游' },
     period: {
       start: { dateTime: '2019', label: { en: '2019', zh: '2019' } },
@@ -400,44 +314,6 @@ export const archiveProjects = [
         zh: '黄色场景中的 Mr Chong 三维品牌角色',
       },
     },
-    gallery: [
-      {
-        src: '/images/archive/details/mr-chong/01-character-direction.webp',
-        width: 2880,
-        height: 1967,
-        alt: {
-          en: 'Mr Chong character direction with illustrated poses',
-          zh: 'Mr Chong 角色方向与插画姿态',
-        },
-      },
-      {
-        src: '/images/archive/details/mr-chong/02-posture-exploration.webp',
-        width: 2070,
-        height: 1523,
-        alt: {
-          en: 'Mr Chong 3D posture exploration',
-          zh: 'Mr Chong 三维姿态探索',
-        },
-      },
-      {
-        src: '/images/archive/details/mr-chong/03-travel-scene.webp',
-        width: 2069,
-        height: 1455,
-        alt: {
-          en: 'Mr Chong 3D character pulling a suitcase',
-          zh: 'Mr Chong 三维角色拉着行李箱',
-        },
-      },
-      {
-        src: '/images/archive/details/mr-chong/04-final-render.webp',
-        width: 1874,
-        height: 1455,
-        alt: {
-          en: 'Mr Chong final 3D render in a yellow scene',
-          zh: '黄色场景中的 Mr Chong 最终三维渲染',
-        },
-      },
-    ],
   },
 ] as const satisfies readonly RealArchiveEntry[];
 

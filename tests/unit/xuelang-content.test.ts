@@ -27,18 +27,7 @@ function section(source: string, id: string) {
   return match[0];
 }
 
-function chapterMetadata(source: string) {
-  const match = source.match(/chapters:\s*\[([\s\S]*?)\n\s*\],/);
-  if (!match) throw new Error('Missing chapter metadata');
-  return match[1];
-}
-
 describe('Xuelang bilingual case content', () => {
-  it('keeps chapter labels semantic so navigation owns the visible sequence', () => {
-    expect(chapterMetadata(zh)).not.toMatch(/label:\s*['"]\d{2}\s/);
-    expect(chapterMetadata(en)).not.toMatch(/label:\s*['"]\d{2}\s/);
-  });
-
   it('keeps all eight chapters aligned and states lead ownership accurately', () => {
     for (const id of chapterIds) {
       expect(count(zh, `id="${id}"`), id).toBe(1);
@@ -104,31 +93,18 @@ describe('Xuelang bilingual case content', () => {
     for (const phrase of ['课程入口', '沉浸观看', '碎片学习', '互动', '笔记与学习资产']) {
       expect(learningZh).toContain(phrase);
     }
-    for (const source of [
-      'learning-before-board.webp',
-      'learning-after-board.webp',
-    ]) {
+    for (const source of ['learning-before-board.webp', 'learning-after-board.webp', 'learning-entry-ui.webp', 'learning-interaction.webp']) {
       expect(learningZh).toContain(`/images/xuelang/${source}`);
     }
-    expect(learningZh).toContain('courseEntry: true');
-    expect(learningZh).toContain('interactionBoard: true');
-    expect(learningZh).not.toContain("image: { src: '/images/xuelang/learning-interaction.webp'");
     expect(learningZh).not.toContain('/images/xuelang/learning-focus.webp');
-    expect(learningZh).not.toContain('/images/xuelang/learning-entry-ui.webp');
-    const learningEn = section(en, 'decision-learning');
-    expect(learningEn).toContain('courseEntry: true');
-    expect(learningEn).toContain('interactionBoard: true');
-    expect(learningEn).not.toContain("image: { src: '/images/xuelang/learning-interaction.webp'");
     for (const source of [
+      'learning-entry-ui.webp',
       'learning-note-player.webp',
       'learning-note-list.webp',
       'learning-note-editor.webp',
     ]) {
       expect(learningZh).toContain(`/images/xuelang/${source}`);
-      expect(learningEn).toContain(`/images/xuelang/${source}`);
     }
-    expect(learningZh.match(/width: 904, height: 1958/g)).toHaveLength(3);
-    expect(learningEn.match(/width: 904, height: 1958/g)).toHaveLength(3);
   });
 
   it('publishes only the approved results and their 14-day basis', () => {

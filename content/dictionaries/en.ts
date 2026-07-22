@@ -67,10 +67,6 @@ export interface Dictionary {
       openImage: string;
       imageDialog: string;
       closeImage: string;
-      previousImage: string;
-      nextImage: string;
-      galleryPosition: string;
-      imageUnavailable: string;
       visitProject: string;
       skillsLabel: string;
     };
@@ -297,10 +293,6 @@ export const enDictionary = {
       openImage: 'Open project image',
       imageDialog: 'Project image detail',
       closeImage: 'Close image',
-      previousImage: 'Previous gallery image',
-      nextImage: 'Next gallery image',
-      galleryPosition: 'Gallery position',
-      imageUnavailable: 'Image unavailable',
       visitProject: 'Visit public project',
       skillsLabel: 'Skills',
     },

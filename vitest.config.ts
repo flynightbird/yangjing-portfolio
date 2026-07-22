@@ -25,6 +25,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': root,
+      'server-only': path.join(root, 'node_modules/server-only/empty.js'),
     },
   },
   test: {

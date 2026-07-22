@@ -42,11 +42,12 @@ html[data-stt-embed='stage'] .land-copy {
 }
 
 html[data-stt-embed='stage'] .land-visual {
-  width: 100%;
-  height: 100%;
+  width: 1000px;
+  height: 560px;
   min-height: 0;
   flex: none;
-  transform: none;
+  transform: scale(var(--stt-stage-scale, 1));
+  transform-origin: center;
 }
 
 html[data-stt-embed='stage'] .snip {
@@ -63,132 +64,6 @@ html[data-stt-embed='stage'] .snip {
 
 html[data-stt-embed='stage'] .snip-side {
   display: grid !important;
-}
-
-@media (max-height: 360px) {
-  html[data-stt-embed='stage'] .snip {
-    grid-template-columns: minmax(0, 1fr) min(140px, 32%);
-    grid-template-rows: 32px minmax(0, 1fr);
-  }
-
-  html[data-stt-embed='stage'] .snip-topbar {
-    padding: 4px 8px;
-  }
-
-  html[data-stt-embed='stage'] .snip-brand {
-    gap: 6px;
-  }
-
-  html[data-stt-embed='stage'] .snip-mark {
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
-  }
-
-  html[data-stt-embed='stage'] .snip-brand strong {
-    font-size: 9px;
-  }
-
-  html[data-stt-embed='stage'] .snip-room {
-    font-size: 6px;
-  }
-
-  html[data-stt-embed='stage'] .snip-status {
-    gap: 4px;
-    padding: 2px 6px;
-    font-size: 7px;
-  }
-
-  html[data-stt-embed='stage'] .snip-status .mono {
-    font-size: 7px;
-  }
-
-  html[data-stt-embed='stage'] .snip-stage {
-    align-content: center;
-    gap: 4px;
-    padding: 8px 10px 10px;
-    transform: none;
-  }
-
-  html[data-stt-embed='stage'] .snip-speaker {
-    gap: 6px;
-  }
-
-  html[data-stt-embed='stage'] .snip-avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    font-size: 9px;
-  }
-
-  html[data-stt-embed='stage'] .snip-speaker-meta strong {
-    font-size: 9px;
-  }
-
-  html[data-stt-embed='stage'] .snip-speaker-sub span {
-    font-size: 6px;
-  }
-
-  html[data-stt-embed='stage'] .snip-wave {
-    height: 8px;
-    margin-left: 5px;
-  }
-
-  html[data-stt-embed='stage'] .snip-original {
-    font-size: clamp(10px, 3.2vw, 15px);
-    line-height: 1.18;
-  }
-
-  html[data-stt-embed='stage'] .snip-translation {
-    max-width: 52ch;
-    font-size: clamp(7px, 2vw, 10px);
-    line-height: 1.3;
-  }
-
-  html[data-stt-embed='stage'] .snip-history {
-    display: none;
-  }
-
-  html[data-stt-embed='stage'] .snip-side {
-    gap: 4px;
-    padding: 7px 6px;
-  }
-
-  html[data-stt-embed='stage'] .snip-side-head {
-    font-size: 6px;
-  }
-
-  html[data-stt-embed='stage'] .snip-side-rows {
-    gap: 3px;
-  }
-
-  html[data-stt-embed='stage'] .snip-side-row {
-    grid-template-columns: 12px 1fr;
-    gap: 4px;
-    font-size: 7px;
-  }
-
-  html[data-stt-embed='stage'] .snip-side-row span {
-    width: 12px;
-    height: 12px;
-    border-radius: 3px;
-  }
-
-  html[data-stt-embed='stage'] .snip-dock {
-    bottom: 6px;
-    gap: 3px;
-    padding: 3px;
-  }
-
-  html[data-stt-embed='stage'] .snip-dock-btn {
-    width: 20px;
-    height: 18px;
-  }
-
-  html[data-stt-embed='stage'] .snip-dock-btn svg {
-    width: 10px;
-    height: 10px;
-  }
 }
 
 html[data-stt-embed='stage'][data-stt-playback='paused'] .land-visual *,

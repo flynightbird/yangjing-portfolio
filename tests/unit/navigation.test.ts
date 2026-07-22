@@ -13,7 +13,6 @@ describe('featured navigation', () => {
       'work/xuelang',
       'work/call-agent',
       'work/meeting',
-      'work/tangping',
       'build/stt-demo',
     ]);
   });
@@ -24,10 +23,6 @@ describe('featured navigation', () => {
       next: 'work/meeting',
     });
     expect(getPreviousFeatured('work/xuelang')).toBeUndefined();
-    expect(getFeaturedNeighbors('work/tangping')).toEqual({
-      previous: 'work/meeting',
-      next: 'build/stt-demo',
-    });
     expect(getNextFeatured('build/stt-demo')).toBeUndefined();
   });
 });

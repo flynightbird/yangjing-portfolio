@@ -2,7 +2,6 @@ export const featuredOrder = [
   'work/xuelang',
   'work/call-agent',
   'work/meeting',
-  'work/tangping',
   'build/stt-demo',
 ] as const;
 

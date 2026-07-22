@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import {
   cpSync,
+  chmodSync,
   existsSync,
   mkdtempSync,
   mkdirSync,
@@ -20,8 +21,10 @@ import {
   findDraftPublicationMarkers,
   findMissingPublicationInputs,
   publicationInputs,
+  publicationInputsForRoot,
   runPublicationValidation,
 } from '@/scripts/validate-publication.mjs';
+import { parseWebVtt, probeMeetingVideo } from '@/scripts/meeting-media-validation.mjs';
 
 const temporaryRoots: string[] = [];
 
@@ -58,6 +61,91 @@ function generatedContract(overrides: Record<string, unknown> = {}) {
     ],
     ...overrides,
   };
+}
+
+function meetingManifestAsset(overrides: Record<string, unknown> = {}) {
+  return {
+    id: 'fixture-film',
+    kind: 'video',
+    source: 'evidence/meeting/source/fixture-film.mp4',
+    output: 'public/videos/meeting/fixture-film.mp4',
+    poster: '/images/meeting/fixture-poster.webp',
+    captions: {
+      en: '/captions/meeting/fixture-film.en.vtt',
+      zh: '/captions/meeting/fixture-film.zh.vtt',
+    },
+    purpose: 'Fixture film for root-local Meeting publication validation.',
+    orientation: 'portrait',
+    publicationRequired: true,
+    readiness: 'ready',
+    ...overrides,
+  };
+}
+
+const validMeetingProbe = {
+  streams: [{ codec_type: 'video', codec_name: 'h264', width: 720, height: 1280 }],
+  format: { duration: '10.5' },
+};
+
+function writeCompleteMeetingFixture(
+  root: string,
+  videoOverrides: Record<string, unknown> = {},
+) {
+  const assets = meetingManifestAssets(videoOverrides);
+  write(root, 'evidence/meeting/manifest.json', JSON.stringify({ version: 1, assets }));
+  for (const asset of assets) {
+    if (asset.kind === 'video') {
+      write(root, asset.source, Buffer.concat([
+        Buffer.from([0, 0, 0, 24]),
+        Buffer.from('ftypisom'),
+        Buffer.alloc(256),
+      ]));
+      write(root, asset.output, Buffer.concat([
+        Buffer.from([0, 0, 0, 24]),
+        Buffer.from('ftypisom'),
+        Buffer.alloc(256),
+      ]));
+    } else if (asset.kind === 'captions') {
+      const cue = 'WEBVTT\n\n00:00.000 --> 00:02.000\nVisible interface state changes.\n';
+      write(root, asset.source, cue);
+      write(root, asset.output, cue);
+    } else {
+      write(root, asset.source, 'poster source');
+      write(root, asset.output, 'poster output');
+    }
+  }
+}
+
+function meetingManifestAssets(videoOverrides: Record<string, unknown> = {}) {
+  return [
+    meetingManifestAsset(videoOverrides),
+    {
+      id: 'fixture-poster',
+      kind: 'image',
+      source: 'evidence/meeting/source/fixture-poster.png',
+      output: 'public/images/meeting/fixture-poster.webp',
+      purpose: 'Fixture poster for Meeting video relationship validation.',
+      alt: { en: 'Fixture poster', zh: '测试封面' },
+    },
+    {
+      id: 'fixture-captions-en',
+      kind: 'captions',
+      source: 'evidence/meeting/source/fixture-film.en.vtt',
+      output: 'public/captions/meeting/fixture-film.en.vtt',
+      purpose: 'Fixture English captions for Meeting video relationship validation.',
+      publicationRequired: true,
+      readiness: 'ready',
+    },
+    {
+      id: 'fixture-captions-zh',
+      kind: 'captions',
+      source: 'evidence/meeting/source/fixture-film.zh.vtt',
+      output: 'public/captions/meeting/fixture-film.zh.vtt',
+      purpose: 'Fixture Chinese captions for Meeting video relationship validation.',
+      publicationRequired: true,
+      readiness: 'ready',
+    },
+  ];
 }
 
 function completeMdx(locale: 'en' | 'zh', body: string) {
@@ -115,22 +203,361 @@ describe('draft publication boundary', () => {
 });
 
 describe('publication validation CLI', () => {
+  it('terminates ffprobe after the configured timeout', async () => {
+    const root = createRoot();
+    const executable = path.join(root, 'fake-ffprobe.mjs');
+    const survivor = path.join(root, 'survived.txt');
+    writeFileSync(executable, `#!/usr/bin/env node
+import { writeFileSync } from 'node:fs';
+setTimeout(() => writeFileSync(process.env.FFPROBE_SURVIVOR, 'alive'), 120);
+setInterval(() => {}, 1000);
+`);
+    chmodSync(executable, 0o755);
+
+    const started = Date.now();
+    await expect(probeMeetingVideo('fixture.mp4', {
+      executable,
+      timeoutMs: 25,
+      env: { ...process.env, FFPROBE_SURVIVOR: survivor },
+    })).rejects.toThrow('ffprobe timed out after 25ms');
+    expect(Date.now() - started).toBeLessThan(1_000);
+    await new Promise((resolve) => setTimeout(resolve, 180));
+    expect(existsSync(survivor)).toBe(false);
+  });
+
+  it.each([
+    ['invalid minutes', '99:00.000 --> 99:01.000'],
+    ['invalid seconds', '00:59:60.000 --> 01:00:01.000'],
+    ['short milliseconds', '00:00.00 --> 00:01.000'],
+    ['long milliseconds', '00:00.0000 --> 00:01.000'],
+    ['missing end', '00:00.000 -->'],
+    ['equal timestamps', '00:01.000 --> 00:01.000'],
+    ['reversed timestamps', '00:02.000 --> 00:01.000'],
+  ])('rejects WebVTT cues with %s', (_name, timing) => {
+    expect(parseWebVtt(`WEBVTT\n\n${timing}\nVisible state.\n`).cues).toEqual([]);
+  });
+
+  it.each([
+    '00:00.000 --> 00:01.000',
+    '00:00:00.000 --> 00:00:01.000',
+    '123:59:59.999 --> 124:00:00.000',
+  ])('accepts a valid WebVTT timestamp form: %s', (timing) => {
+    expect(parseWebVtt(`WEBVTT\n\n${timing}\nVisible state.\n`).cues).toHaveLength(1);
+  });
+
+  it('accepts cue identifiers and ignores NOTE blocks', () => {
+    const parsed = parseWebVtt(
+      'WEBVTT\n\nNOTE inspection context\nNot a cue.\n\nstate-change\n00:00.000 --> 00:01.000\nVisible state.\n',
+    );
+
+    expect(parsed.cues).toEqual([
+      { start: 0, end: 1, text: 'Visible state.' },
+    ]);
+  });
+  it('fails output validation closed when the Meeting manifest is missing', async () => {
+    const result = await runPublicationValidation({
+      mode: 'output',
+      rootDir: createRoot(),
+    });
+
+    expect(result.errors).toContain(
+      'Missing Meeting manifest: evidence/meeting/manifest.json',
+    );
+  });
+
+  it('fails output validation closed when the Meeting manifest is a symlink', async () => {
+    const root = createRoot();
+    const outside = createRoot();
+    write(outside, 'manifest.json', JSON.stringify({ version: 1, assets: [] }));
+    mkdirSync(path.join(root, 'evidence/meeting'), { recursive: true });
+    symlinkSync(
+      path.join(outside, 'manifest.json'),
+      path.join(root, 'evidence/meeting/manifest.json'),
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+
+    expect(result.errors).toContain(
+      'Meeting manifest must be a regular non-symlink file: evidence/meeting/manifest.json',
+    );
+  });
+
+  it('rejects a required Meeting video with an undeclared caption relationship', async () => {
+    const root = createRoot();
+    const assets = meetingManifestAssets().filter(
+      ({ id }) => id !== 'fixture-captions-en',
+    );
+    write(root, 'evidence/meeting/manifest.json', JSON.stringify({ version: 1, assets }));
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+
+    expect(result.errors).toContain(
+      'Meeting video fixture-film captions.en is not declared by manifest output: public/captions/meeting/fixture-film.en.vtt',
+    );
+  });
+
+  it('requires declared video, poster, and caption files in output mode', async () => {
+    const root = createRoot();
+    write(root, 'evidence/meeting/manifest.json', JSON.stringify({
+      version: 1,
+      assets: meetingManifestAssets(),
+    }));
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+
+    expect(result.errors).toEqual(expect.arrayContaining([
+      'Missing required output asset: videos/meeting/fixture-film.mp4',
+      'Missing required output asset: images/meeting/fixture-poster.webp',
+      'Missing required output asset: captions/meeting/fixture-film.en.vtt',
+      'Missing required output asset: captions/meeting/fixture-film.zh.vtt',
+    ]));
+  });
+
+  it('derives Meeting publication requirements from the validated root manifest', async () => {
+    const root = createRoot();
+    write(root, 'evidence/meeting/manifest.json', JSON.stringify({
+      version: 1,
+      assets: meetingManifestAssets(),
+    }));
+
+    const result = await runPublicationValidation({ mode: 'source', rootDir: root });
+
+    expect(result.errors).toEqual(expect.arrayContaining([
+      'Missing publication input: evidence/meeting/source/fixture-film.mp4',
+      'Missing publication input: public/videos/meeting/fixture-film.mp4',
+    ]));
+    expect(result.errors).not.toContain(
+      'Missing publication input: evidence/meeting/source/meeting-stage-portrait.mp4',
+    );
+
+    const outputResult = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(outputResult.errors).toContain(
+      'Missing required output asset: videos/meeting/fixture-film.mp4',
+    );
+    expect(outputResult.errors).not.toContain(
+      'Missing required output asset: videos/meeting/meeting-stage-portrait.mp4',
+    );
+  });
+
+  it('fails closed when complete publication files remain awaiting source inspection', async () => {
+    const root = createRoot();
+    writeCompleteMeetingFixture(root, { readiness: 'awaiting-source' });
+
+    const result = await runPublicationValidation({
+      mode: 'source',
+      rootDir: root,
+      probeMeetingVideo: async () => validMeetingProbe,
+    });
+
+    expect(result.errors).toContain(
+      'Meeting Product Film record awaiting source inspection: fixture-film',
+    );
+  });
+
+  it('rejects a manifest that removes a canonical Meeting publication record', async () => {
+    const root = createRoot();
+    const manifest = JSON.parse(
+      readFileSync(path.join(process.cwd(), 'evidence/meeting/manifest.json'), 'utf8'),
+    );
+    manifest.assets = manifest.assets.filter(
+      ({ id }: { id: string }) => id !== 'meeting-web-layout',
+    );
+    write(root, 'evidence/meeting/manifest.json', JSON.stringify(manifest));
+
+    const result = await runPublicationValidation({ mode: 'source', rootDir: root });
+
+    expect(result.errors).toContain(
+      'Missing canonical Meeting publication asset: meeting-web-layout',
+    );
+  });
+
+  it('rejects a canonical Meeting record declassified from publication', async () => {
+    const root = createRoot();
+    const manifest = JSON.parse(
+      readFileSync(path.join(process.cwd(), 'evidence/meeting/manifest.json'), 'utf8'),
+    );
+    const record = manifest.assets.find(
+      ({ id }: { id: string }) => id === 'meeting-stage-portrait',
+    );
+    record.publicationRequired = false;
+    record.readiness = 'ready';
+    write(root, 'evidence/meeting/manifest.json', JSON.stringify(manifest));
+
+    const result = await runPublicationValidation({ mode: 'source', rootDir: root });
+
+    expect(result.errors).toContain(
+      'Canonical Meeting asset must be publicationRequired: meeting-stage-portrait',
+    );
+  });
+
+  it('rejects a duplicated canonical Meeting publication record', async () => {
+    const root = createRoot();
+    const manifest = JSON.parse(
+      readFileSync(path.join(process.cwd(), 'evidence/meeting/manifest.json'), 'utf8'),
+    );
+    const record = manifest.assets.find(
+      ({ id }: { id: string }) => id === 'meeting-stage-landscape',
+    );
+    manifest.assets.push({ ...record, output: 'public/videos/meeting/substitute.mp4' });
+    write(root, 'evidence/meeting/manifest.json', JSON.stringify(manifest));
+
+    const result = await runPublicationValidation({ mode: 'source', rootDir: root });
+
+    expect(result.errors).toContain(
+      'Duplicate canonical Meeting publication asset: meeting-stage-landscape',
+    );
+  });
+
+  it('rejects an unexpected partial ready Meeting publication record', async () => {
+    const root = createRoot();
+    const manifest = JSON.parse(
+      readFileSync(path.join(process.cwd(), 'evidence/meeting/manifest.json'), 'utf8'),
+    );
+    manifest.assets.push({
+      id: 'partial-ready-caption',
+      kind: 'captions',
+      source: 'evidence/meeting/source/partial-ready.en.vtt',
+      output: 'public/captions/meeting/partial-ready.en.vtt',
+      purpose: 'Attempt to substitute partial ready media for canonical inventory.',
+      publicationRequired: true,
+      readiness: 'ready',
+    });
+    write(root, 'evidence/meeting/manifest.json', JSON.stringify(manifest));
+
+    const result = await runPublicationValidation({ mode: 'source', rootDir: root });
+
+    expect(result.errors).toContain(
+      'Unexpected Meeting publication asset: partial-ready-caption',
+    );
+  });
+
+  it('rejects an MP4 signature that ffprobe cannot decode', async () => {
+    const root = createRoot();
+    writeCompleteMeetingFixture(root);
+
+    const result = await runPublicationValidation({
+      mode: 'source',
+      rootDir: root,
+      probeMeetingVideo: async () => {
+        throw new Error('Invalid data found when processing input');
+      },
+    });
+
+    expect(result.errors).toContain(
+      'Meeting video is not decodable: evidence/meeting/source/fixture-film.mp4 (Invalid data found when processing input)',
+    );
+  });
+
+  it('surfaces an actionable ffprobe timeout through publication validation', async () => {
+    const root = createRoot();
+    writeCompleteMeetingFixture(root);
+
+    const result = await runPublicationValidation({
+      mode: 'source',
+      rootDir: root,
+      probeMeetingVideo: async () => {
+        throw new Error('ffprobe timed out after 25ms');
+      },
+    });
+
+    expect(result.errors).toContain(
+      'ffprobe timed out after 25ms: evidence/meeting/source/fixture-film.mp4',
+    );
+  });
+
+  it('requires at least one valid timed non-empty WebVTT cue', async () => {
+    const root = createRoot();
+    writeCompleteMeetingFixture(root);
+    write(root, 'evidence/meeting/source/fixture-film.en.vtt', 'WEBVTT\n\n');
+
+    const result = await runPublicationValidation({
+      mode: 'source',
+      rootDir: root,
+      probeMeetingVideo: async () => validMeetingProbe,
+    });
+
+    expect(result.errors).toContain(
+      'Meeting captions require at least one valid timed non-empty cue: evidence/meeting/source/fixture-film.en.vtt',
+    );
+  });
+
+  it.each([
+    ['wrong orientation', { streams: [{ codec_type: 'video', codec_name: 'h264', width: 1280, height: 720 }], format: { duration: '10' } }, /requires portrait video/],
+    ['short duration', { streams: [{ codec_type: 'video', codec_name: 'h264', width: 720, height: 1280 }], format: { duration: '4.9' } }, /duration must be between 5 and 30 seconds/],
+    ['long duration', { streams: [{ codec_type: 'video', codec_name: 'h264', width: 720, height: 1280 }], format: { duration: '30.1' } }, /duration must be between 5 and 30 seconds/],
+  ])('rejects ready Meeting media with %s', async (_name, probe, expected) => {
+    const root = createRoot();
+    writeCompleteMeetingFixture(root, { orientation: 'portrait' });
+
+    const result = await runPublicationValidation({
+      mode: 'source',
+      rootDir: root,
+      probeMeetingVideo: async () => probe,
+    });
+
+    expect(result.errors).toEqual(expect.arrayContaining([
+      expect.stringMatching(expected as RegExp),
+    ]));
+  });
+
+  it.each([
+    ['source', 'evidence/meeting/source/../escape.mp4'],
+    ['output', 'public/videos/meeting/../escape.mp4'],
+    ['poster', '/images/meeting/../escape.webp'],
+    ['captions.en', '/captions/meeting/../escape.vtt'],
+  ])('rejects an unsafe Meeting manifest %s path before publication reads', async (
+    field,
+    unsafePath,
+  ) => {
+    const root = createRoot();
+    const assets = meetingManifestAssets();
+    const asset = assets[0];
+    if (field === 'captions.en') {
+      asset.captions = { ...asset.captions, en: unsafePath };
+    } else {
+      asset[field as 'source' | 'output' | 'poster'] = unsafePath;
+    }
+    write(root, 'evidence/meeting/manifest.json', JSON.stringify({
+      version: 1,
+      assets,
+    }));
+
+    const result = await runPublicationValidation({ mode: 'source', rootDir: root });
+
+    expect(result.errors).toContain(
+      `Unsafe Meeting manifest ${field} path: ${unsafePath}`,
+    );
+    expect(result.errors).not.toContain(`Missing publication input: ${unsafePath}`);
+  });
+
   it('requires the current Meeting evidence contract and accepts complete fixtures', async () => {
-    const meetingInputs = [
-      'evidence/meeting/manifest.json',
-      'public/images/meeting/meeting-hero.webp',
-      'public/images/meeting/adaptive-layout-poster.webp',
-      'public/images/meeting/whiteboard-multidevice.webp',
-      'public/images/meeting/transcript-poster.webp',
-      'public/videos/meeting/adaptive-layout-demo.mp4',
-      'public/videos/meeting/transcript-demo.mp4',
-      'public/captions/meeting/adaptive-layout-demo.en.vtt',
-      'public/captions/meeting/adaptive-layout-demo.zh.vtt',
-      'public/captions/meeting/transcript-demo.en.vtt',
-      'public/captions/meeting/transcript-demo.zh.vtt',
-    ];
-    expect(publicationInputs).toEqual(expect.arrayContaining(meetingInputs));
-    expect(publicationInputs).not.toContain(
+    const meetingManifest = JSON.parse(
+      readFileSync(path.join(process.cwd(), 'evidence/meeting/manifest.json'), 'utf8'),
+    ) as { assets: Array<{ source: string; output: string; publicationRequired?: boolean }> };
+    const requiredFilmInputs = meetingManifest.assets
+      .filter(({ publicationRequired }) => publicationRequired)
+      .flatMap(({ source, output }) => [source, output]);
+    const rootInputs = await publicationInputsForRoot(process.cwd());
+    const meetingInputs = rootInputs.filter((value) => (
+      value === 'evidence/meeting/manifest.json' || value.includes('/meeting/')
+    ));
+    expect(rootInputs).toEqual(expect.arrayContaining(meetingInputs));
+    expect(rootInputs).toEqual(expect.arrayContaining(requiredFilmInputs));
+    expect(meetingInputs).toEqual(expect.arrayContaining([
+      'evidence/meeting/source/meeting-stage-portrait.mp4',
+      'evidence/meeting/source/meeting-stage-landscape.mp4',
+      'evidence/meeting/source/meeting-whiteboard-portrait.mp4',
+      'evidence/meeting/source/meeting-whiteboard-landscape.mp4',
+      'evidence/meeting/source/meeting-web-transcription.mp4',
+      'evidence/meeting/source/meeting-web-layout.mp4',
+      'public/videos/meeting/meeting-stage-portrait.mp4',
+      'public/videos/meeting/meeting-stage-landscape.mp4',
+      'public/videos/meeting/meeting-whiteboard-portrait.mp4',
+      'public/videos/meeting/meeting-whiteboard-landscape.mp4',
+      'public/videos/meeting/meeting-web-transcription.mp4',
+      'public/videos/meeting/meeting-web-layout.mp4',
+    ]));
+    expect(rootInputs).not.toContain(
       'public/videos/meeting/interaction-sequence.mp4',
     );
 
@@ -147,14 +574,16 @@ describe('publication validation CLI', () => {
       if (input.endsWith('.webp')) write(root, input, image);
       else if (input.endsWith('.mp4')) write(root, input, mp4);
       else if (input.endsWith('.vtt')) write(root, input, 'WEBVTT\n\n');
-      else write(root, input, JSON.stringify({ version: 1, assets: [] }));
+      else if (input.endsWith('.json')) {
+        write(root, input, readFileSync(path.join(process.cwd(), input)));
+      } else write(root, input, 'source');
     }
 
     const missing = await findMissingPublicationInputs(root);
     expect(missing.filter((value) => value.includes('/meeting/'))).toEqual([]);
   });
 
-  it('reports absent publication inputs deterministically in development mode', () => {
+  it('reports absent publication inputs deterministically in development mode', async () => {
     const result = spawnSync(
       process.execPath,
       ['scripts/validate-publication.mjs', '--mode=development'],
@@ -171,12 +600,13 @@ describe('publication validation CLI', () => {
     const reported = result.stdout.trim()
       ? result.stdout.trim().split('\n')
       : [];
+    const rootInputs = await publicationInputsForRoot(process.cwd());
     expect(reported).toEqual(
-      publicationInputs
+      rootInputs
         .filter((value) => !existsSync(path.join(process.cwd(), value)))
         .map((value) => `Missing publication input: ${value}`),
     );
-  });
+  }, 60_000);
 
   it('rejects an unknown mode', () => {
     const result = spawnSync(
@@ -189,7 +619,7 @@ describe('publication validation CLI', () => {
     expect(result.stderr).toMatch(/unknown publication validation mode.*surprise/i);
   });
 
-  it('prints structural source errors as actionable diagnostics', () => {
+  it('does not report a Meeting source gate after native media intake', () => {
     const result = spawnSync(
       process.execPath,
       ['scripts/validate-publication.mjs', '--mode=source'],
@@ -197,13 +627,10 @@ describe('publication validation CLI', () => {
     );
 
     expect(result.status).toBe(1);
-    expect(`${result.stdout}\n${result.stderr}`).toMatch(
-      /missing launch route.*work\/meeting.*locale.*en/i,
-    );
     expect(`${result.stdout}\n${result.stderr}`).not.toMatch(
-      /missing launch route.*work\/xuelang/i,
+      /Meeting Product Film record awaiting source inspection/,
     );
-  });
+  }, 60_000);
 
   it('turns every missing publication input into a source error', async () => {
     const result = await runPublicationValidation({
@@ -452,13 +879,17 @@ export const metadata = {
 
   it('requires a caption and poster beside a present publication video', async () => {
     const root = createRoot();
-    write(root, 'public/videos/meeting/interaction-sequence.mp4', 'video');
+    write(root, 'evidence/meeting/manifest.json', JSON.stringify({
+      version: 1,
+      assets: meetingManifestAssets(),
+    }));
+    write(root, 'public/videos/meeting/fixture-film.mp4', 'video');
 
     const result = await runPublicationValidation({ mode: 'development', rootDir: root });
     expect(result.errors).toEqual(
       expect.arrayContaining([
-        expect.stringMatching(/interaction-sequence\.mp4.*requires.*\.vtt/i),
-        expect.stringMatching(/interaction-sequence\.mp4.*requires.*poster/i),
+        expect.stringMatching(/fixture-film\.mp4.*requires.*\.vtt/i),
+        expect.stringMatching(/fixture-film\.mp4.*requires.*poster/i),
       ]),
     );
   });
@@ -678,10 +1109,11 @@ export const metadata = {
       'evidence/stt-demo',
       'evidence/xuelang',
       'evidence/media',
+      'evidence/meeting',
       'public/demos/stt-demo',
       'public/images/call-agent',
-      'public/images/archive',
       'public/images/xuelang',
+      'public/images/meeting',
     ]) {
       cpSync(path.join(process.cwd(), relativePath), path.join(root, relativePath), {
         recursive: true,

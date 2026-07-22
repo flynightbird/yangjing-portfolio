@@ -1,7 +1,7 @@
 'use client';
 
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
-import { type CSSProperties, useEffect, useRef, useState } from 'react';
+import { type CSSProperties, type WheelEvent, useRef, useState } from 'react';
 
 import { Lightbox } from '@/components/media/lightbox';
 import { ActionLink } from '@/components/ui/action-link';
@@ -58,31 +58,6 @@ export function VisualArchive({
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
   const programmaticIndexRef = useRef<number | null>(null);
   const total = parsedEntries.length;
-
-  useEffect(() => {
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
-
-    let frame = 0;
-    let pendingDelta = 0;
-    const flushVerticalWheel = () => {
-      const top = pendingDelta;
-      pendingDelta = 0;
-      frame = 0;
-      window.scrollBy({ top, behavior: 'auto' });
-    };
-    const forwardVerticalWheel = (event: globalThis.WheelEvent) => {
-      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-      pendingDelta += event.deltaY;
-      if (frame === 0) frame = window.requestAnimationFrame(flushVerticalWheel);
-    };
-
-    scroller.addEventListener('wheel', forwardVerticalWheel, { passive: true });
-    return () => {
-      scroller.removeEventListener('wheel', forwardVerticalWheel);
-      if (frame !== 0) window.cancelAnimationFrame(frame);
-    };
-  }, []);
 
   const getTrackInset = (card: HTMLElement) => {
     const track = card.parentElement;
@@ -142,6 +117,12 @@ export function VisualArchive({
       }
     });
     setActiveIndex(closestIndex);
+  };
+
+  const forwardVerticalWheel = (event: WheelEvent<HTMLDivElement>) => {
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    event.preventDefault();
+    window.scrollBy({ top: event.deltaY, behavior: 'auto' });
   };
 
   const progressStyle = {
@@ -206,6 +187,7 @@ export function VisualArchive({
         aria-label={copy.carouselLabel}
         data-archive-scroller
         onScroll={updateActiveIndex}
+        onWheel={forwardVerticalWheel}
       >
         <div className={styles.archiveTrack}>
           {parsedEntries.map((entry, index) => {
@@ -259,12 +241,6 @@ export function VisualArchive({
             const start = entry.period.start;
             const end = entry.period.end;
             const alt = entry.image.alt[locale];
-            const gallery = entry.gallery?.map((image) => ({
-              src: image.src,
-              width: image.width,
-              height: image.height,
-              alt: image.alt[locale],
-            }));
             return (
               <article
                 key={entry.key}
@@ -277,41 +253,15 @@ export function VisualArchive({
                 data-active={activeIndex === index ? 'true' : 'false'}
               >
                 <div className={styles.archiveStage}>
-                  {entry.destination === 'internal-case' ? (
-                    <a
-                      className={styles.archiveProjectLink}
-                      href={`/${locale}/${entry.href}`}
-                      aria-label={
-                        locale === 'zh'
-                          ? `查看项目：${primaryTitle}`
-                          : `View project: ${primaryTitle}`
-                      }
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={entry.image.src}
-                        width={entry.image.width}
-                        height={entry.image.height}
-                        alt={alt}
-                        loading="lazy"
-                      />
-                    </a>
-                  ) : (
-                    <Lightbox
-                      src={entry.image.src}
-                      width={entry.image.width}
-                      height={entry.image.height}
-                      alt={alt}
-                      triggerLabel={`${copy.openImage}: ${primaryTitle}`}
-                      dialogLabel={`${copy.imageDialog}: ${primaryTitle}`}
-                      closeLabel={copy.closeImage}
-                      gallery={gallery}
-                      previousLabel={copy.previousImage}
-                      nextLabel={copy.nextImage}
-                      positionLabel={copy.galleryPosition}
-                      errorLabel={copy.imageUnavailable}
-                    />
-                  )}
+                  <Lightbox
+                    src={entry.image.src}
+                    width={entry.image.width}
+                    height={entry.image.height}
+                    alt={alt}
+                    triggerLabel={`${copy.openImage}: ${primaryTitle}`}
+                    dialogLabel={`${copy.imageDialog}: ${primaryTitle}`}
+                    closeLabel={copy.closeImage}
+                  />
                   <div className={styles.archiveCoverIndex}>
                     <span>{company}</span>
                     <span aria-hidden="true"> / </span>

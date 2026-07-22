@@ -74,16 +74,15 @@ describe('XuelangLayout', () => {
     expect(
       Array.from(panorama?.querySelectorAll('img') ?? [], (image) => image.getAttribute('src')),
     ).toEqual([
-      '/images/xuelang/hero-discover.webp',
-      '/images/xuelang/hero-decide.webp',
-      '/images/xuelang/hero-learn.webp',
-      '/images/xuelang/hero-retain.webp',
+      '/images/xuelang/quality-detail-ui.webp',
+      '/images/xuelang/purchase-selected.webp',
+      '/images/xuelang/learning-entry-ui.webp',
+      '/images/xuelang/learning-note-editor.webp',
     ]);
     expect(panorama?.querySelectorAll('[data-hero-product-state]')).toHaveLength(4);
     expect(screen.getByRole('link', { name: pdfLabel })).toHaveAttribute('href', pdfHref);
     expect(screen.getByRole('link', { name: pdfLabel })).toHaveAttribute('download');
     expect(screen.getByRole('link', { name: pdfLabel })).toHaveTextContent(pdfSizeLabel);
-    expect(container.querySelector('[data-xuelang-opening]')).not.toBeInTheDocument();
     expect(screen.getByText(proof, { exact: true })).toBeVisible();
     const noise = container.querySelector('[data-xuelang-noise]');
     expect(noise).toHaveAttribute('aria-hidden', 'true');
@@ -100,13 +99,10 @@ describe('XuelangLayout', () => {
       'data-compact-at',
       'wide',
     );
-    expect(screen.getByRole('link', { name: /^(项目概览|Overview)$/ })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /00 (项目概览|Overview)/ })).toHaveAttribute(
       'aria-current',
       'location',
     );
-    expect(container.querySelector('[data-chapter-variant="xuelang"]')).toBeInTheDocument();
-    expect(container.querySelector('[data-chapter-index="00"]')).toHaveTextContent('00');
-    expect(container.querySelectorAll('[data-chapter-index]')).toHaveLength(8);
     expect(screen.queryByRole('navigation', { name: projectNav })).not.toBeInTheDocument();
   });
 
@@ -121,26 +117,10 @@ describe('XuelangLayout', () => {
     );
 
     expect(
-      container.querySelectorAll(
-        '[data-evidence] img, [data-wipe-interactive] img, [data-course-entry-interactive] img, [data-interaction-board] img',
-      ).length,
+      container.querySelectorAll('[data-evidence] img, [data-wipe-interactive] img').length,
     ).toBeGreaterThanOrEqual(12);
-    expect(container.querySelector('[data-interaction-board]')).toBeInTheDocument();
     expect(screen.getAllByTestId('learning-state')).toHaveLength(5);
     expect(container.querySelectorAll('[data-learning-compact]')).toHaveLength(3);
-    expect(screen.getByRole('tablist', { name: '课程入口状态' })).toBeVisible();
-    expect(screen.getAllByRole('tab')).toHaveLength(4);
-    expect(screen.getByRole('tab', { name: /最近正在看课/ })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
-    expect(
-      within(screen.getByRole('tabpanel')).getByRole('img', {
-        name: /学习进度与继续学习/,
-      }),
-    ).toBeVisible();
-    expect(container.querySelector('[data-course-entry-print]')).toBeInTheDocument();
-    expect(container.querySelectorAll('[data-course-entry-print] img')).toHaveLength(4);
     expect(container.querySelector('img[src="/images/xuelang/learning-focus.webp"]'))
       .not.toBeInTheDocument();
     expect(screen.getAllByTestId('xuelang-dark-stage')).toHaveLength(1);
@@ -170,7 +150,5 @@ describe('XuelangLayout', () => {
       .toBeInTheDocument();
     expect(container.querySelector('img[src="/images/xuelang/purchase-selected.webp"]'))
       .toBeInTheDocument();
-    expect(container.querySelector('img[src="/images/xuelang/learning-entry-ui.webp"]'))
-      .not.toBeInTheDocument();
   });
 });

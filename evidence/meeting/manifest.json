@@ -173,6 +173,74 @@
       "source": "evidence/meeting/source/transcript-demo.zh.vtt",
       "output": "public/captions/meeting/transcript-demo.zh.vtt",
       "purpose": "Provide Chinese text access for the transcript recording."
+    },
+    {
+      "id": "meeting-stage-portrait",
+      "kind": "video",
+      "source": "evidence/meeting/source/meeting-stage-portrait.mp4",
+      "output": "public/videos/meeting/meeting-stage-portrait.mp4",
+      "poster": "/images/meeting/adaptive-layout-poster.webp",
+      "purpose": "Show the native portrait meeting stage immediately before the device orientation changes.",
+      "orientation": "portrait",
+      "publicationRequired": true,
+      "readiness": "ready"
+    },
+    {
+      "id": "meeting-stage-landscape",
+      "kind": "video",
+      "source": "evidence/meeting/source/meeting-stage-landscape.mp4",
+      "output": "public/videos/meeting/meeting-stage-landscape.mp4",
+      "poster": "/images/meeting/adaptive-layout-poster.webp",
+      "purpose": "Show the native landscape meeting stage immediately after the device orientation changes.",
+      "orientation": "landscape",
+      "publicationRequired": true,
+      "readiness": "ready"
+    },
+    {
+      "id": "meeting-whiteboard-portrait",
+      "kind": "video",
+      "source": "evidence/meeting/source/meeting-whiteboard-portrait.mp4",
+      "output": "public/videos/meeting/meeting-whiteboard-portrait.mp4",
+      "poster": "/images/meeting/whiteboard-multidevice.webp",
+      "purpose": "Show the portrait whiteboard keeping the canvas primary while participant awareness remains above it.",
+      "orientation": "portrait",
+      "publicationRequired": true,
+      "readiness": "ready"
+    },
+    {
+      "id": "meeting-whiteboard-landscape",
+      "kind": "video",
+      "source": "evidence/meeting/source/meeting-whiteboard-landscape.mp4",
+      "output": "public/videos/meeting/meeting-whiteboard-landscape.mp4",
+      "poster": "/images/meeting/whiteboard-multidevice.webp",
+      "purpose": "Show the landscape whiteboard placing tools and participant awareness beside the primary canvas.",
+      "orientation": "landscape",
+      "publicationRequired": true,
+      "readiness": "ready"
+    },
+    {
+      "id": "meeting-web-transcription",
+      "kind": "video",
+      "source": "evidence/meeting/source/meeting-web-transcription.mp4",
+      "output": "public/videos/meeting/meeting-web-transcription.mp4",
+      "poster": "/images/meeting/whiteboard-multidevice.webp",
+      "purpose": "Show Web transcription sharing the workspace with the meeting stage while primary content remains clear.",
+      "orientation": "landscape",
+      "bytes": 7031894,
+      "sha256": "fe06e2b39fafc09dc4e36bd7dabdb662b6856d17700df851518e90fb48112ffd",
+      "publicationRequired": true,
+      "readiness": "ready"
+    },
+    {
+      "id": "meeting-web-layout",
+      "kind": "video",
+      "source": "evidence/meeting/source/meeting-web-layout.mp4",
+      "output": "public/videos/meeting/meeting-web-layout.mp4",
+      "poster": "/images/meeting/device-comparison.webp",
+      "purpose": "Show Web participant and chat panels changing sides without interrupting the meeting stage.",
+      "orientation": "landscape",
+      "publicationRequired": true,
+      "readiness": "ready"
     }
   ]
 }

@@ -1,12 +1,15 @@
 .root {
-  margin: clamp(2rem, 5vw, 4.5rem) 0;
+  min-width: 0;
+  margin: clamp(1.5rem, 4vw, 3.25rem) 0;
+  letter-spacing: 0;
+  overflow-wrap: break-word;
 }
 
 .frame {
   position: relative;
   overflow: hidden;
   aspect-ratio: 16 / 9;
-  border: 1px solid var(--line, #d8d8d8);
+  border: 1px solid var(--meeting-line, #d8d8d8);
   border-radius: 6px;
   background: #111315;
 }
@@ -26,22 +29,25 @@
 .root figcaption {
   max-width: 54rem;
   margin-top: 0.75rem;
-  color: var(--text-muted, #62666b);
+  color: var(--meeting-muted, #62666b);
   font-size: 0.875rem;
   line-height: 1.55;
 }
 
 .decisionEvidence {
-  margin: clamp(2rem, 5vw, 4.5rem) 0;
-  border-block: 1px solid var(--line, #d8d8d8);
+  min-width: 0;
+  margin: clamp(1.5rem, 4vw, 3.25rem) 0;
+  border-block: 1px solid var(--meeting-line, #d8d8d8);
+  letter-spacing: 0;
+  overflow-wrap: break-word;
 }
 
 .decisionHeader {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(12rem, 1fr);
-  gap: 2rem;
+  gap: 1.5rem;
   align-items: end;
-  padding: 1.5rem 0;
+  padding: 1.25rem 0;
 }
 
 .decisionHeader span,
@@ -53,15 +59,15 @@
 }
 
 .decisionHeader h3 {
-  margin: 0.75rem 0 0;
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
-  line-height: 1.1;
+  margin: 0.5rem 0 0;
+  font-size: 1.75rem;
+  line-height: 1.2;
 }
 
 .decisionHeader p {
   max-width: 42rem;
   margin: 0.75rem 0 0;
-  color: var(--text-muted, #62666b);
+  color: var(--meeting-muted, #62666b);
   line-height: 1.6;
 }
 
@@ -87,46 +93,77 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: 0;
-  border-top: 1px solid var(--line, #d8d8d8);
+  border-top: 1px solid var(--meeting-line, #d8d8d8);
 }
 
 .decisionRules div {
-  min-height: 8rem;
-  padding: 1.25rem 1.25rem 1.25rem 0;
-  border-bottom: 1px solid var(--line, #d8d8d8);
+  min-width: 0;
+  min-height: 6.5rem;
+  padding: 1rem 1rem 1rem 0;
+  border-bottom: 1px solid var(--meeting-line, #d8d8d8);
 }
 
 .decisionRules div:nth-child(odd) {
-  border-right: 1px solid var(--line, #d8d8d8);
+  border-right: 1px solid var(--meeting-line, #d8d8d8);
 }
 
 .decisionRules div:nth-child(even) {
-  padding-left: 1.25rem;
+  padding-left: 1rem;
 }
 
 .decisionRules dd {
-  margin: 1.5rem 0 0;
-  font-size: clamp(1rem, 2vw, 1.25rem);
+  margin: 1rem 0 0;
+  font-size: 1.125rem;
   line-height: 1.45;
 }
 
-.decisionNote {
-  max-width: 54rem;
-  margin: 0;
-  padding: 1rem 0 1.25rem;
-  color: var(--text-muted, #62666b);
-  font-size: 0.8rem;
+.roleBoundary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: clamp(2rem, 5vw, 4rem) 0;
+  border-block: 1px solid var(--meeting-line, #d8d8d8);
+  letter-spacing: 0;
+  overflow-wrap: break-word;
+}
+
+.roleBoundary div {
+  min-width: 0;
+  padding: 1.25rem;
+}
+
+.roleBoundary div + div {
+  border-left: 1px solid var(--meeting-line, #d8d8d8);
+}
+
+.roleBoundary dt {
+  color: var(--meeting-accent, #e4583e);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.roleBoundary dd {
+  margin: 0.75rem 0 0;
   line-height: 1.55;
 }
 
 @media (max-width: 720px) {
   .decisionHeader,
   .decisionRules {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .decisionHeader {
     gap: 1rem;
+  }
+
+  .roleBoundary {
+    grid-template-columns: 1fr;
+  }
+
+  .roleBoundary div + div {
+    border-top: 1px solid var(--meeting-line, #d8d8d8);
+    border-left: 0;
   }
 
   .decisionRules div,

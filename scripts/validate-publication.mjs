@@ -20,6 +20,8 @@ import {
   selectResponsiveWidths,
 } from '../lib/media/assets.ts';
 import { validateSite } from './validate-content.mjs';
+import { validateMeetingPublicationMedia } from './meeting-media-validation.mjs';
+import { validateMeetingPublicationInventory } from './meeting-publication-contract.mjs';
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repositoryRoot = path.resolve(path.dirname(scriptPath), '..');
@@ -48,6 +50,179 @@ export const publicationInputs = [
   'content/profile/contact.private.json',
 ];
 
+function isSafeMeetingRelativePath(value, prefix) {
+  try {
+    assertSafeRelativePath(value);
+    return value.startsWith(prefix);
+  } catch {
+    return false;
+  }
+}
+
+function isSafeMeetingPublicUrl(value, prefix) {
+  return typeof value === 'string' && value.startsWith(prefix) &&
+    isSafeMeetingRelativePath(value.slice(1), prefix.slice(1));
+}
+
+async function loadMeetingPublicationContract(rootDir, { requireManifest = false } = {}) {
+  const manifestPath = path.join(rootDir, 'evidence/meeting/manifest.json');
+  let manifestStat;
+  try {
+    manifestStat = await fs.lstat(manifestPath);
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+    return {
+      errors: requireManifest
+        ? ['Missing Meeting manifest: evidence/meeting/manifest.json']
+        : [],
+      requiredInputs: [],
+      videos: [],
+      assets: [],
+    };
+  }
+  if (
+    manifestStat.isSymbolicLink() ||
+    !manifestStat.isFile() ||
+    await hasSymlinkInPath(rootDir, manifestPath)
+  ) {
+    return {
+      errors: requireManifest
+        ? ['Meeting manifest must be a regular non-symlink file: evidence/meeting/manifest.json']
+        : [],
+      requiredInputs: [],
+      videos: [],
+      assets: [],
+    };
+  }
+
+  let manifest;
+  try {
+    manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
+  } catch {
+    return {
+      errors: ['Invalid Meeting manifest JSON: evidence/meeting/manifest.json'],
+      requiredInputs: [],
+      videos: [],
+      assets: [],
+    };
+  }
+  if (manifest?.version !== 1 || !Array.isArray(manifest.assets)) {
+    return {
+      errors: ['Meeting manifest must use version 1 with an assets array'],
+      requiredInputs: [],
+      videos: [],
+      assets: [],
+    };
+  }
+
+  const errors = [];
+  const outputs = new Set();
+  for (const [index, asset] of manifest.assets.entries()) {
+    if (!asset || typeof asset !== 'object' || Array.isArray(asset)) {
+      errors.push(`Invalid Meeting manifest asset at index ${index}`);
+      continue;
+    }
+    if (typeof asset.id !== 'string' || !asset.id.trim()) {
+      errors.push(`Invalid Meeting manifest asset id at index ${index}`);
+    }
+    if (!['image', 'video', 'captions'].includes(asset.kind)) {
+      errors.push(`Invalid Meeting manifest kind for ${asset.id ?? `index ${index}`}`);
+    }
+    if (!isSafeMeetingRelativePath(asset.source, 'evidence/meeting/source/')) {
+      errors.push(`Unsafe Meeting manifest source path: ${asset.source}`);
+    }
+    if (
+      !isSafeMeetingRelativePath(asset.output, 'public/') ||
+      !/^public\/(?:images|videos|captions)\/meeting\//.test(asset.output)
+    ) {
+      errors.push(`Unsafe Meeting manifest output path: ${asset.output}`);
+    } else if (outputs.has(asset.output)) {
+      errors.push(`Duplicate Meeting manifest output path: ${asset.output}`);
+    } else {
+      outputs.add(asset.output);
+    }
+    if (
+      asset.publicationRequired !== undefined &&
+      typeof asset.publicationRequired !== 'boolean'
+    ) {
+      errors.push(`Invalid Meeting manifest publicationRequired for ${asset.id}`);
+    }
+    if (
+      asset.readiness !== undefined &&
+      !['ready', 'awaiting-source'].includes(asset.readiness)
+    ) {
+      errors.push(`Invalid Meeting manifest readiness for ${asset.id}`);
+    }
+    if (asset.kind === 'video') {
+      if (
+        asset.publicationRequired === true &&
+        !['portrait', 'landscape'].includes(asset.orientation)
+      ) {
+        errors.push(`Invalid Meeting manifest orientation for ${asset.id}`);
+      }
+      if (!isSafeMeetingPublicUrl(asset.poster, '/images/meeting/')) {
+        errors.push(`Unsafe Meeting manifest poster path: ${asset.poster}`);
+      }
+      for (const locale of Object.keys(asset.captions ?? {})) {
+        const caption = asset.captions?.[locale];
+        if (!isSafeMeetingPublicUrl(caption, '/captions/meeting/')) {
+          errors.push(`Unsafe Meeting manifest captions.${locale} path: ${caption}`);
+        }
+      }
+    }
+  }
+  if (errors.length) return { errors, requiredInputs: [], videos: [], assets: [] };
+
+  const assetsByOutput = new Map(
+    manifest.assets.map((asset) => [asset.output, asset]),
+  );
+  for (const video of manifest.assets.filter(({ kind }) => kind === 'video')) {
+    const relationships = [
+      ['poster', `public${video.poster}`, 'image'],
+      ...Object.entries(video.captions ?? {}).map(([locale, caption]) => (
+        [`captions.${locale}`, `public${caption}`, 'captions']
+      )),
+    ];
+    for (const [label, output, expectedKind] of relationships) {
+      if (assetsByOutput.get(output)?.kind !== expectedKind) {
+        errors.push(
+          `Meeting video ${video.id} ${label} is not declared by manifest output: ${output}`,
+        );
+      }
+    }
+  }
+  errors.push(...validateMeetingPublicationInventory(manifest.assets));
+
+  const publicationAssets = manifest.assets
+    .filter(({ publicationRequired }) => publicationRequired === true);
+  const requiredVideoRelationships = publicationAssets
+    .filter(({ kind }) => kind === 'video')
+    .flatMap(({ poster, captions }) => [
+      `public${poster}`,
+      ...Object.values(captions ?? {}).map((caption) => `public${caption}`),
+    ]);
+  return {
+    errors,
+    assets: manifest.assets,
+    requiredInputs: [
+      ...publicationAssets.flatMap(({ source, output }) => [source, output]),
+      ...requiredVideoRelationships,
+    ],
+    videos: manifest.assets
+      .filter(({ kind }) => kind === 'video')
+      .map(({ output: video, poster, captions }) => ({
+        video,
+        poster: `public${poster}`,
+        captions: Object.values(captions ?? {}).map((caption) => `public${caption}`),
+      })),
+  };
+}
+
+export async function publicationInputsForRoot(rootDir = repositoryRoot) {
+  const meetingContract = await loadMeetingPublicationContract(rootDir);
+  return [...new Set([...publicationInputs, ...meetingContract.requiredInputs])];
+}
+
 export function parseMode(argv = process.argv.slice(2)) {
   const argument = argv.find((value) => value.startsWith('--mode='));
   const mode = argument?.slice('--mode='.length);
@@ -64,8 +239,13 @@ function assertMode(mode) {
 }
 
 export async function findMissingPublicationInputs(rootDir = repositoryRoot) {
+  const inputs = await publicationInputsForRoot(rootDir);
+  return findMissingInputs(rootDir, inputs);
+}
+
+async function findMissingInputs(rootDir, inputs) {
   const missing = [];
-  for (const relativePath of publicationInputs) {
+  for (const relativePath of inputs) {
     try {
       const stat = await fs.stat(path.join(rootDir, relativePath));
       if (!stat.isFile()) missing.push(relativePath);
@@ -103,10 +283,6 @@ const launchRoutes = [
   'work/meeting',
   'build/stt-demo',
 ];
-const outputPublicationPaths = publicationInputs
-  .filter((value) => value.startsWith('public/'))
-  .map((value) => value.slice('public/'.length));
-
 async function isRegularFile(filePath) {
   try {
     const stat = await fs.lstat(filePath);
@@ -675,9 +851,9 @@ async function validateContact(rootDir) {
   return errors;
 }
 
-async function validateExistingMedia(rootDir) {
+async function validateExistingMedia(rootDir, inputs, meetingVideos) {
   const errors = [];
-  for (const relativePath of publicationInputs) {
+  for (const relativePath of inputs) {
     if (!relativePath.startsWith('public/') || !(await isRegularFile(path.join(rootDir, relativePath)))) continue;
     const bytes = await fs.readFile(path.join(rootDir, relativePath));
     if (relativePath.endsWith('.pdf') && !bytes.subarray(0, 5).equals(Buffer.from('%PDF-'))) {
@@ -698,24 +874,6 @@ async function validateExistingMedia(rootDir) {
       errors.push(`Invalid MP4 signature: ${relativePath}`);
     }
   }
-  const meetingVideos = [
-    {
-      video: 'public/videos/meeting/adaptive-layout-demo.mp4',
-      poster: 'public/images/meeting/adaptive-layout-poster.webp',
-      captions: [
-        'public/captions/meeting/adaptive-layout-demo.en.vtt',
-        'public/captions/meeting/adaptive-layout-demo.zh.vtt',
-      ],
-    },
-    {
-      video: 'public/videos/meeting/transcript-demo.mp4',
-      poster: 'public/images/meeting/transcript-poster.webp',
-      captions: [
-        'public/captions/meeting/transcript-demo.en.vtt',
-        'public/captions/meeting/transcript-demo.zh.vtt',
-      ],
-    },
-  ];
   for (const { video, poster, captions } of meetingVideos) {
     if (!(await isRegularFile(path.join(rootDir, video)))) continue;
     const relationships = [
@@ -731,9 +889,9 @@ async function validateExistingMedia(rootDir) {
   return errors;
 }
 
-async function validatePublicationInputKinds(rootDir) {
+async function validatePublicationInputKinds(rootDir, inputs) {
   const errors = [];
-  for (const relativePath of publicationInputs) {
+  for (const relativePath of inputs) {
     const inputPath = path.join(rootDir, relativePath);
     if (await hasSymlinkInPath(rootDir, path.dirname(inputPath))) {
       errors.push(`Publication input has symlink ancestor: ${relativePath}`);
@@ -1033,7 +1191,7 @@ function validateHtmlMedia(document, sourceName) {
   return errors;
 }
 
-async function validateOutput(rootDir) {
+async function validateOutput(rootDir, outputPublicationPaths) {
   const errors = [];
   const outputRoot = path.join(rootDir, 'out');
   for (const relativePath of outputPublicationPaths) {
@@ -1114,6 +1272,7 @@ async function validateOutput(rootDir) {
 export async function runPublicationValidation({
   mode,
   rootDir = repositoryRoot,
+  probeMeetingVideo,
 }) {
   assertMode(mode);
   const publicationRoots = mode === 'output'
@@ -1121,20 +1280,53 @@ export async function runPublicationValidation({
     : ['content', 'evidence', 'public'];
   const rootErrors = await validatePublicationRoots(rootDir, publicationRoots);
   if (rootErrors.length) return { errors: rootErrors, messages: [] };
-  const missing = mode === 'output' ? [] : await findMissingPublicationInputs(rootDir);
+  const meetingContract = await loadMeetingPublicationContract(rootDir, {
+    requireManifest: mode === 'output',
+  });
+  const inputs = [...new Set([
+    ...publicationInputs,
+    ...meetingContract.requiredInputs,
+  ])];
+  const outputPublicationPaths = inputs
+    .filter((value) => value.startsWith('public/'))
+    .map((value) => value.slice('public/'.length));
+  const missing = mode === 'output' ? [] : await findMissingInputs(rootDir, inputs);
+  const meetingReadinessErrors = mode === 'development'
+    ? []
+    : meetingContract.assets
+      .filter(({ publicationRequired, readiness }) => (
+        publicationRequired === true && readiness !== 'ready'
+      ))
+      .map(({ id }) => `Meeting Product Film record awaiting source inspection: ${id}`);
+  const meetingMediaErrors = mode === 'development' || meetingReadinessErrors.length > 0
+    ? []
+    : await validateMeetingPublicationMedia({
+        rootDir,
+        assets: meetingContract.assets,
+        pathForAsset: mode === 'output'
+          ? (asset) => asset.output.replace(/^public\//, 'out/')
+          : (asset) => asset.source,
+        probeVideo: probeMeetingVideo,
+      });
   const structuralErrors = mode === 'output'
     ? [
+        ...meetingContract.errors,
+        ...meetingReadinessErrors,
+        ...meetingMediaErrors,
         ...await validatePrivacy(rootDir, ['out']),
         ...await findDraftPublicationMarkers(rootDir, mode),
         ...await validateMediaManifest(rootDir, mode),
-        ...await validateOutput(rootDir),
+        ...await validateOutput(rootDir, outputPublicationPaths),
       ]
     : [
+        ...meetingContract.errors,
+        ...meetingReadinessErrors,
+        ...meetingMediaErrors,
         ...await validatePrivacy(rootDir, ['content', 'evidence', 'public']),
         ...await findDraftPublicationMarkers(rootDir, mode),
         ...await validateContact(rootDir),
-        ...await validatePublicationInputKinds(rootDir),
-        ...await validateExistingMedia(rootDir),
+        ...await validatePublicationInputKinds(rootDir, inputs),
+        ...await validateExistingMedia(rootDir, inputs, meetingContract.videos),
         ...await validateApprovedContent(rootDir),
         ...await validateMediaManifest(rootDir, mode),
         ...await validateContentMetadata(rootDir, mode),

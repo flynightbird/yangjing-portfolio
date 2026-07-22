@@ -22,7 +22,7 @@ export default async function LocaleHomePage({ params }: LocaleHomePageProps) {
   }
 
   return (
-    <div className={styles.home} data-homepage>
+    <div className={styles.home}>
       <PointerField />
       <DualIdentityHero locale={locale} />
       <IntroStory locale={locale} />

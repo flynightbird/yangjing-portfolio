@@ -29,71 +29,6 @@
       "replacementPath": "figma://t0kTQ49hZ2uIoYjeQD8oh7/20220732+20220735+20220737+20220739_1"
     },
     {
-      "id": "hero-discover",
-      "chapter": "00",
-      "sourceFrames": ["portfolio-supplied-xuelang-hero-discover"],
-      "sourcePaths": ["evidence/xuelang/source/hero-discover.png"],
-      "output": "public/images/xuelang/hero-discover.webp",
-      "format": "webp",
-      "crop": { "left": 0, "top": 0, "width": 896, "height": 1941 },
-      "intrinsic": { "width": 896, "height": 1941 },
-      "purpose": "Introduce the course-discovery state with categories, recommendations, and selection entry points.",
-      "alt": { "zh": "课程发现页中的课程分类、内容推荐与选课入口", "en": "Course discovery with categories, recommendations, and selection entry points" },
-      "replacementPath": "figma://portfolio-supplied/xuelang-hero-discover"
-    },
-    {
-      "id": "hero-decide",
-      "chapter": "00",
-      "sourceFrames": ["portfolio-supplied-xuelang-hero-decide"],
-      "sourcePaths": ["evidence/xuelang/source/hero-decide.png"],
-      "output": "public/images/xuelang/hero-decide.webp",
-      "format": "webp",
-      "crop": { "left": 0, "top": 0, "width": 896, "height": 1941 },
-      "intrinsic": { "width": 896, "height": 1941 },
-      "purpose": "Introduce the course-detail state that supports evaluation, trial, and purchase decisions.",
-      "alt": { "zh": "课程详情页中的课程信息、试听内容与购买决策入口", "en": "Course details supporting evaluation, trial content, and the purchase decision" },
-      "replacementPath": "figma://portfolio-supplied/xuelang-hero-decide"
-    },
-    {
-      "id": "hero-learn",
-      "chapter": "00",
-      "sourceFrames": ["portfolio-supplied-xuelang-hero-learn"],
-      "sourcePaths": ["evidence/xuelang/source/hero-learn.png"],
-      "output": "public/images/xuelang/hero-learn.webp",
-      "format": "webp",
-      "crop": { "left": 0, "top": 0, "width": 897, "height": 1942 },
-      "intrinsic": { "width": 897, "height": 1942 },
-      "purpose": "Introduce the learning-entry state with organized content, progress, and continuation context.",
-      "alt": { "zh": "课程学习入口中的内容组织、学习进度与继续学习状态", "en": "Learning entry with organized content, progress, and a continue-learning state" },
-      "replacementPath": "figma://portfolio-supplied/xuelang-hero-learn"
-    },
-    {
-      "id": "hero-retain",
-      "chapter": "00",
-      "sourceFrames": ["portfolio-supplied-xuelang-hero-retain"],
-      "sourcePaths": ["evidence/xuelang/source/hero-retain.png"],
-      "output": "public/images/xuelang/hero-retain.webp",
-      "format": "webp",
-      "crop": { "left": 0, "top": 0, "width": 904, "height": 1958 },
-      "intrinsic": { "width": 904, "height": 1958 },
-      "purpose": "Introduce note capture as a retained learning asset inside the active learning context.",
-      "alt": { "zh": "播放器内记录笔记并保留学习上下文的编辑状态", "en": "In-player note capture that preserves the active learning context" },
-      "replacementPath": "figma://portfolio-supplied/xuelang-hero-retain"
-    },
-    {
-      "id": "opening-background",
-      "chapter": "00",
-      "sourceFrames": ["portfolio-supplied-opening-background"],
-      "sourcePaths": ["evidence/xuelang/source/opening-background.png"],
-      "output": "public/images/xuelang/opening-background.webp",
-      "format": "webp",
-      "crop": { "left": 0, "top": 0, "width": 3840, "height": 2160 },
-      "intrinsic": { "width": 3840, "height": 2160 },
-      "purpose": "Blend a restrained landscape atmosphere through the Xuelang Hero and overview.",
-      "alt": { "zh": "学浪案例首屏使用的浅色沙丘氛围背景", "en": "Light dune atmosphere used behind the Xuelang case opening" },
-      "replacementPath": "figma://portfolio-supplied/xuelang-opening-background"
-    },
-    {
       "id": "quality-standard",
       "chapter": "04",
       "sourceFrames": ["20220723"],
@@ -265,15 +200,15 @@
     {
       "id": "learning-interaction",
       "chapter": "06",
-      "sourceFrames": ["portfolio-supplied-learning-interaction-board"],
-      "sourcePaths": ["evidence/xuelang/source/learning-interaction-board.png"],
+      "sourceFrames": ["20220739"],
+      "sourcePaths": ["evidence/xuelang/source/20220739.png"],
       "output": "public/images/xuelang/learning-interaction.webp",
       "format": "webp",
-      "crop": { "left": 0, "top": 0, "width": 3840, "height": 1876 },
-      "intrinsic": { "width": 3840, "height": 1876 },
-      "purpose": "Show immersive playback controls, fragmented learning, and lesson switching in one product canvas.",
-      "alt": { "zh": "沉浸播放、倍速控制与课时切换的多种学习界面", "en": "Learning interfaces for immersive playback, speed controls, and lesson switching" },
-      "replacementPath": "figma://portfolio-supplied/learning-interaction-board"
+      "crop": { "left": 305, "top": 175, "width": 718, "height": 400 },
+      "intrinsic": { "width": 1920, "height": 1080 },
+      "purpose": "Show interactive and fragmented learning states across devices.",
+      "alt": { "zh": "视频、互动练习与碎片化学习在不同设备状态中的衔接", "en": "Video, interactive practice, and fragmented learning connected across device states" },
+      "replacementPath": "figma://t0kTQ49hZ2uIoYjeQD8oh7/20220739"
     },
     {
       "id": "learning-assets",
@@ -313,45 +248,6 @@
       "purpose": "Provide the complete redesigned product board for the interactive continuous-learning comparison.",
       "alt": { "zh": "改版后连接连续学习体验的学浪产品界面集合", "en": "Redesigned Xuelang interface collection connecting a continuous learning experience" },
       "replacementPath": "figma://portfolio-supplied/learning-after-board"
-    },
-    {
-      "id": "course-entry-discover",
-      "chapter": "06",
-      "sourceFrames": ["portfolio-supplied-course-entry-discover"],
-      "sourcePaths": ["evidence/xuelang/source/course-entry-discover.png"],
-      "output": "public/images/xuelang/course-entry-discover.webp",
-      "format": "webp",
-      "crop": { "left": 0, "top": 0, "width": 621, "height": 1343 },
-      "intrinsic": { "width": 621, "height": 1343 },
-      "purpose": "Show the adaptive course entry before a learner has purchased a course.",
-      "alt": { "zh": "未购课时的课程发现与选课入口", "en": "Course discovery and selection entry before a learner has purchased a course" },
-      "replacementPath": "figma://portfolio-supplied/course-entry-discover"
-    },
-    {
-      "id": "course-entry-start",
-      "chapter": "06",
-      "sourceFrames": ["portfolio-supplied-course-entry-start"],
-      "sourcePaths": ["evidence/xuelang/source/course-entry-start.png"],
-      "output": "public/images/xuelang/course-entry-start.webp",
-      "format": "webp",
-      "crop": { "left": 0, "top": 0, "width": 621, "height": 1345 },
-      "intrinsic": { "width": 621, "height": 1345 },
-      "purpose": "Show the adaptive course entry immediately after a new course purchase.",
-      "alt": { "zh": "购买新课但尚未开始时的学习入口", "en": "Learning entry for a newly purchased course that has not been started" },
-      "replacementPath": "figma://portfolio-supplied/course-entry-start"
-    },
-    {
-      "id": "course-entry-live",
-      "chapter": "06",
-      "sourceFrames": ["portfolio-supplied-course-entry-live"],
-      "sourcePaths": ["evidence/xuelang/source/course-entry-live.png"],
-      "output": "public/images/xuelang/course-entry-live.webp",
-      "format": "webp",
-      "crop": { "left": 0, "top": 0, "width": 621, "height": 1345 },
-      "intrinsic": { "width": 621, "height": 1345 },
-      "purpose": "Show the adaptive course entry prioritizing an active teacher livestream.",
-      "alt": { "zh": "老师直播时优先显示实时课程的入口", "en": "Course entry prioritizing a teacher's active livestream" },
-      "replacementPath": "figma://portfolio-supplied/course-entry-live"
     },
     {
       "id": "result-evidence",
@@ -434,41 +330,41 @@
     {
       "id": "learning-note-player",
       "chapter": "06",
-      "sourceFrames": ["portfolio-supplied-learning-note-player"],
-      "sourcePaths": ["evidence/xuelang/source/learning-note-player.png"],
+      "sourceFrames": ["1:11618"],
+      "sourcePaths": ["evidence/xuelang/figma/learning-notes-board.png"],
       "output": "public/images/xuelang/learning-note-player.webp",
       "format": "webp",
-      "crop": { "left": 0, "top": 0, "width": 904, "height": 1958 },
-      "intrinsic": { "width": 904, "height": 1958 },
+      "crop": { "left": 140, "top": 420, "width": 390, "height": 660 },
+      "intrinsic": { "width": 390, "height": 660 },
       "purpose": "Focus the in-player note entry and high-frequency learning controls.",
       "alt": { "zh": "播放器高频操作区中的笔记入口", "en": "Note entry in the player's high-frequency control area" },
-      "replacementPath": "figma://portfolio-supplied/learning-note-player"
+      "replacementPath": "figma://STUOWO6MG2rUvwcLlvJdFK/1:11618"
     },
     {
       "id": "learning-note-list",
       "chapter": "06",
-      "sourceFrames": ["portfolio-supplied-learning-note-list"],
-      "sourcePaths": ["evidence/xuelang/source/learning-note-list.png"],
+      "sourceFrames": ["1:11618"],
+      "sourcePaths": ["evidence/xuelang/figma/learning-notes-board.png"],
       "output": "public/images/xuelang/learning-note-list.webp",
       "format": "webp",
-      "crop": { "left": 0, "top": 0, "width": 904, "height": 1958 },
-      "intrinsic": { "width": 904, "height": 1958 },
+      "crop": { "left": 605, "top": 415, "width": 355, "height": 665 },
+      "intrinsic": { "width": 355, "height": 665 },
       "purpose": "Show notes accumulated across courses as a reusable personal learning asset.",
       "alt": { "zh": "按课程积累的个人笔记列表", "en": "Personal notes accumulated across courses" },
-      "replacementPath": "figma://portfolio-supplied/learning-note-list"
+      "replacementPath": "figma://STUOWO6MG2rUvwcLlvJdFK/1:11618"
     },
     {
       "id": "learning-note-editor",
       "chapter": "06",
-      "sourceFrames": ["portfolio-supplied-learning-note-editor"],
-      "sourcePaths": ["evidence/xuelang/source/learning-note-editor.png"],
+      "sourceFrames": ["1:11618"],
+      "sourcePaths": ["evidence/xuelang/figma/learning-notes-board.png"],
       "output": "public/images/xuelang/learning-note-editor.webp",
       "format": "webp",
-      "crop": { "left": 0, "top": 0, "width": 904, "height": 1958 },
-      "intrinsic": { "width": 904, "height": 1958 },
+      "crop": { "left": 950, "top": 205, "width": 470, "height": 875 },
+      "intrinsic": { "width": 470, "height": 875 },
       "purpose": "Show note capture, timestamp context, and editing inside the learning flow.",
       "alt": { "zh": "保留视频时间点和截图的笔记编辑界面", "en": "Note editor preserving the video timestamp and captured frame" },
-      "replacementPath": "figma://portfolio-supplied/learning-note-editor"
+      "replacementPath": "figma://STUOWO6MG2rUvwcLlvJdFK/1:11618"
     }
   ]
 }

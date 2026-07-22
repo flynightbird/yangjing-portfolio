@@ -80,7 +80,7 @@ export function ContextPriorityModel({ locale }: { readonly locale: Locale }) {
     <figure className={styles.model} aria-label={text.contextFlow.join(' to ')}>
       <div className={styles.contextFlow}>
         {text.contextFlow.map((item, index) => (
-          <div key={item} className={styles.contextStep}>
+          <div key={item} className={styles.contextStep} data-meeting-context-step>
             <span>{String(index + 1).padStart(2, '0')}</span>
             <strong>{item}</strong>
             <p>{text.contextDetail[index]}</p>
@@ -94,12 +94,26 @@ export function ContextPriorityModel({ locale }: { readonly locale: Locale }) {
 export function MeetingStateMatrix({ locale }: { readonly locale: Locale }) {
   const text = copy[locale];
   return (
-    <div className={styles.tableWrap}>
+    <div
+      className={styles.tableWrap}
+      role="region"
+      aria-label={text.matrixLabel}
+      tabIndex={0}
+    >
       <table className={styles.matrix} aria-label={text.matrixLabel}>
-        <thead><tr>{text.matrixHeaders.map((header) => <th key={header}>{header}</th>)}</tr></thead>
+        <thead>
+          <tr>
+            {text.matrixHeaders.map((header) => (
+              <th key={header} scope="col">{header}</th>
+            ))}
+          </tr>
+        </thead>
         <tbody>
-          {stageRows[locale].map((row) => (
-            <tr key={row[0]}>{row.map((cell) => <td key={cell}>{cell}</td>)}</tr>
+          {stageRows[locale].map(([trigger, ...cells]) => (
+            <tr key={trigger}>
+              <th scope="row">{trigger}</th>
+              {cells.map((cell) => <td key={cell}>{cell}</td>)}
+            </tr>
           ))}
         </tbody>
       </table>
@@ -124,7 +138,11 @@ export function LanguageControlModel({ locale }: { readonly locale: Locale }) {
       <figcaption>{text.languageTitle}</figcaption>
       <div className={styles.languagePaths}>
         {[text.individual, text.meeting].map((path) => (
-          <div key={path[0]}>{path.map((item, index) => index === 0 ? <strong key={item}>{item}</strong> : <span key={item}>{item}</span>)}</div>
+          <div key={path[0]} data-meeting-language-path>
+            {path.map((item, index) => index === 0
+              ? <strong key={item}>{item}</strong>
+              : <span key={item}>{item}</span>)}
+          </div>
         ))}
       </div>
       <p>{text.languageSupport}</p>

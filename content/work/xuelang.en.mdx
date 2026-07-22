@@ -25,14 +25,14 @@ export const metadata = {
   nextSlug: 'call-agent',
   caseLabel: 'BYTEDANCE / XUELANG',
   chapters: [
-    { id: 'overview', label: 'Overview' },
-    { id: 'business', label: 'Business challenge' },
-    { id: 'problem', label: 'Problem definition' },
-    { id: 'strategy', label: 'Design strategy' },
-    { id: 'decision-standard', label: 'Recognizing quality courses' },
-    { id: 'decision-purchase', label: 'Purchase decision path' },
-    { id: 'decision-learning', label: 'Continuous learning experience' },
-    { id: 'results', label: 'Validated results' },
+    { id: 'overview', label: '00 Overview' },
+    { id: 'business', label: '01 Business challenge' },
+    { id: 'problem', label: '02 Problem definition' },
+    { id: 'strategy', label: '03 Design strategy' },
+    { id: 'decision-standard', label: '04 Recognizing quality courses' },
+    { id: 'decision-purchase', label: '05 Purchase decision path' },
+    { id: 'decision-learning', label: '06 Continuous learning experience' },
+    { id: 'results', label: '07 Validated results' },
   ],
 }
 
@@ -128,10 +128,10 @@ export const metadata = {
   <div className="xuelang-reading"><p className="lead">Course delivery was not the end state. The redesign connected course entry, immersive viewing, fragmented learning, interaction, and note or learning-asset accumulation, balancing immersion with operating efficiency.</p></div>
   <XuelangDarkComparison locale="en" title="Content delivery → Continuous learning experience" before={{ src: '/images/xuelang/learning-before-board.webp', width: 1662, height: 1080, alt: 'Previous Xuelang interface collection centered on content delivery', label: 'Before · Content delivery', caption: 'Entry and content existed, but learning actions remained disconnected.' }} after={{ src: '/images/xuelang/learning-after-board.webp', width: 1662, height: 1080, alt: 'Redesigned Xuelang interface collection connecting a continuous learning experience', label: 'After · Continuous learning', caption: 'Viewing, interaction, and learning accumulation become one continuous experience.' }} />
   <XuelangLearningSequence locale="en" thesis="From entering a course to building personal learning assets, every state makes the current position and next action clear." states={[
-    { index: '01', title: 'Course entry', description: 'Instead of showing one fixed destination, the entry adapts to no course, an unstarted purchase, recent progress, or a teacher going live, surfacing the most relevant next action.', courseEntry: true },
+    { index: '01', title: 'Course entry', description: 'Show course state, progress, and a clear return path.', image: { src: '/images/xuelang/learning-entry-ui.webp', width: 449, height: 886, alt: 'Course entry with progress and continue-learning state', label: 'ENTRY / PRODUCT UI', caption: 'Reduce the cost of returning to learning.' } },
     { index: '02', title: 'Immersive focus', description: 'Reduce distraction while keeping necessary controls legible.' },
     { index: '03', title: 'Fragmented learning', description: 'Preserve progress and context for short return sessions.' },
-    { index: '04', title: 'Interaction', description: 'Keep immersive viewing, frequent controls, and lesson switching in one learning context.', interactionBoard: true },
+    { index: '04', title: 'Interaction', description: 'Keep questions and feedback in the context of the course.', image: { src: '/images/xuelang/learning-interaction.webp', width: 1920, height: 1080, alt: 'Course interaction and feedback interface', label: 'INTERACTION', caption: 'Interaction stays grounded in the learning context.' } },
     { index: '05', title: 'Notes and learning assets', description: 'Accumulate notes and outcomes into personal value worth revisiting.' },
   ]} />
   <XuelangEvidenceStory
@@ -145,10 +145,10 @@ export const metadata = {
       { title: 'Preserve context', description: 'A screenshot and video timestamp are saved with the note.' },
       { title: 'Build personal value', description: 'Notes accumulate by course instead of ending as one viewing record.' },
     ]}
-    primary={{ src: '/images/xuelang/learning-note-editor.webp', width: 904, height: 1958, alt: 'In-player note editor preserving the video timestamp and captured frame', label: '02 / EDIT IN CONTEXT', caption: 'Writing stays connected to the current video.' }}
+    primary={{ src: '/images/xuelang/learning-note-editor.webp', width: 470, height: 875, alt: 'In-player note editor', label: '03 / EDIT IN CONTEXT', caption: 'Writing stays connected to the current video.' }}
     supporting={[
-      { src: '/images/xuelang/learning-note-player.webp', width: 904, height: 1958, alt: 'Note entry in the player high-frequency control area', label: '01 / CAPTURE', caption: 'The high-frequency control zone opens notes directly.' },
-      { src: '/images/xuelang/learning-note-list.webp', width: 904, height: 1958, alt: 'Personal notes accumulated continuously by course', label: '03 / ACCUMULATE', caption: 'Viewing records become revisitable learning assets.' },
+      { src: '/images/xuelang/learning-note-player.webp', width: 390, height: 660, alt: 'Note entry inside the player', label: '01 / CAPTURE', caption: 'The high-frequency control zone opens notes directly.' },
+      { src: '/images/xuelang/learning-note-list.webp', width: 355, height: 665, alt: 'Personal notes accumulated by course', label: '02 / ACCUMULATE', caption: 'Viewing records become revisitable learning assets.' },
     ]}
   />
 </section>

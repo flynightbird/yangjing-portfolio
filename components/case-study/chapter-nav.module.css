@@ -48,19 +48,6 @@
   color: #111512;
 }
 
-.root[data-chapter-variant='xuelang'] .navigation a:hover,
-.root[data-chapter-variant='xuelang'] .navigation a:focus-visible {
-  color: #466b52;
-}
-
-.root[data-chapter-variant='xuelang'] .navigation a:focus-visible {
-  outline-color: #466b52;
-}
-
-.root[data-chapter-variant='xuelang'] .navigation a[aria-current='location'] {
-  box-shadow: none;
-}
-
 @media (max-width: 1100px) {
   .root {
     position: relative;
@@ -107,6 +94,7 @@
 
 @media (min-width: 901px) and (max-width: 1100px) {
   .root[data-compact-at='default'] {
+    position: sticky;
     inset-block-start: calc(var(--header-height) + var(--space-5));
     padding-block: 0;
     border-block: 0;

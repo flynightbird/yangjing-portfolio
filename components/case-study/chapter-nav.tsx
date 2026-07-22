@@ -12,19 +12,11 @@ interface ChapterNavProps {
   readonly chapters: readonly ChapterMeta[];
   readonly locale: Locale;
   readonly compactAt?: 'default' | 'wide';
-  readonly indexStart?: number;
-  readonly variant?: 'default' | 'xuelang';
 }
 
 const subscribeToHydration = () => () => {};
 
-export function ChapterNav({
-  chapters,
-  locale,
-  compactAt = 'default',
-  indexStart = 1,
-  variant = 'default',
-}: ChapterNavProps) {
+export function ChapterNav({ chapters, locale, compactAt = 'default' }: ChapterNavProps) {
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState(chapters[0]?.id);
   const currentActiveId = chapters.some(({ id }) => id === activeId)
@@ -73,7 +65,6 @@ export function ChapterNav({
     <div
       className={styles.root}
       data-case-web-control
-      data-chapter-variant={variant}
       data-compact-at={compactAt}
     >
       <button
@@ -105,12 +96,7 @@ export function ChapterNav({
                   setOpen(false);
                 }}
               >
-                <span
-                  aria-hidden="true"
-                  data-chapter-index={String(index + indexStart).padStart(2, '0')}
-                >
-                  {String(index + indexStart).padStart(2, '0')}
-                </span>
+                <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
                 {chapter.label}
               </a>
             </li>

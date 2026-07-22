@@ -1,0 +1,306 @@
+.clip {
+  position: relative;
+  width: min(100%, 72rem);
+  min-width: 0;
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.mediaFrame {
+  overflow: hidden;
+  border: 1px solid #353a3f;
+  border-radius: 6px;
+  background: #080a0c;
+}
+
+.browserChrome {
+  position: relative;
+  display: flex;
+  height: 2.25rem;
+  align-items: center;
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  color: rgb(255 255 255 / 52%);
+  background: rgb(255 255 255 / 5%);
+}
+
+.browserDots {
+  display: flex;
+  gap: 0.375rem;
+  margin-left: 0.875rem;
+}
+
+.browserDots span {
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-radius: 50%;
+  background: #72777c;
+}
+
+.browserAddress {
+  position: absolute;
+  inset-inline: 3.5rem;
+  overflow: hidden;
+  font-size: 0.75rem;
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #080a0c;
+}
+
+.media video,
+.fallback {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.media video[hidden],
+.fallback[hidden] {
+  display: none;
+}
+
+.filmFooter {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  color: #a7aaad;
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.filmCopy {
+  display: grid;
+  flex: 1;
+  gap: 0.125rem;
+  max-width: 54rem;
+}
+
+.filmTitle {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.filmDescription {
+  display: block;
+}
+
+.replayPlaceholder {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+}
+
+.replay {
+  position: static;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid #5b6065;
+  border-radius: 50%;
+  color: #ffffff;
+  background: #111315;
+  cursor: pointer;
+}
+
+.replay:hover {
+  border-color: #ffffff;
+}
+
+.replay:focus-visible {
+  outline: 2px solid #e4583e;
+  outline-offset: 3px;
+}
+
+.orientationCut {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.orientationStage {
+  --orientation-stage-block-size: min(44.5rem, calc(100vw * 16 / 9));
+
+  display: flex;
+  width: 100%;
+  block-size: var(--orientation-stage-block-size);
+  min-block-size: var(--orientation-stage-block-size);
+  align-items: center;
+  justify-content: center;
+}
+
+.deviceShell {
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  margin-inline: auto;
+  padding: 0.375rem;
+  border: 1px solid #454a4f;
+  border-radius: 0.75rem;
+  background: #24282c;
+  transition: width 600ms ease, aspect-ratio 600ms ease;
+}
+
+.deviceShell[data-orientation='portrait'] {
+  width: min(100%, 25rem);
+  aspect-ratio: 9 / 16;
+}
+
+.deviceShell[data-orientation='landscape'] {
+  width: min(100%, 64rem);
+  aspect-ratio: 16 / 9;
+}
+
+.deviceHardwareCue {
+  position: absolute;
+  z-index: 1;
+  top: 0.1875rem;
+  left: 50%;
+  width: 2rem;
+  height: 0.125rem;
+  border-radius: 999px;
+  background: #686d72;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.orientationFrame {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem;
+  background: #080a0c;
+}
+
+.orientationVideo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: none;
+}
+
+.orientationControls {
+  position: static;
+  display: flex;
+  width: fit-content;
+  min-height: 44px;
+  margin: 0.75rem auto 0;
+  padding: 0.25rem;
+  border: 0;
+  border-radius: 999px;
+  background: #353a3f;
+}
+
+.orientationButton {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.625rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  color: #a7aaad;
+  background: transparent;
+  cursor: pointer;
+}
+
+.orientationButton[aria-pressed='true'] {
+  color: #ffffff;
+  background: #62676c;
+}
+
+.orientationButton:focus-visible {
+  position: relative;
+  outline: 2px solid #e4583e;
+  outline-offset: 3px;
+}
+
+.orientationComparison {
+  display: grid;
+  grid-template-columns: minmax(0, 9fr) minmax(0, 16fr);
+  gap: 1rem;
+  align-items: end;
+  width: min(100%, 64rem);
+  margin-inline: auto;
+}
+
+.orientationPoster {
+  min-width: 0;
+  margin: 0;
+}
+
+.orientationPoster img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid #353a3f;
+  border-radius: 6px;
+  background: #080a0c;
+  object-fit: contain;
+}
+
+.orientationPoster:first-child img {
+  aspect-ratio: 9 / 16;
+}
+
+.orientationPoster:last-child img {
+  aspect-ratio: 16 / 9;
+}
+
+.orientationPoster figcaption {
+  margin-top: 0.5rem;
+  color: #a7aaad;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.orientationPrintComparison {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .orientationComparison {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .orientationPoster:first-child {
+    width: min(100%, 25rem);
+    margin-inline: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deviceShell {
+    transition: none;
+  }
+
+  .media video {
+    display: none;
+    animation: none;
+  }
+
+  .fallback[hidden] {
+    display: block !important;
+  }
+}
+
+@media print {
+  .orientationStage,
+  .orientationControls {
+    display: none !important;
+  }
+
+  .orientationPrintComparison {
+    display: block !important;
+  }
+}

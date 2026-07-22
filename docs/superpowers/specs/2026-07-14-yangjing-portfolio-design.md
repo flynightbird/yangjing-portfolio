@@ -273,7 +273,7 @@ The ByteDance PDF is not present in either inspected GitHub repository and must 
 
 ### Call Agent
 
-Call Agent is the deepest native case. Its approved narrative is sourced from `flynightbird/call-agent-portfolio` and retains these chapters:
+Call Agent is the deepest native case. Its approved narrative is sourced from `yangjing0006/2026-portfolio` and retains these chapters:
 
 1. Project overview.
 2. Context and role.
@@ -561,5 +561,5 @@ The design is implemented successfully when:
 
 - `https://www.adhamdannaway.com/` informs the immediate dual-role Hero concept only. The final portrait treatment, typography, scan system, and layout are original.
 - `https://www.jonnyczar.com/` informs the strong case proposition, evidence strip, and project-index behavior. The final site does not copy its 300px sidebar, excessive page length, or mobile evidence removal.
-- `https://github.com/flynightbird/call-agent-portfolio` is a content reference for the approved Call Agent specification, not the production repository.
+- `https://github.com/yangjing0006/2026-portfolio` is a content reference for the approved Call Agent specification, not the production repository.
 - `https://github.com/flynightbird/yangjing-portfolio` is the single production and future design repository.

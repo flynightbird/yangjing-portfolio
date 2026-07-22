@@ -6,6 +6,7 @@ import {
   getContentEntry,
   type ContentEntry,
 } from '@/content/registry';
+import { resolveContentTitle } from '@/content/presentation';
 import { buildSlugs, type BuildSlug } from '@/content/types';
 import { isLocale } from '@/lib/i18n/locales';
 
@@ -39,7 +40,7 @@ function resolveNeighbor(
 
   return {
     href: `/${locale}/${entry.meta.type}/${entry.meta.slug}/`,
-    title: entry.meta.title,
+    title: resolveContentTitle(entry.meta),
   };
 }
 

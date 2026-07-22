@@ -84,11 +84,11 @@ describe('SiteHeader', () => {
     expect(screen.getByRole('banner')).toHaveAttribute('data-scrolled', 'true');
   });
 
-  it('marks light case-study routes for a readable initial header', () => {
+  it('marks the cinematic Meeting route as a dark initial surface', () => {
     navigationMocks.pathname = '/en/work/meeting/';
 
     render(<SiteHeader locale="en" />);
 
-    expect(screen.getByRole('banner')).toHaveAttribute('data-surface', 'light');
+    expect(screen.getByRole('banner')).toHaveAttribute('data-surface', 'dark');
   });
 });

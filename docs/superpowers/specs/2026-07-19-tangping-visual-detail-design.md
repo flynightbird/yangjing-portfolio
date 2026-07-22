@@ -6,14 +6,14 @@
 
 ## Objective
 
-Add a bilingual internal detail page for the Tangping project. Replace every user-facing occurrence of the former "Mei Ping Mei Wu / 每平每屋" name with "Tangping / 躺平" while retaining stable internal identifiers where changing them would create unnecessary migration work. The page must reproduce the supplied Figma compositions with real web text while using only the corresponding text-free images as production artwork.
+Add a bilingual internal detail page for the Visual Archive entry currently titled "Mei Ping Mei Wu / Design" and referred to as the Tangping project. The page must reproduce the supplied Figma compositions with real web text while using only the corresponding text-free images as production artwork.
 
 The initial story contains frames 6, 10, 11, and 20. The design must support later frame additions without changing the agreed presentation rules.
 
 ## Routes And Entry Point
 
 - Publish the detail page at `/zh/work/tangping/` and `/en/work/tangping/`.
-- Rename the existing Alibaba archive card to Tangping / 躺平 and change it from a lightbox-only entry to an internal project link.
+- Change the existing Alibaba / Mei Ping Mei Wu Visual Archive card from a lightbox-only entry to an internal project link.
 - Preserve the current lightbox behavior for all other Visual Archive entries.
 - Use the existing archive cover image, `/images/archive/alibaba-meipingmeiwu.jpg`, as the detail-page hero artwork.
 - Overlay the existing company, period, project name, and project type as real HTML text on the hero.

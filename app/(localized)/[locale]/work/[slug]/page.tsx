@@ -7,6 +7,7 @@ import {
   getContentEntry,
   type ContentEntry,
 } from '@/content/registry';
+import { resolveContentTitle } from '@/content/presentation';
 import { workSlugs, type WorkSlug } from '@/content/types';
 import { isLocale } from '@/lib/i18n/locales';
 
@@ -47,7 +48,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${entry.meta.title} | Yang Jing`,
+    title: `${resolveContentTitle(entry.meta)} | Yang Jing`,
     description: entry.meta.proposition,
   };
 }
@@ -60,7 +61,7 @@ function resolveNeighbor(
 
   return {
     href: `/${locale}/${entry.meta.type}/${entry.meta.slug}/`,
-    title: entry.meta.title,
+    title: resolveContentTitle(entry.meta),
   };
 }
 

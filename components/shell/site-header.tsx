@@ -1,7 +1,6 @@
 'use client';
 
 import { Menu } from 'lucide-react';
-import { usePathname } from 'next/navigation';
 import { Fragment, useEffect, useRef, useState } from 'react';
 
 import { LocaleSwitcher } from '@/components/shell/locale-switcher';
@@ -14,7 +13,6 @@ import styles from './site-header.module.css';
 export function SiteHeader({ locale }: { readonly locale: Locale }) {
   const dictionary = locale === 'zh' ? zhDictionary : enDictionary;
   const localeRoot = `/${locale}/`;
-  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const topSentinelRef = useRef<HTMLSpanElement>(null);
 
@@ -48,7 +46,7 @@ export function SiteHeader({ locale }: { readonly locale: Locale }) {
       <header
         className={styles.root}
         data-scrolled={scrolled ? 'true' : 'false'}
-        data-surface={pathname.includes('/work/meeting') ? 'light' : 'dark'}
+        data-surface="dark"
       >
         <div className={styles.capsule}>
           <a

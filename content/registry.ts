@@ -20,12 +20,9 @@ import SttDemoZh, {
 } from '@/content/build/stt-demo.zh.mdx';
 import MeetingEn, { metadata as meetingEnMetadata } from '@/content/work/meeting.en.mdx';
 import MeetingZh, { metadata as meetingZhMetadata } from '@/content/work/meeting.zh.mdx';
-import TangpingEn, { metadata as tangpingEnMetadata } from '@/content/work/tangping.en.mdx';
-import TangpingZh, { metadata as tangpingZhMetadata } from '@/content/work/tangping.zh.mdx';
 import { CallAgentActions } from '@/components/case-study/call-agent-actions';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
 import { MeetingLayout } from '@/components/meeting/meeting-layout';
-import { TangpingLayout } from '@/components/tangping/tangping-layout';
 import { XuelangLayout } from '@/components/xuelang/xuelang-layout';
 import { contentMetaSchema, type ContentMeta } from '@/content/schema';
 import type {
@@ -119,16 +116,6 @@ export const contentEntries: readonly ContentEntry[] = [
     meta: contentMetaSchema.parse(meetingZhMetadata),
     Component: MeetingZh,
     Layout: MeetingLayout,
-  },
-  {
-    meta: contentMetaSchema.parse(tangpingEnMetadata),
-    Component: TangpingEn,
-    Layout: TangpingLayout,
-  },
-  {
-    meta: contentMetaSchema.parse(tangpingZhMetadata),
-    Component: TangpingZh,
-    Layout: TangpingLayout,
   },
   {
     meta: contentMetaSchema.parse(sttDemoEnMetadata),

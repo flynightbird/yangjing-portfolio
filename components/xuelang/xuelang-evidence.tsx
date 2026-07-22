@@ -4,8 +4,6 @@ import { EvidenceFigure } from '@/components/case-study/evidence-figure';
 import type { Locale } from '@/content/types';
 
 import styles from './xuelang-evidence.module.css';
-import { XuelangCourseEntry } from './xuelang-course-entry';
-import { XuelangInteractionBoard } from './xuelang-interaction-board';
 import { XuelangWipeComparison } from './xuelang-wipe-comparison';
 
 interface XuelangFigureProps {
@@ -193,8 +191,6 @@ interface LearningState {
   readonly title: string;
   readonly description: string;
   readonly image?: ComparisonImage;
-  readonly courseEntry?: boolean;
-  readonly interactionBoard?: boolean;
 }
 
 export function XuelangLearningSequence({
@@ -217,19 +213,13 @@ export function XuelangLearningSequence({
           <article
             key={state.index}
             data-learning-state
-            data-learning-compact={
-              state.image || state.courseEntry || state.interactionBoard ? undefined : true
-            }
+            data-learning-compact={state.image ? undefined : true}
             data-testid="learning-state"
           >
             <span>{state.index}</span>
             <h3>{state.title}</h3>
             <p>{state.description}</p>
-            {state.courseEntry ? (
-              <XuelangCourseEntry locale={locale} />
-            ) : state.interactionBoard ? (
-              <XuelangInteractionBoard locale={locale} />
-            ) : state.image ? (
+            {state.image ? (
               <XuelangFigure {...state.image} locale={locale} />
             ) : null}
           </article>

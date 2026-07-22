@@ -1,12 +1,20 @@
+import { readFileSync } from 'node:fs';
+
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
   BreakoutDecisionEvidence,
   MeetingVideo,
+  RoleBoundary,
 } from '@/components/meeting/meeting-evidence';
 
 afterEach(cleanup);
+
+const evidenceStyles = readFileSync(
+  'components/meeting/meeting-evidence.module.css',
+  'utf8',
+);
 
 describe('MeetingVideo', () => {
   it('renders poster, localized captions, description, and a static fallback', () => {
@@ -50,8 +58,54 @@ describe('BreakoutDecisionEvidence', () => {
     expect(screen.getByText(/disabled states/i)).toBeVisible();
     expect(screen.getByText(/empty group/i)).toBeVisible();
     expect(screen.getByText(/occupied group/i)).toBeVisible();
-    expect(screen.getByText(/designer-reported/i)).toBeVisible();
+    expect(screen.queryByText(/designer-reported/i)).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Open decision artifact in Figma' }))
       .toHaveAttribute('href', expect.stringContaining('node-id=1-15037'));
+  });
+});
+
+describe('RoleBoundary', () => {
+  it('separates design ownership from cross-functional delivery', () => {
+    const { container } = render(<RoleBoundary locale="en" />);
+
+    expect(screen.getByText('Owned')).toBeVisible();
+    expect(
+      screen.getByText(/product design across Desktop, Web, tablet, and mobile/i),
+    ).toBeVisible();
+    expect(screen.getByText('Co-created')).toBeVisible();
+    expect(
+      screen.getByText(/product, engineering, QA, and customer teams/i),
+    ).toBeVisible();
+    expect(screen.getByText('Out of scope')).toBeVisible();
+    expect(screen.getByText(/customer-built post-meeting interfaces/i)).toBeVisible();
+    expect(container.querySelectorAll('dl > div')).toHaveLength(3);
+  });
+});
+
+describe('Meeting evidence layout', () => {
+  it('preserves widescreen media and canonical Meeting tokens', () => {
+    expect(evidenceStyles).toMatch(
+      /\.frame\s*{[^}]*aspect-ratio:\s*16\s*\/\s*9/s,
+    );
+    expect(evidenceStyles).toContain('var(--meeting-line,');
+    expect(evidenceStyles).toContain('var(--meeting-muted,');
+    expect(evidenceStyles).not.toMatch(/var\(--line(?:,|\))/);
+    expect(evidenceStyles).not.toMatch(/var\(--text-muted(?:,|\))/);
+  });
+
+  it('collapses evidence grids to one column at 720px', () => {
+    expect(evidenceStyles).toMatch(
+      /@media\s*\(max-width:\s*720px\)[^{]*{[\s\S]*?\.decisionHeader,[\s\S]*?\.decisionRules\s*{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/,
+    );
+    expect(evidenceStyles).toMatch(
+      /@media\s*\(max-width:\s*720px\)[^{]*{[\s\S]*?\.roleBoundary\s*{[^}]*grid-template-columns:\s*1fr/,
+    );
+  });
+
+  it('uses a compact role boundary without gradients', () => {
+    expect(evidenceStyles).toMatch(
+      /\.roleBoundary\s*{[^}]*border-block:\s*1px solid var\(--meeting-line/s,
+    );
+    expect(evidenceStyles).not.toMatch(/gradient\s*\(/i);
   });
 });

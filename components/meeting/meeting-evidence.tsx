@@ -1,5 +1,3 @@
-'use client';
-
 import { ExternalLink } from 'lucide-react';
 
 import type { Locale } from '@/content/types';
@@ -27,7 +25,6 @@ const breakoutEvidence = {
       ['Feedback', 'Disabled states and hover feedback are specified'],
       ['Deletion', 'An empty group deletes immediately; an occupied group requires a member-destination confirmation'],
     ],
-    note: 'Designer-reported use: alignment with product, engineering, and QA. The artifact itself verifies the documented rules and edge states.',
     link: 'Open decision artifact in Figma',
   },
   zh: {
@@ -40,7 +37,6 @@ const breakoutEvidence = {
       ['反馈', '明确禁用状态与悬停反馈'],
       ['删除', '空小组直接删除；有成员的小组需先确认成员去向'],
     ],
-    note: '设计师陈述：该稿用于与产品、工程和测试对齐。稿件本身可以证明其中记录的规则与边界状态。',
     link: '在 Figma 中打开决策稿',
   },
 } as const;
@@ -120,7 +116,31 @@ export function BreakoutDecisionEvidence({ locale }: { readonly locale: Locale }
           </div>
         ))}
       </dl>
-      <p className={styles.decisionNote}>{text.note}</p>
     </aside>
+  );
+}
+
+export function RoleBoundary({ locale }: { readonly locale: Locale }) {
+  const rows = locale === 'zh'
+    ? [
+        ['负责', '桌面客户端、Web、平板和手机端的产品设计。'],
+        ['共同交付', '与产品、工程、测试和客户团队协作完成生产交付。'],
+        ['范围之外', '客户自行建设的会后存储、复制与下载界面。'],
+      ]
+    : [
+        ['Owned', 'Product design across Desktop, Web, tablet, and mobile.'],
+        ['Co-created', 'Production delivery with product, engineering, QA, and customer teams.'],
+        ['Out of scope', 'Customer-built post-meeting interfaces for storage, copy, and download.'],
+      ];
+
+  return (
+    <dl className={styles.roleBoundary}>
+      {rows.map(([term, value]) => (
+        <div key={term}>
+          <dt>{term}</dt>
+          <dd>{value}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }

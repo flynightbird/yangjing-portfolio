@@ -27,7 +27,6 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
     >
       <SectionReveal tone="dark">
         <FlagshipProjects
-          locale={locale}
           callAgent={{
             copy: copy.callAgent,
             href: `${localeRoot}${callAgent.href}`,

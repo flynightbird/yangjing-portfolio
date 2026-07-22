@@ -1,11 +1,8 @@
-import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 
 import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
-
-import * as assetPreparation from '../../scripts/prepare-xuelang-assets.mjs';
 
 interface XuelangAsset {
   readonly id: string;
@@ -34,37 +31,6 @@ function loadManifest(): XuelangManifest {
 }
 
 describe('Xuelang evidence manifest', () => {
-  it('uses the approved interaction artwork source', () => {
-    const source = readFileSync(
-      path.join(root, 'evidence/xuelang/source/learning-interaction-board.png'),
-    );
-
-    expect(createHash('sha256').update(source).digest('hex')).toBe(
-      '3c3d03ea8eed58adf4ea31435b10cc54be63a3a2c600b3147f015886e62d837a',
-    );
-  });
-
-  it('resolves source and Figma evidence without allowing path escape', () => {
-    const resolveSource = (
-      assetPreparation as typeof assetPreparation & {
-        resolveXuelangSourcePath?: (sourcePath: string) => string;
-      }
-    ).resolveXuelangSourcePath;
-
-    expect(resolveSource).toBeTypeOf('function');
-    if (!resolveSource) return;
-
-    expect(resolveSource('evidence/xuelang/source/20220723.png')).toBe(
-      path.join(root, 'evidence/xuelang/source/20220723.png'),
-    );
-    expect(resolveSource('evidence/xuelang/figma/quality-detail.png')).toBe(
-      path.join(root, 'evidence/xuelang/figma/quality-detail.png'),
-    );
-    expect(() => resolveSource('evidence/outside.png')).toThrow(
-      /source must stay inside evidence\/xuelang/i,
-    );
-  });
-
   it('declares matched before and after boards for the learning comparison', () => {
     const manifest = loadManifest();
     const comparisonAssets = manifest.assets.filter((asset) =>
@@ -82,118 +48,6 @@ describe('Xuelang evidence manifest', () => {
         /^public\/images\/xuelang\/learning-(before|after)-board\.webp$/,
       );
     }
-  });
-
-  it('declares dedicated source evidence for the four Hero product states', () => {
-    const manifest = loadManifest();
-    const heroAssets = manifest.assets.filter((asset) =>
-      ['hero-discover', 'hero-decide', 'hero-learn', 'hero-retain'].includes(asset.id),
-    );
-
-    expect(heroAssets.map(({ id, sourcePaths, output }) => ({ id, sourcePaths, output })))
-      .toEqual([
-        {
-          id: 'hero-discover',
-          sourcePaths: ['evidence/xuelang/source/hero-discover.png'],
-          output: 'public/images/xuelang/hero-discover.webp',
-        },
-        {
-          id: 'hero-decide',
-          sourcePaths: ['evidence/xuelang/source/hero-decide.png'],
-          output: 'public/images/xuelang/hero-decide.webp',
-        },
-        {
-          id: 'hero-learn',
-          sourcePaths: ['evidence/xuelang/source/hero-learn.png'],
-          output: 'public/images/xuelang/hero-learn.webp',
-        },
-        {
-          id: 'hero-retain',
-          sourcePaths: ['evidence/xuelang/source/hero-retain.png'],
-          output: 'public/images/xuelang/hero-retain.webp',
-        },
-      ]);
-  });
-
-  it('declares the three non-duplicate adaptive Course Entry states', () => {
-    const manifest = loadManifest();
-    const courseEntryAssets = manifest.assets.filter((asset) =>
-      ['course-entry-discover', 'course-entry-start', 'course-entry-live'].includes(asset.id),
-    );
-
-    expect(courseEntryAssets.map(({ id, sourcePaths, output }) => ({
-      id,
-      sourcePaths,
-      output,
-    }))).toEqual([
-      {
-        id: 'course-entry-discover',
-        sourcePaths: ['evidence/xuelang/source/course-entry-discover.png'],
-        output: 'public/images/xuelang/course-entry-discover.webp',
-      },
-      {
-        id: 'course-entry-start',
-        sourcePaths: ['evidence/xuelang/source/course-entry-start.png'],
-        output: 'public/images/xuelang/course-entry-start.webp',
-      },
-      {
-        id: 'course-entry-live',
-        sourcePaths: ['evidence/xuelang/source/course-entry-live.png'],
-        output: 'public/images/xuelang/course-entry-live.webp',
-      },
-    ]);
-  });
-
-  it('declares the supplied opening and learning evidence as semantic assets', () => {
-    const manifest = loadManifest();
-    const refreshedIds = [
-      'opening-background',
-      'learning-interaction',
-      'learning-note-player',
-      'learning-note-list',
-      'learning-note-editor',
-    ];
-    const refreshAssets = manifest.assets.filter((asset) => refreshedIds.includes(asset.id));
-
-    expect(refreshAssets.map(({ id, sourcePaths, output, intrinsic }) => ({
-      id,
-      sourcePaths,
-      output,
-      intrinsic,
-    }))).toEqual([
-      {
-        id: 'opening-background',
-        sourcePaths: ['evidence/xuelang/source/opening-background.png'],
-        output: 'public/images/xuelang/opening-background.webp',
-        intrinsic: { width: 3840, height: 2160 },
-      },
-      {
-        id: 'learning-interaction',
-        sourcePaths: ['evidence/xuelang/source/learning-interaction-board.png'],
-        output: 'public/images/xuelang/learning-interaction.webp',
-        intrinsic: { width: 3840, height: 1876 },
-      },
-      {
-        id: 'learning-note-player',
-        sourcePaths: ['evidence/xuelang/source/learning-note-player.png'],
-        output: 'public/images/xuelang/learning-note-player.webp',
-        intrinsic: { width: 904, height: 1958 },
-      },
-      {
-        id: 'learning-note-list',
-        sourcePaths: ['evidence/xuelang/source/learning-note-list.png'],
-        output: 'public/images/xuelang/learning-note-list.webp',
-        intrinsic: { width: 904, height: 1958 },
-      },
-      {
-        id: 'learning-note-editor',
-        sourcePaths: ['evidence/xuelang/source/learning-note-editor.png'],
-        output: 'public/images/xuelang/learning-note-editor.webp',
-        intrinsic: { width: 904, height: 1958 },
-      },
-    ]);
-    expect(manifest.assets.flatMap(({ sourcePaths }) => sourcePaths))
-      .not.toContain('evidence/xuelang/source/learning-interaction-copy-reference.png');
   });
 
   it('keeps source evidence traceable and replaceable', () => {

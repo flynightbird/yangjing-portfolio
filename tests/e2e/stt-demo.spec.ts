@@ -190,7 +190,7 @@ test('the normal demo primary action remains interactive', async ({ page }) => {
   await expect(page.locator('#pageProduct')).toBeVisible();
 });
 
-test('the direct stage embed fills its viewport and preserves the complete composition', async ({
+test('the direct stage embed is centered and preserves the complete composition', async ({
   page,
 }, testInfo) => {
   const runtime = observeRuntime(page, testInfo.project.use.baseURL);
@@ -236,14 +236,19 @@ test('the direct stage embed fills its viewport and preserves the complete compo
     return;
   }
 
-  expect(stageBox.x).toBeCloseTo(0, 0);
-  expect(stageBox.y).toBeCloseTo(0, 0);
-  expect(stageBox.width).toBeCloseTo(viewport.width, 0);
-  expect(stageBox.height).toBeCloseTo(viewport.height, 0);
-  expect(snipBox.x).toBeCloseTo(stageBox.x, 0);
-  expect(snipBox.y).toBeCloseTo(stageBox.y, 0);
-  expect(snipBox.width).toBeCloseTo(stageBox.width, 0);
-  expect(snipBox.height).toBeCloseTo(stageBox.height, 0);
+  const expectedInset = viewport.width <= 600 ? 8 : 16;
+  const horizontalInset = (viewport.width - stageBox.width) / 2;
+  const verticalInset = (viewport.height - stageBox.height) / 2;
+  expect(Math.abs(stageBox.x - horizontalInset)).toBeLessThanOrEqual(2);
+  expect(Math.abs(stageBox.y - verticalInset)).toBeLessThanOrEqual(2);
+  expect(stageBox.x).toBeGreaterThanOrEqual(expectedInset - 1);
+  expect(viewport.width - stageBox.x - stageBox.width).toBeGreaterThanOrEqual(
+    expectedInset - 1,
+  );
+  expect(stageBox.width).toBeGreaterThanOrEqual(
+    viewport.width - (expectedInset + 2) * 2,
+  );
+  expect(stageBox.width / stageBox.height).toBeCloseTo(1000 / 560, 2);
   for (const childBox of contentBoxes) {
     if (!childBox) continue;
     expect(childBox.x).toBeGreaterThanOrEqual(snipBox.x - 1);
@@ -255,11 +260,18 @@ test('the direct stage embed fills its viewport and preserves the complete compo
       snipBox.y + snipBox.height + 1,
     );
   }
-  expect(
-    await page.locator('html').evaluate((element) =>
+  const scale = await page.locator('html').evaluate((element) =>
+    Number(
       getComputedStyle(element).getPropertyValue('--stt-stage-scale').trim(),
     ),
-  ).toBe('');
+  );
+  expect(scale).toBeCloseTo(
+    Math.min(
+      (viewport.width - expectedInset * 2) / 1000,
+      (viewport.height - expectedInset * 2) / 560,
+    ),
+    3,
+  );
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   );

@@ -2,20 +2,103 @@
   [data-meeting-case] {
     background: #fff !important;
     color: #111 !important;
+    overflow: visible !important;
   }
 
-  [data-meeting-case] aside,
-  [data-meeting-case] nav {
+  [data-meeting-frame] {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  [data-meeting-rail],
+  [data-meeting-case] nav,
+  [data-meeting-case] video,
+  [data-meeting-case] button {
     display: none !important;
   }
 
-  [data-meeting-case] article > div > section:nth-child(n + 5) {
+  [data-product-film-clip] img[hidden] {
+    display: block !important;
+  }
+
+  [data-case-study],
+  [data-meeting-content],
+  [data-meeting-content] > [data-showcase-band] {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin-inline: 0 !important;
+  }
+
+  [data-meeting-hero] {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    grid-template-rows: none !important;
+  }
+
+  [data-meeting-hero] > *,
+  [data-meeting-content] > [data-showcase-band] > * {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  [data-meeting-content] > [data-showcase-band] {
+    padding-top: 2rem !important;
+  }
+
+  [data-product-film-chapter] {
+    min-height: auto !important;
+    color: #171717 !important;
+    background: #fff !important;
+    break-inside: auto;
+  }
+
+  [data-product-film-chapter] :where(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    a,
+    figcaption,
+    label,
+    span,
+    strong,
+    em,
+    small,
+    summary,
+    dt,
+    dd,
+    li,
+    code
+  ) {
+    color: #171717 !important;
+  }
+
+  [data-meeting-content] > [data-showcase-band]:nth-child(n + 5) {
     break-before: page;
   }
 
   [data-meeting-case] img,
+  [data-meeting-case] video,
   [data-meeting-case] figure,
   [data-meeting-case] table {
+    max-width: 100% !important;
     break-inside: avoid;
+  }
+
+  [data-meeting-case] img {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    object-fit: contain !important;
   }
 }

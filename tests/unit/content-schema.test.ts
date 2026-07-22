@@ -64,22 +64,14 @@ const launchDefinitions = [
     translationKey: 'work-meeting',
     featuredOrder: 3,
     previousSlug: 'call-agent',
-    nextSlug: 'tangping',
-  },
-  {
-    type: 'work',
-    slug: 'tangping',
-    translationKey: 'work-tangping',
-    featuredOrder: 4,
-    previousSlug: 'meeting',
     nextSlug: 'stt-demo',
   },
   {
     type: 'build',
     slug: 'stt-demo',
     translationKey: 'build-stt-demo',
-    featuredOrder: 5,
-    previousSlug: 'tangping',
+    featuredOrder: 4,
+    previousSlug: 'meeting',
   },
 ] as const;
 
@@ -209,8 +201,6 @@ describe('content registry', () => {
       'work/call-agent:zh',
       'work/meeting:en',
       'work/meeting:zh',
-      'work/tangping:en',
-      'work/tangping:zh',
       'build/stt-demo:en',
       'build/stt-demo:zh',
     ]);
