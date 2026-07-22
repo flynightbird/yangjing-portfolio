@@ -25,5 +25,7 @@ describe('ConvoAiLayout', () => {
     expect(screen.getByRole('navigation', { name: 'Project navigation' })).toBeVisible();
     expect(container.querySelector('[data-convo-ai-case]')).toBeVisible();
     expect(container.querySelector('[data-case-study]')).toBeVisible();
+    expect(screen.getByRole('link', { name: /Call Agent/ })).toHaveAttribute('href', '/en/work/call-agent/');
+    expect(screen.getByRole('link', { name: /Meeting/ })).toHaveAttribute('href', '/en/work/meeting/');
   });
 });
