@@ -234,6 +234,28 @@ describe('ConvoAiAppShowcase', () => {
     expect(current).toHaveAttribute('autoplay');
   });
 
+  it('uses the shared fixed phone shell for every active App scene', () => {
+    installMediaEnvironment();
+    const { container } = render(<ConvoAiAppShowcase locale="en" />);
+    const observer = IntersectionObserverHarness.instances[0];
+    const sceneIds = ['app-login', 'app-structure', 'app-profile-settings', 'app-hardware-device'] as const;
+    const initialCard = container.querySelector('[data-media-card="app-login"]') as HTMLElement;
+    const cardClass = initialCard.className;
+    const phoneShellClass = initialCard.firstElementChild?.className;
+
+    expect(initialCard.firstElementChild).not.toHaveAttribute('style');
+
+    sceneIds.forEach((id) => {
+      act(() => { observer.trigger(id); });
+      const card = container.querySelector(`[data-media-card="${id}"]`) as HTMLElement;
+
+      expect(card).toHaveClass(cardClass);
+      expect(card.firstElementChild).toHaveClass(phoneShellClass ?? '');
+      expect(card.firstElementChild).not.toHaveAttribute('style');
+      expect(card.firstElementChild?.querySelector('video')).toBeInTheDocument();
+    });
+  });
+
   it('accepts reverse observer activation without inferring scroll direction', () => {
     installMediaEnvironment();
     const { container } = render(<ConvoAiAppShowcase locale="en" />);

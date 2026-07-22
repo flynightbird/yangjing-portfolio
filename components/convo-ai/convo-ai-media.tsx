@@ -172,7 +172,7 @@ export function ConvoAiAppShowcase({ locale }: { readonly locale: Locale }) {
   }, [activate, isDesktop, reducedMotion]);
 
   const mediaCard = <figure className={styles.appShowcaseMedia} data-media-card={activeId}>
-    <div className={styles.appShowcaseVideo} style={{ aspectRatio: `${activeMedia.width} / ${activeMedia.height}` }}>
+    <div className={styles.appShowcaseVideo}>
       <CompleteConvoAiVideo key={activeId} id={activeId} locale={locale} describedBy={descriptionId} autoPlay={autoplayAllowed} loop muted videoRef={videoRef} />
     </div>
     <figcaption id={descriptionId} aria-live="polite">{activeMedia.copy[locale].title}</figcaption>
