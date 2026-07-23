@@ -163,6 +163,11 @@ for (const locale of ['en', 'zh'] as const) {
       await expect(article).toBeVisible();
       expect(await article.locator('section[id]').evaluateAll((sections) => sections.map(({ id }) => id))).toEqual(chapterIds[locale]);
       await expect(article.getByRole('heading', { level: 1, name: 'ConvoAI' })).toBeVisible();
+      await expect(article.getByRole('heading', { level: 1, name: 'ConvoAI' })).toHaveCount(1);
+      await expect(page.locator('[data-stage-display-title]')).toHaveCount(locale === 'en' ? 3 : 1);
+      await expect(page.locator('[data-stage-display-title]').first()).toHaveAttribute('aria-hidden', 'true');
+      await expect(page.locator('body > .section-index')).toHaveCount(0);
+      await expect(page.locator('[data-convo-ai-case] .section-index')).toHaveCount(7);
       await expect(page.locator('[data-convo-ai-stage]').first()).toBeVisible();
       await expect(page.locator('[data-convo-web-plane]').first()).toBeVisible();
       await expect(page.locator('[data-convo-app-device]').first()).toBeVisible();

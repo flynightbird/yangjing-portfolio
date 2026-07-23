@@ -44,6 +44,27 @@ const roleCases = [
   },
 ] as const;
 
+const convoRoleCases = {
+  zh: [
+    ['[data-convo-ai-stage][data-hero="true"] [data-stage-semantic-title]', 58],
+    ['[data-convo-ai-case] .section-heading h2', 50],
+    ['[data-convo-ai-case] .convo-subheading', 36],
+    [
+      '[data-convo-ai-case] [class*="avatarFigure"] figcaption strong',
+      29,
+    ],
+  ],
+  en: [
+    ['[data-convo-ai-stage][data-hero="true"] [data-stage-semantic-title]', 58],
+    ['[data-convo-ai-case] .section-heading h2', 50],
+    [
+      '[data-convo-ai-stage]:not([data-hero="true"]) [data-stage-semantic-title]',
+      29,
+    ],
+    ['[data-convo-ai-case] .convo-principles h3', 22],
+  ],
+} as const;
+
 const responsiveCases = [
   { route: '/zh/work/call-agent/', root: '[data-case-study]' },
   { route: '/en/work/call-agent/', root: '[data-case-study]' },
@@ -53,6 +74,8 @@ const responsiveCases = [
   { route: '/en/build/stt-demo/', root: '[data-case-study]' },
   { route: '/zh/work/xuelang/', root: '[data-xuelang-case]' },
   { route: '/en/work/xuelang/', root: '[data-xuelang-case]' },
+  { route: '/zh/work/convo-ai/', root: '[data-convo-ai-case]' },
+  { route: '/en/work/convo-ai/', root: '[data-convo-ai-case]' },
 ] as const;
 
 const routes = [
@@ -100,6 +123,24 @@ test.describe('portfolio detail system', () => {
       ] as const;
 
       for (const [selector, expected] of roles) {
+        const heading = page.locator(selector).first();
+        await expect(heading).toHaveCount(1);
+        expect(await fontSize(heading)).toBeCloseTo(expected, 0);
+      }
+    });
+  }
+
+  for (const locale of ['zh', 'en'] as const) {
+    test(`${locale} Convo AI exposes its available shared visual roles at desktop size`, async ({
+      page,
+    }, testInfo) => {
+      test.skip(testInfo.project.name !== 'desktop');
+      await page.setViewportSize({ width: 1440, height: 1000 });
+      await page.goto(`/${locale}/work/convo-ai/`, {
+        waitUntil: 'networkidle',
+      });
+
+      for (const [selector, expected] of convoRoleCases[locale]) {
         const heading = page.locator(selector).first();
         await expect(heading).toHaveCount(1);
         expect(await fontSize(heading)).toBeCloseTo(expected, 0);
