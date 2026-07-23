@@ -122,11 +122,63 @@ test.describe('portfolio detail system', () => {
             nodes.map((node, index) => {
               const rect = node.getBoundingClientRect();
               const style = getComputedStyle(node);
+              const range = document.createRange();
+              range.selectNodeContents(node);
+              const textRects = Array.from(range.getClientRects()).filter(
+                (textRect) => textRect.width > 0 && textRect.height > 0,
+              );
+              if (textRects.length === 0) {
+                throw new Error(`Heading ${index} has no rendered text`);
+              }
+              const textBounds = textRects.reduce(
+                (bounds, textRect) => ({
+                  left: Math.min(bounds.left, textRect.left),
+                  right: Math.max(bounds.right, textRect.right),
+                  top: Math.min(bounds.top, textRect.top),
+                  bottom: Math.max(bounds.bottom, textRect.bottom),
+                }),
+                {
+                  left: textRects[0].left,
+                  right: textRects[0].right,
+                  top: textRects[0].top,
+                  bottom: textRects[0].bottom,
+                },
+              );
+              const horizontalOverflow = Math.max(
+                0,
+                node.scrollWidth - node.clientWidth,
+              );
+              const verticalOverflow = Math.max(
+                0,
+                node.scrollHeight - node.clientHeight,
+              );
+              const rendered = {
+                left: Math.min(
+                  rect.left,
+                  textBounds.left,
+                  style.direction === 'rtl'
+                    ? rect.left - horizontalOverflow
+                    : rect.left,
+                ),
+                right: Math.max(
+                  rect.right,
+                  textBounds.right,
+                  style.direction === 'rtl'
+                    ? rect.right
+                    : rect.right + horizontalOverflow,
+                ),
+                top: Math.min(rect.top, textBounds.top),
+                bottom: Math.max(
+                  rect.bottom,
+                  textBounds.bottom,
+                  rect.bottom + verticalOverflow,
+                ),
+              };
               const clipsOwnX = ['hidden', 'clip'].includes(style.overflowX);
               const clipsOwnY = ['hidden', 'clip'].includes(style.overflowY);
               const rootElement = node.closest(rootSelector);
               let container = node.parentElement;
-              while (container && container !== rootElement) {
+              while (container) {
                 const display = getComputedStyle(container).display;
                 if (
                   display !== 'contents' &&
@@ -134,8 +186,17 @@ test.describe('portfolio detail system', () => {
                   display !== 'inline-block' &&
                   container.clientWidth > 0
                 ) {
-                  break;
+                  const candidateRect = container.getBoundingClientRect();
+                  const containsRenderedHeading =
+                    rendered.left >= candidateRect.left - 1 &&
+                    rendered.right <= candidateRect.right + 1 &&
+                    rendered.top >= candidateRect.top - 1 &&
+                    rendered.bottom <= candidateRect.bottom + 1;
+                  if (containsRenderedHeading || container === rootElement) {
+                    break;
+                  }
                 }
+                if (container === rootElement) break;
                 container = container.parentElement;
               }
               container ??= rootElement;
@@ -143,20 +204,64 @@ test.describe('portfolio detail system', () => {
                 throw new Error(`Heading ${index} has no layout container`);
               }
               const containerRect = container.getBoundingClientRect();
-              let adjacent = node.nextElementSibling;
-              if (!adjacent || adjacent.getClientRects().length === 0) {
-                adjacent = node.parentElement?.nextElementSibling ?? null;
+              const siblings = [];
+              const seenSiblings = new Set<Element>();
+              const collectSiblings = (
+                elements: readonly Element[],
+                reference: Element,
+              ) => {
+                for (const sibling of elements) {
+                  if (
+                    sibling === reference ||
+                    seenSiblings.has(sibling) ||
+                    sibling.getAttribute('aria-hidden') === 'true'
+                  ) {
+                    continue;
+                  }
+                  const siblingStyle = getComputedStyle(sibling);
+                  if (
+                    ['absolute', 'fixed'].includes(siblingStyle.position) ||
+                    siblingStyle.display === 'none' ||
+                    siblingStyle.visibility === 'hidden' ||
+                    sibling.getClientRects().length === 0
+                  ) {
+                    continue;
+                  }
+                  const siblingRect = sibling.getBoundingClientRect();
+                  if (siblingRect.width === 0 || siblingRect.height === 0) {
+                    continue;
+                  }
+                  const relativePosition =
+                    node.compareDocumentPosition(sibling);
+                  const relation =
+                    relativePosition & Node.DOCUMENT_POSITION_FOLLOWING
+                      ? 'following'
+                      : 'preceding';
+                  seenSiblings.add(sibling);
+                  siblings.push({
+                    left: siblingRect.left,
+                    right: siblingRect.right,
+                    top: siblingRect.top,
+                    bottom: siblingRect.bottom,
+                    width: siblingRect.width,
+                    height: siblingRect.height,
+                    name: sibling.tagName.toLowerCase(),
+                    relation,
+                  });
+                }
+              };
+              if (node.parentElement) {
+                collectSiblings(Array.from(node.parentElement.children), node);
+                if (node.parentElement.parentElement) {
+                  collectSiblings(
+                    Array.from(node.parentElement.parentElement.children),
+                    node.parentElement,
+                  );
+                }
               }
-              while (adjacent && adjacent.getClientRects().length === 0) {
-                adjacent = adjacent.nextElementSibling;
-              }
-              if (!adjacent) {
-                throw new Error(`Heading ${index} has no adjacent content`);
-              }
-              const adjacentRect = adjacent.getBoundingClientRect();
               const clippingAncestors = [];
               let ancestor = node.parentElement;
-              while (ancestor && ancestor !== rootElement) {
+              while (ancestor) {
                 const ancestorStyle = getComputedStyle(ancestor);
                 const clipsX = ['hidden', 'clip'].includes(
                   ancestorStyle.overflowX,
@@ -178,6 +283,7 @@ test.describe('portfolio detail system', () => {
                       ancestor.tagName.toLowerCase(),
                   });
                 }
+                if (ancestor === rootElement) break;
                 ancestor = ancestor.parentElement;
               }
               return {
@@ -193,6 +299,7 @@ test.describe('portfolio detail system', () => {
                 scrollHeight: node.scrollHeight,
                 clipsOwnX,
                 clipsOwnY,
+                rendered,
                 fontSize: parseFloat(style.fontSize),
                 lineHeight: parseFloat(style.lineHeight),
                 viewport: window.innerWidth,
@@ -203,24 +310,28 @@ test.describe('portfolio detail system', () => {
                   bottom: containerRect.bottom,
                   name: container.tagName.toLowerCase(),
                 },
-                adjacent: {
-                  left: adjacentRect.left,
-                  right: adjacentRect.right,
-                  top: adjacentRect.top,
-                  bottom: adjacentRect.bottom,
-                  width: adjacentRect.width,
-                  height: adjacentRect.height,
-                  name: adjacent.tagName.toLowerCase(),
-                },
+                siblings,
                 clippingAncestors,
               };
             }),
           root,
         );
+        expect(
+          boxes.some(({ siblings }) =>
+            siblings.some(({ relation }) => relation === 'preceding'),
+          ),
+          `${route} at ${width}px has no preceding-sibling coverage`,
+        ).toBe(true);
+        expect(
+          boxes.some(({ siblings }) =>
+            siblings.some(({ relation }) => relation === 'following'),
+          ),
+          `${route} at ${width}px has no following-sibling coverage`,
+        ).toBe(true);
 
         for (const [index, box] of boxes.entries()) {
-          expect(box.left).toBeGreaterThanOrEqual(-1);
-          expect(box.right).toBeLessThanOrEqual(box.viewport + 1);
+          expect(box.rendered.left).toBeGreaterThanOrEqual(-1);
+          expect(box.rendered.right).toBeLessThanOrEqual(box.viewport + 1);
           expect(box.width).toBeGreaterThan(0);
           expect(box.height).toBeGreaterThan(0);
           expect(box.fontSize).toBeGreaterThan(0);
@@ -238,53 +349,55 @@ test.describe('portfolio detail system', () => {
             ).toBe(false);
           }
           expect(
-            box.left,
+            box.rendered.left,
             `heading ${index} escapes its ${box.container.name} on ${route} at ${width}px`,
           ).toBeGreaterThanOrEqual(box.container.left - 1);
           expect(
-            box.right,
+            box.rendered.right,
             `heading ${index} escapes its ${box.container.name} on ${route} at ${width}px`,
           ).toBeLessThanOrEqual(box.container.right + 1);
           expect(
-            box.top,
+            box.rendered.top,
             `heading ${index} escapes its ${box.container.name} on ${route} at ${width}px`,
           ).toBeGreaterThanOrEqual(box.container.top - 1);
           expect(
-            box.bottom,
+            box.rendered.bottom,
             `heading ${index} escapes its ${box.container.name} on ${route} at ${width}px`,
           ).toBeLessThanOrEqual(box.container.bottom + 1);
 
-          expect(box.adjacent.width).toBeGreaterThan(0);
-          expect(box.adjacent.height).toBeGreaterThan(0);
-          const adjacentHorizontalOverlap =
-            Math.min(box.right, box.adjacent.right) -
-            Math.max(box.left, box.adjacent.left);
-          const adjacentVerticalOverlap =
-            Math.min(box.bottom, box.adjacent.bottom) -
-            Math.max(box.top, box.adjacent.top);
-          expect(
-            adjacentHorizontalOverlap > 1 && adjacentVerticalOverlap > 1,
-            `heading ${index} overlaps adjacent ${box.adjacent.name} on ${route} at ${width}px`,
-          ).toBe(false);
+          for (const sibling of box.siblings) {
+            expect(sibling.width).toBeGreaterThan(0);
+            expect(sibling.height).toBeGreaterThan(0);
+            const siblingHorizontalOverlap =
+              Math.min(box.rendered.right, sibling.right) -
+              Math.max(box.rendered.left, sibling.left);
+            const siblingVerticalOverlap =
+              Math.min(box.rendered.bottom, sibling.bottom) -
+              Math.max(box.rendered.top, sibling.top);
+            expect(
+              siblingHorizontalOverlap > 1 && siblingVerticalOverlap > 1,
+              `heading ${index} overlaps ${sibling.relation} ${sibling.name} on ${route} at ${width}px`,
+            ).toBe(false);
+          }
 
           for (const clippingAncestor of box.clippingAncestors) {
             if (clippingAncestor.clipsX) {
               expect(
-                box.left,
+                box.rendered.left,
                 `heading ${index} is horizontally clipped by ${clippingAncestor.name} on ${route} at ${width}px`,
               ).toBeGreaterThanOrEqual(clippingAncestor.left - 1);
               expect(
-                box.right,
+                box.rendered.right,
                 `heading ${index} is horizontally clipped by ${clippingAncestor.name} on ${route} at ${width}px`,
               ).toBeLessThanOrEqual(clippingAncestor.right + 1);
             }
             if (clippingAncestor.clipsY) {
               expect(
-                box.top,
+                box.rendered.top,
                 `heading ${index} is vertically clipped by ${clippingAncestor.name} on ${route} at ${width}px`,
               ).toBeGreaterThanOrEqual(clippingAncestor.top - 1);
               expect(
-                box.bottom,
+                box.rendered.bottom,
                 `heading ${index} is vertically clipped by ${clippingAncestor.name} on ${route} at ${width}px`,
               ).toBeLessThanOrEqual(clippingAncestor.bottom + 1);
             }
@@ -294,11 +407,17 @@ test.describe('portfolio detail system', () => {
         for (let first = 0; first < boxes.length; first += 1) {
           for (let second = first + 1; second < boxes.length; second += 1) {
             const horizontalOverlap =
-              Math.min(boxes[first].right, boxes[second].right) -
-              Math.max(boxes[first].left, boxes[second].left);
+              Math.min(
+                boxes[first].rendered.right,
+                boxes[second].rendered.right,
+              ) -
+              Math.max(boxes[first].rendered.left, boxes[second].rendered.left);
             const verticalOverlap =
-              Math.min(boxes[first].bottom, boxes[second].bottom) -
-              Math.max(boxes[first].top, boxes[second].top);
+              Math.min(
+                boxes[first].rendered.bottom,
+                boxes[second].rendered.bottom,
+              ) -
+              Math.max(boxes[first].rendered.top, boxes[second].rendered.top);
             expect(
               horizontalOverlap > 1 && verticalOverlap > 1,
               `headings ${first} and ${second} overlap on ${route} at ${width}px`,
