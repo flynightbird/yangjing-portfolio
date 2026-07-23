@@ -51,11 +51,13 @@
   }
 
   article[data-case-study] h1 {
-    font-size: 31pt;
+    font-size: var(--case-project-title-size);
+    line-height: var(--case-project-title-leading);
   }
 
   article[data-case-study] h2 {
-    font-size: 24pt !important;
+    font-size: var(--case-chapter-title-size) !important;
+    line-height: var(--case-chapter-title-leading) !important;
   }
 
   article[data-case-study] h1,
