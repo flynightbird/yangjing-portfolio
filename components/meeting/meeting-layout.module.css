@@ -149,7 +149,7 @@
   letter-spacing: 0;
 }
 
-.content h3 {
+.content :where(h3) {
   max-width: var(--case-card-title-max);
   margin-block: var(--case-index-title-gap) var(--case-title-body-gap);
   font-size: var(--case-card-title-size);

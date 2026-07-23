@@ -204,7 +204,7 @@ describe('portfolio detail visual system', () => {
     const eyebrow = ruleBlock(layoutCss, '.eyebrow');
     const proposition = ruleBlock(layoutCss, '.proposition');
     const chapterTitle = ruleBlock(layoutCss, '.content h2');
-    const cardTitle = ruleBlock(layoutCss, '.content h3');
+    const cardTitle = ruleBlock(layoutCss, '.content :where(h3)');
     const decisionTitle = ruleBlock(evidenceCss, '.decisionHeader h3');
     const capabilityTitle = ruleBlock(modelsCss, '.capabilities h3');
     const languageTitle = ruleBlock(modelsCss, '.language > figcaption');
@@ -212,6 +212,7 @@ describe('portfolio detail visual system', () => {
     expect(layoutCss).toContain(
       '--meeting-portfolio-accent: var(--color-iris-deep);',
     );
+    expect(layoutCss).not.toMatch(/(?:^|})\s*\.content h3\s*\{/);
 
     expect(heroTitle).toContain('max-width: var(--case-project-title-max);');
     expect(heroTitle).toContain('font-size: var(--case-project-title-size);');
