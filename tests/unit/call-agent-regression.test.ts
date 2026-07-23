@@ -39,8 +39,6 @@ describe('Call Agent native content registry', () => {
         heroMedia: '/images/call-agent/agent-preview-poster.webp',
         evidenceLevel: 'observed',
         featuredOrder: 2,
-        previousSlug: 'xuelang',
-        nextSlug: 'convo-ai',
         caseLabel: 'CALL AGENT / 0→1 AI PRODUCT',
       });
       expect(meta.facts).toBeUndefined();

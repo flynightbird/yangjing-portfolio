@@ -22,7 +22,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { contentEntries, getEntry } from '@/content/registry';
 import {
   dynamicParams as buildDynamicParams,
-  default as BuildLabPage,
   generateStaticParams as generateBuildStaticParams,
 } from '@/app/(localized)/[locale]/build/[slug]/page';
 
@@ -818,10 +817,8 @@ describe('STT demo source provenance', () => {
         heroMedia: '/demos/stt-demo/poster.png',
         evidenceLevel: 'prototype',
         featuredOrder: 6,
-        previousSlug: 'tangping',
         status: locale === 'en' ? 'Pinned static prototype' : '固定版本静态原型',
       });
-      expect(getEntry('build', 'stt-demo', locale).meta.nextSlug).toBeUndefined();
     }
   });
 
@@ -853,23 +850,6 @@ describe('STT demo source provenance', () => {
       { locale: 'zh', slug: 'stt-demo' },
     ]);
   });
-
-  it.each(['en', 'zh'] as const)(
-    'links the %s Build Lab route back to the registered Tangping case',
-    async (locale) => {
-      const page = await BuildLabPage({
-        params: Promise.resolve({ locale, slug: 'stt-demo' }),
-      });
-
-      expect(page.props).toHaveProperty('previous', {
-        href: `/${locale}/work/tangping/`,
-        title: locale === 'en'
-          ? 'Tangping Designer'
-          : '躺平设计家',
-      });
-      expect(page.props).toHaveProperty('next', undefined);
-    },
-  );
 
   it.each(['en', 'zh'] as const)(
     'states the full %s prototype boundary without outcome claims',

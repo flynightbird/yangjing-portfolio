@@ -80,8 +80,7 @@
 
 .facts dt,
 .disclosure span,
-.heroMedia figcaption,
-.neighbors span {
+.heroMedia figcaption {
   color: var(--meeting-muted);
   font-family: var(--font-mono), monospace;
   font-size: 0.7rem;
@@ -157,36 +156,6 @@
   line-height: 1.75;
 }
 
-.neighbors {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-top: 8rem;
-  border-block: 1px solid var(--meeting-line);
-}
-
-.neighbors a {
-  display: flex;
-  min-height: 9rem;
-  padding: 1rem;
-  flex-direction: column;
-  justify-content: space-between;
-  color: inherit;
-  text-decoration: none;
-}
-
-.neighbors a:first-of-type {
-  border-right: 1px solid var(--meeting-line);
-}
-
-.neighbors a:last-child {
-  text-align: right;
-}
-
-.neighbors a:focus-visible {
-  outline: 2px solid var(--meeting-portfolio-accent);
-  outline-offset: -2px;
-}
-
 @media (max-width: 1099px) {
   .frame {
     display: block;
@@ -231,12 +200,4 @@
     gap: 0.5rem;
   }
 
-  .neighbors {
-    grid-template-columns: 1fr;
-  }
-
-  .neighbors a:first-of-type {
-    border-right: 0;
-    border-bottom: 1px solid var(--meeting-line);
-  }
 }

@@ -23,6 +23,17 @@ import { validateSite } from './validate-content.mjs';
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repositoryRoot = path.resolve(path.dirname(scriptPath), '..');
+const convoAiMediaIds = [
+  'app-login', 'app-structure', 'app-conversation-start', 'app-caption-camera',
+  'app-profile-settings', 'app-voiceprint-lock', 'app-hardware-device',
+  'app-avatar-select', 'app-avatar-interaction', 'web-login', 'web-preflight',
+  'web-preflight-layout', 'web-join-exit', 'web-conversation', 'web-interrupt',
+  'web-realtime-data',
+];
+const convoAiPublicationInputs = convoAiMediaIds.flatMap((id) => [
+  `public/videos/convo-ai/${id}.mp4`,
+  `public/images/convo-ai/posters/${id}.webp`,
+]);
 
 export const publicationInputs = [
   'public/images/xuelang/hero-panorama.webp',
@@ -46,6 +57,8 @@ export const publicationInputs = [
   'public/videos/call-agent/agent-operate.mp4',
   'evidence/xuelang/manifest.json',
   'evidence/meeting/manifest.json',
+  'evidence/convo-ai/media-manifest.json',
+  ...convoAiPublicationInputs,
   'public/images/meeting/meeting-hero.webp',
   'public/images/meeting/adaptive-layout-poster.webp',
   'public/images/meeting/whiteboard-multidevice.webp',

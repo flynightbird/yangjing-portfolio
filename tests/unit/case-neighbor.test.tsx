@@ -34,34 +34,13 @@ beforeEach(() => {
   registryState.currentEntry = undefined;
 });
 
-describe('work case neighbor resolution', () => {
-  it('does not select an ambiguous locale and slug by import order', async () => {
-    const currentEntry = {
-      meta: { ...baseMeta, previousSlug: 'meeting' },
-      Component,
-    };
-    registryState.currentEntry = currentEntry;
+describe('work case route contract', () => {
+  it('does not resolve or pass project neighbors to the detail layout', async () => {
+    registryState.currentEntry = { meta: baseMeta, Component };
     registryState.entries.push(
-      currentEntry,
+      registryState.currentEntry,
       {
-        meta: {
-          ...baseMeta,
-          slug: 'meeting',
-          translationKey: 'work.meeting',
-          title: 'Meeting work',
-          featuredOrder: 3,
-        },
-        Component,
-      },
-      {
-        meta: {
-          ...baseMeta,
-          type: 'build',
-          slug: 'meeting',
-          translationKey: 'build.meeting',
-          title: 'Meeting build',
-          featuredOrder: 4,
-        },
+        meta: { ...baseMeta, slug: 'meeting', title: 'Meeting', featuredOrder: 3 },
         Component,
       },
     );
@@ -69,33 +48,8 @@ describe('work case neighbor resolution', () => {
     const result = await WorkCasePage({
       params: Promise.resolve({ locale: 'en', slug: 'call-agent' }),
     });
-    expect(result.props.previous).toBeUndefined();
-  });
 
-  it('preserves a unique cross-kind neighbor route', async () => {
-    const currentEntry = {
-      meta: { ...baseMeta, nextSlug: 'stt-demo' },
-      Component,
-    };
-    registryState.currentEntry = currentEntry;
-    registryState.entries.push(currentEntry, {
-      meta: {
-        ...baseMeta,
-        type: 'build',
-        slug: 'stt-demo',
-        translationKey: 'build.stt-demo',
-        title: 'Speech-to-text build',
-        featuredOrder: 4,
-      },
-      Component,
-    });
-
-    const result = await WorkCasePage({
-      params: Promise.resolve({ locale: 'en', slug: 'call-agent' }),
-    });
-    expect(result.props.next).toEqual({
-      href: '/en/build/stt-demo/',
-      title: 'Speech-to-text build',
-    });
+    expect(result.props).not.toHaveProperty('previous');
+    expect(result.props).not.toHaveProperty('next');
   });
 });

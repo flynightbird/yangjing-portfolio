@@ -16,7 +16,7 @@ for (const locale of ['en', 'zh'] as const) {
       await expect(page.locator('body')).not.toContainText(/有限灰度|尚未规模验证|约 8 次迭代|limited customer beta|not yet validated|approximately 8 iterations/i);
     });
 
-    test('keeps hero evidence and project navigation intact', async ({ page }) => {
+    test('keeps hero evidence intact without project navigation', async ({ page }) => {
       const heroSequence = page.locator('[data-call-agent-hero-sequence]');
       await expect(heroSequence.locator('[data-hero-clip]')).toHaveCount(3);
       await expect(
@@ -31,8 +31,7 @@ for (const locale of ['en', 'zh'] as const) {
         '/videos/call-agent/agent-preview.mp4',
         '/videos/call-agent/agent-operate.mp4',
       ]);
-      await expect(page.locator('[data-project-previous]')).toHaveAttribute('href', `/${locale}/work/xuelang/`);
-      await expect(page.locator('[data-project-next]')).toHaveAttribute('href', `/${locale}/work/convo-ai/`);
+      await expect(page.locator('[data-project-previous], [data-project-next]')).toHaveCount(0);
     });
 
     test('keeps chapter navigation and horizontal geometry usable', async ({ page }, testInfo) => {

@@ -1,5 +1,6 @@
 .root {
   --chapter-ink: var(--theme-dark-ink);
+  --chapter-link-color: #f4f5f2;
   --chapter-accent: var(--color-iris-luminous);
   --chapter-surface: var(--theme-dark-canvas);
   --chapter-border: var(--theme-dark-border);
@@ -8,10 +9,12 @@
   inset-block-start: calc(var(--header-height) + var(--space-5));
   z-index: 10;
   align-self: start;
+  transition: background-color 220ms var(--ease-out), border-color 220ms var(--ease-out), color 220ms var(--ease-out), box-shadow 220ms var(--ease-out);
 }
 
 .root[data-surface='light'] {
   --chapter-ink: var(--theme-light-ink);
+  --chapter-link-color: #10110f;
   --chapter-accent: var(--color-iris-deep);
   --chapter-surface: var(--theme-light-surface);
   --chapter-border: var(--theme-light-border);
@@ -39,7 +42,7 @@
   align-items: center;
   padding-block: var(--space-2);
   border: 0;
-  color: var(--chapter-ink);
+  color: var(--chapter-link-color);
   font-size: 0.8125rem;
   line-height: 1.35;
   opacity: 0.48;
@@ -55,7 +58,7 @@
 }
 
 .navigation a[aria-current='location'] {
-  color: var(--chapter-ink);
+  color: var(--chapter-link-color);
   font-weight: 600;
   opacity: 1;
 }

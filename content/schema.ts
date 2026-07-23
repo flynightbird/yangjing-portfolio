@@ -9,8 +9,6 @@ import {
 } from '@/content/types';
 
 const nonEmptyString = z.string().trim().min(1);
-const contentSlugs = [...workSlugs, ...buildSlugs] as const;
-
 function isSafePublicAssetPath(assetPath: string): boolean {
   if (!assetPath.startsWith('/') || assetPath.startsWith('//')) {
     return false;
@@ -65,14 +63,12 @@ const sharedContentMetaSchema = z.object({
   role: nonEmptyString,
   duration: nonEmptyString,
   status: nonEmptyString,
-  disclosure: nonEmptyString,
+  disclosure: nonEmptyString.optional(),
   heroMedia: nonEmptyString.refine(isSafePublicAssetPath, {
     message: 'Must be a safe root-relative public asset path',
   }),
   evidenceLevel: z.enum(evidenceLevels),
   featuredOrder: z.number().int().positive(),
-  previousSlug: z.enum(contentSlugs).optional(),
-  nextSlug: z.enum(contentSlugs).optional(),
   chapters: z.array(chapterMetaSchema).optional(),
   caseLabel: nonEmptyString.optional(),
   facts: z.array(caseFactSchema).optional(),

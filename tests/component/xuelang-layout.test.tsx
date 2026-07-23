@@ -49,7 +49,6 @@ describe('XuelangLayout', () => {
       <XuelangLayout
         meta={meta}
         locale={locale}
-        next={{ href: `/${locale}/work/call-agent/`, title: 'Call Agent' }}
       >
         <section id="overview">Overview evidence</section>
       </XuelangLayout>,

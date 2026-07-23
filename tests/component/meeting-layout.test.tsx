@@ -20,8 +20,6 @@ const meta: ContentMeta = {
   heroMedia: '/images/meeting/meeting-hero.webp',
   evidenceLevel: 'delivered',
   featuredOrder: 3,
-  previousSlug: 'call-agent',
-  nextSlug: 'stt-demo',
   chapters: [{ id: 'business-context', label: 'Business context' }],
 };
 

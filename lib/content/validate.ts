@@ -6,14 +6,12 @@ import {
 import { contentMetaSchema } from '@/content/schema';
 import {
   locales,
-  type ContentSlug,
   type Locale,
 } from '@/content/types';
 
 export interface RegistryValidationOptions {
   readonly checkAssets?: boolean;
   readonly assetExists?: (assetPath: string) => boolean;
-  readonly checkNavigation?: boolean;
 }
 
 function fail(message: string): never {
@@ -97,42 +95,13 @@ export function validateRegistry(
     }
   }
 
-  if (options.checkNavigation) {
-    const slugsByLocale = new Map<Locale, Set<string>>(
-      locales.map((locale) => [
-        locale,
-        new Set(
-          entries
-            .filter((entry) => entry.meta.locale === locale)
-            .map((entry) => entry.meta.slug),
-        ),
-      ]),
-    );
-
-    entries.forEach((entry, index) => {
-      const availableSlugs = slugsByLocale.get(entry.meta.locale);
-      const targets = [
-        ['previousSlug', entry.meta.previousSlug],
-        ['nextSlug', entry.meta.nextSlug],
-      ] as const;
-
-      for (const [field, target] of targets) {
-        if (target !== undefined && !availableSlugs?.has(target)) {
-          fail(
-            `entries[${index}].meta.${field}: target "${target}" ` +
-              `is not registered for locale "${entry.meta.locale}"`,
-          );
-        }
-      }
-    });
-  }
 }
 
 export function assertCompleteRegistry(
   entries: readonly ContentEntry[],
   options: RegistryValidationOptions = {},
 ): void {
-  validateRegistry(entries, { ...options, checkNavigation: true });
+  validateRegistry(entries, options);
 
   for (const route of featuredOrder) {
     for (const locale of locales) {
@@ -147,10 +116,6 @@ export function assertCompleteRegistry(
     }
   }
 
-  const orderedSlugs = featuredOrder.map(
-    (route) => route.split('/')[1] as ContentSlug,
-  );
-
   entries.forEach((entry, index) => {
     const route = `${entry.meta.type}/${entry.meta.slug}` as FeaturedRoute;
     const routeIndex = featuredOrder.indexOf(route);
@@ -160,23 +125,6 @@ export function assertCompleteRegistry(
         `entries[${index}].meta.featuredOrder: expected ` +
           `${expectedFeaturedOrder}, received ${entry.meta.featuredOrder}`,
       );
-    }
-
-    const expectedNeighbors = [
-      ['previousSlug', orderedSlugs[routeIndex - 1]],
-      ['nextSlug', orderedSlugs[routeIndex + 1]],
-    ] as const;
-
-    for (const [field, expected] of expectedNeighbors) {
-      const actual = entry.meta[field];
-      if (actual !== expected) {
-        const expectation = expected ? `"${expected}"` : 'no target';
-        const received = actual ? `"${actual}"` : 'no target';
-        fail(
-          `entries[${index}].meta.${field}: expected ${expectation} from ` +
-            `canonical order, received ${received}`,
-        );
-      }
     }
   });
 }
