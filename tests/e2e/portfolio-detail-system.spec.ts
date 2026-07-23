@@ -148,6 +148,113 @@ test.describe('portfolio detail system', () => {
     });
   }
 
+  for (const width of [1440, 1024, 390] as const) {
+    test(`Convo AI keeps decorative type subordinate at ${width}px`, async ({
+      page,
+    }, testInfo) => {
+      const expectedProject = width === 390 ? 'mobile' : 'desktop';
+      test.skip(testInfo.project.name !== expectedProject);
+      await page.setViewportSize({
+        width,
+        height: width === 390 ? 844 : 900,
+      });
+
+      for (const locale of ['zh', 'en'] as const) {
+        await page.goto(`/${locale}/work/convo-ai/`, {
+          waitUntil: 'networkidle',
+        });
+
+        const root = page.locator('[data-convo-ai-case]');
+        const displayTitle = root.locator('[data-stage-display-title]').first();
+        const projectTitle = root
+          .locator('[data-stage-semantic-title]')
+          .first();
+        const chapterTitle = root.locator('.section-heading h2').first();
+        const sectionIndex = root.locator('.section-index').first();
+        const semanticHeadings = root.locator(
+          '[data-stage-semantic-title], .section-heading h2',
+        );
+
+        await expect(projectTitle).toBeVisible();
+        for (let index = 0; index < await semanticHeadings.count(); index += 1) {
+          const heading = semanticHeadings.nth(index);
+          await heading.scrollIntoViewIfNeeded();
+          await expect(heading).toBeVisible();
+        }
+        await expect(displayTitle).toHaveAttribute('aria-hidden', 'true');
+        await expect(displayTitle).toHaveCSS('pointer-events', 'none');
+        await expect(displayTitle).toHaveCSS('z-index', '-1');
+        await expect(projectTitle).toHaveCSS('z-index', '1');
+        await expect(chapterTitle).toHaveCSS('z-index', '1');
+
+        const indexLayer = await sectionIndex.evaluate((node) => {
+          const style = getComputedStyle(node, '::before');
+          return {
+            color: style.color,
+            pointerEvents: style.pointerEvents,
+            zIndex: style.zIndex,
+          };
+        });
+        expect(indexLayer).toEqual({
+          color: 'rgba(242, 247, 246, 0.055)',
+          pointerEvents: 'none',
+          zIndex: '-1',
+        });
+
+        const headingLayout = await semanticHeadings.evaluateAll((headings) =>
+          headings.map((heading) => {
+            const headingRect = heading.getBoundingClientRect();
+            const container = heading.closest(
+              '[data-convo-ai-stage], section',
+            );
+            if (!container) {
+              return { label: heading.textContent?.trim() ?? '', fits: false };
+            }
+            const containerRect = container.getBoundingClientRect();
+            const range = document.createRange();
+            range.selectNodeContents(heading);
+            const textRects = Array.from(range.getClientRects()).filter(
+              (rect) => rect.width > 0 && rect.height > 0,
+            );
+            const fits =
+              textRects.length > 0 &&
+              headingRect.left >= containerRect.left - 1 &&
+              headingRect.right <= containerRect.right + 1 &&
+              textRects.every(
+                (rect) =>
+                  rect.left >= containerRect.left - 1 &&
+                  rect.right <= containerRect.right + 1,
+              );
+            return {
+              label: heading.textContent?.trim() ?? '',
+              fits,
+              heading: {
+                left: headingRect.left,
+                right: headingRect.right,
+                top: headingRect.top,
+                bottom: headingRect.bottom,
+              },
+              container: {
+                left: containerRect.left,
+                right: containerRect.right,
+                top: containerRect.top,
+                bottom: containerRect.bottom,
+              },
+            };
+          }),
+        );
+        expect(headingLayout.filter(({ fits }) => !fits)).toEqual([]);
+        expect(
+          await page.evaluate(
+            () =>
+              document.documentElement.scrollWidth -
+              document.documentElement.clientWidth,
+          ),
+        ).toBeLessThanOrEqual(1);
+      }
+    });
+  }
+
   test('English Xuelang avoids a single-word final project-title line on mobile', async ({
     page,
   }, testInfo) => {

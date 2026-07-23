@@ -110,6 +110,7 @@ describe('Convo AI semantic heading system', () => {
     );
     const avatar = ruleBlock(css, '.avatarFigure figcaption strong');
     const display = ruleBlock(css, '.stageDisplayTitle');
+    const inlineChapter = ruleBlock(css, '.inlineHeading');
 
     for (const declaration of [
       'max-width: var(--case-project-title-max);',
@@ -133,6 +134,7 @@ describe('Convo AI semantic heading system', () => {
 
     expect(display).toContain('position: absolute;');
     expect(display).toContain('pointer-events: none;');
+    expect(inlineChapter).not.toContain('max-width:');
   });
 
   it('maps Convo AI print headings to fixed shared roles', () => {
