@@ -102,15 +102,66 @@ describe('portfolio detail visual system', () => {
     );
   });
 
-  it('keeps Call Agent on the shared compatibility heading tokens', () => {
-    const css = read('components/call-agent/call-agent-layout.module.css');
+  it('maps Call Agent headings directly to their semantic roles', () => {
+    const layoutCss = read('components/call-agent/call-agent-layout.module.css');
+    const stageCss = read(
+      'components/call-agent/call-agent-system-stage.module.css',
+    );
+    const heroTitle = ruleBlock(layoutCss, '.hero h1');
+    const proposition = ruleBlock(layoutCss, '.proposition');
+    const chapterTitle = ruleBlock(layoutCss, '.case > section h2');
+    const chapterBody = ruleBlock(
+      layoutCss,
+      '.case > section h2 + :global(.call-reading)',
+    );
+    const desktopStageTitle = ruleBlock(stageCss, '.steps button strong');
+    const desktopStageBody = ruleBlock(stageCss, '.steps button p');
+    const staticStageTitle = ruleBlock(stageCss, '.staticSequence h3');
+    const staticStageBody = ruleBlock(
+      stageCss,
+      '.staticSequence article > p',
+    );
 
-    expect(css).toContain('var(--case-h1-size)');
-    expect(css).toContain('var(--case-h2-size)');
-    expect(css).toContain('var(--case-h3-size)');
-    expect(css).toContain('var(--case-h1-leading)');
-    expect(css).toContain('var(--case-h2-leading)');
-    expect(css).toContain('var(--case-h3-leading)');
+    for (const declaration of [
+      'max-width: var(--case-project-title-max);',
+      'margin-block: var(--case-index-title-gap) 0;',
+      'font-size: var(--case-project-title-size);',
+      'font-weight: var(--case-project-title-weight);',
+      'line-height: var(--case-project-title-leading);',
+    ]) {
+      expect(heroTitle).toContain(declaration);
+    }
+    expect(proposition).toContain(
+      'margin-block: var(--case-title-body-gap) 0;',
+    );
+
+    for (const declaration of [
+      'max-width: var(--case-chapter-title-max);',
+      'margin-block: 0 var(--case-title-body-gap);',
+      'font-size: var(--case-chapter-title-size);',
+      'font-weight: var(--case-chapter-title-weight);',
+      'line-height: var(--case-chapter-title-leading);',
+    ]) {
+      expect(chapterTitle).toContain(declaration);
+    }
+    expect(chapterBody).toContain('margin-block-start: 0;');
+
+    for (const title of [desktopStageTitle, staticStageTitle]) {
+      for (const declaration of [
+        'max-width: var(--case-card-title-max);',
+        'margin-block: var(--case-index-title-gap) var(--case-title-body-gap);',
+        'font-size: var(--case-card-title-size);',
+        'font-weight: var(--case-card-title-weight);',
+        'line-height: var(--case-card-title-leading);',
+      ]) {
+        expect(title).toContain(declaration);
+      }
+    }
+    expect(desktopStageBody).toContain('margin-block: 0;');
+    expect(staticStageBody).toContain('margin-block: 0 24px;');
+
+    expect(layoutCss).not.toMatch(/var\(--case-h[123]-(?:size|weight|leading)\)/);
+    expect(stageCss).not.toMatch(/var\(--case-h[123]-(?:size|weight|leading)\)/);
   });
 
   it('maps shared case-study headings to their semantic roles', () => {
