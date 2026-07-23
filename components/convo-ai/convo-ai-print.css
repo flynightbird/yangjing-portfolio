@@ -2,7 +2,40 @@
   [data-convo-ai-case] video,
   [data-convo-ai-case] [class*='terrain'],
   [data-convo-ai-case] [class*='stageControls'] { display: none !important; }
+  [data-convo-ai-case] [data-stage-display-title],
+  [data-convo-ai-case] .section-index::before { display: none !important; }
   [data-convo-ai-case], [data-convo-ai-case] section { background: #fff !important; color: #000 !important; }
   [data-convo-ai-case] img { display: block !important; max-width: 100%; }
   [data-convo-ai-case] dl { break-inside: avoid; }
+
+  [data-convo-ai-stage][data-hero='true'] [data-stage-semantic-title] {
+    max-width: var(--case-project-title-max) !important;
+    font-size: var(--case-project-title-size) !important;
+    line-height: var(--case-project-title-leading) !important;
+  }
+
+  [data-convo-ai-case] .section-heading h2 {
+    max-width: var(--case-chapter-title-max) !important;
+    font-size: var(--case-chapter-title-size) !important;
+    line-height: var(--case-chapter-title-leading) !important;
+  }
+
+  [data-convo-ai-case] .convo-subheading {
+    max-width: var(--case-narrative-title-max) !important;
+    font-size: var(--case-narrative-title-size) !important;
+    line-height: var(--case-narrative-title-leading) !important;
+  }
+
+  [data-convo-ai-stage]:not([data-hero='true']) [data-stage-semantic-title],
+  [data-convo-ai-case] [class*='avatarFigure'] figcaption strong {
+    max-width: var(--case-media-title-max) !important;
+    font-size: var(--case-media-title-size) !important;
+    line-height: var(--case-media-title-leading) !important;
+  }
+
+  [data-convo-ai-case] .convo-principles h3 {
+    max-width: var(--case-card-title-max) !important;
+    font-size: var(--case-card-title-size) !important;
+    line-height: var(--case-card-title-leading) !important;
+  }
 }

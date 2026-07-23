@@ -134,4 +134,48 @@ describe('Convo AI semantic heading system', () => {
     expect(display).toContain('position: absolute;');
     expect(display).toContain('pointer-events: none;');
   });
+
+  it('maps Convo AI print headings to fixed shared roles', () => {
+    const css = read('components/convo-ai/convo-ai-print.css');
+    const project = ruleBlock(
+      css,
+      "[data-convo-ai-stage][data-hero='true'] [data-stage-semantic-title]",
+    );
+    const chapter = ruleBlock(
+      css,
+      '[data-convo-ai-case] .section-heading h2',
+    );
+    const narrative = ruleBlock(
+      css,
+      '[data-convo-ai-case] .convo-subheading',
+    );
+    const media = ruleBlock(css, [
+      "[data-convo-ai-stage]:not([data-hero='true']) [data-stage-semantic-title]",
+      "[data-convo-ai-case] [class*='avatarFigure'] figcaption strong",
+    ]);
+    const card = ruleBlock(
+      css,
+      '[data-convo-ai-case] .convo-principles h3',
+    );
+
+    expect(project).toContain(
+      'font-size: var(--case-project-title-size) !important;',
+    );
+    expect(chapter).toContain(
+      'font-size: var(--case-chapter-title-size) !important;',
+    );
+    expect(narrative).toContain(
+      'font-size: var(--case-narrative-title-size) !important;',
+    );
+    expect(media).toContain(
+      'font-size: var(--case-media-title-size) !important;',
+    );
+    expect(card).toContain(
+      'font-size: var(--case-card-title-size) !important;',
+    );
+    expect(css).toContain('[data-stage-display-title]');
+    expect(css).toMatch(
+      /\[data-stage-display-title\][^{]*\{[^}]*display:\s*none\s*!important;/s,
+    );
+  });
 });
