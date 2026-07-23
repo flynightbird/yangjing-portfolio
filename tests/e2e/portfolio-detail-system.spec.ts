@@ -117,34 +117,178 @@ test.describe('portfolio detail system', () => {
 
         const headings = page.locator(`${root} :is(h1, h2, h3, h4)`);
         expect(await headings.count()).toBeGreaterThan(0);
-        const boxes = await headings.evaluateAll((nodes) =>
-          nodes.map((node) => {
-            const rect = node.getBoundingClientRect();
-            const style = getComputedStyle(node);
-            return {
-              left: rect.left,
-              right: rect.right,
-              top: rect.top,
-              bottom: rect.bottom,
-              width: rect.width,
-              height: rect.height,
-              clientWidth: node.clientWidth,
-              scrollWidth: node.scrollWidth,
-              fontSize: parseFloat(style.fontSize),
-              lineHeight: parseFloat(style.lineHeight),
-              viewport: window.innerWidth,
-            };
-          }),
+        const boxes = await headings.evaluateAll(
+          (nodes, rootSelector) =>
+            nodes.map((node, index) => {
+              const rect = node.getBoundingClientRect();
+              const style = getComputedStyle(node);
+              const clipsOwnX = ['hidden', 'clip'].includes(style.overflowX);
+              const clipsOwnY = ['hidden', 'clip'].includes(style.overflowY);
+              const rootElement = node.closest(rootSelector);
+              let container = node.parentElement;
+              while (container && container !== rootElement) {
+                const display = getComputedStyle(container).display;
+                if (
+                  display !== 'contents' &&
+                  display !== 'inline' &&
+                  display !== 'inline-block' &&
+                  container.clientWidth > 0
+                ) {
+                  break;
+                }
+                container = container.parentElement;
+              }
+              container ??= rootElement;
+              if (!container) {
+                throw new Error(`Heading ${index} has no layout container`);
+              }
+              const containerRect = container.getBoundingClientRect();
+              let adjacent = node.nextElementSibling;
+              if (!adjacent || adjacent.getClientRects().length === 0) {
+                adjacent = node.parentElement?.nextElementSibling ?? null;
+              }
+              while (adjacent && adjacent.getClientRects().length === 0) {
+                adjacent = adjacent.nextElementSibling;
+              }
+              if (!adjacent) {
+                throw new Error(`Heading ${index} has no adjacent content`);
+              }
+              const adjacentRect = adjacent.getBoundingClientRect();
+              const clippingAncestors = [];
+              let ancestor = node.parentElement;
+              while (ancestor && ancestor !== rootElement) {
+                const ancestorStyle = getComputedStyle(ancestor);
+                const clipsX = ['hidden', 'clip'].includes(
+                  ancestorStyle.overflowX,
+                );
+                const clipsY = ['hidden', 'clip'].includes(
+                  ancestorStyle.overflowY,
+                );
+                if (clipsX || clipsY) {
+                  const ancestorRect = ancestor.getBoundingClientRect();
+                  clippingAncestors.push({
+                    left: ancestorRect.left,
+                    right: ancestorRect.right,
+                    top: ancestorRect.top,
+                    bottom: ancestorRect.bottom,
+                    clipsX,
+                    clipsY,
+                    name:
+                      ancestor.getAttribute('data-testid') ??
+                      ancestor.tagName.toLowerCase(),
+                  });
+                }
+                ancestor = ancestor.parentElement;
+              }
+              return {
+                left: rect.left,
+                right: rect.right,
+                top: rect.top,
+                bottom: rect.bottom,
+                width: rect.width,
+                height: rect.height,
+                clientWidth: node.clientWidth,
+                scrollWidth: node.scrollWidth,
+                clientHeight: node.clientHeight,
+                scrollHeight: node.scrollHeight,
+                clipsOwnX,
+                clipsOwnY,
+                fontSize: parseFloat(style.fontSize),
+                lineHeight: parseFloat(style.lineHeight),
+                viewport: window.innerWidth,
+                container: {
+                  left: containerRect.left,
+                  right: containerRect.right,
+                  top: containerRect.top,
+                  bottom: containerRect.bottom,
+                  name: container.tagName.toLowerCase(),
+                },
+                adjacent: {
+                  left: adjacentRect.left,
+                  right: adjacentRect.right,
+                  top: adjacentRect.top,
+                  bottom: adjacentRect.bottom,
+                  width: adjacentRect.width,
+                  height: adjacentRect.height,
+                  name: adjacent.tagName.toLowerCase(),
+                },
+                clippingAncestors,
+              };
+            }),
+          root,
         );
 
-        for (const box of boxes) {
+        for (const [index, box] of boxes.entries()) {
           expect(box.left).toBeGreaterThanOrEqual(-1);
           expect(box.right).toBeLessThanOrEqual(box.viewport + 1);
           expect(box.width).toBeGreaterThan(0);
           expect(box.height).toBeGreaterThan(0);
           expect(box.fontSize).toBeGreaterThan(0);
           expect(box.lineHeight).toBeGreaterThan(0);
-          expect(box.scrollWidth).toBeLessThanOrEqual(box.clientWidth + 1);
+          if (box.scrollWidth > box.clientWidth + 1) {
+            expect(
+              box.clipsOwnX,
+              `heading ${index} clips horizontal text on ${route} at ${width}px`,
+            ).toBe(false);
+          }
+          if (box.scrollHeight > box.clientHeight + 1) {
+            expect(
+              box.clipsOwnY,
+              `heading ${index} clips vertical text on ${route} at ${width}px`,
+            ).toBe(false);
+          }
+          expect(
+            box.left,
+            `heading ${index} escapes its ${box.container.name} on ${route} at ${width}px`,
+          ).toBeGreaterThanOrEqual(box.container.left - 1);
+          expect(
+            box.right,
+            `heading ${index} escapes its ${box.container.name} on ${route} at ${width}px`,
+          ).toBeLessThanOrEqual(box.container.right + 1);
+          expect(
+            box.top,
+            `heading ${index} escapes its ${box.container.name} on ${route} at ${width}px`,
+          ).toBeGreaterThanOrEqual(box.container.top - 1);
+          expect(
+            box.bottom,
+            `heading ${index} escapes its ${box.container.name} on ${route} at ${width}px`,
+          ).toBeLessThanOrEqual(box.container.bottom + 1);
+
+          expect(box.adjacent.width).toBeGreaterThan(0);
+          expect(box.adjacent.height).toBeGreaterThan(0);
+          const adjacentHorizontalOverlap =
+            Math.min(box.right, box.adjacent.right) -
+            Math.max(box.left, box.adjacent.left);
+          const adjacentVerticalOverlap =
+            Math.min(box.bottom, box.adjacent.bottom) -
+            Math.max(box.top, box.adjacent.top);
+          expect(
+            adjacentHorizontalOverlap > 1 && adjacentVerticalOverlap > 1,
+            `heading ${index} overlaps adjacent ${box.adjacent.name} on ${route} at ${width}px`,
+          ).toBe(false);
+
+          for (const clippingAncestor of box.clippingAncestors) {
+            if (clippingAncestor.clipsX) {
+              expect(
+                box.left,
+                `heading ${index} is horizontally clipped by ${clippingAncestor.name} on ${route} at ${width}px`,
+              ).toBeGreaterThanOrEqual(clippingAncestor.left - 1);
+              expect(
+                box.right,
+                `heading ${index} is horizontally clipped by ${clippingAncestor.name} on ${route} at ${width}px`,
+              ).toBeLessThanOrEqual(clippingAncestor.right + 1);
+            }
+            if (clippingAncestor.clipsY) {
+              expect(
+                box.top,
+                `heading ${index} is vertically clipped by ${clippingAncestor.name} on ${route} at ${width}px`,
+              ).toBeGreaterThanOrEqual(clippingAncestor.top - 1);
+              expect(
+                box.bottom,
+                `heading ${index} is vertically clipped by ${clippingAncestor.name} on ${route} at ${width}px`,
+              ).toBeLessThanOrEqual(clippingAncestor.bottom + 1);
+            }
+          }
         }
 
         for (let first = 0; first < boxes.length; first += 1) {
