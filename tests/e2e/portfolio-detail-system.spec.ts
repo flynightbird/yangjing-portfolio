@@ -158,6 +158,7 @@ test.describe('portfolio detail system', () => {
         width,
         height: width === 390 ? 844 : 900,
       });
+      await page.emulateMedia({ reducedMotion: 'reduce' });
 
       for (const locale of ['zh', 'en'] as const) {
         await page.goto(`/${locale}/work/convo-ai/`, {
@@ -165,6 +166,7 @@ test.describe('portfolio detail system', () => {
         });
 
         const root = page.locator('[data-convo-ai-case]');
+        const heroStage = root.locator('[data-convo-ai-stage]').first();
         const displayTitle = root.locator('[data-stage-display-title]').first();
         const projectTitle = root
           .locator('[data-stage-semantic-title]')
@@ -172,20 +174,49 @@ test.describe('portfolio detail system', () => {
         const chapterTitle = root.locator('.section-heading h2').first();
         const sectionIndex = root.locator('.section-index').first();
         const semanticHeadings = root.locator(
-          '[data-stage-semantic-title], .section-heading h2',
+          [
+            '[data-stage-semantic-title]',
+            '.section-heading h2',
+            '.convo-subheading',
+            '.convo-principles h3',
+            '[class*="avatarFigure"] figcaption strong',
+          ].join(', '),
         );
 
         await expect(projectTitle).toBeVisible();
         for (let index = 0; index < await semanticHeadings.count(); index += 1) {
           const heading = semanticHeadings.nth(index);
-          await heading.scrollIntoViewIfNeeded();
           await expect(heading).toBeVisible();
         }
         await expect(displayTitle).toHaveAttribute('aria-hidden', 'true');
         await expect(displayTitle).toHaveCSS('pointer-events', 'none');
         await expect(displayTitle).toHaveCSS('z-index', '-1');
+        await expect(displayTitle).toHaveCSS(
+          'color',
+          'rgba(242, 247, 246, 0.075)',
+        );
+        await expect(heroStage).toHaveCSS('overflow-x', 'hidden');
+        await expect(heroStage).toHaveCSS('overflow-y', 'hidden');
         await expect(projectTitle).toHaveCSS('z-index', '1');
         await expect(chapterTitle).toHaveCSS('z-index', '1');
+
+        const heroLayersFit = await heroStage.evaluate((stage) => {
+          const stageRect = stage.getBoundingClientRect();
+          const semantic = stage.querySelector('[data-stage-semantic-title]');
+          const display = stage.querySelector('[data-stage-display-title]');
+          if (!semantic || !display) return false;
+          const semanticRect = semantic.getBoundingClientRect();
+          const displayRect = display.getBoundingClientRect();
+          return (
+            semanticRect.left >= stageRect.left - 1 &&
+            semanticRect.right <= stageRect.right + 1 &&
+            displayRect.right > stageRect.left &&
+            displayRect.left < stageRect.right &&
+            displayRect.bottom > stageRect.top &&
+            displayRect.top < stageRect.bottom
+          );
+        });
+        expect(heroLayersFit).toBe(true);
 
         const indexLayer = await sectionIndex.evaluate((node) => {
           const style = getComputedStyle(node, '::before');
@@ -205,7 +236,7 @@ test.describe('portfolio detail system', () => {
           headings.map((heading) => {
             const headingRect = heading.getBoundingClientRect();
             const container = heading.closest(
-              '[data-convo-ai-stage], section',
+              '[data-convo-ai-stage], article, figure, section',
             );
             if (!container) {
               return { label: heading.textContent?.trim() ?? '', fits: false };
