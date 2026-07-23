@@ -42,13 +42,20 @@ describe('portfolio detail visual system', () => {
 
     expect(css).toContain('--case-index-title-gap: 0.75rem;');
     expect(css).toContain('--case-title-body-gap: 1.5rem;');
-    expect(css).toContain(
-      '--case-h1-size: var(--case-project-title-size);',
-    );
-    expect(css).toContain(
-      '--case-h2-size: var(--case-chapter-title-size);',
-    );
-    expect(css).toContain('--case-h3-size: var(--case-card-title-size);');
+
+    const compatibilityAliases = [
+      ['h1', 'project'],
+      ['h2', 'chapter'],
+      ['h3', 'card'],
+    ] as const;
+
+    for (const [legacyLevel, role] of compatibilityAliases) {
+      for (const property of ['size', 'weight', 'leading']) {
+        expect(css).toContain(
+          `--case-${legacyLevel}-${property}: var(--case-${role}-title-${property});`,
+        );
+      }
+    }
 
     expect(css).toMatch(
       /@media print\s*\{\s*:root\s*\{[^}]*--case-project-title-size:\s*31pt;[^}]*--case-chapter-title-size:\s*24pt;[^}]*--case-narrative-title-size:\s*18pt;[^}]*--case-media-title-size:\s*14pt;[^}]*--case-card-title-size:\s*11pt;[^}]*\}\s*\}/s,
