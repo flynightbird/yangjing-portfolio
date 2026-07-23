@@ -196,6 +196,121 @@ describe('portfolio detail visual system', () => {
     );
   });
 
+  it('maps Meeting headings to the shared semantic roles', () => {
+    const layoutCss = read('components/meeting/meeting-layout.module.css');
+    const evidenceCss = read('components/meeting/meeting-evidence.module.css');
+    const modelsCss = read('components/meeting/meeting-models.module.css');
+    const heroTitle = ruleBlock(layoutCss, '.hero h1');
+    const eyebrow = ruleBlock(layoutCss, '.eyebrow');
+    const proposition = ruleBlock(layoutCss, '.proposition');
+    const chapterTitle = ruleBlock(layoutCss, '.content h2');
+    const cardTitle = ruleBlock(layoutCss, '.content h3');
+    const decisionTitle = ruleBlock(evidenceCss, '.decisionHeader h3');
+    const capabilityTitle = ruleBlock(modelsCss, '.capabilities h3');
+    const languageTitle = ruleBlock(modelsCss, '.language > figcaption');
+
+    expect(layoutCss).toContain(
+      '--meeting-portfolio-accent: var(--color-iris-deep);',
+    );
+
+    expect(heroTitle).toContain('max-width: var(--case-project-title-max);');
+    expect(heroTitle).toContain('font-size: var(--case-project-title-size);');
+    expect(heroTitle).toContain(
+      'font-weight: var(--case-project-title-weight);',
+    );
+    expect(heroTitle).toContain(
+      'line-height: var(--case-project-title-leading);',
+    );
+
+    expect(eyebrow).toContain(
+      'margin-block-end: var(--case-index-title-gap);',
+    );
+    expect(proposition).toContain(
+      'margin-block-start: var(--case-title-body-gap);',
+    );
+
+    expect(chapterTitle).toContain(
+      'max-width: var(--case-chapter-title-max);',
+    );
+    expect(chapterTitle).toContain(
+      'margin-block-end: var(--case-title-body-gap);',
+    );
+    expect(chapterTitle).toContain(
+      'font-size: var(--case-chapter-title-size);',
+    );
+    expect(chapterTitle).toContain(
+      'font-weight: var(--case-chapter-title-weight);',
+    );
+    expect(chapterTitle).toContain(
+      'line-height: var(--case-chapter-title-leading);',
+    );
+
+    expect(cardTitle).toContain(
+      'margin-block: var(--case-index-title-gap) var(--case-title-body-gap);',
+    );
+    expect(cardTitle).toContain('max-width: var(--case-card-title-max);');
+    expect(cardTitle).toContain('font-size: var(--case-card-title-size);');
+    expect(cardTitle).toContain(
+      'font-weight: var(--case-card-title-weight);',
+    );
+    expect(cardTitle).toContain(
+      'line-height: var(--case-card-title-leading);',
+    );
+
+    expect(decisionTitle).toContain(
+      'margin-block: var(--case-index-title-gap) var(--case-title-body-gap);',
+    );
+    expect(decisionTitle).toContain(
+      'max-width: var(--case-narrative-title-max);',
+    );
+    expect(decisionTitle).toContain(
+      'font-size: var(--case-narrative-title-size);',
+    );
+    expect(decisionTitle).toContain(
+      'font-weight: var(--case-narrative-title-weight);',
+    );
+    expect(decisionTitle).toContain(
+      'line-height: var(--case-narrative-title-leading);',
+    );
+
+    expect(capabilityTitle).toContain(
+      'margin-block: var(--case-index-title-gap) var(--case-title-body-gap);',
+    );
+    expect(capabilityTitle).toContain(
+      'max-width: var(--case-card-title-max);',
+    );
+    expect(capabilityTitle).toContain(
+      'font-size: var(--case-card-title-size);',
+    );
+    expect(capabilityTitle).toContain(
+      'font-weight: var(--case-card-title-weight);',
+    );
+    expect(capabilityTitle).toContain(
+      'line-height: var(--case-card-title-leading);',
+    );
+
+    expect(languageTitle).toContain(
+      'margin-block: 0 var(--case-title-body-gap);',
+    );
+    expect(languageTitle).toContain(
+      'max-width: var(--case-media-title-max);',
+    );
+    expect(languageTitle).toContain(
+      'font-size: var(--case-media-title-size);',
+    );
+    expect(languageTitle).toContain(
+      'font-weight: var(--case-media-title-weight);',
+    );
+    expect(languageTitle).toContain(
+      'line-height: var(--case-media-title-leading);',
+    );
+    const languagePaths = ruleBlock(
+      modelsCss,
+      '.language > .languagePaths',
+    );
+    expect(languagePaths).toContain('margin-block-start: 0;');
+  });
+
   it.each([
     'components/case-study/case-layout.module.css',
     'components/case-study/evidence-figure.module.css',
