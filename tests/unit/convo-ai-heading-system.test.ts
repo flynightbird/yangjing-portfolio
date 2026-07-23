@@ -97,4 +97,41 @@ describe('Convo AI semantic heading system', () => {
       ),
     ).toHaveLength(14);
   });
+
+  it('maps readable stage and media titles while isolating display type', () => {
+    const css = read('components/convo-ai/convo-ai-media.module.css');
+    const project = ruleBlock(
+      css,
+      ".stage[data-hero='true'] .stageSemanticTitle",
+    );
+    const media = ruleBlock(
+      css,
+      ".stage:not([data-hero='true']) .stageSemanticTitle",
+    );
+    const avatar = ruleBlock(css, '.avatarFigure figcaption strong');
+    const display = ruleBlock(css, '.stageDisplayTitle');
+
+    for (const declaration of [
+      'max-width: var(--case-project-title-max);',
+      'font-size: var(--case-project-title-size);',
+      'font-weight: var(--case-project-title-weight);',
+      'line-height: var(--case-project-title-leading);',
+    ]) {
+      expect(project).toContain(declaration);
+    }
+
+    for (const block of [media, avatar]) {
+      for (const declaration of [
+        'max-width: var(--case-media-title-max);',
+        'font-size: var(--case-media-title-size);',
+        'font-weight: var(--case-media-title-weight);',
+        'line-height: var(--case-media-title-leading);',
+      ]) {
+        expect(block).toContain(declaration);
+      }
+    }
+
+    expect(display).toContain('position: absolute;');
+    expect(display).toContain('pointer-events: none;');
+  });
 });

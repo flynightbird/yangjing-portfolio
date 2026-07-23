@@ -329,10 +329,40 @@ describe('ConvoAiStage', () => {
     expect(container.querySelector('[data-convo-app-device]')).toBeVisible();
     expect(container.querySelector('[data-convo-web-plane] video')).toBeInTheDocument();
     expect(container.querySelector('[data-convo-app-device] video')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { level: 1 })).toBeNull();
+    expect(
+      screen.getByRole('heading', { level: 3, name: 'ConvoAI' }),
+    ).toHaveAttribute('data-stage-semantic-title');
+    expect(container.querySelector('[data-stage-display-title]')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
     fireEvent.click(screen.getByRole('button', { name: 'Focus App recording' }));
     expect(container.querySelector('[data-convo-ai-stage]')).toHaveAttribute('data-active-platform', 'app');
     expect(container.querySelector('[data-convo-web-plane] video')).toBeInTheDocument();
     expect(container.querySelector('[data-convo-app-device] video')).toBeInTheDocument();
+  });
+
+  it('uses the shared project heading role only for the hero stage', () => {
+    const { container } = render(
+      <ConvoAiStage
+        locale="en"
+        eyebrow="Agora / shipped product"
+        title="ConvoAI"
+        description="A live AI conversation system."
+        webId="web-join-exit"
+        appId="app-conversation-start"
+        hero
+      />,
+    );
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'ConvoAI' }),
+    ).toHaveAttribute('data-stage-semantic-title');
+    expect(screen.queryByRole('heading', { level: 3 })).toBeNull();
+    expect(container.querySelectorAll('[data-stage-display-title]')).toHaveLength(
+      1,
+    );
   });
 });
 

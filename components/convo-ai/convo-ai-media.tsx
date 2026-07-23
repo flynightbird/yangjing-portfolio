@@ -189,6 +189,7 @@ export function ConvoAiInlineHeading({ kind, children }: { readonly kind: keyof 
 export function ConvoAiStage({ locale, eyebrow, title, description, webId, appId, hero = false }: { readonly locale: Locale; readonly eyebrow: string; readonly title: string; readonly description: string; readonly webId: ConvoAiMediaId; readonly appId: ConvoAiMediaId; readonly hero?: boolean }) {
   const [activePlatform, setActivePlatform] = useState<'web' | 'app' | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const SemanticHeading = hero ? 'h1' : 'h3';
   const updateTilt = (event: React.PointerEvent<HTMLDivElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
     const x = ((event.clientX - bounds.left) / bounds.width - 0.5) * 8;
@@ -199,7 +200,12 @@ export function ConvoAiStage({ locale, eyebrow, title, description, webId, appId
   const resetTilt = () => { stageRef.current?.style.setProperty('--stage-x', '0deg'); stageRef.current?.style.setProperty('--stage-y', '0deg'); };
 
   return <div ref={stageRef} className={styles.stage} data-convo-ai-stage data-active-platform={activePlatform ?? 'posters'} data-hero={hero ? 'true' : 'false'} onPointerMove={updateTilt} onPointerLeave={resetTilt}>
-    <div className={styles.stageCopy}><p>{eyebrow}</p><h1>{title}</h1><div>{description}</div></div>
+    <div className={styles.stageCopy}>
+      <p>{eyebrow}</p>
+      <span className={styles.stageDisplayTitle} data-stage-display-title aria-hidden="true">{title}</span>
+      <SemanticHeading className={styles.stageSemanticTitle} data-stage-semantic-title>{title}</SemanticHeading>
+      <div>{description}</div>
+    </div>
     <div className={styles.terrain} aria-hidden="true"><i /><i /><i /></div>
     <div className={styles.webPlane} data-convo-web-plane><ConvoAiViewportVideo id={webId} locale={locale} /></div>
     <div className={styles.appDevice} data-convo-app-device><div><ConvoAiViewportVideo id={appId} locale={locale} /></div></div>

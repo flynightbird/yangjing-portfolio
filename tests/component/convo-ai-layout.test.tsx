@@ -19,6 +19,11 @@ describe('ConvoAiLayout', () => {
     const { container } = render(<ConvoAiLayout meta={meta} locale="en"><section id="context-thesis">Story</section></ConvoAiLayout>);
     expect(container.querySelector('[data-convo-ai-stage]')).toBeVisible();
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/^ConvoAI$/);
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+    expect(container.querySelector('[data-stage-display-title]')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
     expect(container.querySelector('[data-convo-next-section-hint]')).toBeVisible();
     expect(screen.getAllByRole('navigation', { name: 'Case study chapters' })).toHaveLength(1);
     expect(screen.getByRole('navigation', { name: 'Case study chapters' })).toBeVisible();
