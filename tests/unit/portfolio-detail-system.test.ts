@@ -4,6 +4,32 @@ import { describe, expect, it } from 'vitest';
 
 const read = (path: string) => readFileSync(path, 'utf8');
 
+const ruleBlock = (css: string, selectors: string | readonly string[]) => {
+  const expectedSelectors =
+    typeof selectors === 'string' ? [selectors] : selectors;
+  const rule = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/gs)].find(
+    ([, selectorList]) => {
+      const actualSelectors = selectorList
+        .split(',')
+        .map((selector) => selector.trim());
+
+      return (
+        actualSelectors.length === expectedSelectors.length &&
+        expectedSelectors.every((selector) =>
+          actualSelectors.includes(selector),
+        )
+      );
+    },
+  );
+
+  expect(
+    rule,
+    `Expected CSS rule for ${expectedSelectors.join(', ')}`,
+  ).toBeDefined();
+
+  return rule?.[2] ?? '';
+};
+
 describe('portfolio detail visual system', () => {
   it('keeps chapter navigation neutral and line-free on desktop', () => {
     const css = read('components/case-study/chapter-nav.module.css');
@@ -79,28 +105,94 @@ describe('portfolio detail visual system', () => {
   it('maps shared case-study headings to their semantic roles', () => {
     const css = read('components/case-study/case-layout.module.css');
     const printCss = read('components/case-study/print.css');
+    const heroTitle = ruleBlock(css, '.hero h1');
+    const sectionHeading = ruleBlock(css, '.case :global(.section-heading)');
+    const chapterTitle = ruleBlock(
+      css,
+      '.case :global(.section-heading h2)',
+    );
+    const narrativeTitle = ruleBlock(
+      css,
+      '.case :global(.reflection-grid h3)',
+    );
+    const cardTitles = ruleBlock(css, [
+      '.case :global(.principles h3)',
+      '.case :global(.evidence-levels h3)',
+      '.case :global(.boundary-map h3)',
+      '.case :global(.feedback-loop h3)',
+    ]);
+    const printProjectTitle = ruleBlock(
+      printCss,
+      'article[data-case-study] h1',
+    );
+    const printChapterTitle = ruleBlock(
+      printCss,
+      'article[data-case-study] h2',
+    );
 
-    expect(css).toMatch(
-      /\.hero h1\s*\{[^}]*max-width:\s*var\(--case-project-title-max\);[^}]*margin-block:\s*var\(--case-index-title-gap\)\s+var\(--case-title-body-gap\);[^}]*font-size:\s*var\(--case-project-title-size\);[^}]*font-weight:\s*var\(--case-project-title-weight\);[^}]*line-height:\s*var\(--case-project-title-leading\);[^}]*\}/s,
+    expect(heroTitle).toContain(
+      'max-width: var(--case-project-title-max);',
     );
-    expect(css).toMatch(
-      /\.case :global\(\.section-heading\)\s*\{[^}]*gap:\s*var\(--case-index-title-gap\);[^}]*margin-block-end:\s*var\(--case-title-body-gap\);[^}]*\}/s,
+    expect(heroTitle).toContain(
+      'margin-block: var(--case-index-title-gap) var(--case-title-body-gap);',
     );
-    expect(css).toMatch(
-      /\.case :global\(\.section-heading h2\)\s*\{[^}]*max-width:\s*var\(--case-chapter-title-max\);[^}]*font-size:\s*var\(--case-chapter-title-size\);[^}]*font-weight:\s*var\(--case-chapter-title-weight\);[^}]*line-height:\s*var\(--case-chapter-title-leading\);[^}]*\}/s,
+    expect(heroTitle).toContain('font-size: var(--case-project-title-size);');
+    expect(heroTitle).toContain(
+      'font-weight: var(--case-project-title-weight);',
     );
-    expect(css).toMatch(
-      /\.case :global\(\.reflection-grid h3\)\s*\{[^}]*margin-block:\s*var\(--case-index-title-gap\)\s+var\(--case-title-body-gap\);[^}]*max-width:\s*var\(--case-narrative-title-max\);[^}]*font-size:\s*var\(--case-narrative-title-size\);[^}]*font-weight:\s*var\(--case-narrative-title-weight\);[^}]*line-height:\s*var\(--case-narrative-title-leading\);[^}]*\}/s,
-    );
-    expect(css).toMatch(
-      /\.case :global\(\.principles h3\),\s*\.case :global\(\.evidence-levels h3\),\s*\.case :global\(\.boundary-map h3\),\s*\.case :global\(\.feedback-loop h3\)\s*\{[^}]*margin-block:\s*var\(--case-index-title-gap\)\s+var\(--case-title-body-gap\);[^}]*max-width:\s*var\(--case-card-title-max\);[^}]*font-size:\s*var\(--case-card-title-size\);[^}]*font-weight:\s*var\(--case-card-title-weight\);[^}]*line-height:\s*var\(--case-card-title-leading\);[^}]*\}/s,
+    expect(heroTitle).toContain(
+      'line-height: var(--case-project-title-leading);',
     );
 
-    expect(printCss).toMatch(
-      /article\[data-case-study\] h1\s*\{[^}]*font-size:\s*var\(--case-project-title-size\);[^}]*line-height:\s*var\(--case-project-title-leading\);[^}]*\}/s,
+    expect(sectionHeading).toContain('gap: var(--case-index-title-gap);');
+    expect(sectionHeading).toContain(
+      'margin-block-end: var(--case-title-body-gap);',
     );
-    expect(printCss).toMatch(
-      /article\[data-case-study\] h2\s*\{[^}]*font-size:\s*var\(--case-chapter-title-size\)\s*!important;[^}]*line-height:\s*var\(--case-chapter-title-leading\)\s*!important;[^}]*\}/s,
+
+    expect(chapterTitle).toContain(
+      'max-width: var(--case-chapter-title-max);',
+    );
+    expect(chapterTitle).toContain(
+      'font-size: var(--case-chapter-title-size);',
+    );
+    expect(chapterTitle).toContain(
+      'font-weight: var(--case-chapter-title-weight);',
+    );
+    expect(chapterTitle).toContain(
+      'line-height: var(--case-chapter-title-leading);',
+    );
+
+    for (const declaration of [
+      'margin-block: var(--case-index-title-gap) var(--case-title-body-gap);',
+      'max-width: var(--case-narrative-title-max);',
+      'font-size: var(--case-narrative-title-size);',
+      'font-weight: var(--case-narrative-title-weight);',
+      'line-height: var(--case-narrative-title-leading);',
+    ]) {
+      expect(narrativeTitle).toContain(declaration);
+    }
+
+    for (const declaration of [
+      'margin-block: var(--case-index-title-gap) var(--case-title-body-gap);',
+      'max-width: var(--case-card-title-max);',
+      'font-size: var(--case-card-title-size);',
+      'font-weight: var(--case-card-title-weight);',
+      'line-height: var(--case-card-title-leading);',
+    ]) {
+      expect(cardTitles).toContain(declaration);
+    }
+
+    expect(printProjectTitle).toContain(
+      'font-size: var(--case-project-title-size);',
+    );
+    expect(printProjectTitle).toContain(
+      'line-height: var(--case-project-title-leading);',
+    );
+    expect(printChapterTitle).toContain(
+      'font-size: var(--case-chapter-title-size) !important;',
+    );
+    expect(printChapterTitle).toContain(
+      'line-height: var(--case-chapter-title-leading) !important;',
     );
   });
 
