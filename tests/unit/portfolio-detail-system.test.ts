@@ -76,19 +76,32 @@ describe('portfolio detail visual system', () => {
     );
   });
 
-  it.each([
-    'components/case-study/case-layout.module.css',
-    'components/meeting/meeting-layout.module.css',
-    'components/xuelang/xuelang-layout.module.css',
-  ])('%s consumes shared editorial heading tokens', (path) => {
-    const css = read(path);
+  it('maps shared case-study headings to their semantic roles', () => {
+    const css = read('components/case-study/case-layout.module.css');
+    const printCss = read('components/case-study/print.css');
 
-    expect(css).toContain('var(--case-h1-size)');
-    expect(css).toContain('var(--case-h2-size)');
-    expect(css).toContain('var(--case-h3-size)');
-    expect(css).toContain('var(--case-h1-leading)');
-    expect(css).toContain('var(--case-h2-leading)');
-    expect(css).toContain('var(--case-h3-leading)');
+    expect(css).toMatch(
+      /\.hero h1\s*\{[^}]*max-width:\s*var\(--case-project-title-max\);[^}]*margin-block:\s*var\(--case-index-title-gap\)\s+var\(--case-title-body-gap\);[^}]*font-size:\s*var\(--case-project-title-size\);[^}]*font-weight:\s*var\(--case-project-title-weight\);[^}]*line-height:\s*var\(--case-project-title-leading\);[^}]*\}/s,
+    );
+    expect(css).toMatch(
+      /\.case :global\(\.section-heading\)\s*\{[^}]*gap:\s*var\(--case-index-title-gap\);[^}]*margin-block-end:\s*var\(--case-title-body-gap\);[^}]*\}/s,
+    );
+    expect(css).toMatch(
+      /\.case :global\(\.section-heading h2\)\s*\{[^}]*max-width:\s*var\(--case-chapter-title-max\);[^}]*font-size:\s*var\(--case-chapter-title-size\);[^}]*font-weight:\s*var\(--case-chapter-title-weight\);[^}]*line-height:\s*var\(--case-chapter-title-leading\);[^}]*\}/s,
+    );
+    expect(css).toMatch(
+      /\.case :global\(\.reflection-grid h3\)\s*\{[^}]*margin-block:\s*var\(--case-index-title-gap\)\s+var\(--case-title-body-gap\);[^}]*max-width:\s*var\(--case-narrative-title-max\);[^}]*font-size:\s*var\(--case-narrative-title-size\);[^}]*font-weight:\s*var\(--case-narrative-title-weight\);[^}]*line-height:\s*var\(--case-narrative-title-leading\);[^}]*\}/s,
+    );
+    expect(css).toMatch(
+      /\.case :global\(\.principles h3\),\s*\.case :global\(\.evidence-levels h3\),\s*\.case :global\(\.boundary-map h3\),\s*\.case :global\(\.feedback-loop h3\)\s*\{[^}]*margin-block:\s*var\(--case-index-title-gap\)\s+var\(--case-title-body-gap\);[^}]*max-width:\s*var\(--case-card-title-max\);[^}]*font-size:\s*var\(--case-card-title-size\);[^}]*font-weight:\s*var\(--case-card-title-weight\);[^}]*line-height:\s*var\(--case-card-title-leading\);[^}]*\}/s,
+    );
+
+    expect(printCss).toMatch(
+      /article\[data-case-study\] h1\s*\{[^}]*font-size:\s*var\(--case-project-title-size\);[^}]*line-height:\s*var\(--case-project-title-leading\);[^}]*\}/s,
+    );
+    expect(printCss).toMatch(
+      /article\[data-case-study\] h2\s*\{[^}]*font-size:\s*var\(--case-chapter-title-size\)\s*!important;[^}]*line-height:\s*var\(--case-chapter-title-leading\)\s*!important;[^}]*\}/s,
+    );
   });
 
   it.each([
