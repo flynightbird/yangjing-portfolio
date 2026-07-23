@@ -107,6 +107,52 @@ test.describe('portfolio detail system', () => {
     });
   }
 
+  test('English Xuelang avoids a single-word final project-title line on mobile', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'mobile');
+    await page.setViewportSize({ width: 390, height: 900 });
+    await page.goto('/en/work/xuelang/', { waitUntil: 'networkidle' });
+    await page.evaluate(() => document.fonts.ready);
+
+    const title = page.locator('[data-xuelang-case] h1');
+    await expect(title).toHaveText('Xuelang Commercial Experience Upgrade');
+    const lineWordCounts = await title.evaluate((node) => {
+      const textNode = Array.from(node.childNodes).find(
+        (child): child is Text => child.nodeType === Node.TEXT_NODE,
+      );
+      if (!textNode) throw new Error('Xuelang title has no text node');
+
+      const words = Array.from(textNode.data.matchAll(/\S+/g), (match) => {
+        const start = match.index;
+        const range = document.createRange();
+        range.setStart(textNode, start);
+        range.setEnd(textNode, start + match[0].length);
+        const rects = Array.from(range.getClientRects()).filter(
+          (rect) => rect.width > 0 && rect.height > 0,
+        );
+        if (rects.length !== 1) {
+          throw new Error(`Expected one rendered rect for ${match[0]}`);
+        }
+        return { word: match[0], top: rects[0].top };
+      });
+
+      const lines: Array<{ top: number; words: string[] }> = [];
+      for (const word of words) {
+        const line = lines.find(({ top }) => Math.abs(top - word.top) <= 1);
+        if (line) line.words.push(word.word);
+        else lines.push({ top: word.top, words: [word.word] });
+      }
+      return lines
+        .sort((first, second) => first.top - second.top)
+        .map(({ words: renderedWords }) => renderedWords.length);
+    });
+
+    expect(lineWordCounts.length).toBeGreaterThan(1);
+    expect(lineWordCounts.reduce((sum, count) => sum + count, 0)).toBe(4);
+    expect(lineWordCounts.at(-1)).toBeGreaterThanOrEqual(2);
+  });
+
   for (const width of [1024, 390] as const) {
     for (const { route, root } of responsiveCases) {
       test(`${route} keeps headings contained at ${width}px`, async ({
