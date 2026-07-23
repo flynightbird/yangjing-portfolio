@@ -85,6 +85,17 @@ describe('AboutPage', () => {
     expect(screen.getByText('Alibaba · TDesign')).toBeVisible();
     expect(screen.getByText('Experience Design')).toBeVisible();
     expect(screen.getByText('Independent experience validation')).toBeVisible();
+    expect(screen.getByText('Research & Design')).toBeVisible();
+    expect(screen.queryByText('Research & Interaction')).not.toBeInTheDocument();
+    expect(screen.getByText('Product Designer (UI/UX)')).toBeVisible();
+
+    const agoraLink = within(timeline as HTMLElement).getByRole('link', { name: 'Agora' });
+    expect(agoraLink).toHaveAttribute('href', 'https://www.agora.io/');
+    expect(agoraLink).toHaveAttribute('target', '_blank');
+    expect(agoraLink).toHaveAttribute('rel', 'noreferrer');
+    expect(
+      screen.queryByText('全球领先的对话式 AI 与实时音视频云服务商', { exact: false }),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByText(
         'Rapidly build interactive HTML with product logic using Codex and Claude.',
@@ -129,6 +140,23 @@ describe('AboutPage', () => {
     expect(screen.getByText('体验设计')).toBeVisible();
     expect(screen.getByText('字节跳动')).toBeVisible();
     expect(screen.getByText('声网 Agora')).toBeVisible();
+    expect(screen.getByText('研究与设计')).toBeVisible();
+    expect(screen.queryByText('研究与交互')).not.toBeInTheDocument();
+    expect(screen.getByText('产品设计师（UI/UX）')).toBeVisible();
+
+    const timeline = container.querySelector('[data-about-timeline]');
+    expect(timeline).not.toBeNull();
+    const shengwangLink = within(timeline as HTMLElement).getByRole('link', {
+      name: '声网 Agora',
+    });
+    expect(shengwangLink).toHaveAttribute('href', 'https://www.shengwang.cn/');
+    expect(shengwangLink).toHaveAttribute('target', '_blank');
+    expect(shengwangLink).toHaveAttribute('rel', 'noreferrer');
+    expect(
+      within(timeline as HTMLElement).getByText(
+        '（全球领先的对话式 AI 与实时音视频云服务商）',
+      ),
+    ).toBeVisible();
     expect(container).not.toHaveTextContent(/AIDX/i);
   });
 });

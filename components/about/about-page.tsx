@@ -21,6 +21,8 @@ interface TimelineEntry {
   readonly date: string;
   readonly title: string;
   readonly company: string;
+  readonly companyHref?: string;
+  readonly companyDescription?: string;
   readonly role: string;
 }
 
@@ -86,7 +88,7 @@ const copy = {
       {
         tone: 'ux',
         date: '2010–2016',
-        title: 'Research & Interaction',
+        title: 'Research & Design',
         company: 'ZTE · 99bill',
         role: 'User research & mobile UX',
       },
@@ -116,7 +118,8 @@ const copy = {
         date: '2022.07–Present',
         title: 'AI & Real-Time',
         company: 'Agora',
-        role: 'Product Designer',
+        companyHref: 'https://www.agora.io/',
+        role: 'Product Designer (UI/UX)',
       },
     ] satisfies TimelineEntry[],
     educationLabel: 'Education',
@@ -175,7 +178,7 @@ const copy = {
       {
         tone: 'ux',
         date: '2010–2016',
-        title: '研究与交互',
+        title: '研究与设计',
         company: '中兴 · 快钱',
         role: '用户研究与移动 UX',
       },
@@ -205,7 +208,9 @@ const copy = {
         date: '2022.07–至今',
         title: 'AI 与实时互动',
         company: '声网 Agora',
-        role: '产品设计师',
+        companyHref: 'https://www.shengwang.cn/',
+        companyDescription: '（全球领先的对话式 AI 与实时音视频云服务商）',
+        role: '产品设计师（UI/UX）',
       },
     ] satisfies TimelineEntry[],
     educationLabel: '教育经历',
@@ -505,12 +510,21 @@ export function AboutPage({ locale }: AboutPageProps) {
         />
         <div data-scroll-reveal-group="media">
           <ol className={styles.timeline} data-about-timeline>
-            {content.timeline.map((entry) => (
+            {content.timeline.map((entry: TimelineEntry) => (
               <li key={entry.date} data-tone={entry.tone}>
                 <span className={styles.timelineDot} aria-hidden="true" />
                 <time>{entry.date}</time>
                 <h3>{entry.title}</h3>
-                <p>{entry.company}</p>
+                <p className={styles.timelineCompany}>
+                  {entry.companyHref ? (
+                    <a href={entry.companyHref} target="_blank" rel="noreferrer">
+                      {entry.company}
+                    </a>
+                  ) : (
+                    entry.company
+                  )}
+                  {entry.companyDescription ? <span>{entry.companyDescription}</span> : null}
+                </p>
                 <p>{entry.role}</p>
               </li>
             ))}

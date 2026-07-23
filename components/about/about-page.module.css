@@ -595,6 +595,30 @@
   line-height: 1.5;
 }
 
+.timelineCompany a {
+  color: inherit;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  transition: color 180ms ease-out, text-decoration-color 180ms ease-out;
+}
+
+.timelineCompany a:hover,
+.timelineCompany a:focus-visible {
+  color: var(--about-leadership);
+  text-decoration-color: currentColor;
+}
+
+.timelineCompany a:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.timelineCompany span {
+  color: #8d928a;
+}
+
 .timeline p + p {
   margin-top: 0.25rem;
   color: #8d928a;
@@ -817,5 +841,9 @@
 
   .capabilityCard:hover {
     transform: none;
+  }
+
+  .timelineCompany a {
+    transition: none;
   }
 }
