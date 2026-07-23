@@ -1,5 +1,19 @@
 import { expect, test, type Locator } from '@playwright/test';
 
+type SiblingRelation = 'preceding' | 'following';
+
+interface SiblingGeometry {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+  width: number;
+  height: number;
+  name: string;
+  relation: SiblingRelation;
+  hasMedia: boolean;
+}
+
 const fontSize = async (locator: Locator) =>
   locator.evaluate((node) => parseFloat(getComputedStyle(node).fontSize));
 
@@ -117,6 +131,38 @@ test.describe('portfolio detail system', () => {
 
         const headings = page.locator(`${root} :is(h1, h2, h3, h4)`);
         expect(await headings.count()).toBeGreaterThan(0);
+        await page.evaluate(() => document.fonts.ready);
+        await expect
+          .poll(
+            () =>
+              headings.evaluateAll(
+                (nodes) =>
+                  new Promise<boolean>((resolve) => {
+                    const snapshot = () =>
+                      nodes.map((node) => {
+                        const rect = node.getBoundingClientRect();
+                        return [rect.left, rect.top, rect.width, rect.height];
+                      });
+                    const before = snapshot();
+                    requestAnimationFrame(() => {
+                      requestAnimationFrame(() => {
+                        const after = snapshot();
+                        resolve(
+                          before.every((box, boxIndex) =>
+                            box.every(
+                              (value, valueIndex) =>
+                                Math.abs(value - after[boxIndex][valueIndex]) <=
+                                0.25,
+                            ),
+                          ),
+                        );
+                      });
+                    });
+                  }),
+              ),
+            { timeout: 5_000, intervals: [100, 250, 500] },
+          )
+          .toBe(true);
         const boxes = await headings.evaluateAll(
           (nodes, rootSelector) =>
             nodes.map((node, index) => {
@@ -144,35 +190,11 @@ test.describe('portfolio detail system', () => {
                   bottom: textRects[0].bottom,
                 },
               );
-              const horizontalOverflow = Math.max(
-                0,
-                node.scrollWidth - node.clientWidth,
-              );
-              const verticalOverflow = Math.max(
-                0,
-                node.scrollHeight - node.clientHeight,
-              );
               const rendered = {
-                left: Math.min(
-                  rect.left,
-                  textBounds.left,
-                  style.direction === 'rtl'
-                    ? rect.left - horizontalOverflow
-                    : rect.left,
-                ),
-                right: Math.max(
-                  rect.right,
-                  textBounds.right,
-                  style.direction === 'rtl'
-                    ? rect.right
-                    : rect.right + horizontalOverflow,
-                ),
+                left: Math.min(rect.left, textBounds.left),
+                right: Math.max(rect.right, textBounds.right),
                 top: Math.min(rect.top, textBounds.top),
-                bottom: Math.max(
-                  rect.bottom,
-                  textBounds.bottom,
-                  rect.bottom + verticalOverflow,
-                ),
+                bottom: Math.max(rect.bottom, textBounds.bottom),
               };
               const clipsOwnX = ['hidden', 'clip'].includes(style.overflowX);
               const clipsOwnY = ['hidden', 'clip'].includes(style.overflowY);
@@ -189,23 +211,30 @@ test.describe('portfolio detail system', () => {
                 throw new Error(`Heading ${index} has no layout container`);
               }
               const containerRect = container.getBoundingClientRect();
-              const siblings = [];
+              const siblings: SiblingGeometry[] = [];
               const seenSiblings = new Set<Element>();
               const collectSiblings = (
                 elements: readonly Element[],
                 reference: Element,
               ) => {
                 for (const sibling of elements) {
+                  const isCaseNavigation =
+                    sibling.matches('aside') &&
+                    sibling.querySelector('[data-case-web-control]') !== null;
                   if (
                     sibling === reference ||
                     seenSiblings.has(sibling) ||
-                    sibling.getAttribute('aria-hidden') === 'true'
+                    isCaseNavigation ||
+                    sibling.getAttribute('aria-hidden') === 'true' ||
+                    ['presentation', 'none'].includes(
+                      sibling.getAttribute('role') ?? '',
+                    )
                   ) {
                     continue;
                   }
                   const siblingStyle = getComputedStyle(sibling);
                   if (
-                    ['absolute', 'fixed'].includes(siblingStyle.position) ||
+                    siblingStyle.position === 'fixed' ||
                     siblingStyle.display === 'none' ||
                     siblingStyle.visibility === 'hidden' ||
                     sibling.getClientRects().length === 0
@@ -218,7 +247,7 @@ test.describe('portfolio detail system', () => {
                   }
                   const relativePosition =
                     node.compareDocumentPosition(sibling);
-                  const relation =
+                  const relation: SiblingRelation =
                     relativePosition & Node.DOCUMENT_POSITION_FOLLOWING
                       ? 'following'
                       : 'preceding';
@@ -232,6 +261,11 @@ test.describe('portfolio detail system', () => {
                     height: siblingRect.height,
                     name: sibling.tagName.toLowerCase(),
                     relation,
+                    hasMedia:
+                      sibling.matches('img, picture, video, canvas, svg') ||
+                      sibling.querySelector(
+                        'img, picture, video, canvas, svg',
+                      ) !== null,
                   });
                 }
               };
@@ -244,13 +278,6 @@ test.describe('portfolio detail system', () => {
                   Array.from(comparisonNode.parentElement.children),
                   comparisonNode,
                 );
-                const hasPreceding = siblings.some(
-                  ({ relation }) => relation === 'preceding',
-                );
-                const hasFollowing = siblings.some(
-                  ({ relation }) => relation === 'following',
-                );
-                if (hasPreceding && hasFollowing) break;
                 comparisonNode = comparisonNode.parentElement;
               }
               if (siblings.length === 0) {
@@ -300,6 +327,9 @@ test.describe('portfolio detail system', () => {
                 fontSize: parseFloat(style.fontSize),
                 lineHeight: parseFloat(style.lineHeight),
                 viewport: window.innerWidth,
+                isCourseStageHeading:
+                  node.matches('h4') &&
+                  node.closest('[data-course-entry]') !== null,
                 container: {
                   left: containerRect.left,
                   right: containerRect.right,
@@ -325,6 +355,19 @@ test.describe('portfolio detail system', () => {
           ),
           `${route} at ${width}px has no following-sibling coverage`,
         ).toBe(true);
+        if (route.includes('/work/xuelang/')) {
+          const courseStageHeading = boxes.find(
+            ({ isCourseStageHeading }) => isCourseStageHeading,
+          );
+          expect(
+            courseStageHeading,
+            `${route} at ${width}px has no course stage heading`,
+          ).toBeDefined();
+          expect(
+            courseStageHeading?.siblings.some(({ hasMedia }) => hasMedia),
+            `${route} course stage heading is not compared with adjacent media at ${width}px`,
+          ).toBe(true);
+        }
 
         for (const [index, box] of boxes.entries()) {
           expect(box.rendered.left).toBeGreaterThanOrEqual(-1);
