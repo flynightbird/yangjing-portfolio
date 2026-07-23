@@ -87,7 +87,6 @@ describe('SiteHeader', () => {
   it.each([
     '/en/work/meeting/',
     '/zh/work/call-agent/',
-    '/en/work/convo-ai/',
     '/en/work/xuelang/',
   ])('marks detail route %s as light', (pathname) => {
     navigationMocks.pathname = pathname;
@@ -111,5 +110,17 @@ describe('SiteHeader', () => {
     render(<SiteHeader locale={pathname.startsWith('/zh/') ? 'zh' : 'en'} />);
 
     expect(screen.getByRole('banner')).toHaveAttribute('data-surface', 'dark');
+  });
+
+  it('uses dark as the initial ConvoAI surface and follows shared tone events', () => {
+    navigationMocks.pathname = '/en/work/convo-ai/';
+    render(<SiteHeader locale="en" />);
+    const header = screen.getByRole('banner');
+    expect(header).toHaveAttribute('data-surface', 'dark');
+
+    act(() => {
+      window.dispatchEvent(new CustomEvent('portfolio-nav-tone', { detail: 'light' }));
+    });
+    expect(header).toHaveAttribute('data-surface', 'light');
   });
 });

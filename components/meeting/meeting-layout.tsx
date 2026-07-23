@@ -35,8 +35,6 @@ export function MeetingLayout({
   meta,
   locale,
   children,
-  previous,
-  next,
 }: ContentLayoutProps) {
   const text = copy[locale];
 
@@ -68,35 +66,8 @@ export function MeetingLayout({
             </figure>
           </header>
           <div className={styles.content}>{children}</div>
-          <CaseNeighbors locale={locale} previous={previous} next={next} />
         </article>
       </div>
     </div>
-  );
-}
-
-function CaseNeighbors({
-  locale,
-  previous,
-  next,
-}: Pick<ContentLayoutProps, 'locale' | 'previous' | 'next'>) {
-  if (!previous && !next) return null;
-  const text = locale === 'zh'
-    ? { label: '项目导航', previous: '上一个项目', next: '下一个项目' }
-    : { label: 'Project navigation', previous: 'Previous project', next: 'Next project' };
-
-  return (
-    <nav className={styles.neighbors} aria-label={text.label}>
-      {previous ? (
-        <a href={previous.href} data-project-previous>
-          <span>{text.previous}</span><strong>{previous.title}</strong>
-        </a>
-      ) : <span />}
-      {next ? (
-        <a href={next.href} data-project-next>
-          <span>{text.next}</span><strong>{next.title}</strong>
-        </a>
-      ) : null}
-    </nav>
   );
 }

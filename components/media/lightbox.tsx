@@ -39,6 +39,7 @@ interface LightboxProps {
   readonly positionLabel?: string;
   readonly errorLabel?: string;
   readonly expandLabel?: string;
+  readonly triggerLoading?: 'eager' | 'lazy';
 }
 
 const subscribeToHydration = () => () => {};
@@ -88,6 +89,7 @@ export function Lightbox({
   positionLabel,
   errorLabel,
   expandLabel,
+  triggerLoading = 'lazy',
 }: LightboxProps) {
   const resolvedExpandLabel = expandLabel
     ?? (/[㐀-鿿]/u.test(triggerLabel) ? '放大' : 'Expand');
@@ -479,7 +481,7 @@ export function Lightbox({
       >
         {/* Preserve the verified evidence file and its intrinsic dimensions. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={src} width={width} height={height} alt={alt} loading="lazy" />
+        <img src={src} width={width} height={height} alt={alt} loading={triggerLoading} />
         <span className={styles.expandCue} data-expand-cue aria-hidden="true">
           <Maximize2 size={15} strokeWidth={1.8} />
           <span>{resolvedExpandLabel}</span>

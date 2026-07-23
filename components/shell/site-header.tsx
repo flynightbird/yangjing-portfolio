@@ -12,7 +12,7 @@ import type { Locale } from '@/content/types';
 import styles from './site-header.module.css';
 
 function resolveHeaderSurface(pathname: string): 'light' | 'dark' {
-  return /^\/(?:en|zh)\/work\/(?:call-agent|convo-ai|meeting|xuelang)\/?$/.test(pathname)
+  return /^\/(?:en|zh)\/work\/(?:call-agent|meeting|xuelang)\/?$/.test(pathname)
     ? 'light'
     : 'dark';
 }
@@ -22,6 +22,7 @@ export function SiteHeader({ locale }: { readonly locale: Locale }) {
   const localeRoot = `/${locale}/`;
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [sectionSurface, setSectionSurface] = useState<'light' | 'dark' | null>(null);
   const topSentinelRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -33,6 +34,15 @@ export function SiteHeader({ locale }: { readonly locale: Locale }) {
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const updateTone = (event: Event) => {
+      const tone = (event as CustomEvent<'light' | 'dark'>).detail;
+      if (tone === 'light' || tone === 'dark') setSectionSurface(tone);
+    };
+    window.addEventListener('portfolio-nav-tone', updateTone);
+    return () => window.removeEventListener('portfolio-nav-tone', updateTone);
   }, []);
 
   const links = (
@@ -54,7 +64,7 @@ export function SiteHeader({ locale }: { readonly locale: Locale }) {
       <header
         className={styles.root}
         data-scrolled={scrolled ? 'true' : 'false'}
-        data-surface={resolveHeaderSurface(pathname)}
+        data-surface={sectionSurface ?? resolveHeaderSurface(pathname)}
       >
         <div className={styles.capsule}>
           <a

@@ -115,6 +115,16 @@ describe('draft publication boundary', () => {
 });
 
 describe('publication validation CLI', () => {
+  it('requires the ConvoAI manifest and representative complete media', () => {
+    expect(publicationInputs).toEqual(expect.arrayContaining([
+      'evidence/convo-ai/media-manifest.json',
+      'public/videos/convo-ai/app-voiceprint-lock.mp4',
+      'public/images/convo-ai/posters/app-voiceprint-lock.webp',
+      'public/videos/convo-ai/web-realtime-data.mp4',
+      'public/images/convo-ai/posters/web-realtime-data.webp',
+    ]));
+  });
+
   it('requires the current Meeting evidence contract and accepts complete fixtures', async () => {
     const meetingInputs = [
       'evidence/meeting/manifest.json',

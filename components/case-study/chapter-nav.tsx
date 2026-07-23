@@ -29,6 +29,7 @@ export function ChapterNav({
 }: ChapterNavProps) {
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState(chapters[0]?.id);
+  const [sectionSurface, setSectionSurface] = useState(surface);
   const currentActiveId = chapters.some(({ id }) => id === activeId)
     ? activeId
     : chapters[0]?.id;
@@ -49,6 +50,15 @@ export function ChapterNav({
           open: 'Open chapter index',
           close: 'Close chapter index',
         };
+
+  useEffect(() => {
+    const updateTone = (event: Event) => {
+      const tone = (event as CustomEvent<'light' | 'dark'>).detail;
+      if (tone === 'light' || tone === 'dark') setSectionSurface(tone);
+    };
+    window.addEventListener('portfolio-nav-tone', updateTone);
+    return () => window.removeEventListener('portfolio-nav-tone', updateTone);
+  }, []);
 
   useEffect(() => {
     if (typeof IntersectionObserver === 'undefined') return;
@@ -77,7 +87,7 @@ export function ChapterNav({
       data-case-web-control
       data-chapter-variant={variant}
       data-compact-at={compactAt}
-      data-surface={surface}
+      data-surface={sectionSurface}
     >
       <button
         className={styles.toggle}

@@ -5,7 +5,6 @@ import { CaseLayout } from '@/components/case-study/case-layout';
 import {
   contentEntries,
   getContentEntry,
-  type ContentEntry,
 } from '@/content/registry';
 import { workSlugs, type WorkSlug } from '@/content/types';
 import { isLocale } from '@/lib/i18n/locales';
@@ -52,27 +51,6 @@ export async function generateMetadata({
   };
 }
 
-function resolveNeighbor(
-  entry: ContentEntry | undefined,
-  locale: string,
-) {
-  if (!entry) return undefined;
-
-  return {
-    href: `/${locale}/${entry.meta.type}/${entry.meta.slug}/`,
-    title: entry.meta.title,
-  };
-}
-
-function findUniqueNeighbor(slug: string | undefined, locale: string) {
-  if (!slug) return undefined;
-
-  const candidates = contentEntries.filter(
-    ({ meta }) => meta.locale === locale && meta.slug === slug,
-  );
-  return candidates.length === 1 ? candidates[0] : undefined;
-}
-
 export default async function WorkCasePage({ params }: WorkCasePageProps) {
   const { locale, slug } = await params;
 
@@ -86,16 +64,12 @@ export default async function WorkCasePage({ params }: WorkCasePageProps) {
   }
 
   const { Actions, Component, Layout = CaseLayout, meta } = entry;
-  const previousEntry = findUniqueNeighbor(meta.previousSlug, locale);
-  const nextEntry = findUniqueNeighbor(meta.nextSlug, locale);
 
   return (
     <Layout
       meta={meta}
       locale={locale}
       actions={Actions ? <Actions locale={locale} /> : undefined}
-      previous={resolveNeighbor(previousEntry, locale)}
-      next={resolveNeighbor(nextEntry, locale)}
     >
       <Component />
     </Layout>

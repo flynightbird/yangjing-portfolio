@@ -12,6 +12,7 @@ interface EvidenceFigureProps {
   readonly caption: string;
   readonly locale: Locale;
   readonly className?: string;
+  readonly eager?: boolean;
 }
 
 export function EvidenceFigure({
@@ -23,6 +24,7 @@ export function EvidenceFigure({
   caption,
   locale,
   className,
+  eager = false,
 }: EvidenceFigureProps) {
   const triggerLabel = locale === 'zh' ? `放大查看：${alt}` : `Enlarge: ${alt}`;
   const dialogLabel = locale === 'zh' ? '查看产品界面' : 'Product interface detail';
@@ -44,6 +46,7 @@ export function EvidenceFigure({
         dialogLabel={dialogLabel}
         closeLabel={closeLabel}
         expandLabel={expandLabel}
+        triggerLoading={eager ? 'eager' : 'lazy'}
       />
       <figcaption>{caption}</figcaption>
     </figure>

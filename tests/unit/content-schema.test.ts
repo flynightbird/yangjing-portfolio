@@ -27,8 +27,6 @@ const validCallAgent = {
   heroMedia: '/images/call-agent/ai-preview-live.png',
   evidenceLevel: 'observed',
   featuredOrder: 2,
-  previousSlug: 'xuelang',
-  nextSlug: 'meeting',
 } as const;
 
 const TestContent = () => null;
@@ -48,46 +46,36 @@ const launchDefinitions = [
     slug: 'xuelang',
     translationKey: 'work-xuelang',
     featuredOrder: 1,
-    nextSlug: 'call-agent',
   },
   {
     type: 'work',
     slug: 'call-agent',
     translationKey: 'work-call-agent',
     featuredOrder: 2,
-    previousSlug: 'xuelang',
-    nextSlug: 'convo-ai',
   },
   {
     type: 'work',
     slug: 'convo-ai',
     translationKey: 'work-convo-ai',
     featuredOrder: 3,
-    previousSlug: 'call-agent',
-    nextSlug: 'meeting',
   },
   {
     type: 'work',
     slug: 'meeting',
     translationKey: 'work-meeting',
     featuredOrder: 4,
-    previousSlug: 'convo-ai',
-    nextSlug: 'tangping',
   },
   {
     type: 'work',
     slug: 'tangping',
     translationKey: 'work-tangping',
     featuredOrder: 5,
-    previousSlug: 'meeting',
-    nextSlug: 'stt-demo',
   },
   {
     type: 'build',
     slug: 'stt-demo',
     translationKey: 'build-stt-demo',
     featuredOrder: 6,
-    previousSlug: 'tangping',
   },
 ] as const;
 
@@ -99,12 +87,6 @@ function createCompleteLaunchEntries(): ContentEntry[] {
           ...validCallAgent,
           ...definition,
           locale,
-          previousSlug:
-            'previousSlug' in definition
-              ? definition.previousSlug
-              : undefined,
-          nextSlug:
-            'nextSlug' in definition ? definition.nextSlug : undefined,
         }),
       ),
     ),
@@ -112,6 +94,17 @@ function createCompleteLaunchEntries(): ContentEntry[] {
 }
 
 describe('content metadata', () => {
+  it('removes legacy project-neighbor fields from parsed metadata', () => {
+    const parsed = contentMetaSchema.parse({
+      ...validCallAgent,
+      previousSlug: 'xuelang',
+      nextSlug: 'meeting',
+    });
+
+    expect(parsed).not.toHaveProperty('previousSlug');
+    expect(parsed).not.toHaveProperty('nextSlug');
+  });
+
   it('accepts the exact approved Call Agent fixture', () => {
     expect(contentMetaSchema.parse(validCallAgent)).toEqual(validCallAgent);
   });
@@ -125,31 +118,6 @@ describe('content metadata', () => {
     expect(contentMetaSchema.parse({ ...validCallAgent, chapters }).chapters).toEqual(
       chapters,
     );
-  });
-
-  it('accepts omitted neighbors at the canonical navigation boundaries', () => {
-    expect(
-      contentMetaSchema.parse({
-        ...validCallAgent,
-        slug: 'xuelang',
-        translationKey: 'work-xuelang',
-        featuredOrder: 1,
-        previousSlug: undefined,
-        nextSlug: 'call-agent',
-      }),
-    ).toMatchObject({ slug: 'xuelang', nextSlug: 'call-agent' });
-
-    expect(
-      contentMetaSchema.parse({
-        ...validCallAgent,
-        type: 'build',
-        slug: 'stt-demo',
-        translationKey: 'build-stt-demo',
-        featuredOrder: 6,
-        previousSlug: 'tangping',
-        nextSlug: undefined,
-      }),
-    ).toMatchObject({ slug: 'stt-demo', previousSlug: 'tangping' });
   });
 
   it('rejects unsupported evidence claims', () => {
@@ -244,38 +212,10 @@ describe('content registry', () => {
     );
   });
 
-  it('checks dangling navigation targets by default', () => {
-    expect(() => assertCompleteRegistry(pairedEntries)).toThrow(
-      /entries\[0\]\.meta\.previousSlug.*xuelang.*en/i,
-    );
-  });
-
-  it('accepts all bilingual launch routes with canonical boundary navigation', () => {
+  it('accepts all bilingual launch routes in canonical featured order', () => {
     expect(() =>
       assertCompleteRegistry(createCompleteLaunchEntries()),
     ).not.toThrow();
-  });
-
-  it('rejects an incorrect interior neighbor even when that target exists', () => {
-    const entries = createCompleteLaunchEntries();
-    entries[1] = entry(
-      contentMetaSchema.parse({ ...entries[1].meta, nextSlug: 'stt-demo' }),
-    );
-
-    expect(() => assertCompleteRegistry(entries)).toThrow(
-      /entries\[1\]\.meta\.nextSlug.*expected.*convo-ai/i,
-    );
-  });
-
-  it('rejects a missing interior neighbor', () => {
-    const entries = createCompleteLaunchEntries();
-    entries[1] = entry(
-      contentMetaSchema.parse({ ...entries[1].meta, previousSlug: undefined }),
-    );
-
-    expect(() => assertCompleteRegistry(entries)).toThrow(
-      /entries\[1\]\.meta\.previousSlug.*expected.*xuelang/i,
-    );
   });
 
   it('rejects a route whose featured order differs from the canonical index', () => {
@@ -311,7 +251,6 @@ describe('content registry', () => {
       contentMetaSchema.parse({
         ...validCallAgent,
         slug: 'xuelang',
-        previousSlug: 'call-agent',
         locale: 'en',
       }),
     );
@@ -333,8 +272,6 @@ describe('content registry', () => {
         ...validCallAgent,
         locale: 'zh',
         slug: 'meeting',
-        previousSlug: 'call-agent',
-        nextSlug: 'stt-demo',
       }),
     );
 
@@ -352,18 +289,4 @@ describe('content registry', () => {
     ).toThrow(/entries\[0\]\.meta\.heroMedia.*ai-preview-live\.png/i);
   });
 
-  it('rejects previous or next targets outside the locale registry', () => {
-    const selfContainedPair = pairedEntries.map(({ meta, Component }) => ({
-      meta: contentMetaSchema.parse({
-        ...meta,
-        previousSlug: 'call-agent',
-        nextSlug: 'meeting',
-      }),
-      Component,
-    }));
-
-    expect(() =>
-      assertCompleteRegistry(selfContainedPair),
-    ).toThrow(/entries\[0\]\.meta\.nextSlug.*meeting.*en/i);
-  });
 });

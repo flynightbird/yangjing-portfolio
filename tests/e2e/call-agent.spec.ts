@@ -72,20 +72,7 @@ for (const locale of ['en', 'zh'] as const) {
         expect(size.naturalHeight).toBeGreaterThan(0);
       }
 
-      const projectNavigation = page.getByRole('navigation', {
-        name: locale === 'zh' ? '项目导航' : 'Project navigation',
-      });
-      const previous = page.locator('[data-project-previous]');
-      const next = page.locator('[data-project-next]');
-
-      await expect(projectNavigation).toBeVisible();
-      await expect(previous).toHaveAttribute(
-        'href',
-        `/${locale}/work/xuelang/`,
-      );
-      await expect(previous).toContainText(locale === 'zh' ? '学浪商业化体验升级' : 'Xuelang');
-      await expect(next).toHaveAttribute('href', `/${locale}/work/convo-ai/`);
-      await expect(next).toContainText('ConvoAI');
+      await expect(page.locator('[data-project-previous], [data-project-next]')).toHaveCount(0);
     });
 
     test('opens and dismisses evidence with the keyboard without losing scroll state', async ({ page }) => {

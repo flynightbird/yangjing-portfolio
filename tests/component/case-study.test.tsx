@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -114,6 +114,16 @@ describe('ChapterNav', () => {
       screen.getByRole('navigation', { name: 'Case study chapters' }).parentElement,
     ).toHaveAttribute('data-surface', 'light');
   });
+
+  it('updates the chapter rail from the shared navigation tone event', () => {
+    render(<ChapterNav chapters={chapters} locale="en" surface="dark" />);
+    const root = screen.getByRole('navigation', { name: 'Case study chapters' }).parentElement;
+    expect(root).toHaveAttribute('data-surface', 'dark');
+    act(() => {
+      window.dispatchEvent(new CustomEvent('portfolio-nav-tone', { detail: 'light' }));
+    });
+    expect(root).toHaveAttribute('data-surface', 'light');
+  });
 });
 
 describe('CaseLayout', () => {
@@ -132,7 +142,6 @@ describe('CaseLayout', () => {
       heroMedia: '/images/meeting/hero.png',
       evidenceLevel: 'retrospective',
       featuredOrder: 3,
-      previousSlug: 'call-agent',
       caseLabel: 'MEETING / REAL-TIME COLLABORATION',
       facts: [{ label: 'Complexity', value: 'Real-time state' }],
     } as ContentMeta & {
@@ -166,6 +175,7 @@ describe('EvidenceFigure', () => {
         label="OBSERVED / Product evidence"
         caption="Configuration and runtime feedback share one view."
         locale="en"
+        eager
       />,
     );
 
@@ -174,6 +184,7 @@ describe('EvidenceFigure', () => {
         name: 'Agent configuration next to a live call preview',
       }),
     ).toHaveAttribute('width', '2934');
+    expect(screen.getByRole('img', { name: 'Agent configuration next to a live call preview' })).toHaveAttribute('loading', 'eager');
     expect(screen.getByText('OBSERVED / Product evidence')).toBeVisible();
     expect(
       screen.getByText('Configuration and runtime feedback share one view.'),

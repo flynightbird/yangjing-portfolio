@@ -12,13 +12,6 @@ export interface ContentLayoutProps {
   readonly locale: Locale;
   readonly children: ReactNode;
   readonly actions?: ReactNode;
-  readonly previous?: CaseNeighbor;
-  readonly next?: CaseNeighbor;
-}
-
-export interface CaseNeighbor {
-  readonly href: string;
-  readonly title: string;
 }
 
 const copy = {
@@ -29,9 +22,6 @@ const copy = {
     status: 'Status',
     evidence: 'Evidence',
     disclosure: 'Disclosure',
-    previous: 'Previous project',
-    next: 'Next project',
-    projectNavigation: 'Project navigation',
   },
   zh: {
     projectFacts: '项目概况',
@@ -40,9 +30,6 @@ const copy = {
     status: '状态',
     evidence: '证据',
     disclosure: '公开说明',
-    previous: '上一个项目',
-    next: '下一个项目',
-    projectNavigation: '项目导航',
   },
 } as const;
 
@@ -51,8 +38,6 @@ export function CaseLayout({
   locale,
   children,
   actions,
-  previous,
-  next,
 }: ContentLayoutProps) {
   const text = copy[locale];
 
@@ -101,25 +86,6 @@ export function CaseLayout({
             {actions}
           </header>
           {children}
-          {previous || next ? (
-            <nav
-              className={styles.projectNavigation}
-              aria-label={text.projectNavigation}
-            >
-              {previous ? (
-                <a href={previous.href} data-project-previous>
-                  <span>{text.previous}</span>
-                  <strong>{previous.title}</strong>
-                </a>
-              ) : null}
-              {next ? (
-                <a href={next.href} data-project-next>
-                  <span>{text.next}</span>
-                  <strong>{next.title}</strong>
-                </a>
-              ) : null}
-            </nav>
-          ) : null}
         </article>
       </div>
     </div>
