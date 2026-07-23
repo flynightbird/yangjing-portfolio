@@ -90,7 +90,8 @@ describe('shell dictionaries', () => {
     expect(zhDictionary.home.projects.aidx.company).toBe('新加坡 AI 公司');
     expect(zhDictionary.home.projects.sttDemo.company).toBe('Agora / 声网');
     expect(enDictionary.actions).toHaveProperty('downloadPdf');
-    expect(enDictionary.actions).toHaveProperty('next');
+    expect(enDictionary.actions).not.toHaveProperty('previous');
+    expect(enDictionary.actions).not.toHaveProperty('next');
     expect(enDictionary.notFound).toHaveProperty('title');
     expect(enDictionary.directContact).toHaveProperty('email');
     expect(enDictionary.menu.label).toBe('Menu');

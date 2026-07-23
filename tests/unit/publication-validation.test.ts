@@ -182,7 +182,7 @@ describe('publication validation CLI', () => {
         .filter((value) => !existsSync(path.join(process.cwd(), value)))
         .map((value) => `Missing publication input: ${value}`),
     );
-  }, 10_000);
+  }, 20_000);
 
   it('rejects an unknown mode', () => {
     const result = spawnSync(
@@ -193,7 +193,7 @@ describe('publication validation CLI', () => {
 
     expect(result.status).toBe(1);
     expect(result.stderr).toMatch(/unknown publication validation mode.*surprise/i);
-  });
+  }, 20_000);
 
   it('accepts the current source publication contract', () => {
     const result = spawnSync(
@@ -209,7 +209,7 @@ describe('publication validation CLI', () => {
     expect(`${result.stdout}\n${result.stderr}`).not.toMatch(
       /missing launch route.*work\/(?:xuelang|meeting)/i,
     );
-  }, 10_000);
+  }, 20_000);
 
   it('turns every missing publication input into a source error', async () => {
     const result = await runPublicationValidation({

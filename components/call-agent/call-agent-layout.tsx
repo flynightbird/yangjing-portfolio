@@ -1,6 +1,5 @@
 import { ChapterNav } from '@/components/case-study/chapter-nav';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
-import { withBasePath } from '@/lib/i18n/locales';
 
 import { CallAgentHeroSequence } from './call-agent-hero-sequence';
 import styles from './call-agent-layout.module.css';
@@ -8,11 +7,11 @@ import { CallAgentMotion } from './call-agent-motion';
 import './call-agent-print.css';
 
 const copy = {
-  zh: { eyebrow: '声网 · CALL AGENT', audience: '为企业呼叫运营人员打造', facts: '项目概况', role: '角色', duration: '周期', status: '状态', previous: '上一个项目', next: '下一个项目', navigation: '项目导航' },
-  en: { eyebrow: 'AGORA · CALL AGENT', audience: 'Built for enterprise call operators', facts: 'Project facts', role: 'Role', duration: 'Duration', status: 'Status', previous: 'Previous project', next: 'Next project', navigation: 'Project navigation' },
+  zh: { eyebrow: '声网 · CALL AGENT', audience: '为企业呼叫运营人员打造', facts: '项目概况', role: '角色', duration: '周期', status: '状态' },
+  en: { eyebrow: 'AGORA · CALL AGENT', audience: 'Built for enterprise call operators', facts: 'Project facts', role: 'Role', duration: 'Duration', status: 'Status' },
 } as const;
 
-export function CallAgentLayout({ meta, locale, children, actions, previous, next }: ContentLayoutProps) {
+export function CallAgentLayout({ meta, locale, children, actions }: ContentLayoutProps) {
   const text = copy[locale];
   return (
     <CallAgentMotion>
@@ -38,12 +37,6 @@ export function CallAgentLayout({ meta, locale, children, actions, previous, nex
               </div>
             </header>
             {children}
-            {previous || next ? (
-              <nav className={styles.projectNavigation} aria-label={text.navigation}>
-                {previous ? <a href={withBasePath(previous.href)} data-project-previous><span>{text.previous}</span><strong>{previous.title}</strong></a> : <span />}
-                {next ? <a href={withBasePath(next.href)} data-project-next><span>{text.next}</span><strong>{next.title}</strong></a> : null}
-              </nav>
-            ) : null}
           </article>
         </div>
       </main>

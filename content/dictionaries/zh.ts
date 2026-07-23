@@ -188,8 +188,6 @@ export const zhDictionary = {
     downloadResume: '下载简历',
     viewPdf: '查看 PDF',
     downloadPdf: '下载 PDF',
-    previous: '上一个项目',
-    next: '下一个项目',
   },
   notFound: {
     title: '页面未找到',

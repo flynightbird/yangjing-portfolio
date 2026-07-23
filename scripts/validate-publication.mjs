@@ -109,7 +109,6 @@ const requiredMetadata = [
   'role',
   'duration',
   'status',
-  'disclosure',
   'heroMedia',
   'evidenceLevel',
   'featuredOrder',

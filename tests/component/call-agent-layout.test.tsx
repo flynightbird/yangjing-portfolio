@@ -33,7 +33,7 @@ describe('Call Agent dedicated layout', () => {
     expect(getEntry('work', 'tangping', 'en').Layout).toBe(TangpingLayout);
   });
 
-  it('renders one light case boundary, hero browser, facts, actions, and neighbors', () => {
+  it('renders one light case boundary, hero browser, facts, and actions', () => {
     vi.stubGlobal('IntersectionObserver', undefined);
     const meta = getEntry('work', 'call-agent', 'zh').meta;
     const { container } = render(
@@ -41,8 +41,6 @@ describe('Call Agent dedicated layout', () => {
         meta={meta}
         locale="zh"
         actions={<button type="button">下载案例</button>}
-        previous={{ href: '/zh/work/xuelang/', title: '学浪' }}
-        next={{ href: '/zh/work/meeting/', title: 'Meeting' }}
       >
         <section id="product-boundary"><h2>产品边界</h2></section>
       </CallAgentLayout>,
@@ -54,8 +52,7 @@ describe('Call Agent dedicated layout', () => {
     expect(screen.getByText(meta.role)).toBeVisible();
     expect(screen.getByText(meta.status)).toBeVisible();
     expect(screen.getByRole('button', { name: '下载案例' })).toBeVisible();
-    expect(screen.getByRole('link', { name: /学浪/ })).toHaveAttribute('href', '/zh/work/xuelang/');
-    expect(screen.getByRole('link', { name: /Meeting/ })).toHaveAttribute('href', '/zh/work/meeting/');
+    expect(container.querySelector('[data-project-previous], [data-project-next]')).toBeNull();
   });
 
   it('plays the detail Hero story in full, advancing only when each clip ends', () => {
