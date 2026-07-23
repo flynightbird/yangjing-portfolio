@@ -22,24 +22,37 @@ describe('portfolio detail visual system', () => {
     expect(css).not.toMatch(/color:\s*var\(--color-cobalt\)/);
   });
 
-  it('defines the approved editorial heading hierarchy', () => {
+  it('defines the semantic case-study heading token contract', () => {
     const css = read('app/globals.css');
 
-    expect(css).toMatch(
-      /--case-h1-size:\s*clamp\(3\.25rem,\s*5vw,\s*5\.5rem\)/,
+    const roles = [
+      ['project', 'clamp(2.5rem, 4.03vw, 3.625rem)', '1.06', '18ch'],
+      ['chapter', 'clamp(2.125rem, 3.47vw, 3.125rem)', '1.12', '20ch'],
+      ['narrative', 'clamp(1.75rem, 2.5vw, 2.25rem)', '1.18', '22ch'],
+      ['media', 'clamp(1.375rem, 2.01vw, 1.8125rem)', '1.16', '18ch'],
+      ['card', 'clamp(1.125rem, 1.53vw, 1.375rem)', '1.35', '28ch'],
+    ] as const;
+
+    for (const [role, size, leading, max] of roles) {
+      expect(css).toContain(`--case-${role}-title-size: ${size};`);
+      expect(css).toContain(`--case-${role}-title-weight: 600;`);
+      expect(css).toContain(`--case-${role}-title-leading: ${leading};`);
+      expect(css).toContain(`--case-${role}-title-max: ${max};`);
+    }
+
+    expect(css).toContain('--case-index-title-gap: 0.75rem;');
+    expect(css).toContain('--case-title-body-gap: 1.5rem;');
+    expect(css).toContain(
+      '--case-h1-size: var(--case-project-title-size);',
     );
-    expect(css).toMatch(/--case-h1-weight:\s*600/);
-    expect(css).toMatch(/--case-h1-leading:\s*1\.06/);
-    expect(css).toMatch(
-      /--case-h2-size:\s*clamp\(2\.2rem,\s*4vw,\s*4\.5rem\)/,
+    expect(css).toContain(
+      '--case-h2-size: var(--case-chapter-title-size);',
     );
-    expect(css).toMatch(/--case-h2-weight:\s*600/);
-    expect(css).toMatch(/--case-h2-leading:\s*1\.16/);
+    expect(css).toContain('--case-h3-size: var(--case-card-title-size);');
+
     expect(css).toMatch(
-      /--case-h3-size:\s*clamp\(1\.25rem,\s*2vw,\s*1\.75rem\)/,
+      /@media print\s*\{\s*:root\s*\{[^}]*--case-project-title-size:\s*31pt;[^}]*--case-chapter-title-size:\s*24pt;[^}]*--case-narrative-title-size:\s*18pt;[^}]*--case-media-title-size:\s*14pt;[^}]*--case-card-title-size:\s*11pt;[^}]*\}\s*\}/s,
     );
-    expect(css).toMatch(/--case-h3-weight:\s*600/);
-    expect(css).toMatch(/--case-h3-leading:\s*1\.28/);
   });
 
   it('keeps the base detail layout readable on dark surfaces', () => {
