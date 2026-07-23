@@ -247,10 +247,23 @@ test.describe('portfolio detail system', () => {
             const textRects = Array.from(range.getClientRects()).filter(
               (rect) => rect.width > 0 && rect.height > 0,
             );
+            const chapterHeader = heading.closest('.section-heading');
+            const following = chapterHeader
+              ? chapterHeader.nextElementSibling
+              : heading.nextElementSibling;
+            const followingRect = following?.getBoundingClientRect();
+            const noFollowingOverlap =
+              !followingRect ||
+              followingRect.width === 0 ||
+              followingRect.height === 0 ||
+              headingRect.bottom <= followingRect.top + 1;
             const fits =
               textRects.length > 0 &&
               headingRect.left >= containerRect.left - 1 &&
               headingRect.right <= containerRect.right + 1 &&
+              headingRect.top >= containerRect.top - 1 &&
+              headingRect.bottom <= containerRect.bottom + 1 &&
+              noFollowingOverlap &&
               textRects.every(
                 (rect) =>
                   rect.left >= containerRect.left - 1 &&
@@ -271,6 +284,12 @@ test.describe('portfolio detail system', () => {
                 top: containerRect.top,
                 bottom: containerRect.bottom,
               },
+              following: followingRect
+                ? {
+                    top: followingRect.top,
+                    bottom: followingRect.bottom,
+                  }
+                : null,
             };
           }),
         );
