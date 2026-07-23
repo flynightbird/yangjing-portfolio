@@ -312,6 +312,127 @@ describe('portfolio detail visual system', () => {
     expect(languagePaths).toContain('margin-block-start: 0;');
   });
 
+  it('maps Xuelang headings to the shared semantic roles', () => {
+    const layoutCss = read('components/xuelang/xuelang-layout.module.css');
+    const evidenceCss = read('components/xuelang/xuelang-evidence.module.css');
+    const printCss = read('components/xuelang/xuelang-print.css');
+    const heroTitle = ruleBlock(layoutCss, '.hero h1');
+    const eyebrow = ruleBlock(layoutCss, '.eyebrow');
+    const proposition = ruleBlock(layoutCss, '.proposition');
+    const sectionGrid = ruleBlock(
+      layoutCss,
+      '.content > :global(section)',
+    );
+    const sectionHeading = ruleBlock(
+      layoutCss,
+      '.content :global(.section-heading)',
+    );
+    const chapterTitle = ruleBlock(layoutCss, [
+      '.content :global(.section-heading h2)',
+      '.content > :global(section > h2)',
+    ]);
+    const problemTitle = ruleBlock(
+      layoutCss,
+      '.content :global(.xuelang-problem-list h3)',
+    );
+    const reflectionTitle = ruleBlock(
+      layoutCss,
+      '.content :global(.xuelang-reflection h3)',
+    );
+    const storyTitle = ruleBlock(evidenceCss, '.storyCopy > h3');
+    const learningTitle = ruleBlock(evidenceCss, '.learningStates h3');
+    const printProjectTitle = ruleBlock(
+      printCss,
+      '[data-xuelang-hero] h1',
+    );
+    const printChapterTitle = ruleBlock(
+      printCss,
+      '[data-xuelang-case] [data-case-study] section h2',
+    );
+    const printStoryTitle = ruleBlock(
+      printCss,
+      '[data-xuelang-case] [data-evidence-story] h3',
+    );
+    const printReflectionTitle = ruleBlock(
+      printCss,
+      '[data-xuelang-case] [data-case-study] .xuelang-reflection h3',
+    );
+
+    for (const declaration of [
+      'max-width: var(--case-project-title-max);',
+      'font-size: var(--case-project-title-size);',
+      'font-weight: var(--case-project-title-weight);',
+      'line-height: var(--case-project-title-leading);',
+    ]) {
+      expect(heroTitle).toContain(declaration);
+    }
+    expect(eyebrow).toContain(
+      'margin-block-end: var(--case-index-title-gap);',
+    );
+    expect(proposition).toContain(
+      'margin-block-start: var(--case-title-body-gap);',
+    );
+
+    expect(sectionGrid).toContain('gap: 1.5rem;');
+    expect(sectionHeading).toContain('display: grid;');
+    expect(sectionHeading).toContain('gap: var(--case-index-title-gap);');
+
+    for (const declaration of [
+      'max-width: var(--case-chapter-title-max);',
+      'font-size: var(--case-chapter-title-size);',
+      'font-weight: var(--case-chapter-title-weight);',
+      'line-height: var(--case-chapter-title-leading);',
+    ]) {
+      expect(chapterTitle).toContain(declaration);
+    }
+
+    for (const declaration of [
+      'margin-block: var(--case-index-title-gap) var(--case-title-body-gap);',
+      'max-width: var(--case-card-title-max);',
+      'font-size: var(--case-card-title-size);',
+      'font-weight: var(--case-card-title-weight);',
+      'line-height: var(--case-card-title-leading);',
+    ]) {
+      expect(problemTitle).toContain(declaration);
+    }
+
+    for (const title of [reflectionTitle, storyTitle, learningTitle]) {
+      for (const declaration of [
+        'margin-block: var(--case-index-title-gap) var(--case-title-body-gap);',
+        'max-width: var(--case-narrative-title-max);',
+        'font-size: var(--case-narrative-title-size);',
+        'font-weight: var(--case-narrative-title-weight);',
+        'line-height: var(--case-narrative-title-leading);',
+      ]) {
+        expect(title).toContain(declaration);
+      }
+    }
+    expect(evidenceCss).not.toMatch(/\.storyCopy:lang\(en\)\s*>\s*h3/);
+
+    for (const declaration of [
+      'max-width: var(--case-project-title-max) !important;',
+      'font-size: var(--case-project-title-size) !important;',
+      'line-height: var(--case-project-title-leading) !important;',
+    ]) {
+      expect(printProjectTitle).toContain(declaration);
+    }
+    for (const declaration of [
+      'max-width: var(--case-chapter-title-max) !important;',
+      'font-size: var(--case-chapter-title-size) !important;',
+      'line-height: var(--case-chapter-title-leading) !important;',
+    ]) {
+      expect(printChapterTitle).toContain(declaration);
+    }
+    for (const title of [printStoryTitle, printReflectionTitle]) {
+      expect(title).toContain(
+        'font-size: var(--case-narrative-title-size) !important;',
+      );
+      expect(title).toContain(
+        'line-height: var(--case-narrative-title-leading) !important;',
+      );
+    }
+  });
+
   it.each([
     'components/case-study/case-layout.module.css',
     'components/case-study/evidence-figure.module.css',
