@@ -177,29 +177,14 @@ test.describe('portfolio detail system', () => {
               const clipsOwnX = ['hidden', 'clip'].includes(style.overflowX);
               const clipsOwnY = ['hidden', 'clip'].includes(style.overflowY);
               const rootElement = node.closest(rootSelector);
-              let container = node.parentElement;
-              while (container) {
-                const display = getComputedStyle(container).display;
-                if (
-                  display !== 'contents' &&
-                  display !== 'inline' &&
-                  display !== 'inline-block' &&
-                  container.clientWidth > 0
-                ) {
-                  const candidateRect = container.getBoundingClientRect();
-                  const containsRenderedHeading =
-                    rendered.left >= candidateRect.left - 1 &&
-                    rendered.right <= candidateRect.right + 1 &&
-                    rendered.top >= candidateRect.top - 1 &&
-                    rendered.bottom <= candidateRect.bottom + 1;
-                  if (containsRenderedHeading || container === rootElement) {
-                    break;
-                  }
-                }
-                if (container === rootElement) break;
-                container = container.parentElement;
+              if (!rootElement) {
+                throw new Error(`Heading ${index} has no case root`);
               }
-              container ??= rootElement;
+              const isChapterHeading =
+                node.parentElement?.matches('.section-heading');
+              const container = isChapterHeading
+                ? node.closest('section')
+                : node.closest('article, figure, section, header');
               if (!container) {
                 throw new Error(`Heading ${index} has no layout container`);
               }
@@ -250,14 +235,26 @@ test.describe('portfolio detail system', () => {
                   });
                 }
               };
-              if (node.parentElement) {
-                collectSiblings(Array.from(node.parentElement.children), node);
-                if (node.parentElement.parentElement) {
-                  collectSiblings(
-                    Array.from(node.parentElement.parentElement.children),
-                    node.parentElement,
-                  );
-                }
+              let comparisonNode: Element = node;
+              while (
+                comparisonNode !== rootElement &&
+                comparisonNode.parentElement
+              ) {
+                collectSiblings(
+                  Array.from(comparisonNode.parentElement.children),
+                  comparisonNode,
+                );
+                const hasPreceding = siblings.some(
+                  ({ relation }) => relation === 'preceding',
+                );
+                const hasFollowing = siblings.some(
+                  ({ relation }) => relation === 'following',
+                );
+                if (hasPreceding && hasFollowing) break;
+                comparisonNode = comparisonNode.parentElement;
+              }
+              if (siblings.length === 0) {
+                throw new Error(`Heading ${index} has no comparable content`);
               }
               const clippingAncestors = [];
               let ancestor = node.parentElement;
