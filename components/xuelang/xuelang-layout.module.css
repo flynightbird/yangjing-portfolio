@@ -654,8 +654,13 @@
     padding-block: 2rem;
   }
 
+  .root:lang(en) .hero {
+    width: calc(100% + 0.9375rem);
+    margin-inline: -0.46875rem;
+  }
+
   .root:lang(en) .hero h1 {
-    font-size: 2.125rem;
+    font-size: 2.25rem;
   }
 
   .eyebrow {

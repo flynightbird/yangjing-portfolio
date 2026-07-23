@@ -117,6 +117,11 @@ test.describe('portfolio detail system', () => {
 
     const title = page.locator('[data-xuelang-case] h1');
     await expect(title).toHaveText('Xuelang Commercial Experience Upgrade');
+    const chapterTitle = page
+      .locator('[data-xuelang-case] .section-heading h2')
+      .first();
+    await expect(chapterTitle).toHaveCount(1);
+    expect(await fontSize(title)).toBeGreaterThan(await fontSize(chapterTitle));
     const lineWordCounts = await title.evaluate((node) => {
       const textNode = Array.from(node.childNodes).find(
         (child): child is Text => child.nodeType === Node.TEXT_NODE,
