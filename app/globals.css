@@ -93,15 +93,44 @@
   --line-height-heading: 1.2;
   --line-height-body: 1.65;
   --line-height-label: 1.4;
-  --case-h1-size: clamp(3.25rem, 5vw, 5.5rem);
-  --case-h1-weight: 600;
-  --case-h1-leading: 1.06;
-  --case-h2-size: clamp(2.2rem, 4vw, 4.5rem);
-  --case-h2-weight: 600;
-  --case-h2-leading: 1.16;
-  --case-h3-size: clamp(1.25rem, 2vw, 1.75rem);
-  --case-h3-weight: 600;
-  --case-h3-leading: 1.28;
+
+  --case-project-title-size: clamp(2.5rem, 4.03vw, 3.625rem);
+  --case-project-title-weight: 600;
+  --case-project-title-leading: 1.06;
+  --case-project-title-max: 18ch;
+
+  --case-chapter-title-size: clamp(2.125rem, 3.47vw, 3.125rem);
+  --case-chapter-title-weight: 600;
+  --case-chapter-title-leading: 1.12;
+  --case-chapter-title-max: 20ch;
+
+  --case-narrative-title-size: clamp(1.75rem, 2.5vw, 2.25rem);
+  --case-narrative-title-weight: 600;
+  --case-narrative-title-leading: 1.18;
+  --case-narrative-title-max: 22ch;
+
+  --case-media-title-size: clamp(1.375rem, 2.01vw, 1.8125rem);
+  --case-media-title-weight: 600;
+  --case-media-title-leading: 1.16;
+  --case-media-title-max: 18ch;
+
+  --case-card-title-size: clamp(1.125rem, 1.53vw, 1.375rem);
+  --case-card-title-weight: 600;
+  --case-card-title-leading: 1.35;
+  --case-card-title-max: 28ch;
+
+  --case-index-title-gap: 0.75rem;
+  --case-title-body-gap: 1.5rem;
+
+  --case-h1-size: var(--case-project-title-size);
+  --case-h1-weight: var(--case-project-title-weight);
+  --case-h1-leading: var(--case-project-title-leading);
+  --case-h2-size: var(--case-chapter-title-size);
+  --case-h2-weight: var(--case-chapter-title-weight);
+  --case-h2-leading: var(--case-chapter-title-leading);
+  --case-h3-size: var(--case-card-title-size);
+  --case-h3-weight: var(--case-card-title-weight);
+  --case-h3-leading: var(--case-card-title-leading);
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -122,6 +151,16 @@
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --z-dropdown: 20;
   --z-sticky: 30;
+}
+
+@media print {
+  :root {
+    --case-project-title-size: 31pt;
+    --case-chapter-title-size: 24pt;
+    --case-narrative-title-size: 18pt;
+    --case-media-title-size: 14pt;
+    --case-card-title-size: 11pt;
+  }
 }
 
 @media (min-width: 480px) {

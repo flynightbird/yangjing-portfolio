@@ -78,22 +78,24 @@
 }
 
 .eyebrow {
-  margin: 0 0 clamp(2rem, 4vh, 3.5rem);
+  margin: 0;
+  margin-block-end: var(--case-index-title-gap);
 }
 
 .hero h1 {
-  max-width: 12ch;
+  max-width: var(--case-project-title-max);
   margin: 0;
   font-family: var(--xuelang-font-body);
-  font-size: var(--case-h1-size);
-  font-weight: var(--case-h1-weight);
-  line-height: var(--case-h1-leading);
+  font-size: var(--case-project-title-size);
+  font-weight: var(--case-project-title-weight);
+  line-height: var(--case-project-title-leading);
   letter-spacing: 0;
 }
 
 .proposition {
   max-width: 34rem;
-  margin: 1.75rem 0 0;
+  margin: 0;
+  margin-block-start: var(--case-title-body-gap);
   color: var(--xuelang-muted);
   font-size: clamp(1.125rem, 1.5vw, 1.5rem);
   line-height: 1.45;
@@ -258,13 +260,18 @@
   grid-column: 1 / span 7;
 }
 
+.content :global(.section-heading) {
+  display: grid;
+  gap: var(--case-index-title-gap);
+}
+
 .content :global(.section-heading h2),
 .content > :global(section > h2) {
-  max-width: 18ch;
+  max-width: var(--case-chapter-title-max);
   margin: 0;
-  font-size: var(--case-h2-size);
-  font-weight: var(--case-h2-weight);
-  line-height: var(--case-h2-leading);
+  font-size: var(--case-chapter-title-size);
+  font-weight: var(--case-chapter-title-weight);
+  line-height: var(--case-chapter-title-leading);
   letter-spacing: 0;
 }
 
@@ -379,10 +386,11 @@
 }
 
 .content :global(.xuelang-problem-list h3) {
-  margin: 2rem 0 0;
-  font-size: var(--case-h3-size);
-  font-weight: var(--case-h3-weight);
-  line-height: var(--case-h3-leading);
+  max-width: var(--case-card-title-max);
+  margin-block: var(--case-index-title-gap) var(--case-title-body-gap);
+  font-size: var(--case-card-title-size);
+  font-weight: var(--case-card-title-weight);
+  line-height: var(--case-card-title-leading);
 }
 
 .content :global(.xuelang-problem-list p) {
@@ -453,10 +461,11 @@
 }
 
 .content :global(.xuelang-reflection h3) {
-  max-width: 20ch;
-  margin: 1rem 0 2rem;
-  font-size: clamp(1.8rem, 3vw, 3.5rem);
-  line-height: 1.15;
+  max-width: var(--case-narrative-title-max);
+  margin-block: var(--case-index-title-gap) var(--case-title-body-gap);
+  font-size: var(--case-narrative-title-size);
+  font-weight: var(--case-narrative-title-weight);
+  line-height: var(--case-narrative-title-leading);
 }
 
 .root:lang(en) .content :global(.xuelang-thesis) {
@@ -643,6 +652,15 @@
 @media (max-width: 520px) {
   .hero {
     padding-block: 2rem;
+  }
+
+  .root:lang(en) .hero {
+    width: calc(100% + 0.9375rem);
+    margin-inline: -0.46875rem;
+  }
+
+  .root:lang(en) .hero h1 {
+    font-size: 2.25rem;
   }
 
   .eyebrow {

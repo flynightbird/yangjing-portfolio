@@ -32,7 +32,8 @@
 
 .eyebrow {
   grid-column: 1 / -1;
-  margin: 0 0 1.5rem;
+  margin: 0;
+  margin-block-end: var(--case-index-title-gap);
   color: var(--meeting-portfolio-accent);
   font-family: var(--font-mono), monospace;
   font-size: 0.75rem;
@@ -41,12 +42,12 @@
 
 .hero h1 {
   grid-column: 1 / -1;
-  max-width: 24ch;
+  max-width: var(--case-project-title-max);
   margin: 0;
   font-family: var(--font-display), sans-serif;
-  font-size: var(--case-h1-size);
-  font-weight: var(--case-h1-weight);
-  line-height: var(--case-h1-leading);
+  font-size: var(--case-project-title-size);
+  font-weight: var(--case-project-title-weight);
+  line-height: var(--case-project-title-leading);
   letter-spacing: 0;
   overflow-wrap: break-word;
   text-wrap: balance;
@@ -55,7 +56,8 @@
 
 .proposition {
   grid-column: 1 / 8;
-  margin: 1.5rem 0 0;
+  margin: 0;
+  margin-block-start: var(--case-title-body-gap);
   font-size: clamp(1.15rem, 2vw, 1.6rem);
   line-height: 1.5;
 }
@@ -136,18 +138,22 @@
 }
 
 .content h2 {
-  margin: 0 0 2rem;
+  max-width: var(--case-chapter-title-max);
+  margin: 0;
+  margin-block-end: var(--case-title-body-gap);
   font-family: var(--font-display), sans-serif;
-  font-size: var(--case-h2-size);
-  font-weight: var(--case-h2-weight);
-  line-height: var(--case-h2-leading);
+  font-size: var(--case-chapter-title-size);
+  font-weight: var(--case-chapter-title-weight);
+  line-height: var(--case-chapter-title-leading);
   letter-spacing: 0;
 }
 
-.content h3 {
-  font-size: var(--case-h3-size);
-  font-weight: var(--case-h3-weight);
-  line-height: var(--case-h3-leading);
+.content :where(h3) {
+  max-width: var(--case-card-title-max);
+  margin-block: var(--case-index-title-gap) var(--case-title-body-gap);
+  font-size: var(--case-card-title-size);
+  font-weight: var(--case-card-title-weight);
+  line-height: var(--case-card-title-leading);
   letter-spacing: 0;
 }
 
@@ -179,7 +185,7 @@
   }
 
   .proposition {
-    margin-top: 1.25rem;
+    margin-block-start: var(--case-title-body-gap);
     font-size: 1.05rem;
   }
 
