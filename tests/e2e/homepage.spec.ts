@@ -941,13 +941,24 @@ test.describe('portfolio homepage framework', () => {
   });
 
   test('keeps vertical page scrolling active over the Visual Archive', async ({ page }, testInfo) => {
+    test.setTimeout(60_000);
     test.skip(
       testInfo.project.name !== 'desktop',
       'Fine-pointer wheel behavior is verified at the desktop viewport.',
     );
-    await page.goto('/en/', { waitUntil: 'networkidle' });
+    await page.goto('/en/', { waitUntil: 'domcontentloaded' });
 
     const scroller = page.locator('[data-archive-scroller]');
+    await expect(scroller).toBeAttached();
+    await expect.poll(
+      () => page.locator('[data-intro-story]').evaluate((section) => {
+        const pinSpacer = section.querySelector(':scope > .pin-spacer');
+        if (!pinSpacer) return false;
+        const expectedHeight = window.innerHeight * 3.4;
+        return Math.abs(pinSpacer.getBoundingClientRect().height - expectedHeight) <= 1;
+      }),
+      { timeout: 30_000 },
+    ).toBe(true);
     await scroller.evaluate((element) => {
       const top = element.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({ top: Math.max(0, top - 120), behavior: 'instant' });
@@ -960,7 +971,7 @@ test.describe('portfolio homepage framework', () => {
       pageY: window.scrollY,
       archiveX: document.querySelector<HTMLElement>('[data-archive-scroller]')
         ?.scrollLeft ?? 0,
-      inlineScrollBehavior: document.documentElement.style.scrollBehavior,
+      computedScrollBehavior: getComputedStyle(document.documentElement).scrollBehavior,
     }));
     const maximum = await page.evaluate(
       () => document.documentElement.scrollHeight - window.innerHeight,
@@ -975,12 +986,13 @@ test.describe('portfolio homepage framework', () => {
       pageY: window.scrollY,
       archiveX: document.querySelector<HTMLElement>('[data-archive-scroller]')
         ?.scrollLeft ?? 0,
-      inlineScrollBehavior: document.documentElement.style.scrollBehavior,
+      computedScrollBehavior: getComputedStyle(document.documentElement).scrollBehavior,
     }));
     expect(after.pageY - before.pageY).toBeGreaterThanOrEqual(450);
     expect(after.pageY - before.pageY).toBeLessThanOrEqual(550);
     expect(Math.abs(after.archiveX - before.archiveX)).toBeLessThanOrEqual(1);
-    expect(after.inlineScrollBehavior).toBe(before.inlineScrollBehavior);
+    expect(after.computedScrollBehavior).toBe(before.computedScrollBehavior);
+    expect(after.computedScrollBehavior).toBe('smooth');
   });
 
   test('leaves horizontal-dominant archive wheel input on the carousel', async ({

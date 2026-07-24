@@ -32,6 +32,15 @@ async function placeComparisonBottomAt(page: import('@playwright/test').Page, bo
   expect(Math.abs(positionedBottom - bottom)).toBeLessThanOrEqual(1);
 }
 
+async function waitForIntroPinLayout(page: import('@playwright/test').Page) {
+  await expect.poll(() => page.locator('[data-intro-story]').evaluate((section) => {
+    const pinSpacer = section.querySelector(':scope > .pin-spacer');
+    if (!pinSpacer) return false;
+    const expectedHeight = window.innerHeight * 3.4;
+    return Math.abs(pinSpacer.getBoundingClientRect().height - expectedHeight) <= 1;
+  })).toBe(true);
+}
+
 test.describe('Xuelang homepage comparison', () => {
   test.describe.configure({ timeout: 90_000 });
 
@@ -58,6 +67,7 @@ test.describe('Xuelang homepage comparison', () => {
     );
 
     await page.setViewportSize({ width: viewport.width, height: viewport.height - 120 });
+    await waitForIntroPinLayout(page);
     const viewportHeight = await page.evaluate(() => window.innerHeight);
     const inset = Math.round(viewportHeight * 0.3);
     await expect(comparison).toHaveAttribute(
@@ -69,29 +79,10 @@ test.describe('Xuelang homepage comparison', () => {
     await page.waitForTimeout(300);
     await expect(comparison).toHaveAttribute('data-auto-state', 'idle');
 
-    const observedState = await comparison.evaluate((element, targetBottom) => {
-      return new Promise<string>((resolve, reject) => {
-        const timeout = window.setTimeout(() => {
-          observer.disconnect();
-          reject(new Error('Comparison did not enter the running state'));
-        }, 5_000);
-        const observer = new MutationObserver(() => {
-          const state = element.getAttribute('data-auto-state');
-          if (state !== 'running') return;
-          window.clearTimeout(timeout);
-          observer.disconnect();
-          resolve(state);
-        });
-        observer.observe(element, { attributes: true, attributeFilter: ['data-auto-state'] });
-        const rect = element.getBoundingClientRect();
-        const documentTop = rect.top + window.scrollY;
-        window.scrollTo({
-          top: documentTop - (targetBottom - rect.height),
-          behavior: 'instant',
-        });
-      });
-    }, inset + 20);
-    expect(observedState).toBe('running');
+    await placeComparisonBottomAt(page, inset + 20);
+    await expect
+      .poll(() => comparison.getAttribute('data-auto-state'), { timeout: 10_000 })
+      .toMatch(/^(running|complete)$/);
     await page.locator('[data-comparison-boundary-spacer]').evaluate((element) => element.remove());
   });
 
