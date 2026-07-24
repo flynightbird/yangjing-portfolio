@@ -201,7 +201,7 @@ test.describe('Xuelang visual matrix', () => {
     }
   }
 
-  test('Xuelang owns the wider compact chapter breakpoint without changing shared cases', async ({
+  test('refreshed cases share the wider compact chapter breakpoint', async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'This test sets exact breakpoint widths.');
@@ -225,7 +225,12 @@ test.describe('Xuelang visual matrix', () => {
 
     await page.setViewportSize({ width: 1024, height: 800 });
     await page.goto('/en/work/call-agent/', { waitUntil: 'networkidle' });
-    await expect(toggle, 'Shared cases should retain the original 900px breakpoint').toBeHidden();
+    await expect(toggle, 'Refreshed shared cases should use the compact index at 1024px').toBeVisible();
+    await expect(navigation).toBeHidden();
+
+    await page.setViewportSize({ width: 1101, height: 800 });
+    await page.goto('/en/work/call-agent/', { waitUntil: 'networkidle' });
+    await expect(toggle, 'Refreshed shared cases should restore the rail above 1100px').toBeHidden();
     await expect(navigation).toBeVisible();
   });
 

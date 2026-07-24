@@ -13,7 +13,7 @@ test.describe('Tangping visual detail', () => {
     await expect(page).toHaveURL(/\/zh\/$/);
     const dialog = page.getByRole('dialog', { name: '项目图片详情: 躺平' });
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole('img', { name: '躺平设计家 APP 与官网界面系统' })).toBeVisible();
+    await expect(dialog.getByRole('img', { name: '躺平设计家项目展示，第 6 页' }).first()).toBeVisible();
   });
 
   for (const locale of ['en', 'zh'] as const) {

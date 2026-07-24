@@ -121,7 +121,7 @@ test.describe('portfolio detail system', () => {
       await page.goto(`/${locale}/work/xuelang/`, { waitUntil: 'networkidle' });
 
       const roles = [
-        ['[data-xuelang-case] h1', 58],
+        ['[data-xuelang-case] h1', 39],
         ['[data-xuelang-case] .section-heading h2', 50],
         ['[data-xuelang-case] [data-evidence-story] h3', 36],
         ['[data-xuelang-case] [role="tabpanel"] h4', 29],
@@ -384,7 +384,7 @@ test.describe('portfolio detail system', () => {
           ),
         ).toBeLessThanOrEqual(1);
 
-        const headings = page.locator(`${root} :is(h1, h2, h3, h4)`);
+        const headings = page.locator(`${root} :is(h1, h2, h3, h4):visible`);
         expect(await headings.count()).toBeGreaterThan(0);
         await page.evaluate(() => document.fonts.ready);
         await expect
