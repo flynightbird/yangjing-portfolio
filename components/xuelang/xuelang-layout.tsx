@@ -14,6 +14,7 @@ const copy = {
     duration: 'Duration',
     status: 'Status',
     proof: '14-day experiment · GMV per user +11.75%',
+    coverAlt: 'Xuelang experience-upgrade cover',
     panoramaAlt:
       'Xuelang product panorama showing course discovery, purchase decisions, and learning experiences',
     panoramaKicker: 'PRODUCT EXPERIENCE / 4 STATES',
@@ -48,6 +49,7 @@ const copy = {
     duration: '周期',
     status: '状态',
     proof: '14 天实验 · 人均 GMV +11.75%',
+    coverAlt: '学浪体验升级项目封面',
     panoramaAlt: '学浪产品体验全景，呈现课程发现、购买决策与持续学习体验',
     panoramaKicker: 'PRODUCT EXPERIENCE / 4 STATES',
     panoramaFlow: '发现 · 决策 · 学习 · 沉淀',
@@ -86,72 +88,82 @@ export function XuelangLayout({
   return (
     <XuelangMotion>
       <div className={styles.root} data-xuelang-case>
-        <div className={styles.noise} data-xuelang-noise aria-hidden="true" />
-        <div className={styles.frame}>
-          <aside className={styles.rail}>
-            <ChapterNav
-              chapters={meta.chapters ?? []}
-              locale={locale}
-              compactAt="wide"
-              surface="light"
-            />
-          </aside>
+      <div className={styles.frame}>
+        <aside className={styles.rail}>
+          <ChapterNav
+            chapters={meta.chapters ?? []}
+            locale={locale}
+            compactAt="wide"
+            indexStart={0}
+            variant="xuelang"
+            surface="light"
+          />
+        </aside>
 
-          <article className={styles.case} data-case-study>
-            <header className={styles.hero} data-xuelang-hero>
-              <div className={styles.heroCopy}>
-                <p className={styles.eyebrow}>{text.eyebrow}</p>
-                <div className={styles.heroThesis} data-hero-thesis>
-                  <h1>{meta.title}</h1>
-                </div>
-                <div className={styles.heroSupport} data-hero-support>
-                  <p className={styles.proposition}>{meta.proposition}</p>
-                  <dl className={styles.facts} aria-label={text.facts}>
-                    <div>
-                      <dt>{text.role}</dt>
-                      <dd>{meta.role}</dd>
-                    </div>
-                    <div>
-                      <dt>{text.duration}</dt>
-                      <dd>{meta.duration}</dd>
-                    </div>
-                    <div>
-                      <dt>{text.status}</dt>
-                      <dd className={styles.heroProof}>{text.proof}</dd>
-                    </div>
-                  </dl>
-                </div>
+        <article className={styles.case} data-case-study>
+          <header className={styles.hero} data-xuelang-hero>
+            <figure className={styles.cover} data-xuelang-cover>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={withBasePath('/images/xuelang/opening-cover.webp')}
+                alt={text.coverAlt}
+              />
+            </figure>
+
+            <div className={styles.heroCopy}>
+              <p className={styles.eyebrow}>{text.eyebrow}</p>
+              <div className={styles.heroThesis} data-hero-thesis>
+                <h1>{meta.title}</h1>
               </div>
+              <div className={styles.heroSupport} data-hero-support>
+                <p className={styles.proposition}>{meta.proposition}</p>
+                <dl className={styles.facts} aria-label={text.facts}>
+                  <div>
+                    <dt>{text.role}</dt>
+                    <dd>{meta.role}</dd>
+                  </div>
+                  <div>
+                    <dt>{text.duration}</dt>
+                    <dd>{meta.duration}</dd>
+                  </div>
+                  <div>
+                    <dt>{text.status}</dt>
+                    <dd className={styles.heroProof}>{text.proof}</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
 
-              <figure
-                className={styles.panorama}
-                data-hero-panorama
-                aria-label={text.panoramaAlt}
-              >
-                <div className={styles.panoramaMeta} aria-hidden="true">
-                  <span>{text.panoramaKicker}</span>
-                  <span>{text.panoramaFlow}</span>
-                </div>
-                <span className={styles.panoramaWord} aria-hidden="true">XUELANG</span>
-                <div className={styles.productStates}>
-                  {text.heroStates.map((state, index) => (
-                    <div
-                      key={state.src}
-                      className={`${styles.productState} ${styles[`productState${index + 1}`]}`}
-                      data-hero-product-state
-                    >
-                      <span aria-hidden="true">{state.label}</span>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={withBasePath(state.src)} alt={state.alt} />
-                    </div>
-                  ))}
-                </div>
-              </figure>
-            </header>
+          </header>
 
-            <div className={styles.content}>{children}</div>
-          </article>
-        </div>
+          <figure
+            className={styles.panorama}
+            data-hero-panorama
+            aria-label={text.panoramaAlt}
+          >
+            <div className={styles.panoramaMeta} aria-hidden="true">
+              <span>{text.panoramaKicker}</span>
+              <span>{text.panoramaFlow}</span>
+            </div>
+            <span className={styles.panoramaWord} aria-hidden="true">XUELANG</span>
+            <div className={styles.productStates}>
+              {text.heroStates.map((state, index) => (
+                <div
+                  key={state.src}
+                  className={`${styles.productState} ${styles[`productState${index + 1}`]}`}
+                  data-hero-product-state
+                >
+                  <span aria-hidden="true">{state.label}</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={withBasePath(state.src)} alt={state.alt} />
+                </div>
+              ))}
+            </div>
+          </figure>
+
+          <div className={styles.content}>{children}</div>
+        </article>
+      </div>
       </div>
     </XuelangMotion>
   );

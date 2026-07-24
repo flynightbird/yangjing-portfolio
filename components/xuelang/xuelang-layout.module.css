@@ -7,30 +7,17 @@
   --xuelang-paper: #f5f7f5;
   --xuelang-ink: #111512;
   --xuelang-muted: #5f6862;
-  --xuelang-portfolio-accent: var(--color-iris-deep);
+  --xuelang-portfolio-accent: #466b52;
   --xuelang-line: #d8ded9;
   --xuelang-dark: #121614;
-  position: relative;
-  isolation: isolate;
+  --xuelang-media-radius: 20px;
   border-block-end: 1px solid var(--xuelang-line);
   background: var(--xuelang-paper);
   color: var(--xuelang-ink);
   font-family: var(--xuelang-font-body);
 }
 
-.noise {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  background-image: url('../../public/images/xuelang/paper-noise.png');
-  background-repeat: repeat;
-  opacity: 0.035;
-  pointer-events: none;
-}
-
 .frame {
-  position: relative;
-  z-index: 1;
   display: grid;
   width: min(100%, 100rem);
   grid-template-columns: minmax(9rem, 2fr) minmax(0, 10fr);
@@ -55,11 +42,30 @@
   grid-template-columns: repeat(10, minmax(0, 1fr));
   align-content: start;
   column-gap: clamp(1rem, 2vw, 2rem);
-  padding-block: clamp(3rem, 6vh, 5rem) clamp(2.5rem, 5vh, 4rem);
+  padding-block: clamp(1.5rem, 3.2vh, 2.75rem) clamp(2rem, 4vh, 3.25rem);
+}
+
+.cover {
+  overflow: hidden;
+  grid-column: 1 / -1;
+  margin: 0;
+  border: 1px solid var(--xuelang-line);
+  aspect-ratio: 16 / 9;
+  background: #e7ebe7;
+}
+
+.cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
 }
 
 .heroCopy {
-  grid-column: 1 / span 7;
+  grid-column: 1 / -1;
+  margin-block-start: clamp(1.25rem, 2.5vh, 2rem);
+  padding-block-end: clamp(1.25rem, 2.5vh, 2rem);
+  border-block-end: 1px solid var(--xuelang-line);
 }
 
 .heroThesis,
@@ -97,7 +103,7 @@
   margin: 0;
   margin-block-start: var(--case-title-body-gap);
   color: var(--xuelang-muted);
-  font-size: clamp(1.125rem, 1.5vw, 1.5rem);
+  font-size: clamp(1rem, 1.2vw, 1.2rem);
   line-height: 1.45;
 }
 
@@ -106,8 +112,8 @@
   flex-wrap: wrap;
   gap: 0;
   max-width: 52rem;
-  margin: clamp(2rem, 4vh, 3rem) 0 0;
-  border-block: 1px solid var(--xuelang-line);
+  margin: 1rem 0 0;
+  border-block-start: 1px solid var(--xuelang-line);
 }
 
 .facts div {
@@ -130,11 +136,10 @@
 .panorama {
   position: relative;
   overflow: hidden;
-  grid-column: 1 / -1;
-  align-self: end;
-  margin: clamp(2rem, 5vh, 4rem) 0 0;
+  width: 100%;
+  margin: clamp(3rem, 7vh, 6rem) 0 clamp(4rem, 10vh, 8rem);
   border: 1px solid #2f3732;
-  border-radius: 4px;
+  border-radius: var(--xuelang-media-radius);
   aspect-ratio: 2 / 1;
   background: #111512;
   box-shadow: 0 2rem 5rem rgb(17 21 18 / 14%);
@@ -253,7 +258,7 @@
 
 .content > :global(section:not(#overview)) {
   position: relative;
-  background: transparent;
+  background: var(--xuelang-paper);
 }
 
 .content > :global(section > *) {
@@ -476,7 +481,6 @@
 
 @media (min-width: 1200px) {
   .heroCopy {
-    grid-column: 1 / -1;
     display: grid;
     grid-template-columns: repeat(10, minmax(0, 1fr));
     column-gap: clamp(1rem, 2vw, 2rem);
@@ -485,16 +489,20 @@
 
   .eyebrow {
     grid-column: 1 / -1;
-    margin-block-end: clamp(1.5rem, 3vh, 2.5rem);
+    margin-block-end: 0.65rem;
   }
 
   .heroThesis {
-    grid-column: 1 / span 6;
+    grid-column: 1 / span 4;
   }
 
   .heroSupport {
-    grid-column: 7 / -1;
-    padding-block-start: 0.5rem;
+    grid-column: 5 / -1;
+    padding-block-start: 0.2rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.1rem, 2.7vw, 3rem);
   }
 
   .heroSupport .proposition {
@@ -504,21 +512,17 @@
 
   .heroSupport .facts {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    margin-block-start: clamp(1.5rem, 3vh, 2.25rem);
+    grid-template-columns: 0.9fr 1fr 1.4fr;
+    margin-block-start: 1rem;
   }
 
   .heroSupport .facts div {
     min-width: 0;
   }
 
-  .heroSupport .facts div:last-child {
-    grid-column: 1 / -1;
-    border-block-start: 1px solid var(--xuelang-line);
-  }
-
-  .panorama {
-    margin-block-start: clamp(1.75rem, 3.5vh, 3rem);
+  .heroSupport .facts div + div {
+    padding-inline-start: 1rem;
+    border-inline-start: 1px solid var(--xuelang-line);
   }
 }
 
@@ -540,6 +544,7 @@
 @media (max-width: 1100px) {
   .frame {
     display: block;
+    padding-block-start: var(--header-height);
     padding-inline: clamp(1rem, 5vw, 2rem);
   }
 
@@ -553,11 +558,15 @@
   .hero {
     min-height: auto;
     display: block;
-    padding-block-start: 3rem;
+    padding-block-start: 2rem;
   }
 
   .heroCopy {
     width: 100%;
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 6vw, 3rem);
   }
 
   .facts {
@@ -614,7 +623,7 @@
 
   .eyebrow {
     grid-column: 1 / -1;
-    margin-block-end: 1.25rem;
+    margin-block-end: 0.65rem;
   }
 
   .heroThesis {
@@ -623,6 +632,10 @@
 
   .heroSupport {
     grid-column: 7 / -1;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.1rem, 4vw, 2.75rem);
   }
 
   .heroSupport .proposition,
@@ -641,17 +654,13 @@
 
   .heroSupport .facts div {
     min-width: 0;
-    padding-block: 0.55rem 0.65rem;
-  }
-
-  .panorama {
-    margin-block-start: 1.75rem;
+    padding-block: 0.45rem 0.55rem;
   }
 }
 
 @media (max-width: 520px) {
   .hero {
-    padding-block: 2rem;
+    padding-block: 1.25rem 2rem;
   }
 
   .root:lang(en) .hero {
@@ -659,12 +668,12 @@
     margin-inline: -0.46875rem;
   }
 
-  .root:lang(en) .hero h1 {
-    font-size: 2.25rem;
-  }
-
   .eyebrow {
     margin-block-end: 1.25rem;
+  }
+
+  .root:lang(en) .hero h1 {
+    font-size: 2.25rem;
   }
 
   .proposition {
@@ -687,7 +696,7 @@
   }
 
   .panorama {
-    margin-block-start: 1.25rem;
+    margin-block: 2.5rem 4rem;
     aspect-ratio: 4 / 3;
   }
 

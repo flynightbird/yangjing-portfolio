@@ -11,6 +11,7 @@ const viewports = [
 ] as const;
 
 const visualPeakSelectors = [
+  '[data-xuelang-cover]',
   '[data-hero-panorama]',
   '[data-testid="xuelang-dark-stage"]',
   '[data-story-variant="result"]',
@@ -44,22 +45,31 @@ test.describe('Xuelang visual matrix', () => {
           { timeout: 30_000 },
         ).toBe(true);
 
+        const cover = page.locator('[data-xuelang-cover]');
+        await expect(cover).toBeInViewport();
         await expect(page.locator('[data-xuelang-hero] h1')).toBeInViewport();
-        await expect(page.locator('[data-xuelang-case] [data-case-web-control]')).toBeInViewport();
-        await expect(page.locator('[data-hero-panorama]')).toBeInViewport();
 
-        if (viewport.width >= 1280) {
-          const visiblePanoramaHeight = await page.locator('[data-hero-panorama]').evaluate(
-            (element) => {
-              const box = element.getBoundingClientRect();
-              return Math.max(0, Math.min(box.bottom, window.innerHeight) - Math.max(box.top, 0));
-            },
-          );
-          expect(
-            visiblePanoramaHeight,
-            'The product panorama should be meaningfully visible in the first desktop viewport',
-          ).toBeGreaterThanOrEqual(220);
-        }
+        const openingGeometry = await page.evaluate(() => {
+          const coverElement = document.querySelector<HTMLElement>('[data-xuelang-cover]');
+          const coverImage = coverElement?.querySelector<HTMLImageElement>('img');
+          const panoramaElement = document.querySelector<HTMLElement>('[data-hero-panorama]');
+          if (!coverElement || !coverImage || !panoramaElement) {
+            throw new Error('Missing Xuelang opening media');
+          }
+          const coverBox = coverElement.getBoundingClientRect();
+          const imageBox = coverImage.getBoundingClientRect();
+          const panoramaBox = panoramaElement.getBoundingClientRect();
+          return {
+            coverBottom: coverBox.bottom,
+            imageRatio: imageBox.width / imageBox.height,
+            panoramaTop: panoramaBox.top,
+          };
+        });
+        expect(openingGeometry.imageRatio).toBeCloseTo(16 / 9, 2);
+        expect(
+          openingGeometry.panoramaTop,
+          'The product panorama should begin after the cover-first hero',
+        ).toBeGreaterThan(openingGeometry.coverBottom);
 
         const overflow = await page.evaluate(
           () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -85,28 +95,17 @@ test.describe('Xuelang visual matrix', () => {
                 ?? '';
               return `${element.tagName.toLowerCase()}${label ? ` (${label})` : ''}`;
             };
-            const isInsideHorizontalScroller = (element: Element) => {
-              for (let parent = element.parentElement; parent; parent = parent.parentElement) {
-                const style = getComputedStyle(parent);
-                if (
-                  (style.overflowX === 'auto' || style.overflowX === 'scroll')
-                  && parent.scrollWidth > parent.clientWidth
-                ) {
-                  return true;
-                }
-              }
-              return false;
-            };
 
             return elements.flatMap((element) => {
               if (!isVisible(element)) return [];
+              const tablist = element.getAttribute('role') === 'tab'
+                ? element.closest<HTMLElement>('[role="tablist"]')
+                : null;
+              if (tablist && tablist.scrollWidth > tablist.clientWidth) return [];
               const box = element.getBoundingClientRect();
               const defects: string[] = [];
 
-              if (
-                !isInsideHorizontalScroller(element)
-                && (box.left < -1 || box.right > viewportWidth + 1)
-              ) {
+              if (box.left < -1 || box.right > viewportWidth + 1) {
                 defects.push(
                   `${describe(element)} exceeds viewport: ${box.left.toFixed(1)}..${box.right.toFixed(1)} / ${viewportWidth}`,
                 );
@@ -202,7 +201,7 @@ test.describe('Xuelang visual matrix', () => {
     }
   }
 
-  test('portfolio details share the wider compact chapter breakpoint', async ({
+  test('Xuelang owns the wider compact chapter breakpoint without changing shared cases', async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'This test sets exact breakpoint widths.');
@@ -226,8 +225,8 @@ test.describe('Xuelang visual matrix', () => {
 
     await page.setViewportSize({ width: 1024, height: 800 });
     await page.goto('/en/work/call-agent/', { waitUntil: 'networkidle' });
-    await expect(toggle, 'Shared cases should use the unified compact index').toBeVisible();
-    await expect(navigation).toBeHidden();
+    await expect(toggle, 'Shared cases should retain the original 900px breakpoint').toBeHidden();
+    await expect(navigation).toBeVisible();
   });
 
   test('the 1024px Xuelang chapter index remains sticky and opens as an overlay', async ({
