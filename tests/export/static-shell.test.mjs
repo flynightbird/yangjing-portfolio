@@ -11,6 +11,22 @@ function readOutput(relativePath) {
   return fs.readFileSync(path.join(outputPath, relativePath), 'utf8');
 }
 
+function readLocaleResolverChunk() {
+  const chunksPath = path.join(outputPath, '_next', 'static', 'chunks');
+  const resolverChunk = fs
+    .readdirSync(chunksPath)
+    .filter((filename) => filename.endsWith('.js'))
+    .map((filename) => fs.readFileSync(path.join(chunksPath, filename), 'utf8'))
+    .find(
+      (source) =>
+        source.includes('yj-locale')
+        && source.includes('window.location.replace'),
+    );
+
+  assert.ok(resolverChunk, 'the locale resolver client chunk must be emitted');
+  return resolverChunk;
+}
+
 test('localized exports have server-correct document languages', () => {
   assert.match(
     readOutput('en/index.html'),
@@ -24,14 +40,26 @@ test('localized exports have server-correct document languages', () => {
 
 test('root resolver and custom bilingual 404 remain static artifacts', () => {
   assert.ok(fs.existsSync(path.join(outputPath, 'index.html')));
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+
+  const rootPage = readOutput('index.html');
+  assert.match(rootPage, new RegExp(`href="${basePath}/en/"`));
+  const resolverChunk = readLocaleResolverChunk();
+  assert.match(resolverChunk, new RegExp(`["']${basePath}["']`));
+  assert.match(resolverChunk, /withBasePath\)\("\/en\/"\)/);
+  assert.match(resolverChunk, /withBasePath\)\("\/zh\/"\)/);
+  assert.match(resolverChunk, /window\.location\.replace/);
 
   const notFound = readOutput('404.html');
   assert.match(notFound, /^<!DOCTYPE html><html lang="en">/);
   assert.match(notFound, /<title>Page not found \| Yang Jing Portfolio<\/title>/);
   assert.match(notFound, /Page not found/);
   assert.match(notFound, /<span lang="zh-CN">页面未找到<\/span>/);
-  assert.match(notFound, /href="\/en\/"/);
-  assert.match(notFound, /<a href="\/zh\/" lang="zh-CN">中文<\/a>/);
+  assert.match(notFound, new RegExp(`href="${basePath}/en/"`));
+  assert.match(
+    notFound,
+    new RegExp(`<a href="${basePath}/zh/" lang="zh-CN">中文</a>`),
+  );
 });
 
 test('published work routes are emitted without draft markers', () => {
@@ -59,11 +87,21 @@ test('published bilingual About routes are emitted without fake contacts', () =>
 });
 
 test('the bilingual STT Build Lab routes and pinned demo are emitted', () => {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+
   for (const locale of ['en', 'zh']) {
     const buildPage = readOutput(`${locale}/build/stt-demo/index.html`);
     assert.match(buildPage, /STT Demo|STT Demo：/);
     assert.match(buildPage, /e5e840a/);
     assert.match(buildPage, /\/demos\/stt-demo\/index\.html/);
+    assert.match(
+      buildPage,
+      new RegExp(`(?:href|src)="${basePath}/demos/stt-demo/index\\.html"`),
+    );
+    assert.match(
+      buildPage,
+      new RegExp(`src="${basePath}/demos/stt-demo/poster\\.png"`),
+    );
   }
 
   for (const asset of [

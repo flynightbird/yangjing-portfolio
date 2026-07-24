@@ -5,6 +5,7 @@ import Image from 'next/image';
 
 import { ActionLink } from '@/components/ui/action-link';
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './build-lab.module.css';
 
@@ -49,7 +50,7 @@ export function DemoFrame({ locale }: DemoFrameProps) {
         </p>
         <iframe
           className={styles.demoIframe}
-          src="/demos/stt-demo/index.html"
+          src={withBasePath('/demos/stt-demo/index.html')}
           title={text.title}
           loading="lazy"
           referrerPolicy="no-referrer"
@@ -57,7 +58,7 @@ export function DemoFrame({ locale }: DemoFrameProps) {
         <div className={styles.posterFallback} data-demo-fallback>
           {/* The poster is copied from the pinned repository's approved baseline. */}
           <Image
-            src="/demos/stt-demo/poster.png"
+            src={withBasePath('/demos/stt-demo/poster.png')}
             alt={text.title}
             width="1440"
             height="900"
@@ -70,7 +71,7 @@ export function DemoFrame({ locale }: DemoFrameProps) {
       <figcaption className={styles.demoCaption}>
         <div className={styles.demoActions}>
           <ActionLink
-            href="/demos/stt-demo/index.html"
+            href={withBasePath('/demos/stt-demo/index.html')}
             icon={ExternalLink}
             variant="primary"
             target="_blank"
