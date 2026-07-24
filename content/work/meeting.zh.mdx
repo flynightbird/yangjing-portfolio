@@ -1,6 +1,5 @@
-import { EvidenceFigure } from '@/components/case-study/evidence-figure'
-import { BreakoutDecisionEvidence } from '@/components/meeting/meeting-evidence'
-import { CapabilitySystem, ContextPriorityModel, LanguageControlModel, MeetingStateMatrix, ParticipantPriorityStack } from '@/components/meeting/meeting-models'
+import { ContextPriorityModel, LanguageControlModel, MeetingStateMatrix } from '@/components/meeting/meeting-models'
+import { MeetingAdaptiveStageShowcase, MeetingLanguageShowcase, MeetingPolishShowcase, MeetingWhiteboardShowcase } from '@/components/meeting/meeting-showcase'
 
 export const metadata = {
   type: 'work',
@@ -8,11 +7,11 @@ export const metadata = {
   locale: 'zh',
   translationKey: 'work.meeting',
   title: 'Agora Meeting：实时协作系统',
-  proposition: '用同一套会议系统覆盖四类终端，让舞台、工作区与信息层随会中情境自适应。',
+  proposition: '为桌面、Web、平板和手机建立统一的会议规则，让界面随参会人数、共享内容和协作任务调整重点。',
   role: '唯一产品设计师',
   duration: '2024-2026 · 1.5 年',
   status: '已上线',
-  disclosure: '本案例使用已上线产品界面，不声明缺少证据的采用率、满意度或效率数据。',
+  disclosure: '本页展示已上线界面和真实录屏；因缺少验证数据，不作采用率、满意度或效率提升声明。',
   heroMedia: '/images/meeting/meeting-hero.webp',
   evidenceLevel: 'delivered',
   featuredOrder: 4,
@@ -23,79 +22,95 @@ export const metadata = {
     { id: 'system-strategy', label: '系统策略' },
     { id: 'adaptive-stage', label: '自适应舞台' },
     { id: 'whiteboard-workspace', label: '白板工作区' },
-    { id: 'information-layer', label: '实时信息层' },
-    { id: 'capability-impact', label: '能力系统与影响' },
+    { id: 'information-layer', label: '实时语言能力' },
+    { id: 'capability-impact', label: '完整产品能力' },
     { id: 'reflection', label: '反思' },
   ],
 }
 
 <section id="business-context">
-  <header className="section-heading"><p className="section-index">01 / 业务背景</p><h2>在客户从 Zoom 迁移时，从零搭建可上线的会议系统</h2></header>
+  <header className="section-heading">
+    <h2>把会议能力嵌入客户业务，而不是再做一款独立 App</h2>
+  </header>
   <div className="reading">
-    <p className="lead">Zoom 准备退出中国市场，客户需要一套可集成进自身产品的替代会议能力。Agora Meeting 要从零补齐核心体验，同时适应不同行业与配置需求。</p>
-    <p>我作为唯一产品设计师投入 1.5 年，负责桌面客户端、Web、平板和手机从定义到上线的端到端体验，并与产品、工程、测试及客户团队协作。</p>
-    <p>输入来自客户功能清单和产品经理转述，并非直接用户访谈。高覆盖需求成为默认规则；重复出现的差异需求进入可配置能力。</p>
+    <p className="lead">客户需要的不是单一会议工具，而是一套可集成、可配置的 Zoom 替代方案。</p>
+    <p>我作为唯一产品设计师，负责桌面客户端、Web、平板和手机端，将分散需求收束为一套覆盖四端的已上线产品。</p>
   </div>
 </section>
 
 <section id="design-challenge">
-  <header className="section-heading"><p className="section-index">02 / 设计挑战</p><h2>实时会议是持续变化的系统，不是一组响应式页面</h2></header>
+  <header className="section-heading">
+    <h2>核心挑战不是适配屏幕，而是管理不断变化的会议状态</h2>
+  </header>
   <div className="reading">
-    <p className="lead">参会者、内容、权限和可用空间在会中持续变化。固定响应式布局无法在共享、白板和人数变化中始终保持正确的信息对象处于主要位置。</p>
-    <p>设计需要在四端保留同一套交互逻辑，同时允许各终端对空间、密度、导航和控制方式做不同取舍。</p>
+    <p className="lead">参会人数、共享内容、白板、权限和语言能力会在会中持续变化，界面重点也必须随之调整。</p>
+    <p>四端共享同一套交互规则，但不追求相同布局；空间、密度、导航和控制方式按平台重新组织。</p>
   </div>
 </section>
 
 <section id="system-strategy">
-  <header className="section-heading"><p className="section-index">03 / 系统策略</p><h2>把会中情境转化为信息优先级，再转化为界面状态</h2></header>
-  <div className="reading"><p className="lead">我建立统一决策模型：识别当前会议情境，判断此刻必须保持主要的信息，再为当前设备解析界面状态。</p><p>四端保持一致的用户目标与角色逻辑，信息密度、导航、面板行为和横竖屏结构则适配平台。</p></div>
+  <header className="section-heading">
+    <h2>先确定信息优先级，再生成对应的界面状态</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">每次状态变化都先回答一个问题：此刻最重要的是人、共享内容，还是协作工具？</p>
+    <p>这套规则统一了四端的判断逻辑，也减少了为单个平台补写例外的成本。</p>
+  </div>
   <ContextPriorityModel locale="zh" />
 </section>
 
 <section id="adaptive-stage">
-  <header className="section-heading"><p className="section-index">04 / 核心体验</p><h2>自适应会议舞台</h2></header>
+  <header className="section-heading">
+    <h2>让会议舞台围绕任务切换，而不是等比例缩放</h2>
+  </header>
   <div className="reading">
-    <h3>情境</h3><p>参会者在对话、演示、创作和多人会议状态之间连续切换。</p>
-    <h3>问题</h3><p>响应式缩放无法判断参会者、共享内容或白板画布谁应该占据主舞台。</p>
-    <h3>决策</h3><p>屏幕共享、白板开启和参会人数变化是三个主要触发条件。系统先改变信息优先级，再改变界面。</p>
-    <h3>交付</h3><p>状态驱动的舞台已在四类终端上线并支持客户要求的会议场景。</p>
+    <p className="lead">对话时突出参会者，共享时突出内容，协作时则把白板变成主要工作区。</p>
+    <p>布局由屏幕共享、白板开启和参会人数等状态触发，在不同终端上保留相同的信息优先级。</p>
   </div>
-  <EvidenceFigure src="/images/meeting/adaptive-layout-poster.webp" width={1800} height={1000} alt="两种代表性已上线会议舞台状态：宫格与白板工作区" label="自适应舞台 / 已上线状态" caption="屏幕共享、白板开启和参会人数变化共同改变信息优先级与布局。" locale="zh" />
+  <MeetingAdaptiveStageShowcase locale="zh" />
   <MeetingStateMatrix locale="zh" />
 </section>
 
 <section id="whiteboard-workspace">
-  <header className="section-heading"><p className="section-index">05 / 核心体验</p><h2>白板工作区</h2></header>
+  <header className="section-heading">
+    <h2>白板占据主要空间，会议状态仍然可见</h2>
+  </header>
   <div className="reading">
-    <h3>情境</h3><p>参会者需要在会议中创建和查看内容，同时保持对其他参会者的感知。</p>
-    <h3>问题</h3><p>画布、用户视窗和会议控制争夺有限空间，手机竖屏尤为明显。</p>
-    <h3>决策</h3><p>以画布为主。竖屏采用上下布局：上方保留小用户视窗，下方是白板区域。视窗显示对象由统一优先级决定，而不是为每个屏幕编写例外。</p>
-    <h3>交付</h3><p>上线布局在终端与横竖屏变化中同时保留创作空间和会议感知。</p>
+    <p className="lead">桌面端让白板充分展开；手机竖屏则在白板上方保留必要的参会者画面。</p>
+    <p>统一的显示优先级决定保留谁的画面，避免为每种设备和状态单独编写规则。</p>
   </div>
-  <EvidenceFigure src="/images/meeting/whiteboard-multidevice.webp" width={1800} height={1100} alt="白板工作区在桌面端与手机方向状态中的布局" label="画布优先 / 多端适配" caption="画布成为主要对象，同时通过设备特定布局保留参会者感知。" locale="zh" />
-  <ParticipantPriorityStack locale="zh" />
+  <MeetingWhiteboardShowcase locale="zh" />
 </section>
 
 <section id="information-layer">
-  <header className="section-heading"><p className="section-index">06 / 核心体验</p><h2>实时信息层</h2></header>
+  <header className="section-heading">
+    <h2>把字幕、转写和同传纳入同一套会中语言能力</h2>
+  </header>
   <div className="reading">
-    <h3>情境</h3><p>参会者需要在会中获得实时理解、翻译和转写信息。</p>
-    <h3>问题</h3><p>个人理解偏好与会议级转写治理需要不同的权限和控制入口。</p>
-    <h3>决策</h3><p>实时字幕是个人控制。转写面板由主持人开启和停止，参会者可以申请主持人开启；会中同时支持声源语言选择、翻译、双语输出和同声传译。</p>
-    <h3>影响</h3><p>完整会中语言体验已上线。转写数据通过客户 API 提供；客户自行建设的会后存储、复制和下载界面不属于 Agora Meeting 的端内范围。</p>
+    <p className="lead">三类能力都服务于实时理解，但控制权限不同：字幕由个人设置，转写和同传由会议统一管理。</p>
+    <p>转写结果通过客户 API 提供；客户自建的会后存储不属于本项目范围。</p>
   </div>
-  <EvidenceFigure src="/images/meeting/transcript-poster.webp" width={1764} height={900} alt="实时字幕、转写面板、语言选择和双语输出" label="实时信息层 / 已上线界面" caption="实时字幕、主持人治理的转写、翻译、双语输出和同声传译组成统一的会中信息层。" locale="zh" />
+  <MeetingLanguageShowcase locale="zh" />
   <LanguageControlModel locale="zh" />
 </section>
 
 <section id="capability-impact">
-  <header className="section-heading"><p className="section-index">07 / 会议能力系统与影响</p><h2>三个核心决策之外的可配置会议系统</h2></header>
-  <div className="reading"><p className="lead">分组讨论、聊天和等候室把相同的角色、权限和状态逻辑延伸到辅助工作流。这里用它们说明系统广度，而不是罗列功能。</p><p>可验证的结果是四类终端的生产交付，并满足客户业务需求。</p></div>
-  <CapabilitySystem locale="zh" />
-  <BreakoutDecisionEvidence locale="zh" />
+  <header className="section-heading">
+    <h2>系统完整性，体现在高频细节的一致性</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">美颜、成员管理和安全控制补齐个人设置与会议管理。</p>
+    <p>这些能力沿用相同的角色、权限和状态规则，避免功能扩展后形成彼此割裂的体验。</p>
+  </div>
+  <MeetingPolishShowcase locale="zh" />
 </section>
 
 <section id="reflection">
-  <header className="section-heading"><p className="section-index">08 / 反思</p><h2>在组件开始分化前建立跨端治理</h2></header>
-  <div className="reading"><p className="lead">项目节奏快，组件系统在后期才补建。相似组件在客户端与 Web 重复维护，提高了对齐状态与规则的成本。</p><p>如果再次迭代，我会更早建立共享状态定义、所有权和组件治理：交互规则只有一个来源，平台例外被明确记录，并在上线前用统一评审检查四端行为。</p></div>
+  <header className="section-heading">
+    <h2>跨端规则应该早于组件分化</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">四端已经上线，但组件和状态规则建立得偏晚，增加了后期对齐成本。</p>
+    <p>下一轮会更早统一状态定义、组件所有权和平台例外，让交互规则有单一来源。</p>
+  </div>
 </section>

@@ -37,13 +37,11 @@ for (const locale of ['en', 'zh'] as const) {
     });
 
     test('loads committed static evidence without missing recordings', async ({ page }) => {
-      await expect(page.locator('video[src^="/videos/meeting/"]')).toHaveCount(0);
-      await expect(
-        page.locator('img[src="/images/meeting/adaptive-layout-poster.webp"]'),
-      ).toBeVisible();
-      await expect(
-        page.locator('img[src="/images/meeting/transcript-poster.webp"]'),
-      ).toBeVisible();
+      await expect(page.locator('video[src^="/videos/meeting/"]')).toHaveCount(13);
+      await expect(page.getByRole('button', { name: locale === 'zh' ? '重播' : 'Replay' })).toBeVisible();
+      await expect(page.getByText('Agora Meeting', { exact: true })).toBeVisible();
+      await expect(page.getByText(locale === 'zh' ? '横屏视窗' : 'Landscape viewport')).toBeVisible();
+      await expect(page.getByText(locale === 'zh' ? '竖屏视窗' : 'Portrait viewport')).toBeVisible();
     });
 
     test('has no horizontal overflow', async ({ page }) => {

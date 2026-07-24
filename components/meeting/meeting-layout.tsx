@@ -1,6 +1,7 @@
 import { ChapterNav } from '@/components/case-study/chapter-nav';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
 
+import { MeetingHeroStage } from './meeting-showcase';
 import styles from './meeting-layout.module.css';
 import './meeting-print.css';
 
@@ -13,9 +14,8 @@ const copy = {
     platforms: 'Platforms',
     platformValue: 'Desktop · Web · Tablet · Mobile',
     status: 'Status',
-    disclosure: 'Evidence boundary',
-    heroAlt: 'Agora Meeting desktop stage with participant video, controls, and live meeting state',
-    heroCaption: 'Shipped meeting stage / Desktop',
+    product: 'Product',
+    productValue: 'Enterprise meeting aPaaS',
   },
   zh: {
     eyebrow: 'AGORA MEETING / 企业会议 aPaaS',
@@ -25,9 +25,8 @@ const copy = {
     platforms: '平台',
     platformValue: '桌面客户端 · Web · 平板 · 手机',
     status: '状态',
-    disclosure: '证据边界',
-    heroAlt: 'Agora Meeting 桌面会议舞台，包含参会者视频、控制栏与实时会议状态',
-    heroCaption: '已上线会议舞台 / 桌面端',
+    product: '产品',
+    productValue: '企业会议 aPaaS',
   },
 } as const;
 
@@ -42,28 +41,29 @@ export function MeetingLayout({
     <div className={styles.root} data-meeting-case>
       <div className={styles.frame}>
         <aside className={styles.rail}>
-          <ChapterNav chapters={meta.chapters ?? []} locale={locale} compactAt="wide" surface="light" />
+          <ChapterNav chapters={meta.chapters ?? []} locale={locale} compactAt="wide" surface="dark" />
         </aside>
         <article className={styles.case} data-case-study>
           <header className={styles.hero}>
-            <p className={styles.eyebrow}>{text.eyebrow}</p>
-            <h1>{meta.title}</h1>
-            <p className={styles.proposition}>{meta.proposition}</p>
-            <dl className={styles.facts} aria-label={text.projectFacts}>
-              <div><dt>{text.role}</dt><dd>{meta.role}</dd></div>
-              <div><dt>{text.timeline}</dt><dd>{meta.duration}</dd></div>
-              <div><dt>{text.platforms}</dt><dd>{text.platformValue}</dd></div>
-              <div><dt>{text.status}</dt><dd>{meta.status}</dd></div>
-            </dl>
-            <div className={styles.disclosure}>
-              <span>{text.disclosure}</span>
-              <p>{meta.disclosure}</p>
+            <div className={styles.heroTop}>
+              <div className={styles.heroBody}>
+                <p className={styles.eyebrow}>{text.eyebrow}</p>
+                <h1>{meta.title}</h1>
+                <p className={styles.proposition}>{meta.proposition}</p>
+              </div>
+              <div className={styles.heroMeta}>
+                <dl className={styles.facts} aria-label={text.projectFacts}>
+                  <div><dt>{text.role}</dt><dd>{meta.role}</dd></div>
+                  <div><dt>{text.timeline}</dt><dd>{meta.duration}</dd></div>
+                  <div><dt>{text.platforms}</dt><dd>{text.platformValue}</dd></div>
+                  <div><dt>{text.product}</dt><dd>{text.productValue}</dd></div>
+                  <div><dt>{text.status}</dt><dd>{meta.status}</dd></div>
+                </dl>
+              </div>
             </div>
-            <figure className={styles.heroMedia}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={meta.heroMedia} alt={text.heroAlt} width={2400} height={1430} />
-              <figcaption>{text.heroCaption}</figcaption>
-            </figure>
+            <div className={styles.heroMedia}>
+              <MeetingHeroStage locale={locale} />
+            </div>
           </header>
           <div className={styles.content}>{children}</div>
         </article>

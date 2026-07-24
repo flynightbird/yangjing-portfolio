@@ -13,7 +13,7 @@ import { withBasePath } from '@/lib/i18n/locales';
 import styles from './site-header.module.css';
 
 function resolveHeaderSurface(pathname: string): 'light' | 'dark' {
-  return /^\/(?:en|zh)\/work\/(?:call-agent|meeting|xuelang)\/?$/.test(pathname)
+  return /^\/(?:en|zh)\/work\/(?:call-agent|xuelang)\/?$/.test(pathname)
     ? 'light'
     : 'dark';
 }

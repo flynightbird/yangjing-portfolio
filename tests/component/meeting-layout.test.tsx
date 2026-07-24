@@ -34,10 +34,8 @@ it('presents product proof, approved facts, and chapter navigation', () => {
   expect(screen.getByRole('heading', { level: 1 }).querySelector('br')).toBeNull();
   expect(screen.getByText('Sole Product Designer')).toBeVisible();
   expect(screen.getByText('2024-2026 · 1.5 years')).toBeVisible();
-  expect(screen.getByRole('img', { name: /Agora Meeting desktop stage/i })).toHaveAttribute(
-    'src',
-    '/images/meeting/meeting-hero.webp',
-  );
+  expect(screen.getByRole('button', { name: 'Replay' })).toBeVisible();
+  expect(screen.getByText('Agora Meeting')).toBeVisible();
   expect(screen.getByRole('navigation', { name: 'Case study chapters' })).toBeVisible();
 });
 
@@ -54,6 +52,7 @@ it('prevents forced word breaks and uses the shared chapter treatment', () => {
   expect(layoutStyles).toMatch(/word-break:\s*normal/);
   expect(layoutStyles).toMatch(/overflow-wrap:\s*break-word/);
   expect(layoutStyles).toMatch(/text-wrap:\s*balance/);
+  expect(layoutStyles).toMatch(/\.heroMedia\s*\{\s*order:\s*1;/);
   expect(chapterStyles).toMatch(
     /--chapter-accent:\s*var\(--color-iris-deep\)/,
   );
