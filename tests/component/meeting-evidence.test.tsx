@@ -5,6 +5,7 @@ import {
   MeetingAdaptiveStageShowcase,
   MeetingHeroStage,
   MeetingLanguageShowcase,
+  MeetingPolishShowcase,
   MeetingWhiteboardShowcase,
 } from '@/components/meeting/meeting-showcase';
 
@@ -87,6 +88,24 @@ describe('Meeting showcase media', () => {
       '/videos/meeting/meeting-transcript-app.mp4',
       '/videos/meeting/meeting-interpretation-on-app.mp4',
       '/videos/meeting/meeting-interpretation-live-app.mp4',
+    ]);
+  });
+
+  it('groups chat behavior separately from other controls in the polish section', () => {
+    const { container } = render(<MeetingPolishShowcase locale="en" />);
+    const sources = Array.from(container.querySelectorAll('video')).map((video) => video.getAttribute('src'));
+
+    expect(screen.getByText('Chat')).toBeVisible();
+    expect(screen.getByText('Private chat and length feedback keep messaging usable inside the room')).toBeVisible();
+    expect(screen.getByText('Hidden actions extend chat beyond the default compose state')).toBeVisible();
+    expect(screen.getByText('Personal & meeting controls')).toBeVisible();
+    expect(screen.getByText('Camera polish')).toBeVisible();
+    expect(screen.getByText('Member and safety')).toBeVisible();
+    expect(sources).toEqual([
+      '/videos/meeting/meeting-chat-1-app.mp4',
+      '/videos/meeting/meeting-chat-2-app.mp4',
+      '/videos/meeting/meeting-beauty-app.mp4',
+      '/videos/meeting/meeting-safety-app.mp4',
     ]);
   });
 });

@@ -282,6 +282,44 @@
       "purpose": "Show simultaneous interpretation inside the live meeting flow."
     },
     {
+      "id": "meeting-chat-1-app-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-chat-1-app-poster.png",
+      "output": "public/images/meeting/meeting-chat-1-app-poster.webp",
+      "purpose": "Provide the poster frame for the private chat and character warning recording.",
+      "alt": {
+        "en": "Portrait mobile meeting chat with private messaging and a character limit warning",
+        "zh": "手机竖屏会议聊天界面，展示私聊与字数超限预警"
+      }
+    },
+    {
+      "id": "meeting-chat-1-app",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-chat-1-app.mp4",
+      "output": "public/videos/meeting/meeting-chat-1-app.mp4",
+      "poster": "/images/meeting/meeting-chat-1-app-poster.webp",
+      "purpose": "Show private chat behavior and length feedback inside the live mobile meeting."
+    },
+    {
+      "id": "meeting-chat-2-app-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-chat-2-app-poster.png",
+      "output": "public/images/meeting/meeting-chat-2-app-poster.webp",
+      "purpose": "Provide the poster frame for the mobile chat recording with additional hidden actions.",
+      "alt": {
+        "en": "Portrait mobile meeting chat showing deeper hidden actions and secondary interaction patterns",
+        "zh": "手机竖屏会议聊天界面，展示更多隐藏操作与二级交互"
+      }
+    },
+    {
+      "id": "meeting-chat-2-app",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-chat-2-app.mp4",
+      "output": "public/videos/meeting/meeting-chat-2-app.mp4",
+      "poster": "/images/meeting/meeting-chat-2-app-poster.webp",
+      "purpose": "Show the deeper chat interaction layer that extends beyond the default compose state."
+    },
+    {
       "id": "meeting-beauty-app-poster",
       "kind": "image",
       "source": "evidence/meeting/source/imported/meeting-beauty-app-poster.png",
