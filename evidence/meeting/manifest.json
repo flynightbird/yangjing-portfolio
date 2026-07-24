@@ -187,6 +187,44 @@
       "purpose": "Show the second portrait whiteboard mobile state."
     },
     {
+      "id": "meeting-whiteboard-annotation-app-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-whiteboard-annotation-app-poster.png",
+      "output": "public/images/meeting/meeting-whiteboard-annotation-app-poster.webp",
+      "purpose": "Provide the poster frame for screen-share annotation on mobile.",
+      "alt": {
+        "en": "Portrait mobile meeting with annotation tools active over shared content",
+        "zh": "手机竖屏会议中在共享内容上启用标注工具"
+      }
+    },
+    {
+      "id": "meeting-whiteboard-annotation-app",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-whiteboard-annotation-app.mp4",
+      "output": "public/videos/meeting/meeting-whiteboard-annotation-app.mp4",
+      "poster": "/images/meeting/meeting-whiteboard-annotation-app-poster.webp",
+      "purpose": "Show direct annotation on shared content during a mobile meeting."
+    },
+    {
+      "id": "meeting-captions-app-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-captions-app-poster.png",
+      "output": "public/images/meeting/meeting-captions-app-poster.webp",
+      "purpose": "Provide the poster frame for live captions inside a mobile meeting.",
+      "alt": {
+        "en": "Portrait mobile meeting with a live caption displayed over the stage",
+        "zh": "手机竖屏会议舞台上显示实时字幕"
+      }
+    },
+    {
+      "id": "meeting-captions-app",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-captions-app.mp4",
+      "output": "public/videos/meeting/meeting-captions-app.mp4",
+      "poster": "/images/meeting/meeting-captions-app-poster.webp",
+      "purpose": "Show participant-controlled live captions inside a mobile meeting."
+    },
+    {
       "id": "meeting-transcript-app-poster",
       "kind": "image",
       "source": "evidence/meeting/source/imported/meeting-transcript-app-poster.png",

@@ -19,6 +19,8 @@ type MeetingMediaId =
   | 'whiteboard-web'
   | 'whiteboard-app-1'
   | 'whiteboard-app-2'
+  | 'whiteboard-annotation-app'
+  | 'captions-app'
   | 'transcript-app'
   | 'interpretation-on-app'
   | 'interpretation-live-app'
@@ -132,7 +134,7 @@ const mediaCatalog: Record<MeetingMediaId, MediaDefinition> = {
     width: 590,
     height: 1280,
     label: { en: 'Portrait whiteboard A', zh: '手机白板 A' },
-    title: { en: 'Portrait keeps one participant channel above the board', zh: '白板优先，参会者仍然可见' },
+    title: { en: 'Portrait keeps one participant channel above the board', zh: '白板优先，参会者、常用操作仍然清晰可见' },
     description: {
       en: 'The board stays primary, while a compact participant window preserves meeting awareness.',
       zh: '白板上方保留一个参会者画面。',
@@ -146,10 +148,38 @@ const mediaCatalog: Record<MeetingMediaId, MediaDefinition> = {
     width: 590,
     height: 1280,
     label: { en: 'Portrait whiteboard B', zh: '手机白板 B' },
-    title: { en: 'The same rule survives another whiteboard state', zh: '状态变化，规则保持一致' },
+    title: { en: 'The same rule survives another whiteboard state', zh: '退出/进入绘制白板功能前后，均合理利用有限空间' },
     description: {
       en: 'Different whiteboard moments still follow the same layout logic rather than device-by-device exceptions.',
-      zh: '不同白板状态沿用同一套布局判断。',
+      zh: '不同状态沿用同一套布局规则。',
+    },
+  },
+  'whiteboard-annotation-app': {
+    id: 'whiteboard-annotation-app',
+    kind: 'phone',
+    src: '/videos/meeting/meeting-whiteboard-annotation-app.mp4',
+    poster: '/images/meeting/meeting-whiteboard-annotation-app-poster.webp',
+    width: 590,
+    height: 1280,
+    label: { en: 'Screen-share annotation', zh: '屏幕共享标注' },
+    title: { en: 'Annotate directly on shared content', zh: '共享内容上直接标注' },
+    description: {
+      en: 'Annotation tools keep discussion attached to the content being shared.',
+      zh: '共享过程中调用标注工具，让讨论直接发生在内容上。',
+    },
+  },
+  'captions-app': {
+    id: 'captions-app',
+    kind: 'phone',
+    src: '/videos/meeting/meeting-captions-app.mp4',
+    poster: '/images/meeting/meeting-captions-app-poster.webp',
+    width: 590,
+    height: 1280,
+    label: { en: 'Live captions', zh: '实时字幕' },
+    title: { en: 'Captions are enabled on demand', zh: '字幕由个人按需开启' },
+    description: {
+      en: 'Participants can enable captions without changing meeting-level settings.',
+      zh: '参会者可在会中自行开启，不改变会议级设置。',
     },
   },
   'transcript-app': {
@@ -495,9 +525,10 @@ export function MeetingWhiteboardShowcase({ locale }: { readonly locale: Locale 
         <p>{text.whiteboardSummary}</p>
       </div>
       <BrowserShell mediaId="whiteboard-web" locale={locale} chromeLabel="Whiteboard workspace" />
-      <div className={`${styles.phoneGrid} ${styles.whiteboardDeck}`} data-columns="2">
+      <div className={`${styles.phoneGrid} ${styles.whiteboardDeck}`} data-columns="3">
         <PhoneShell mediaId="whiteboard-app-1" locale={locale} />
         <PhoneShell mediaId="whiteboard-app-2" locale={locale} />
+        <PhoneShell mediaId="whiteboard-annotation-app" locale={locale} />
       </div>
     </div>
   );
@@ -512,7 +543,8 @@ export function MeetingLanguageShowcase({ locale }: { readonly locale: Locale })
         <h3>{text.languageTitle}</h3>
         <p>{text.languageSummary}</p>
       </div>
-      <div className={styles.phoneGrid} data-columns="3">
+      <div className={styles.phoneGrid} data-columns="4">
+        <PhoneShell mediaId="captions-app" locale={locale} />
         <PhoneShell mediaId="transcript-app" locale={locale} />
         <PhoneShell mediaId="interpretation-on-app" locale={locale} />
         <PhoneShell mediaId="interpretation-live-app" locale={locale} />

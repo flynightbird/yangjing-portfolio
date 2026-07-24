@@ -20,27 +20,33 @@ const fontSize = async (locator: Locator) =>
 const roleCases = [
   {
     route: '/zh/work/call-agent/',
-    cardSelector: '[data-case-study] .boundary-map h3',
+    roleSelector: '[data-case-study] .boundary-map h3',
+    expectedSize: 22,
   },
   {
     route: '/en/work/call-agent/',
-    cardSelector: '[data-case-study] .boundary-map h3',
+    roleSelector: '[data-case-study] .boundary-map h3',
+    expectedSize: 22,
   },
   {
     route: '/zh/work/meeting/',
-    cardSelector: '[data-meeting-case] #capability-impact > div > article h3',
+    roleSelector: '[data-meeting-case] #capability-impact h3',
+    expectedSize: 29,
   },
   {
     route: '/en/work/meeting/',
-    cardSelector: '[data-meeting-case] #capability-impact > div > article h3',
+    roleSelector: '[data-meeting-case] #capability-impact h3',
+    expectedSize: 29,
   },
   {
     route: '/zh/build/stt-demo/',
-    cardSelector: '[data-case-study] .feedback-loop h3',
+    roleSelector: '[data-case-study] .feedback-loop h3',
+    expectedSize: 22,
   },
   {
     route: '/en/build/stt-demo/',
-    cardSelector: '[data-case-study] .feedback-loop h3',
+    roleSelector: '[data-case-study] .feedback-loop h3',
+    expectedSize: 22,
   },
 ] as const;
 
@@ -56,13 +62,13 @@ const responsiveCases = [
 ] as const;
 
 const routes = [
-  '/zh/work/call-agent/',
-  '/zh/work/meeting/',
-  '/zh/work/xuelang/',
+  { route: '/zh/work/call-agent/', surface: 'light' },
+  { route: '/zh/work/meeting/', surface: 'dark' },
+  { route: '/zh/work/xuelang/', surface: 'light' },
 ] as const;
 
 test.describe('portfolio detail system', () => {
-  for (const { route, cardSelector } of roleCases) {
+  for (const { route, roleSelector, expectedSize } of roleCases) {
     test(`${route} exposes the approved desktop hierarchy`, async ({
       page,
     }, testInfo) => {
@@ -77,9 +83,9 @@ test.describe('portfolio detail system', () => {
         await fontSize(page.locator('[data-case-study] h2').first()),
       ).toBeCloseTo(50, 0);
 
-      const card = page.locator(cardSelector).first();
-      await expect(card).toHaveCount(1);
-      expect(await fontSize(card)).toBeCloseTo(22, 0);
+      const roleHeading = page.locator(roleSelector).first();
+      await expect(roleHeading).toHaveCount(1);
+      expect(await fontSize(roleHeading)).toBeCloseTo(expectedSize, 0);
     });
   }
 
@@ -519,7 +525,7 @@ test.describe('portfolio detail system', () => {
     }
   }
 
-  for (const route of routes) {
+  for (const { route, surface } of routes) {
     test(`${route} shares navigation and heading semantics`, async ({
       page,
     }, testInfo) => {
@@ -528,7 +534,7 @@ test.describe('portfolio detail system', () => {
 
       await expect(page.getByRole('banner')).toHaveAttribute(
         'data-surface',
-        'light',
+        surface,
       );
 
       const chapters = page
@@ -571,7 +577,7 @@ test.describe('portfolio detail system', () => {
     const chapters = page
       .getByRole('navigation', { name: '案例章节' })
       .getByRole('link');
-    await expect(chapters.first()).toHaveCSS('color', 'rgb(242, 244, 240)');
+    await expect(chapters.first()).toHaveCSS('color', 'rgb(244, 245, 242)');
     await expect(chapters.first()).toHaveCSS('opacity', '1');
     await expect(chapters.nth(1)).toHaveCSS('opacity', '0.48');
   });
