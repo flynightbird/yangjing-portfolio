@@ -53,6 +53,7 @@
 
 .eyebrow {
   margin: 0;
+  margin-block-end: var(--case-index-title-gap);
   color: var(--meeting-portfolio-accent);
   font-family: var(--font-mono), monospace;
   font-size: 0.6875rem;
@@ -61,13 +62,13 @@
 }
 
 .hero h1 {
-  max-width: 10.8ch;
+  max-width: var(--case-project-title-max);
   margin: 0;
   font-family: var(--font-display), sans-serif;
-  font-size: var(--case-h1-size);
-  font-weight: var(--case-h1-weight);
-  line-height: var(--case-h1-leading);
-  letter-spacing: -0.03em;
+  font-size: var(--case-project-title-size);
+  font-weight: var(--case-project-title-weight);
+  line-height: var(--case-project-title-leading);
+  letter-spacing: 0;
   overflow-wrap: break-word;
   text-wrap: balance;
   word-break: normal;
@@ -76,6 +77,7 @@
 .proposition {
   max-width: 29rem;
   margin: 0;
+  margin-block-start: var(--case-title-body-gap);
   color: var(--meeting-muted);
   font-size: clamp(1.08rem, 1.35vw, 1.38rem);
   line-height: 1.58;
@@ -155,12 +157,12 @@
 
 .content :global(.section-heading) {
   display: grid;
-  gap: 0.8rem;
-  margin-bottom: 1.85rem;
+  gap: var(--case-index-title-gap);
+  margin-bottom: var(--case-title-body-gap);
 }
 
 .content :global(.section-heading h2) {
-  max-width: 16ch;
+  max-width: var(--case-chapter-title-max);
   text-wrap: balance;
 }
 
@@ -174,18 +176,22 @@
 }
 
 .content h2 {
-  margin: 0 0 2rem;
+  max-width: var(--case-chapter-title-max);
+  margin: 0;
+  margin-block-end: var(--case-title-body-gap);
   font-family: var(--font-display), sans-serif;
-  font-size: var(--case-h2-size);
-  font-weight: var(--case-h2-weight);
-  line-height: var(--case-h2-leading);
+  font-size: var(--case-chapter-title-size);
+  font-weight: var(--case-chapter-title-weight);
+  line-height: var(--case-chapter-title-leading);
   letter-spacing: 0;
 }
 
-.content h3 {
-  font-size: var(--case-h3-size);
-  font-weight: var(--case-h3-weight);
-  line-height: var(--case-h3-leading);
+.content :where(h3) {
+  max-width: var(--case-card-title-max);
+  margin-block: var(--case-index-title-gap) var(--case-title-body-gap);
+  font-size: var(--case-card-title-size);
+  font-weight: var(--case-card-title-weight);
+  line-height: var(--case-card-title-leading);
   letter-spacing: 0;
 }
 

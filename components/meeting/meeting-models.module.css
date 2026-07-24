@@ -94,9 +94,12 @@
 }
 
 .capabilities h3 {
-  margin: 2.5rem 0 0.65rem;
   color: var(--meeting-ink, inherit);
-  font-size: 1.35rem;
+  max-width: var(--case-card-title-max);
+  margin-block: var(--case-index-title-gap) var(--case-title-body-gap);
+  font-size: var(--case-card-title-size);
+  font-weight: var(--case-card-title-weight);
+  line-height: var(--case-card-title-leading);
 }
 
 .priority figcaption {
@@ -137,8 +140,15 @@
 
 .language > figcaption {
   color: var(--meeting-ink, inherit);
-  font-size: clamp(1.35rem, 2vw, 2rem);
-  font-weight: 700;
+  max-width: var(--case-media-title-max);
+  margin-block: 0 var(--case-title-body-gap);
+  font-size: var(--case-media-title-size);
+  font-weight: var(--case-media-title-weight);
+  line-height: var(--case-media-title-leading);
+}
+
+.language > .languagePaths {
+  margin-block-start: 0;
 }
 
 .languagePaths > div {

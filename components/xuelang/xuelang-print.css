@@ -54,9 +54,9 @@
   }
 
   [data-xuelang-hero] h1 {
-    max-width: 14ch !important;
-    font-size: 31pt !important;
-    line-height: 1.03 !important;
+    max-width: var(--case-project-title-max) !important;
+    font-size: var(--case-project-title-size) !important;
+    line-height: var(--case-project-title-leading) !important;
   }
 
   [data-xuelang-hero] dl {
@@ -89,9 +89,9 @@
   }
 
   [data-xuelang-case] [data-case-study] section h2 {
-    max-width: 18ch !important;
-    font-size: 22pt !important;
-    line-height: 1.12 !important;
+    max-width: var(--case-chapter-title-max) !important;
+    font-size: var(--case-chapter-title-size) !important;
+    line-height: var(--case-chapter-title-leading) !important;
   }
 
   [data-xuelang-case] [data-case-study] section h3,
@@ -157,7 +157,8 @@
 
   [data-xuelang-case] [data-evidence-story] h3 {
     margin-block-start: 3mm !important;
-    font-size: 18pt !important;
+    font-size: var(--case-narrative-title-size) !important;
+    line-height: var(--case-narrative-title-leading) !important;
   }
 
   [data-xuelang-case] [data-evidence-story] ol {
@@ -367,7 +368,8 @@
 
   [data-xuelang-case] [data-case-study] .xuelang-reflection h3 {
     margin: 2mm 0 3mm !important;
-    font-size: 18pt !important;
+    font-size: var(--case-narrative-title-size) !important;
+    line-height: var(--case-narrative-title-leading) !important;
   }
 
   [data-xuelang-case] [data-case-study] .xuelang-reflection p {
