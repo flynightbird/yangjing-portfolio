@@ -24,7 +24,7 @@ const meta: ContentMeta = {
 };
 
 it('presents product proof, approved facts, and chapter navigation', () => {
-  render(
+  const { container } = render(
     <MeetingLayout meta={meta} locale="en">
       <section id="business-context">Context</section>
     </MeetingLayout>,
@@ -37,6 +37,11 @@ it('presents product proof, approved facts, and chapter navigation', () => {
   expect(screen.getByRole('button', { name: 'Replay' })).toBeVisible();
   expect(screen.getByText('Agora Meeting')).toBeVisible();
   expect(screen.getByRole('navigation', { name: 'Case study chapters' })).toBeVisible();
+  expect(container.querySelectorAll('[data-meeting-video]')).toHaveLength(2);
+  for (const video of container.querySelectorAll('[data-meeting-video]')) {
+    expect(video).toHaveAttribute('aria-hidden', 'true');
+  }
+  expect(container.querySelectorAll('[data-meeting-video-poster]')).toHaveLength(2);
 });
 
 it('prevents forced word breaks and uses the shared chapter treatment', () => {
@@ -48,6 +53,10 @@ it('prevents forced word breaks and uses the shared chapter treatment', () => {
     'components/case-study/chapter-nav.module.css',
     'utf8',
   );
+  const printStyles = readFileSync(
+    'components/meeting/meeting-print.css',
+    'utf8',
+  );
 
   expect(layoutStyles).toMatch(/word-break:\s*normal/);
   expect(layoutStyles).toMatch(/overflow-wrap:\s*break-word/);
@@ -57,4 +66,10 @@ it('prevents forced word breaks and uses the shared chapter treatment', () => {
     /--chapter-accent:\s*var\(--color-iris-deep\)/,
   );
   expect(chapterStyles).toMatch(/opacity:\s*0\.48/);
+  expect(printStyles).toMatch(
+    /\[data-meeting-case\]\s+\[data-meeting-video\]\s*\{[^}]*display:\s*none\s*!important/s,
+  );
+  expect(printStyles).toMatch(
+    /\[data-meeting-case\]\s+\[data-meeting-video-poster\]\s*\{[^}]*opacity:\s*1\s*!important/s,
+  );
 });

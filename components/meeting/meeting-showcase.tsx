@@ -287,6 +287,7 @@ function MeetingViewportVideo({
     <div className={styles.videoFrame} data-loaded={isLoaded ? 'true' : 'false'}>
       <img
         className={styles.videoPoster}
+        data-meeting-video-poster
         src={media.poster}
         alt=""
         loading="lazy"
@@ -295,6 +296,8 @@ function MeetingViewportVideo({
       <video
         ref={videoRef}
         className={className}
+        data-meeting-video
+        aria-hidden="true"
         src={media.src}
         poster={media.poster}
         autoPlay
