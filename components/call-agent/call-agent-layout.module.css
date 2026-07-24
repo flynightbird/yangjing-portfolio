@@ -20,8 +20,8 @@
 .eyebrow, .audience { margin: 0; font-family: var(--call-mono); font-size: 11px; line-height: 1.3; text-transform: uppercase; }
 .eyebrow { color: var(--call-accent); }
 .audience { margin-top: 14px; color: #666b74; }
-.hero h1 { max-width: 20ch; margin: 28px 0 0; font-size: var(--case-h1-size); font-weight: var(--case-h1-weight); line-height: var(--case-h1-leading); letter-spacing: 0; text-wrap: balance; }
-.proposition { max-width: 50ch; margin: 28px 0 0; color: #60646c; font-size: clamp(1rem, 1.3vw, 1.25rem); line-height: 1.55; }
+.hero h1 { max-width: var(--case-project-title-max); margin-block: var(--case-index-title-gap) 0; font-size: var(--case-project-title-size); font-weight: var(--case-project-title-weight); line-height: var(--case-project-title-leading); letter-spacing: 0; text-wrap: balance; }
+.proposition { max-width: 50ch; margin-block: var(--case-title-body-gap) 0; color: #60646c; font-size: clamp(1rem, 1.3vw, 1.25rem); line-height: 1.55; }
 .facts { display: grid; grid-template-columns: 1.5fr .7fr .7fr; gap: 20px; max-width: 650px; margin: 38px 0 0; padding-top: 16px; border-top: 1px solid var(--call-line); }
 .facts div { min-width: 0; }
 .facts dt { color: #868a92; font: 500 10px/1.2 var(--call-mono); text-transform: uppercase; }
@@ -29,9 +29,9 @@
 .heroCopy > div:last-child { margin-top: 26px; }
 .heroMedia { z-index: 1; grid-column: 6 / -1; margin: 220px 0 0 -4vw; }
 .case > section { padding: clamp(112px, 14vw, 210px) clamp(0px, 2vw, 32px); border-top: 1px solid var(--call-line); }
-.case > section h2 { max-width: 20ch; margin: 0; font-size: var(--case-h2-size); font-weight: var(--case-h2-weight); line-height: var(--case-h2-leading); text-wrap: balance; }
-.case > section > h3 { font-size: var(--case-h3-size); font-weight: var(--case-h3-weight); line-height: var(--case-h3-leading); letter-spacing: 0; }
+.case > section h2 { max-width: var(--case-chapter-title-max); margin-block: 0 var(--case-title-body-gap); font-size: var(--case-chapter-title-size); font-weight: var(--case-chapter-title-weight); line-height: var(--case-chapter-title-leading); text-wrap: balance; }
 .case :global(.call-reading) { max-width: 70ch; margin-top: 32px; color: #61656d; font-size: clamp(1rem, 1.25vw, 1.18rem); line-height: 1.75; }
+.case > section h2 + :global(.call-reading) { margin-block-start: 0; }
 .case :global(.call-reading--lead) { color: var(--call-ink); font-size: clamp(1.3rem, 2vw, 2rem); line-height: 1.45; }
 .case :global(.call-dark-band) { overflow: clip; margin-inline: calc(clamp(24px, 4vw, 72px) * -1); padding-inline: clamp(24px, 6vw, 96px); border: 0; border-radius: 20px; background: var(--call-runtime); color: #fafafa; }
 .case :global(.call-dark-band) :global(.call-reading) { color: #aeb3bc; }

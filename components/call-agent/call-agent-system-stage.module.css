@@ -6,8 +6,8 @@
 .steps li:last-child { border-bottom: 1px solid var(--call-line); }
 .steps button { width: 100%; padding: 28px 0; border: 0; background: transparent; color: var(--call-ink); text-align: left; cursor: pointer; }
 .steps button span { display: block; color: #858991; font: 500 11px/1 var(--call-mono); }
-.steps button strong { display: block; margin-top: 10px; font-size: clamp(1.45rem, 2.3vw, 2.25rem); font-weight: 550; }
-.steps button p { max-width: 36ch; margin: 10px 0 0; color: #737780; line-height: 1.6; }
+.steps button strong { display: block; max-width: var(--case-card-title-max); margin-block: var(--case-index-title-gap) var(--case-title-body-gap); font-size: var(--case-card-title-size); font-weight: var(--case-card-title-weight); line-height: var(--case-card-title-leading); }
+.steps button p { max-width: 36ch; margin-block: 0; color: #737780; line-height: 1.6; }
 .steps li[data-active='true'] button strong { color: var(--call-accent); }
 .mediaStage { position: sticky; top: 13vh; min-height: min(64vw, 700px); }
 .mediaLayer { position: absolute; inset: 0; opacity: 0; visibility: hidden; transform: scale(.985); transition: opacity .42s ease, transform .55s ease, visibility .42s; pointer-events: none; }
@@ -27,6 +27,6 @@
   .desktopStage { display: none; }
   .staticSequence { display: grid; gap: 72px; }
   .staticSequence article > span { color: #858991; font: 500 11px/1 var(--call-mono); }
-  .staticSequence h3 { margin: 10px 0 0; font-size: 1.7rem; }
-  .staticSequence article > p { margin: 10px 0 24px; color: #737780; line-height: 1.65; }
+  .staticSequence h3 { max-width: var(--case-card-title-max); margin-block: var(--case-index-title-gap) var(--case-title-body-gap); font-size: var(--case-card-title-size); font-weight: var(--case-card-title-weight); line-height: var(--case-card-title-leading); }
+  .staticSequence article > p { margin-block: 0 24px; color: #737780; line-height: 1.65; }
 }
