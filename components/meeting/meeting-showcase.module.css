@@ -128,8 +128,8 @@
 
 .surface figcaption {
   display: grid;
-  gap: 0.48rem;
-  margin-top: 1.6rem;
+  gap: 0.56rem;
+  margin-top: 1.95rem;
   max-width: 32rem;
 }
 
