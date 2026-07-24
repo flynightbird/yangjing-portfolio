@@ -85,7 +85,6 @@ describe('SiteHeader', () => {
   });
 
   it.each([
-    '/en/work/meeting/',
     '/zh/work/call-agent/',
     '/en/work/xuelang/',
   ])('marks detail route %s as light', (pathname) => {
@@ -95,7 +94,12 @@ describe('SiteHeader', () => {
     expect(screen.getByRole('banner')).toHaveAttribute('data-surface', 'light');
   });
 
-  it.each(['/zh/build/stt-demo/', '/en/work/tangping/'])(
+  it.each([
+    '/zh/build/stt-demo/',
+    '/en/work/tangping/',
+    '/zh/work/meeting/',
+    '/en/work/meeting/',
+  ])(
     'keeps dark detail route %s dark',
     (pathname) => {
       navigationMocks.pathname = pathname;
