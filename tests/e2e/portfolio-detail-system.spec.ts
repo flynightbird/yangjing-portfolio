@@ -384,7 +384,9 @@ test.describe('portfolio detail system', () => {
           ),
         ).toBeLessThanOrEqual(1);
 
-        const headings = page.locator(`${root} :is(h1, h2, h3, h4):visible`);
+        const headings = page.locator(
+          `${root} :is(h1, h2, h3, h4):not([data-static-stage] h3)`,
+        );
         expect(await headings.count()).toBeGreaterThan(0);
         await page.evaluate(() => document.fonts.ready);
         await expect
