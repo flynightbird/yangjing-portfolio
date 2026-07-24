@@ -1,0 +1,465 @@
+.heroStage,
+.sectionStack {
+  display: grid;
+  gap: clamp(1.35rem, 2.8vw, 2.2rem);
+}
+
+.heroStage {
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 2.25rem;
+  background:
+    radial-gradient(circle at top left, rgba(93, 118, 255, 0.16), transparent 24%),
+    linear-gradient(180deg, #0b0f14 0%, #131922 100%);
+  box-shadow:
+    0 1.75rem 4.5rem rgba(7, 10, 15, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.heroStageTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.heroBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.heroBrand img {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.7rem;
+}
+
+.heroBrand strong,
+.heroBrand span,
+.replayButton {
+  color: #f5f7fb;
+}
+
+.heroBrand strong {
+  display: block;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.heroBrand span {
+  display: block;
+  margin-top: 0.1rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.67rem;
+  text-transform: uppercase;
+  opacity: 0.62;
+}
+
+.replayButton {
+  display: inline-grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.replayButton:hover,
+.replayButton:focus-visible {
+  background: #ffffff;
+  color: #17191c;
+}
+
+.replayButton:active {
+  transform: scale(0.98);
+}
+
+.replayButton:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+.heroStageScene {
+  position: relative;
+  min-height: clamp(25rem, 50vw, 39rem);
+  padding: 0.35rem clamp(11rem, 15vw, 13rem) 0 0;
+}
+
+.surface {
+  margin: 0;
+}
+
+.videoFrame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #050709;
+}
+
+.videoPoster,
+.media {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.videoPoster {
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  object-position: center top;
+  transition: opacity 220ms ease;
+}
+
+.videoFrame[data-loaded='true'] .videoPoster {
+  opacity: 0;
+}
+
+.videoFrame[data-loaded='false'] .media {
+  opacity: 0;
+}
+
+.surface figcaption {
+  display: grid;
+  gap: 0.56rem;
+  margin-top: 1.95rem;
+  max-width: 32rem;
+}
+
+.surface figcaption span {
+  color: var(--meeting-portfolio-accent, var(--color-iris-deep));
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.surface figcaption strong {
+  color: var(--meeting-ink, #eef3f7);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.surface figcaption p {
+  margin: 0;
+  color: var(--meeting-muted, rgba(238, 243, 247, 0.66));
+  font-size: 0.86rem;
+  line-height: 1.66;
+}
+
+.browserFigure {
+  color: var(--meeting-ink, #17191c);
+}
+
+.heroBrowser {
+  width: 100%;
+  max-width: 47.5rem;
+}
+
+.browserShell {
+  overflow: hidden;
+  border: 1px solid rgba(23, 25, 28, 0.12);
+  border-radius: 1.5rem;
+  background: #ffffff;
+  box-shadow:
+    0 1.5rem 3.75rem rgba(10, 14, 20, 0.18),
+    0 0.3rem 0.9rem rgba(10, 14, 20, 0.09);
+}
+
+.browserBar {
+  display: grid;
+  height: 3rem;
+  grid-template-columns: 4rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid rgba(23, 25, 28, 0.08);
+  background: rgba(250, 251, 253, 0.96);
+}
+
+.browserLights {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.browserLights i {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: #d4d8de;
+}
+
+.browserLights i:first-child {
+  background: #ff7269;
+}
+
+.browserLights i:nth-child(2) {
+  background: #f2bf49;
+}
+
+.browserLights i:last-child {
+  background: #63c56f;
+}
+
+.browserAddress {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid rgba(23, 25, 28, 0.08);
+  border-radius: 999px;
+  color: #6b727b;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.62rem;
+  line-height: 1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.browserAddress img {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: 0 0 auto;
+}
+
+.browserMeta {
+  color: #6d7480;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.browserViewport {
+  overflow: hidden;
+  background: #eef1f5;
+}
+
+.heroPhone {
+  position: absolute;
+  right: 0.15rem;
+  bottom: 0.55rem;
+  width: clamp(12rem, 17.4vw, 13.8rem);
+}
+
+.phoneFigure {
+  color: var(--meeting-ink, #17191c);
+}
+
+.landscapeFigure {
+  min-width: 0;
+  color: var(--meeting-ink, #17191c);
+}
+
+.phoneShell,
+.landscapeShell {
+  padding: 0.5rem;
+  border: 1px solid rgba(18, 21, 25, 0.22);
+  background:
+    linear-gradient(180deg, #1a1f26 0%, #0e1116 100%);
+  box-shadow:
+    0 1.35rem 3.25rem rgba(10, 14, 20, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.phoneShell {
+  border-radius: 1.72rem;
+}
+
+.landscapeShell {
+  border-radius: 1.45rem;
+}
+
+.phoneViewport,
+.landscapeViewport {
+  width: 100%;
+  overflow: hidden;
+  background: #050709;
+}
+
+.phoneViewport {
+  border-radius: 1.34rem;
+}
+
+.landscapeViewport {
+  border-radius: 1.08rem;
+}
+
+.browserViewport .media {
+  object-fit: cover;
+  object-position: left top;
+  background: #eef1f5;
+}
+
+.phoneViewport .media,
+.landscapeViewport .media {
+  object-fit: contain;
+  object-position: center top;
+  background: #050709;
+}
+
+.heroPhone figcaption {
+  display: none;
+}
+
+.sectionIntro {
+  display: grid;
+  gap: 0.8rem;
+  max-width: 46rem;
+}
+
+.sectionIntro h3 {
+  max-width: var(--case-media-title-max);
+  margin-block: var(--case-index-title-gap) var(--case-title-body-gap);
+  font-size: var(--case-media-title-size);
+  font-weight: var(--case-media-title-weight);
+  line-height: var(--case-media-title-leading);
+}
+
+.sectionIntro p {
+  margin: 0;
+  color: var(--meeting-muted, rgba(238, 243, 247, 0.66));
+  font-size: 0.98rem;
+  line-height: 1.72;
+}
+
+.orientationBlock {
+  display: grid;
+  gap: clamp(1.2rem, 2.4vw, 1.8rem);
+  padding-top: clamp(0.5rem, 1vw, 0.9rem);
+}
+
+.orientationCompare {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(10.5rem, 14rem);
+  gap: clamp(1.25rem, 3vw, 2.4rem);
+  align-items: start;
+}
+
+.orientationCompare .phoneFigure {
+  width: 100%;
+}
+
+.phoneGrid {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  align-items: start;
+}
+
+.phoneGrid > * {
+  width: min(100%, 15.75rem);
+  justify-self: center;
+}
+
+.phoneGrid[data-columns='2'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.phoneGrid[data-columns='3'] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.phoneGrid[data-columns='4'] {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.phoneGrid[data-columns='4'] > * {
+  width: min(100%, 14rem);
+}
+
+.whiteboardDeck {
+  align-items: start;
+}
+
+.polishDeck {
+  margin-block-end: clamp(2.75rem, 5vw, 4.5rem);
+}
+
+@media (max-width: 1120px) {
+  .heroStageScene {
+    min-height: 34rem;
+  }
+
+  .heroBrowser {
+    max-width: 39rem;
+  }
+
+  .phoneGrid[data-columns='3'],
+  .phoneGrid[data-columns='4'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .phoneGrid[data-columns='4'] > * {
+    width: min(100%, 15.75rem);
+  }
+}
+
+@media (max-width: 920px) {
+  .heroStageScene {
+    display: grid;
+    min-height: auto;
+    gap: 1.25rem;
+    padding-right: 0;
+  }
+
+  .heroPhone {
+    position: static;
+    width: min(52vw, 12.6rem);
+    transform: none;
+    justify-self: center;
+  }
+
+}
+
+@media (max-width: 720px) {
+  .browserBar {
+    grid-template-columns: 3rem minmax(0, 1fr);
+    height: 2.8rem;
+  }
+
+  .browserMeta {
+    display: none;
+  }
+
+  .phoneGrid[data-columns='2'],
+  .phoneGrid[data-columns='3'],
+  .phoneGrid[data-columns='4'] {
+    grid-template-columns: 1fr;
+  }
+
+  .orientationCompare {
+    grid-template-columns: 1fr;
+  }
+
+  .orientationCompare .phoneFigure {
+    width: min(58vw, 14rem);
+    justify-self: center;
+  }
+
+  .heroStage {
+    border-radius: 1.75rem;
+  }
+
+  .phoneShell {
+    border-radius: 1.5rem;
+  }
+
+  .phoneViewport {
+    border-radius: 1.16rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .replayButton {
+    transition: none;
+  }
+}

@@ -29,6 +29,14 @@ describe('Meeting system models', () => {
     expect(screen.getByText('Interface state')).toBeVisible();
   });
 
+  it('renders the strategy-led Chinese state model', () => {
+    render(<ContextPriorityModel locale="zh" />);
+    expect(screen.getByText('会议状态')).toBeVisible();
+    expect(screen.getByText('信息重点')).toBeVisible();
+    expect(screen.getByText('界面布局')).toBeVisible();
+    expect(screen.getByText('此刻最重要的是什么？')).toBeVisible();
+  });
+
   it('preserves the approved participant priority order', () => {
     render(<ParticipantPriorityStack locale="en" />);
     expect(screen.getAllByRole('listitem').map((item) => item.textContent)).toEqual([

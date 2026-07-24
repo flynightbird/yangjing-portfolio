@@ -6,11 +6,318 @@
       "kind": "image",
       "source": "evidence/meeting/source/meeting-hero.png",
       "output": "public/images/meeting/meeting-hero.webp",
-      "purpose": "Orient the reviewer to the shipped Agora Meeting stage and product scale.",
+      "purpose": "Provide a static hero image for metadata and non-interactive contexts.",
       "alt": {
         "en": "Agora Meeting desktop stage with participant video, controls, and live meeting state",
         "zh": "Agora Meeting 桌面会议舞台，包含参会者视频、控制栏与实时会议状态"
       }
+    },
+    {
+      "id": "meeting-logo-light",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-logo-light.png",
+      "output": "public/images/meeting/meeting-logo-light.webp",
+      "purpose": "Provide the light meeting brand mark used in the hero media chrome.",
+      "alt": {
+        "en": "Agora Meeting product logo mark",
+        "zh": "Agora Meeting 标识"
+      }
+    },
+    {
+      "id": "meeting-logo-dark",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-logo-dark.png",
+      "output": "public/images/meeting/meeting-logo-dark.webp",
+      "purpose": "Preserve the dark meeting brand mark for alternate portfolio contexts.",
+      "alt": {
+        "en": "Agora Meeting product logo on dark background",
+        "zh": "深色底上的 Agora Meeting 标识"
+      }
+    },
+    {
+      "id": "meeting-hero-web-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-hero-web-poster.png",
+      "output": "public/images/meeting/meeting-hero-web-poster.webp",
+      "purpose": "Provide the poster frame for the desktop Web hero recording.",
+      "alt": {
+        "en": "Agora Meeting web workspace with live transcript and participant stage",
+        "zh": "Agora Meeting Web 工作区，包含实时转写与参会者舞台"
+      }
+    },
+    {
+      "id": "meeting-hero-web",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-hero-web.mp4",
+      "output": "public/videos/meeting/meeting-hero-web.mp4",
+      "poster": "/images/meeting/meeting-hero-web-poster.webp",
+      "purpose": "Show the shipped Web transcript workspace used in the page hero."
+    },
+    {
+      "id": "meeting-hero-app-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-hero-app-poster.png",
+      "output": "public/images/meeting/meeting-hero-app-poster.webp",
+      "purpose": "Provide the poster frame for the portrait app hero recording.",
+      "alt": {
+        "en": "Agora Meeting portrait mobile stage",
+        "zh": "Agora Meeting 手机竖屏会议舞台"
+      }
+    },
+    {
+      "id": "meeting-hero-app",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-hero-app.mp4",
+      "output": "public/videos/meeting/meeting-hero-app.mp4",
+      "poster": "/images/meeting/meeting-hero-app-poster.webp",
+      "purpose": "Show the portrait mobile meeting stage paired with the Web hero."
+    },
+    {
+      "id": "meeting-stage-web-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-stage-web-poster.png",
+      "output": "public/images/meeting/meeting-stage-web-poster.webp",
+      "purpose": "Provide the poster frame for the adaptive stage recording.",
+      "alt": {
+        "en": "Agora Meeting web layout switching between live stage states",
+        "zh": "Agora Meeting Web 舞台在不同会议状态之间切换"
+      }
+    },
+    {
+      "id": "meeting-stage-web",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-stage-web.mp4",
+      "output": "public/videos/meeting/meeting-stage-web.mp4",
+      "poster": "/images/meeting/meeting-stage-web-poster.webp",
+      "purpose": "Show the adaptive stage behavior on the Web meeting surface."
+    },
+    {
+      "id": "meeting-stage-landscape-app-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-stage-landscape-app-poster.png",
+      "output": "public/images/meeting/meeting-stage-landscape-app-poster.webp",
+      "purpose": "Provide the poster frame for the landscape mobile viewport recording.",
+      "alt": {
+        "en": "Agora Meeting landscape viewport with an expanded participant stage",
+        "zh": "Agora Meeting 横屏视窗，主舞台横向展开"
+      }
+    },
+    {
+      "id": "meeting-stage-landscape-app",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-stage-landscape-app.mp4",
+      "output": "public/videos/meeting/meeting-stage-landscape-app.mp4",
+      "poster": "/images/meeting/meeting-stage-landscape-app-poster.webp",
+      "purpose": "Show how the shipped mobile stage expands across a landscape viewport."
+    },
+    {
+      "id": "meeting-stage-portrait-app-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-stage-portrait-app-poster.png",
+      "output": "public/images/meeting/meeting-stage-portrait-app-poster.webp",
+      "purpose": "Provide the poster frame for the portrait mobile viewport recording.",
+      "alt": {
+        "en": "Agora Meeting portrait viewport with vertically reordered meeting information",
+        "zh": "Agora Meeting 竖屏视窗，会议信息纵向重排"
+      }
+    },
+    {
+      "id": "meeting-stage-portrait-app",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-stage-portrait-app.mp4",
+      "output": "public/videos/meeting/meeting-stage-portrait-app.mp4",
+      "poster": "/images/meeting/meeting-stage-portrait-app-poster.webp",
+      "purpose": "Show how the shipped mobile stage reorders information in a portrait viewport."
+    },
+    {
+      "id": "meeting-whiteboard-web-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-whiteboard-web-poster.png",
+      "output": "public/images/meeting/meeting-whiteboard-web-poster.webp",
+      "purpose": "Provide the poster frame for the desktop whiteboard workspace recording.",
+      "alt": {
+        "en": "Agora Meeting whiteboard workspace on the web surface",
+        "zh": "Agora Meeting Web 白板工作区"
+      }
+    },
+    {
+      "id": "meeting-whiteboard-web",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-whiteboard-web.mp4",
+      "output": "public/videos/meeting/meeting-whiteboard-web.mp4",
+      "poster": "/images/meeting/meeting-whiteboard-web-poster.webp",
+      "purpose": "Show the whiteboard workspace on the large browser surface."
+    },
+    {
+      "id": "meeting-whiteboard-app-1-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-whiteboard-app-1-poster.png",
+      "output": "public/images/meeting/meeting-whiteboard-app-1-poster.webp",
+      "purpose": "Provide the first portrait whiteboard poster frame.",
+      "alt": {
+        "en": "Portrait mobile whiteboard layout, first state",
+        "zh": "手机竖屏白板布局，状态一"
+      }
+    },
+    {
+      "id": "meeting-whiteboard-app-1",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-whiteboard-app-1.mp4",
+      "output": "public/videos/meeting/meeting-whiteboard-app-1.mp4",
+      "poster": "/images/meeting/meeting-whiteboard-app-1-poster.webp",
+      "purpose": "Show the first portrait whiteboard mobile state."
+    },
+    {
+      "id": "meeting-whiteboard-app-2-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-whiteboard-app-2-poster.png",
+      "output": "public/images/meeting/meeting-whiteboard-app-2-poster.webp",
+      "purpose": "Provide the second portrait whiteboard poster frame.",
+      "alt": {
+        "en": "Portrait mobile whiteboard layout, second state",
+        "zh": "手机竖屏白板布局，状态二"
+      }
+    },
+    {
+      "id": "meeting-whiteboard-app-2",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-whiteboard-app-2.mp4",
+      "output": "public/videos/meeting/meeting-whiteboard-app-2.mp4",
+      "poster": "/images/meeting/meeting-whiteboard-app-2-poster.webp",
+      "purpose": "Show the second portrait whiteboard mobile state."
+    },
+    {
+      "id": "meeting-whiteboard-annotation-app-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-whiteboard-annotation-app-poster.png",
+      "output": "public/images/meeting/meeting-whiteboard-annotation-app-poster.webp",
+      "purpose": "Provide the poster frame for screen-share annotation on mobile.",
+      "alt": {
+        "en": "Portrait mobile meeting with annotation tools active over shared content",
+        "zh": "手机竖屏会议中在共享内容上启用标注工具"
+      }
+    },
+    {
+      "id": "meeting-whiteboard-annotation-app",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-whiteboard-annotation-app.mp4",
+      "output": "public/videos/meeting/meeting-whiteboard-annotation-app.mp4",
+      "poster": "/images/meeting/meeting-whiteboard-annotation-app-poster.webp",
+      "purpose": "Show direct annotation on shared content during a mobile meeting."
+    },
+    {
+      "id": "meeting-captions-app-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-captions-app-poster.png",
+      "output": "public/images/meeting/meeting-captions-app-poster.webp",
+      "purpose": "Provide the poster frame for live captions inside a mobile meeting.",
+      "alt": {
+        "en": "Portrait mobile meeting with a live caption displayed over the stage",
+        "zh": "手机竖屏会议舞台上显示实时字幕"
+      }
+    },
+    {
+      "id": "meeting-captions-app",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-captions-app.mp4",
+      "output": "public/videos/meeting/meeting-captions-app.mp4",
+      "poster": "/images/meeting/meeting-captions-app-poster.webp",
+      "purpose": "Show participant-controlled live captions inside a mobile meeting."
+    },
+    {
+      "id": "meeting-transcript-app-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-transcript-app-poster.png",
+      "output": "public/images/meeting/meeting-transcript-app-poster.webp",
+      "purpose": "Provide the poster frame for the portrait transcript recording.",
+      "alt": {
+        "en": "Portrait mobile transcript interface inside Agora Meeting",
+        "zh": "Agora Meeting 手机竖屏实时转写界面"
+      }
+    },
+    {
+      "id": "meeting-transcript-app",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-transcript-app.mp4",
+      "output": "public/videos/meeting/meeting-transcript-app.mp4",
+      "poster": "/images/meeting/meeting-transcript-app-poster.webp",
+      "purpose": "Show the in-meeting transcript behavior on mobile."
+    },
+    {
+      "id": "meeting-interpretation-on-app-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-interpretation-on-app-poster.png",
+      "output": "public/images/meeting/meeting-interpretation-on-app-poster.webp",
+      "purpose": "Provide the poster frame for interpretation setup.",
+      "alt": {
+        "en": "Portrait mobile interpretation activation flow",
+        "zh": "手机竖屏同声传译开启流程"
+      }
+    },
+    {
+      "id": "meeting-interpretation-on-app",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-interpretation-on-app.mp4",
+      "output": "public/videos/meeting/meeting-interpretation-on-app.mp4",
+      "poster": "/images/meeting/meeting-interpretation-on-app-poster.webp",
+      "purpose": "Show how interpretation is activated on mobile."
+    },
+    {
+      "id": "meeting-interpretation-live-app-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-interpretation-live-app-poster.png",
+      "output": "public/images/meeting/meeting-interpretation-live-app-poster.webp",
+      "purpose": "Provide the poster frame for live interpretation usage.",
+      "alt": {
+        "en": "Portrait mobile simultaneous interpretation interface",
+        "zh": "手机竖屏同声传译界面"
+      }
+    },
+    {
+      "id": "meeting-interpretation-live-app",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-interpretation-live-app.mp4",
+      "output": "public/videos/meeting/meeting-interpretation-live-app.mp4",
+      "poster": "/images/meeting/meeting-interpretation-live-app-poster.webp",
+      "purpose": "Show simultaneous interpretation inside the live meeting flow."
+    },
+    {
+      "id": "meeting-beauty-app-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-beauty-app-poster.png",
+      "output": "public/images/meeting/meeting-beauty-app-poster.webp",
+      "purpose": "Provide the poster frame for the portrait beauty controls.",
+      "alt": {
+        "en": "Portrait mobile beauty controls inside Agora Meeting",
+        "zh": "Agora Meeting 手机竖屏美颜控制界面"
+      }
+    },
+    {
+      "id": "meeting-beauty-app",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-beauty-app.mp4",
+      "output": "public/videos/meeting/meeting-beauty-app.mp4",
+      "poster": "/images/meeting/meeting-beauty-app-poster.webp",
+      "purpose": "Show the beauty controls inside the shipped mobile meeting flow."
+    },
+    {
+      "id": "meeting-safety-app-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-safety-app-poster.png",
+      "output": "public/images/meeting/meeting-safety-app-poster.webp",
+      "purpose": "Provide the poster frame for the member and safety recording.",
+      "alt": {
+        "en": "Portrait mobile member and safety controls inside Agora Meeting",
+        "zh": "Agora Meeting 手机竖屏成员与安全控制界面"
+      }
+    },
+    {
+      "id": "meeting-safety-app",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-safety-app.mp4",
+      "output": "public/videos/meeting/meeting-safety-app.mp4",
+      "poster": "/images/meeting/meeting-safety-app-poster.webp",
+      "purpose": "Show member visibility and safety controls inside the live mobile room."
     },
     {
       "id": "adaptive-layout-poster",

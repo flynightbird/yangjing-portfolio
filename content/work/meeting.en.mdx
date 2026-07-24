@@ -1,6 +1,5 @@
-import { EvidenceFigure } from '@/components/case-study/evidence-figure'
-import { BreakoutDecisionEvidence } from '@/components/meeting/meeting-evidence'
 import { CapabilitySystem, ContextPriorityModel, LanguageControlModel, MeetingStateMatrix, ParticipantPriorityStack } from '@/components/meeting/meeting-models'
+import { MeetingAdaptiveStageShowcase, MeetingLanguageShowcase, MeetingPolishShowcase, MeetingWhiteboardShowcase } from '@/components/meeting/meeting-showcase'
 
 export const metadata = {
   type: 'work',
@@ -12,7 +11,7 @@ export const metadata = {
   role: 'Sole Product Designer',
   duration: '2024-2026 · 1.5 years',
   status: 'Shipped',
-  disclosure: 'This case uses shipped product interfaces. No quantitative adoption or satisfaction metrics are claimed.',
+  disclosure: 'This page uses shipped product UI and recorded flows. No quantitative adoption, satisfaction, or efficiency metrics are claimed.',
   heroMedia: '/images/meeting/meeting-hero.webp',
   evidenceLevel: 'delivered',
   featuredOrder: 4,
@@ -31,104 +30,89 @@ export const metadata = {
 
 <section id="business-context">
   <header className="section-heading">
-    <p className="section-index">01 / BUSINESS CONTEXT</p>
-    <h2>Build a production meeting system as customers moved away from Zoom</h2>
+    <h2>Built as customers needed a Zoom replacement they could ship inside their own products</h2>
   </header>
   <div className="reading">
-    <p className="lead">As Zoom prepared to exit the Chinese market, customers needed a meeting product they could integrate into their own services. Agora Meeting had to rebuild the expected core while supporting different industries and configurations.</p>
-    <p>For 1.5 years, I was the sole product designer across Desktop, Web, Tablet, and Mobile, owning the experience from definition through launch with product, engineering, QA, and customer teams.</p>
-    <p>Inputs came from customer requirement lists and product-manager synthesis, not direct user interviews. High-coverage needs became defaults; recurring differences became configurable capabilities.</p>
+    <p className="lead">Agora Meeting was created for organizations that needed an embeddable meeting system, not another standalone meeting app.</p>
+    <p>From 2024 to 2026, I was the sole product designer across Desktop, Web, Tablet, and Mobile. The work moved from broad requirement coverage into a production system that customers could integrate and launch.</p>
   </div>
 </section>
 
 <section id="design-challenge">
   <header className="section-heading">
-    <p className="section-index">02 / DESIGN CHALLENGE</p>
-    <h2>A live meeting is a changing system, not a set of responsive screens</h2>
+    <h2>A live meeting is not a stack of responsive screens</h2>
   </header>
   <div className="reading">
-    <p className="lead">People, content, permissions, and available space change during a meeting. A fixed responsive layout cannot keep the right subject primary across sharing, whiteboarding, and changes in group size.</p>
-    <p>The challenge was to preserve one recognizable interaction logic across four platforms while allowing each surface to make different space, density, navigation, and control tradeoffs.</p>
+    <p className="lead">People, shared content, whiteboards, permissions, and language support all compete during the same session.</p>
+    <p>The design problem was to keep one recognizable interaction system while letting each platform make its own space and density tradeoffs.</p>
   </div>
 </section>
 
 <section id="system-strategy">
   <header className="section-heading">
-    <p className="section-index">03 / SYSTEM STRATEGY</p>
-    <h2>Translate live context into information priority, then into interface state</h2>
+    <h2>One rule: read the meeting context, then decide what stays primary</h2>
   </header>
   <div className="reading">
-    <p className="lead">I used one decision model: identify the current meeting context, decide what information must remain primary, then resolve the interface state for that device.</p>
-    <p>User goals and role logic remain stable. Density, navigation, panel behavior, and orientation adapt to the platform.</p>
+    <p className="lead">The system first identifies the current meeting context, then promotes the right object before changing the interface state.</p>
+    <p>That let the product behave like one meeting system across four platform categories instead of becoming a set of unrelated screen exceptions.</p>
   </div>
   <ContextPriorityModel locale="en" />
 </section>
 
 <section id="adaptive-stage">
   <header className="section-heading">
-    <p className="section-index">04 / KEY EXPERIENCE</p>
-    <h2>Adaptive Meeting Stage</h2>
+    <h2>The stage changes with context instead of shrinking everything equally</h2>
   </header>
   <div className="reading">
-    <h3>Context</h3><p>Participants move between conversation, presentation, creation, and larger group states without leaving the meeting.</p>
-    <h3>Problem</h3><p>Responsive sizing cannot decide whether people, shared content, or a canvas should dominate the stage.</p>
-    <h3>Decision</h3><p>Three triggers drive layout: Screen Share, Whiteboard Open, and Participant Count. Each changes information priority before the interface changes.</p>
-    <h3>Delivery</h3><p>The state-driven stage shipped across all four platform categories and supported the required customer scenarios.</p>
+    <p className="lead">Share, speaker, and workspace states each deserve a different primary object.</p>
+    <p>The product switches the stage around the current meeting job rather than treating every state like the same canvas with smaller boxes.</p>
   </div>
-  <EvidenceFigure src="/images/meeting/adaptive-layout-poster.webp" width={1800} height={1000} alt="Representative shipped meeting-stage states showing the gallery and whiteboard workspace" label="ADAPTIVE STAGE / SHIPPED STATES" caption="Screen Share, Whiteboard Open, and Participant Count change information priority and layout." locale="en" />
+  <MeetingAdaptiveStageShowcase locale="en" />
   <MeetingStateMatrix locale="en" />
 </section>
 
 <section id="whiteboard-workspace">
   <header className="section-heading">
-    <p className="section-index">05 / KEY EXPERIENCE</p>
-    <h2>Whiteboard Workspace</h2>
+    <h2>Whiteboard becomes the workspace without losing meeting awareness</h2>
   </header>
   <div className="reading">
-    <h3>Context</h3><p>Participants create and review content while staying aware of an active meeting.</p>
-    <h3>Problem</h3><p>The canvas, participant awareness, and meeting controls compete for limited space, especially in mobile portrait orientation.</p>
-    <h3>Decision</h3><p>Make the canvas primary. In portrait, the upper region keeps a small participant view while the whiteboard occupies the lower workspace. The visible participant is resolved by a shared priority rule rather than by screen-specific exceptions.</p>
-    <h3>Delivery</h3><p>The shipped layouts preserved creation space and meeting awareness across platform and orientation changes.</p>
+    <p className="lead">On larger surfaces, the board can expand. On mobile portrait, the board still needs one live participant channel to keep the room legible.</p>
+    <p>The same rule carries across devices, but each platform resolves it with its own spatial rhythm.</p>
   </div>
-  <EvidenceFigure src="/images/meeting/whiteboard-multidevice.webp" width={1800} height={1100} alt="Whiteboard workspace across desktop and mobile orientation states" label="CANVAS FIRST / MULTI-DEVICE" caption="The canvas becomes primary while participant awareness remains available through device-specific layouts." locale="en" />
+  <MeetingWhiteboardShowcase locale="en" />
   <ParticipantPriorityStack locale="en" />
 </section>
 
 <section id="information-layer">
   <header className="section-heading">
-    <p className="section-index">06 / KEY EXPERIENCE</p>
-    <h2>Real-time Information Layer</h2>
+    <h2>Transcript, translation, and interpretation behave like one in-meeting layer</h2>
   </header>
   <div className="reading">
-    <h3>Context</h3><p>Participants need live comprehension, translation, and transcript access during a meeting.</p>
-    <h3>Problem</h3><p>Personal comprehension preferences and meeting-level transcription governance require different permissions and controls.</p>
-    <h3>Decision</h3><p>Live Captions are an individual control. The Transcript Panel is started and stopped by the host, while participants can request activation. The in-meeting layer supports source-language selection, translation, bilingual output, and simultaneous interpretation.</p>
-    <h3>Impact</h3><p>The complete in-meeting language experience shipped. Transcript data is exposed through the Customer API; Agora Meeting does not own customer-built post-meeting storage, copy, or download interfaces.</p>
+    <p className="lead">Understanding support had to stay inside the meeting instead of becoming a separate post-meeting artifact.</p>
+    <p>Live captions remain personal, while transcript activation and interpretation behave like meeting capabilities with different control scopes. Transcript data is exposed through the Customer API, but customer-built post-meeting storage is outside this project scope.</p>
   </div>
-  <EvidenceFigure src="/images/meeting/transcript-poster.webp" width={1764} height={900} alt="Live captions, transcript panel, language selection, and bilingual output" label="REAL-TIME INFORMATION LAYER / SHIPPED UI" caption="Live Captions, host-governed transcription, translation, bilingual output, and simultaneous interpretation form one in-meeting information layer." locale="en" />
+  <MeetingLanguageShowcase locale="en" />
   <LanguageControlModel locale="en" />
 </section>
 
 <section id="capability-impact">
   <header className="section-heading">
-    <p className="section-index">07 / MEETING CAPABILITY SYSTEM &amp; IMPACT</p>
-    <h2>A configurable system beyond the three core decisions</h2>
+    <h2>The shipped system also had to feel complete in everyday moments</h2>
   </header>
   <div className="reading">
-    <p className="lead">Breakout Rooms, Chat, and Waiting Room extended the same role, permission, and state logic into supporting workflows. They are presented here as system breadth, not as a feature catalogue.</p>
-    <p>The verified outcome is production delivery across Desktop, Web, Tablet, and Mobile against customer business requirements.</p>
+    <p className="lead">Recruiters should see the system idea, but they should also see that the shipped product held together in everyday use.</p>
+    <p>Beauty tuning, member visibility, safety controls, Breakout Rooms, Chat, and Waiting Room all extended the same meeting logic instead of branching into disconnected tools.</p>
   </div>
+  <MeetingPolishShowcase locale="en" />
   <CapabilitySystem locale="en" />
-  <BreakoutDecisionEvidence locale="en" />
 </section>
 
 <section id="reflection">
   <header className="section-heading">
-    <p className="section-index">08 / REFLECTION</p>
-    <h2>Build cross-platform governance before the component library starts to drift</h2>
+    <h2>Next time, I would establish cross-platform governance earlier</h2>
   </header>
   <div className="reading">
-    <p className="lead">The delivery pace meant the component system was formalized late. Similar components were maintained repeatedly across client and Web surfaces, increasing the cost of keeping states aligned.</p>
-    <p>In a second iteration, I would establish shared state definitions, ownership, and component governance earlier: one source for interaction rules, explicit platform exceptions, and a review process that tests behavior across all four surfaces before release.</p>
+    <p className="lead">The product shipped across four platform categories, but component and state governance arrived later than it should have.</p>
+    <p>In a second iteration, I would formalize shared state definitions, ownership, and exception rules earlier so the system stays aligned as the product grows.</p>
   </div>
 </section>

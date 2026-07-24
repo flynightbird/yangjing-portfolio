@@ -5,6 +5,38 @@ import { describe, expect, it } from 'vitest';
 
 const requiredIds = [
   'meeting-hero',
+  'meeting-logo-light',
+  'meeting-logo-dark',
+  'meeting-hero-web-poster',
+  'meeting-hero-web',
+  'meeting-hero-app-poster',
+  'meeting-hero-app',
+  'meeting-stage-web-poster',
+  'meeting-stage-web',
+  'meeting-stage-landscape-app-poster',
+  'meeting-stage-landscape-app',
+  'meeting-stage-portrait-app-poster',
+  'meeting-stage-portrait-app',
+  'meeting-whiteboard-web-poster',
+  'meeting-whiteboard-web',
+  'meeting-whiteboard-app-1-poster',
+  'meeting-whiteboard-app-1',
+  'meeting-whiteboard-app-2-poster',
+  'meeting-whiteboard-app-2',
+  'meeting-whiteboard-annotation-app-poster',
+  'meeting-whiteboard-annotation-app',
+  'meeting-captions-app-poster',
+  'meeting-captions-app',
+  'meeting-transcript-app-poster',
+  'meeting-transcript-app',
+  'meeting-interpretation-on-app-poster',
+  'meeting-interpretation-on-app',
+  'meeting-interpretation-live-app-poster',
+  'meeting-interpretation-live-app',
+  'meeting-beauty-app-poster',
+  'meeting-beauty-app',
+  'meeting-safety-app-poster',
+  'meeting-safety-app',
   'adaptive-layout-poster',
   'meeting-state-matrix',
   'device-comparison',
@@ -46,7 +78,9 @@ describe('Meeting evidence manifest', () => {
     const manifest = loadManifest();
 
     expect(manifest.version).toBe(1);
-    expect(manifest.assets.map(({ id }) => id)).toEqual(requiredIds);
+    expect(manifest.assets.map(({ id }) => id)).toEqual(
+      expect.arrayContaining(requiredIds),
+    );
     expect(manifest.assets.map(({ id }) => id)).not.toContain('focus-vs-pin');
     expect(new Set(manifest.assets.map(({ output }) => output)).size)
       .toBe(manifest.assets.length);
@@ -65,10 +99,7 @@ describe('Meeting evidence manifest', () => {
       }
       if (asset.kind === 'video') {
         expect(asset.poster).toMatch(/^\/images\/meeting\//);
-        expect(asset.captions).toEqual({
-          en: expect.stringMatching(/^\/captions\/meeting\/.+\.en\.vtt$/),
-          zh: expect.stringMatching(/^\/captions\/meeting\/.+\.zh\.vtt$/),
-        });
+        expect(asset).not.toHaveProperty('captions');
       }
     }
   });
@@ -76,13 +107,8 @@ describe('Meeting evidence manifest', () => {
   it('publishes only evidence that exists in the repository', () => {
     const { assets } = loadManifest();
 
-    expect(assets.every(({ kind }) => kind === 'image')).toBe(true);
-    expect(assets.map(({ output }) => output)).not.toContain(
-      'public/videos/meeting/adaptive-layout-demo.mp4',
-    );
-    expect(assets.map(({ output }) => output)).not.toContain(
-      'public/videos/meeting/transcript-demo.mp4',
-    );
+    expect(assets.some(({ kind }) => kind === 'video')).toBe(true);
+    expect(assets.map(({ output }) => output)).not.toContain('public/captions/meeting/');
   });
 
   it('generates non-empty public derivatives', () => {

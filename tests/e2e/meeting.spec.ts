@@ -14,6 +14,7 @@ const chapterIds = [
 for (const locale of ['en', 'zh'] as const) {
   test.describe(`${locale} Agora Meeting case`, () => {
     test.beforeEach(async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
       await page.goto(`/${locale}/work/meeting/`, { waitUntil: 'domcontentloaded' });
     });
 
@@ -37,13 +38,23 @@ for (const locale of ['en', 'zh'] as const) {
     });
 
     test('loads committed static evidence without missing recordings', async ({ page }) => {
-      await expect(page.locator('video[src^="/videos/meeting/"]')).toHaveCount(0);
-      await expect(
-        page.locator('img[src="/images/meeting/adaptive-layout-poster.webp"]'),
-      ).toBeVisible();
-      await expect(
-        page.locator('img[src="/images/meeting/transcript-poster.webp"]'),
-      ).toBeVisible();
+      await expect(page.locator('video[src^="/videos/meeting/"]')).toHaveCount(15);
+      await expect(page.getByRole('button', { name: locale === 'zh' ? '重播' : 'Replay' })).toBeVisible();
+      await expect(page.getByText('Agora Meeting', { exact: true })).toBeVisible();
+      await expect(page.getByText(locale === 'zh' ? '横屏视窗' : 'Landscape viewport')).toBeVisible();
+      await expect(page.getByText(locale === 'zh' ? '竖屏视窗' : 'Portrait viewport')).toBeVisible();
+      await expect(page.locator('#adaptive-stage figure figcaption > span').filter({
+        hasText: locale === 'zh' ? '自适应舞台' : 'Adaptive stage',
+      }).first()).toBeVisible();
+      await expect(page.locator('#whiteboard-workspace figure figcaption > span').filter({
+        hasText: locale === 'zh' ? '屏幕共享标注' : 'Screen-share annotation',
+      }).first()).toBeVisible();
+      await expect(page.locator('#information-layer figure figcaption > span').filter({
+        hasText: locale === 'zh' ? '实时字幕' : 'Live captions',
+      }).first()).toBeVisible();
+      await expect(page.locator('#information-layer figure figcaption > span').filter({
+        hasText: locale === 'zh' ? '实时转写' : 'Live transcript',
+      }).first()).toBeVisible();
     });
 
     test('has no horizontal overflow', async ({ page }) => {
