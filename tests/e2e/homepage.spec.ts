@@ -1,5 +1,18 @@
 import { expect, test } from '@playwright/test';
 
+async function waitForIntroPinLayout(page: import('@playwright/test').Page) {
+  await expect.poll(
+    () => page.locator('[data-intro-story]').evaluate((section) => {
+      const pinSpacer = section.querySelector<HTMLElement>(':scope > .pin-spacer');
+      if (!pinSpacer) return false;
+      const expectedSpacing = window.innerHeight * 2.4;
+      const spacing = Number.parseFloat(pinSpacer.style.paddingBottom);
+      return Math.abs(spacing - expectedSpacing) <= 1;
+    }),
+    { timeout: 30_000 },
+  ).toBe(true);
+}
+
 test.describe('portfolio homepage framework', () => {
   test('does not show field labels in the hero corners', async ({ page }) => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
@@ -950,15 +963,7 @@ test.describe('portfolio homepage framework', () => {
 
     const scroller = page.locator('[data-archive-scroller]');
     await expect(scroller).toBeAttached();
-    await expect.poll(
-      () => page.locator('[data-intro-story]').evaluate((section) => {
-        const pinSpacer = section.querySelector(':scope > .pin-spacer');
-        if (!pinSpacer) return false;
-        const expectedHeight = window.innerHeight * 3.4;
-        return Math.abs(pinSpacer.getBoundingClientRect().height - expectedHeight) <= 1;
-      }),
-      { timeout: 30_000 },
-    ).toBe(true);
+    await waitForIntroPinLayout(page);
     await scroller.evaluate((element) => {
       const top = element.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({ top: Math.max(0, top - 120), behavior: 'instant' });
@@ -1005,6 +1010,7 @@ test.describe('portfolio homepage framework', () => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
     const scroller = page.locator('[data-archive-scroller]');
+    await waitForIntroPinLayout(page);
     await scroller.evaluate((element) => {
       const top = element.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({ top: Math.max(0, top - 120), behavior: 'instant' });

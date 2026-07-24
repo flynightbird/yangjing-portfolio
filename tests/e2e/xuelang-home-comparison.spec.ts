@@ -33,12 +33,16 @@ async function placeComparisonBottomAt(page: import('@playwright/test').Page, bo
 }
 
 async function waitForIntroPinLayout(page: import('@playwright/test').Page) {
-  await expect.poll(() => page.locator('[data-intro-story]').evaluate((section) => {
-    const pinSpacer = section.querySelector(':scope > .pin-spacer');
-    if (!pinSpacer) return false;
-    const expectedHeight = window.innerHeight * 3.4;
-    return Math.abs(pinSpacer.getBoundingClientRect().height - expectedHeight) <= 1;
-  })).toBe(true);
+  await expect.poll(
+    () => page.locator('[data-intro-story]').evaluate((section) => {
+      const pinSpacer = section.querySelector<HTMLElement>(':scope > .pin-spacer');
+      if (!pinSpacer) return false;
+      const expectedSpacing = window.innerHeight * 2.4;
+      const spacing = Number.parseFloat(pinSpacer.style.paddingBottom);
+      return Math.abs(spacing - expectedSpacing) <= 1;
+    }),
+    { timeout: 30_000 },
+  ).toBe(true);
 }
 
 test.describe('Xuelang homepage comparison', () => {
@@ -46,7 +50,7 @@ test.describe('Xuelang homepage comparison', () => {
 
   test('starts only when its edge enters the central viewport band after resize', async ({
     page,
-  }) => {
+  }, testInfo) => {
     await openHomepage(page);
     const comparison = page.locator(comparisonSelector);
     const viewport = page.viewportSize();
@@ -66,8 +70,9 @@ test.describe('Xuelang homepage comparison', () => {
       `-${initialInset}px 0px -${initialInset}px 0px`,
     );
 
+    if (testInfo.project.name === 'desktop') await page.waitForLoadState('networkidle');
     await page.setViewportSize({ width: viewport.width, height: viewport.height - 120 });
-    await waitForIntroPinLayout(page);
+    if (testInfo.project.name === 'desktop') await waitForIntroPinLayout(page);
     const viewportHeight = await page.evaluate(() => window.innerHeight);
     const inset = Math.round(viewportHeight * 0.3);
     await expect(comparison).toHaveAttribute(

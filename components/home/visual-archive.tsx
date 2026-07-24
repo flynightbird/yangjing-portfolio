@@ -60,16 +60,45 @@ export function VisualArchive({
   const programmaticIndexRef = useRef<number | null>(null);
   const total = parsedEntries.length;
 
+  const getTrackInset = (card: HTMLElement) => {
+    const track = card.parentElement;
+    if (!track) return 0;
+    return Number.parseFloat(getComputedStyle(track).paddingInlineStart) || 0;
+  };
+
   useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
 
     let frame = 0;
-    let pendingDelta = 0;
-    const flushVerticalWheel = () => {
-      const top = pendingDelta;
-      pendingDelta = 0;
+    let pendingHorizontalDelta = 0;
+    let pendingVerticalDelta = 0;
+    const flushWheel = () => {
+      const left = pendingHorizontalDelta;
+      const top = pendingVerticalDelta;
+      pendingHorizontalDelta = 0;
+      pendingVerticalDelta = 0;
       frame = 0;
+
+      if (left !== 0) {
+        const cards = cardRefs.current.filter((card): card is HTMLElement => card !== null);
+        const inset = cards[0] ? getTrackInset(cards[0]) : 0;
+        const currentIndex = cards.reduce((closestIndex, card, index) => {
+          const closestDistance = Math.abs(cards[closestIndex].offsetLeft - inset - scroller.scrollLeft);
+          const distance = Math.abs(card.offsetLeft - inset - scroller.scrollLeft);
+          return distance < closestDistance ? index : closestIndex;
+        }, 0);
+        const nextIndex = Math.max(0, Math.min(cards.length - 1, currentIndex + Math.sign(left)));
+        const targetCard = cards[nextIndex];
+        if (targetCard) {
+          const previousScrollBehavior = scroller.style.scrollBehavior;
+          scroller.style.scrollBehavior = 'auto';
+          programmaticIndexRef.current = nextIndex;
+          scroller.scrollLeft = targetCard.offsetLeft - inset;
+          scroller.style.scrollBehavior = previousScrollBehavior;
+        }
+      }
+      if (top === 0) return;
 
       const root = document.documentElement;
       const previousScrollBehavior = root.style.scrollBehavior;
@@ -80,24 +109,23 @@ export function VisualArchive({
         root.style.scrollBehavior = previousScrollBehavior;
       }
     };
-    const forwardVerticalWheel = (event: globalThis.WheelEvent) => {
-      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-      pendingDelta += event.deltaY;
-      if (frame === 0) frame = window.requestAnimationFrame(flushVerticalWheel);
+    const forwardWheel = (event: globalThis.WheelEvent) => {
+      if (Math.abs(event.deltaX) >= Math.abs(event.deltaY) && event.deltaX !== 0) {
+        event.preventDefault();
+        pendingHorizontalDelta += event.deltaX;
+      } else {
+        event.preventDefault();
+        pendingVerticalDelta += event.deltaY;
+      }
+      if (frame === 0) frame = window.requestAnimationFrame(flushWheel);
     };
 
-    scroller.addEventListener('wheel', forwardVerticalWheel, { passive: true });
+    scroller.addEventListener('wheel', forwardWheel, { passive: false });
     return () => {
-      scroller.removeEventListener('wheel', forwardVerticalWheel);
+      scroller.removeEventListener('wheel', forwardWheel);
       if (frame !== 0) window.cancelAnimationFrame(frame);
     };
   }, []);
-
-  const getTrackInset = (card: HTMLElement) => {
-    const track = card.parentElement;
-    if (!track) return 0;
-    return Number.parseFloat(getComputedStyle(track).paddingInlineStart) || 0;
-  };
 
   const scrollToIndex = (nextIndex: number) => {
     const clampedIndex = Math.max(0, Math.min(nextIndex, total - 1));

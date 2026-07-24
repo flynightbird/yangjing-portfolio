@@ -769,7 +769,7 @@ describe('VisualArchive', () => {
     expect(viewport).toHaveAttribute('data-scroll-reveal-group', 'media');
   });
 
-  it('forwards vertical wheel movement once per animation frame without cancelling it', () => {
+  it('forwards vertical wheel movement once per animation frame', () => {
     const scrollBy = vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);
     const frames: FrameRequestCallback[] = [];
     const requestFrame = vi
@@ -789,7 +789,7 @@ describe('VisualArchive', () => {
       }));
     wheels.forEach((wheel) => fireEvent(scroller, wheel));
 
-    expect(wheels.every((wheel) => !wheel.defaultPrevented)).toBe(true);
+    expect(wheels.every((wheel) => wheel.defaultPrevented)).toBe(true);
     expect(frames).toHaveLength(1);
     expect(scrollBy).not.toHaveBeenCalled();
     frames[0]?.(0);
@@ -798,6 +798,39 @@ describe('VisualArchive', () => {
 
     requestFrame.mockRestore();
     scrollBy.mockRestore();
+  });
+
+  it('forwards horizontal-dominant wheel movement to the archive scroller', () => {
+    const frames: FrameRequestCallback[] = [];
+    const requestFrame = vi
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => {
+        frames.push(callback);
+        return frames.length;
+      });
+    const { container } = render(<VisualArchive locale="en" />);
+    const scroller = container.querySelector('[data-archive-scroller]');
+    if (!(scroller instanceof HTMLElement)) throw new Error('Missing archive scroller');
+    const cards = Array.from(container.querySelectorAll<HTMLElement>('[data-archive-card]'));
+    cards.forEach((card, index) => {
+      Object.defineProperty(card, 'offsetLeft', { configurable: true, value: index * 400 });
+    });
+
+    const wheels = [250, 150].map((deltaX) => new WheelEvent('wheel', {
+      bubbles: true,
+      cancelable: true,
+      deltaX,
+      deltaY: 20,
+    }));
+    wheels.forEach((wheel) => fireEvent(scroller, wheel));
+
+    expect(wheels.every((wheel) => wheel.defaultPrevented)).toBe(true);
+    expect(frames).toHaveLength(1);
+    expect(scroller.scrollLeft).toBe(0);
+    frames[0]?.(0);
+    expect(scroller.scrollLeft).toBe(400);
+
+    requestFrame.mockRestore();
   });
 
   it('renders four real projects with distinct cover treatments', () => {
