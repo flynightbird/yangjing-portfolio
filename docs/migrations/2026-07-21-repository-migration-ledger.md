@@ -61,7 +61,7 @@ branch refs/heads/codex/portfolio-nextjs
 
 ## GitHub Authority
 
-`gh auth status` reports no authenticated GitHub host. Local migration may proceed. Remote default-branch changes, remote cleanup, and replacement of remote `main` are blocked until authentication identifies the `flynightbird` account.
+`gh auth status` identifies the active authenticated account as `flynightbird`, using SSH for Git operations. GitHub reports `main` as the default branch.
 
 ## Accepted Pre-Migration Test Baseline
 
@@ -159,18 +159,34 @@ Merged and verified locally:
 - Meeting merge `2aa6570`; 2/2 focused integration tests passed.
 - Migration audit merge `97ed48c`; this also preserves the previously completed Homepage AI toolchain copy commits already present on the migration-control branch.
 
-### ConvoAI publication gate
+### Final integration candidate
 
-Final verification and publication are blocked by the explicit no-placeholder contract:
+Final integration branch: `codex/shared/final-main-integration`, created from local `main` at `5cb4775`.
 
-- Missing `content/work/convo-ai.zh.mdx`.
-- Missing `content/work/convo-ai.en.mdx`.
-- Missing `convo-ai` work slug and registry entries.
-- Homepage still declares ConvoAI as `external-live-site`, `awaiting-assets`, and `https://conversational-ai.shengwang.cn/` instead of `internal-case` and `work/convo-ai/`.
-- Missing `tests/e2e/convo-ai.spec.ts`.
+The candidate includes the current Home/About shell and the latest retained work from:
 
-Branch `codex/case/convo-ai-build` currently contains only evidence blueprint commit `93d173f`; it has not been merged. Full canonical verification, remote `main` replacement, deployment, and cleanup remain intentionally pending.
+- `codex/case/meeting-refresh` at `cc7694b`
+- `codex/case/call-agent-refresh` at `4d325bf`
+- `codex/xuelang-case-polish` at `e8ecd69`
+- `codex/case/convo-ai-build` at `31f7ae2`
+- `codex/homepage-project-media-refresh` at `66c8125`
+
+Integration-specific commits through `f8c434b` align shared heading roles, retain the approved Meeting media expansion, preserve Xuelang's current visual system, and expose ConvoAI media descriptions. Ancestor checks confirm every branch above is reachable from the final candidate.
+
+The previous ConvoAI publication gate is resolved: bilingual content, internal routes, registry entries, homepage destination, media assets, and E2E coverage are all present. The retained Meeting case uses its refreshed dark opening and current static/video evidence. Xuelang uses the shared global Header, locale switcher, project navigation, and Footer contracts while retaining its case-specific presentation.
+
+Fresh verification on the final integration candidate:
+
+- `npm run validate:content`: passed.
+- `npm test`: 58 files passed; 528 tests passed.
+- `npm run lint`: 0 errors; 4 non-blocking warnings.
+- `npm run build`: 19 static pages generated; publication output validation passed.
+- Five-spec Playwright suite covering Home, Call Agent, ConvoAI, Meeting, and Xuelang: 121 passed; 47 conditionally skipped; 0 failed across desktop, tablet, and mobile.
+
+The E2E integration pass also updated stale global-surface assertions and replaced fixed-time waits with state-based waits for Home reveal/scroll geometry and ConvoAI scene commands. No product CSS was changed for the Xuelang Home centering check: the measured offset came from its intentional pre-reveal transform, and the final rendered layout is centered.
+
+Remote publication and GitHub Actions deployment verification remain pending until this ledger and the E2E hardening changes are committed and local `main` is fast-forwarded.
 
 ## Cleanup
 
-Not started. No historical branch or worktree has been deleted.
+Historical cleanup has not started. No branch or worktree has been deleted. Cleanup will only remove references proven integrated and worktrees proven clean; explicitly rejected historical branches remain preserved unless separately approved.

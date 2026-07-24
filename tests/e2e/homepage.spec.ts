@@ -926,8 +926,10 @@ test.describe('portfolio homepage framework', () => {
       .toBe('50% 0%');
 
     const xuelang = page.locator('[data-project-id="xuelang"]');
+    await xuelang.scrollIntoViewIfNeeded();
     const inner = xuelang.locator('> div');
     const media = xuelang.locator('[data-project-media-frame]');
+    await expect(media).toHaveCSS('transform', 'none');
     const [innerBox, mediaBox] = await Promise.all([
       inner.boundingBox(),
       media.boundingBox(),
@@ -965,7 +967,9 @@ test.describe('portfolio homepage framework', () => {
     );
     expect(maximum - before.pageY).toBeGreaterThan(550);
     await page.mouse.wheel(0, 500);
-    await page.waitForTimeout(100);
+    await expect
+      .poll(() => page.evaluate(() => window.scrollY))
+      .toBeGreaterThanOrEqual(before.pageY + 450);
 
     const after = await page.evaluate(() => ({
       pageY: window.scrollY,
@@ -1003,7 +1007,9 @@ test.describe('portfolio homepage framework', () => {
         ?.scrollLeft ?? 0,
     }));
     await page.mouse.wheel(400, 0);
-    await page.waitForTimeout(100);
+    await expect
+      .poll(() => scroller.evaluate((element) => element.scrollLeft))
+      .toBeGreaterThan(before.archiveX + 1);
     const after = await page.evaluate(() => ({
       pageY: window.scrollY,
       archiveX: document.querySelector<HTMLElement>('[data-archive-scroller]')

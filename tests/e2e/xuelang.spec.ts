@@ -81,8 +81,10 @@ test.describe('Xuelang case study', () => {
       const siteFooter = page.locator('body > footer');
       await expect(siteFooter).toBeVisible();
       await expect(siteFooter.getByRole('link', {
-        name: locale === 'zh' ? '联系' : 'Contact',
-      })).toHaveAttribute('href', `/${locale}/about/#contact`);
+        name: 'amanda.yangj@gmail.com',
+        exact: true,
+      })).toHaveAttribute('href', 'mailto:amanda.yangj@gmail.com');
+      await expect(siteFooter.getByText('© 2026 Yang Jing')).toBeVisible();
       await expect(page.locator('main')).not.toContainText(
         /yangux@qq\.com|amanda\.yangj@gmail\.com|flydesigner_yangj/,
       );
@@ -110,11 +112,14 @@ test.describe('Xuelang case study', () => {
 
     const siteFooter = page.locator('body > footer');
     await expect(siteFooter).toBeVisible();
-    await expect(siteFooter.getByRole('link', { name: '联系' })).toHaveAttribute(
+    await expect(siteFooter.getByRole('link', {
+      name: 'amanda.yangj@gmail.com',
+      exact: true,
+    })).toHaveAttribute(
       'href',
-      '/zh/about/#contact',
+      'mailto:amanda.yangj@gmail.com',
     );
-    await expect(siteFooter.getByText(/© \d{4} Yang Jing\./)).toBeVisible();
+    await expect(siteFooter.getByText('© 2026 Yang Jing')).toBeVisible();
   });
 
   test('desktop creates one learning pin and reduced motion creates none', async ({
