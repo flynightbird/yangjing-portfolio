@@ -289,11 +289,13 @@ const copy = {
 
 function MeetingViewportVideo({
   media,
+  locale,
   loop = true,
   videoRef,
   className,
 }: {
   readonly media: MediaDefinition;
+  readonly locale: Locale;
   readonly loop?: boolean;
   readonly videoRef?: React.RefObject<HTMLVideoElement | null>;
   readonly className?: string;
@@ -306,7 +308,7 @@ function MeetingViewportVideo({
       <img
         className={className}
         src={media.poster}
-        alt=""
+        alt={media.title[locale]}
         loading="lazy"
         decoding="async"
       />
@@ -320,6 +322,7 @@ function MeetingViewportVideo({
         data-meeting-video-poster
         src={media.poster}
         alt=""
+        aria-hidden="true"
         loading="lazy"
         decoding="async"
       />
@@ -369,7 +372,7 @@ function BrowserShell({
             <i />
           </span>
           <span className={styles.browserAddress}>
-            <img src="/images/meeting/meeting-logo-light.webp" alt="" />
+            <img src="/images/meeting/meeting-logo-light.webp" alt="" aria-hidden="true" />
             {text.browserAddress}
           </span>
           <span className={styles.browserMeta}>
@@ -377,7 +380,7 @@ function BrowserShell({
           </span>
         </div>
         <div className={styles.browserViewport} style={{ aspectRatio: `${media.width} / ${media.height}` }}>
-          <MeetingViewportVideo media={media} loop={loop} videoRef={videoRef} className={styles.media} />
+          <MeetingViewportVideo media={media} locale={locale} loop={loop} videoRef={videoRef} className={styles.media} />
         </div>
       </div>
       <figcaption>
@@ -408,7 +411,7 @@ function PhoneShell({
     <figure className={`${styles.surface} ${styles.phoneFigure} ${className ?? ''}`}>
       <div className={styles.phoneShell}>
         <div className={styles.phoneViewport} style={{ aspectRatio: `${media.width} / ${media.height}` }}>
-          <MeetingViewportVideo media={media} loop={loop} videoRef={videoRef} className={styles.media} />
+          <MeetingViewportVideo media={media} locale={locale} loop={loop} videoRef={videoRef} className={styles.media} />
         </div>
       </div>
       <figcaption>
@@ -433,7 +436,7 @@ function LandscapeShell({
     <figure className={`${styles.surface} ${styles.landscapeFigure}`}>
       <div className={styles.landscapeShell}>
         <div className={styles.landscapeViewport} style={{ aspectRatio: `${media.width} / ${media.height}` }}>
-          <MeetingViewportVideo media={media} className={styles.media} />
+          <MeetingViewportVideo media={media} locale={locale} className={styles.media} />
         </div>
       </div>
       <figcaption>
@@ -463,7 +466,7 @@ export function MeetingHeroStage({ locale }: { readonly locale: Locale }) {
     <div className={styles.heroStage}>
       <div className={styles.heroStageTop}>
         <div className={styles.heroBrand}>
-          <img src="/images/meeting/meeting-logo-light.webp" alt="" />
+          <img src="/images/meeting/meeting-logo-light.webp" alt="" aria-hidden="true" />
           <div>
             <strong>{text.brand}</strong>
             <span>{text.stageLabel}</span>
@@ -562,7 +565,7 @@ export function MeetingPolishShowcase({ locale }: { readonly locale: Locale }) {
         <h3>{text.polishTitle}</h3>
         <p>{text.polishSummary}</p>
       </div>
-      <div className={styles.phoneGrid} data-columns="2">
+      <div className={`${styles.phoneGrid} ${styles.polishDeck}`} data-columns="2">
         <PhoneShell mediaId="beauty-app" locale={locale} />
         <PhoneShell mediaId="safety-app" locale={locale} />
       </div>

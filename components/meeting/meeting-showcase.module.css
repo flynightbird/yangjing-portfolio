@@ -380,6 +380,10 @@
   align-items: start;
 }
 
+.polishDeck {
+  margin-block-end: clamp(2.75rem, 5vw, 4.5rem);
+}
+
 @media (max-width: 1120px) {
   .heroStageScene {
     min-height: 34rem;

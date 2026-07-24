@@ -341,6 +341,15 @@ describe('portfolio detail visual system', () => {
     expect(languagePaths).toContain('margin-block-start: 0;');
   });
 
+  it('keeps the Meeting final capability captions clear of the next chapter divider', () => {
+    const css = read('components/meeting/meeting-showcase.module.css');
+    const polishDeck = ruleBlock(css, '.polishDeck');
+
+    expect(polishDeck).toContain(
+      'margin-block-end: clamp(2.75rem, 5vw, 4.5rem);',
+    );
+  });
+
   it('maps Xuelang headings to the shared semantic roles', () => {
     const layoutCss = read('components/xuelang/xuelang-layout.module.css');
     const evidenceCss = read('components/xuelang/xuelang-evidence.module.css');
