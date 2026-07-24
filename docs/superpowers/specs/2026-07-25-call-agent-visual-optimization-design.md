@@ -59,9 +59,10 @@ Define a Call Agent signal token using the homepage fluorescent green:
 
 ```css
 --call-signal: #c7ff38;
+--call-signal-ink: #486600;
 ```
 
-Use it for the active tab, section indexes, focused interactive states, and small diagram signals. Do not flood large backgrounds with fluorescent green. Dark runtime sections retain near-black surfaces so the signal color remains legible and purposeful.
+Use fluorescent green as the active-tab fill and as a small signal on dark surfaces. Use the deeper signal ink for text, section indexes, links, and focus outlines on the light paper surface so those states maintain accessible contrast. Do not flood large backgrounds with fluorescent green. Dark runtime sections retain near-black surfaces so the signal color remains legible and purposeful.
 
 Replace the current iris-based Call Agent accent. Existing global purple tokens remain unchanged for other pages.
 
