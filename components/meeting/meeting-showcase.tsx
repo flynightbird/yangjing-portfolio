@@ -24,6 +24,8 @@ type MeetingMediaId =
   | 'transcript-app'
   | 'interpretation-on-app'
   | 'interpretation-live-app'
+  | 'chat-1-app'
+  | 'chat-2-app'
   | 'beauty-app'
   | 'safety-app';
 
@@ -224,6 +226,40 @@ const mediaCatalog: Record<MeetingMediaId, MediaDefinition> = {
       zh: '用户在当前会议中直接获取翻译内容。',
     },
   },
+  'chat-1-app': {
+    id: 'chat-1-app',
+    kind: 'phone',
+    src: '/videos/meeting/meeting-chat-1-app.mp4',
+    poster: '/images/meeting/meeting-chat-1-app-poster.webp',
+    width: 590,
+    height: 1280,
+    label: { en: 'Private chat', zh: '私聊与输入反馈' },
+    title: {
+      en: 'Private chat and length feedback keep messaging usable inside the room',
+      zh: '私聊与字数反馈，让会中聊天保持可用',
+    },
+    description: {
+      en: 'Private messages and input warnings stay inside the same meeting system instead of becoming a side utility.',
+      zh: '私聊、输入限制与预警都留在同一套会中体验里。',
+    },
+  },
+  'chat-2-app': {
+    id: 'chat-2-app',
+    kind: 'phone',
+    src: '/videos/meeting/meeting-chat-2-app.mp4',
+    poster: '/images/meeting/meeting-chat-2-app-poster.webp',
+    width: 590,
+    height: 1280,
+    label: { en: 'Hidden chat actions', zh: '聊天隐藏交互' },
+    title: {
+      en: 'Hidden actions extend chat beyond the default compose state',
+      zh: '隐藏操作扩展聊天，不只停留在输入框',
+    },
+    description: {
+      en: 'Secondary actions make chat feel like a complete in-room tool instead of a minimal add-on.',
+      zh: '二级操作让聊天成为完整能力，而不是附属功能。',
+    },
+  },
   'beauty-app': {
     id: 'beauty-app',
     kind: 'phone',
@@ -268,7 +304,11 @@ const copy = {
     languageTitle: 'Real-time language support lives inside the meeting, not outside it',
     languageSummary: 'Transcript, interpretation, and bilingual understanding behave like one information layer with different control scopes.',
     polishTitle: 'The shipped system also had to feel complete in the details',
-    polishSummary: 'Beauty, member visibility, and safety controls matter because enterprise meeting products are judged on everyday fit, not only on big system ideas.',
+    polishSummary: 'Chat, camera polish, member visibility, and safety controls show whether the meeting system still feels coherent away from the main stage.',
+    chatGroupTitle: 'Chat',
+    chatGroupSummary: 'Messaging patterns stay in the room, with feedback and hidden actions tuned for live collaboration.',
+    controlsGroupTitle: 'Personal & meeting controls',
+    controlsGroupSummary: 'Personal polish and room governance keep the same interaction tone as the main meeting surfaces.',
   },
   zh: {
     brand: 'Agora Meeting',
@@ -283,7 +323,11 @@ const copy = {
     languageTitle: '三类能力，同一处完成',
     languageSummary: '字幕、转写和同传都发生在会中，再按个人与会议两级权限控制。',
     polishTitle: '高频细节决定系统是否完整',
-    polishSummary: '美颜、成员管理和安全控制沿用统一的角色、状态与交互规则。',
+    polishSummary: '聊天、个人设置与会议管理延续同一套角色、状态与交互规则。',
+    chatGroupTitle: 'Chat',
+    chatGroupSummary: '私聊、输入反馈与隐藏操作都留在会中，让聊天体验更完整。',
+    controlsGroupTitle: '个人设置与会议控制',
+    controlsGroupSummary: '美颜、成员与安全控制保持与主流程一致的产品语气。',
   },
 } as const;
 
@@ -565,9 +609,27 @@ export function MeetingPolishShowcase({ locale }: { readonly locale: Locale }) {
         <h3>{text.polishTitle}</h3>
         <p>{text.polishSummary}</p>
       </div>
-      <div className={`${styles.phoneGrid} ${styles.polishDeck}`} data-columns="2">
-        <PhoneShell mediaId="beauty-app" locale={locale} />
-        <PhoneShell mediaId="safety-app" locale={locale} />
+
+      <div className={styles.capabilityGroup}>
+        <div className={styles.capabilityGroupHeader}>
+          <h4>{text.chatGroupTitle}</h4>
+          <p>{text.chatGroupSummary}</p>
+        </div>
+        <div className={`${styles.phoneGrid} ${styles.polishDeck}`} data-columns="2">
+          <PhoneShell mediaId="chat-1-app" locale={locale} />
+          <PhoneShell mediaId="chat-2-app" locale={locale} />
+        </div>
+      </div>
+
+      <div className={styles.capabilityGroup}>
+        <div className={styles.capabilityGroupHeader}>
+          <h4>{text.controlsGroupTitle}</h4>
+          <p>{text.controlsGroupSummary}</p>
+        </div>
+        <div className={`${styles.phoneGrid} ${styles.polishDeck}`} data-columns="2">
+          <PhoneShell mediaId="beauty-app" locale={locale} />
+          <PhoneShell mediaId="safety-app" locale={locale} />
+        </div>
       </div>
     </div>
   );
