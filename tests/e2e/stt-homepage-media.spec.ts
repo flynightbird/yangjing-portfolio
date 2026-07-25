@@ -49,6 +49,25 @@ async function offsetBox(locator: Locator): Promise<ElementBox> {
   });
 }
 
+async function stageLayout(locator: Locator) {
+  return locator.evaluate((element) => {
+    const media = element as HTMLElement;
+    const browser = media.querySelector<HTMLElement>('[data-stt-browser-window]');
+    const viewport = media.querySelector<HTMLElement>('[data-stt-stage-viewport]');
+    if (!browser || !viewport) throw new Error('Missing STT stage layout element');
+
+    const browserStyle = getComputedStyle(browser);
+    return {
+      browserOffsetParentIsMedia: browser.offsetParent === media,
+      browserPosition: browserStyle.position,
+      browserBottom: browserStyle.bottom,
+      viewportOffsetParentIsBrowser: viewport.offsetParent === browser,
+      browserClientHeight: browser.clientHeight,
+      viewportBottom: viewport.offsetTop + viewport.offsetHeight,
+    };
+  });
+}
+
 async function holdStageEmbed(page: Page) {
   let releaseRequest = () => undefined;
   let markRequestHeld = () => undefined;
@@ -140,20 +159,12 @@ test.describe('STT homepage live-stage presentation', () => {
       await expect(viewport).toHaveCSS('aspect-ratio', '633 / 560');
       await expect(fallback).toHaveCSS('object-fit', 'contain');
       await expect(fallback).toHaveCSS('object-position', '50% 0%');
-      expect(
-        Math.abs(
-          (viewportBox?.y ?? 0) +
-            (viewportBox?.height ?? 0) -
-            ((browserBoxBefore?.y ?? 0) + (browserBoxBefore?.height ?? 0)),
-        ),
-      ).toBeLessThanOrEqual(1);
-      expect(
-        Math.abs(
-          (browserBoxBefore?.y ?? 0) +
-            (browserBoxBefore?.height ?? 0) -
-            ((mediaBox?.y ?? 0) + (mediaBox?.height ?? 0)),
-        ),
-      ).toBeLessThanOrEqual(1);
+      const layout = await stageLayout(media);
+      expect(layout.browserOffsetParentIsMedia).toBe(true);
+      expect(layout.browserPosition).toBe('absolute');
+      expect(layout.browserBottom).toBe('0px');
+      expect(layout.viewportOffsetParentIsBrowser).toBe(true);
+      expect(layout.viewportBottom).toBe(layout.browserClientHeight);
       expect(
         await fallback.evaluate((image) => {
           const rendered = image as HTMLImageElement;
