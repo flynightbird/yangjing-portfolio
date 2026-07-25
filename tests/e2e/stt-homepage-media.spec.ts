@@ -49,6 +49,32 @@ async function offsetBox(locator: Locator): Promise<ElementBox> {
   });
 }
 
+async function transformMetrics(locator: Locator) {
+  return locator.evaluate((element) => {
+    const transform = getComputedStyle(element).transform;
+    const matrix = new DOMMatrixReadOnly(transform === 'none' ? undefined : transform);
+    return {
+      scaleX: matrix.a,
+      skewY: matrix.b,
+      skewX: matrix.c,
+      scaleY: matrix.d,
+      translateX: matrix.e,
+      translateY: matrix.f,
+    };
+  });
+}
+
+function identityTransformDelta(metrics: Awaited<ReturnType<typeof transformMetrics>>) {
+  return Math.max(
+    Math.abs(metrics.scaleX - 1),
+    Math.abs(metrics.skewY),
+    Math.abs(metrics.skewX),
+    Math.abs(metrics.scaleY - 1),
+    Math.abs(metrics.translateX),
+    Math.abs(metrics.translateY),
+  );
+}
+
 async function stageLayout(locator: Locator) {
   return locator.evaluate((element) => {
     const media = element as HTMLElement;
@@ -144,12 +170,10 @@ test.describe('STT homepage live-stage presentation', () => {
         await fallback.evaluate((image) => (image as HTMLImageElement).naturalWidth),
       ).toBeGreaterThan(0);
       await page.evaluate(() => document.fonts.ready.then(() => undefined));
-      const mediaBox = await media.boundingBox();
       const browserBoxBefore = await browserWindow.boundingBox();
       const viewportBox = await viewport.boundingBox();
       const browserOffsetsBefore = await offsetBox(browserWindow);
       const viewportOffsetsBefore = await offsetBox(viewport);
-      expect(mediaBox).not.toBeNull();
       await expect(media).toHaveCSS(
         'aspect-ratio',
         testInfo.project.name === 'desktop' ? '4 / 3' : '1.05 / 1',
@@ -165,6 +189,12 @@ test.describe('STT homepage live-stage presentation', () => {
       expect(layout.browserBottom).toBe('0px');
       expect(layout.viewportOffsetParentIsBrowser).toBe(true);
       expect(layout.viewportBottom).toBe(layout.browserClientHeight);
+      await expect
+        .poll(async () => identityTransformDelta(await transformMetrics(browserWindow)))
+        .toBeLessThanOrEqual(1e-6);
+      await expect
+        .poll(async () => identityTransformDelta(await transformMetrics(viewport)))
+        .toBeLessThanOrEqual(1e-6);
       expect(
         await fallback.evaluate((image) => {
           const rendered = image as HTMLImageElement;
