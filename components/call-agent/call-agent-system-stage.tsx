@@ -41,6 +41,11 @@ function StageMedia({ item, active }: { readonly item: StageItem; readonly activ
   );
 }
 
+function StagePoster({ item }: { readonly item: StageItem }) {
+  const src = item.media.kind === 'video' ? item.media.poster! : item.media.src;
+  return <CallAgentBrowserImage src={src} title={item.title} description={item.media.alt} />;
+}
+
 export function CallAgentSystemStage({ locale }: { readonly locale: Locale }) {
   const items = copy[locale];
   const instanceId = useId();
@@ -113,10 +118,10 @@ export function CallAgentSystemStage({ locale }: { readonly locale: Locale }) {
         })}
       </div>
       <p className={styles.summary} data-stage-summary aria-live="polite">{items[activeIndex].summary}</p>
-      <div className={styles.staticSequence} data-static-sequence aria-hidden="true">
+      <div className={styles.staticSequence} data-static-sequence>
         {items.map((item, index) => (
           <article key={item.id} data-static-stage data-stage-id={item.id}>
-            <span>{String(index + 1).padStart(2, '0')}</span><h3>{item.title}</h3><p>{item.summary}</p><StageMedia item={item} active={false} />
+            <span>{String(index + 1).padStart(2, '0')}</span><h3>{item.title}</h3><p>{item.summary}</p><StagePoster item={item} />
           </article>
         ))}
       </div>

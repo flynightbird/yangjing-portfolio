@@ -22,15 +22,19 @@ for (const locale of ['en', 'zh'] as const) {
       await expect(
         heroSequence.locator('[data-hero-clip][data-active="true"] [data-call-agent-browser]'),
       ).toBeVisible();
-      expect(
-        await heroSequence.locator('video').evaluateAll((videos) =>
-          videos.map((video) => video.getAttribute('src')),
-        ),
-      ).toEqual([
+      await expect(heroSequence.locator('img')).toHaveCount(3);
+      const sources = [
         '/videos/call-agent/agent-create.mp4',
         '/videos/call-agent/agent-preview.mp4',
         '/videos/call-agent/agent-operate.mp4',
-      ]);
+      ];
+      for (const [index, source] of sources.entries()) {
+        const activeClip = heroSequence.locator('[data-hero-clip]').nth(index);
+        await expect(activeClip).toHaveAttribute('data-active', 'true');
+        await expect(heroSequence.locator('video')).toHaveCount(1);
+        await expect(activeClip.locator('video')).toHaveAttribute('src', source);
+        if (index < sources.length - 1) await activeClip.locator('video').dispatchEvent('ended');
+      }
       await expect(page.locator('[data-project-previous], [data-project-next]')).toHaveCount(0);
     });
 
@@ -60,6 +64,8 @@ for (const locale of ['en', 'zh'] as const) {
       const staticStages = page.locator('[data-static-stage]');
       await expect(staticStages).toHaveCount(6);
       for (const stage of await staticStages.all()) await expect(stage).toBeVisible();
+      await expect(page.locator('[data-static-sequence] video')).toHaveCount(0);
+      await expect(page.locator('[data-static-sequence] img')).toHaveCount(6);
     });
   });
 }

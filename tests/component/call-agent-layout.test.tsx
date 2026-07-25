@@ -111,6 +111,9 @@ describe('Call Agent six-stage system', () => {
     expect(root?.querySelector(':scope > [data-call-agent-media-stage]')).toBeInTheDocument();
     expect(root?.querySelector(':scope > [data-stage-summary]')).toBeInTheDocument();
     expect(root?.querySelector(':scope > [data-static-sequence]')).toBeInTheDocument();
+    expect(root?.querySelector(':scope > [data-static-sequence]')).not.toHaveAttribute('aria-hidden');
+    expect(root?.querySelectorAll(':scope > [data-static-sequence] video')).toHaveLength(0);
+    expect(root?.querySelectorAll(':scope > [data-static-sequence] img')).toHaveLength(6);
     expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
     expect(tabs[0]).not.toHaveTextContent('从空白或客服模板开始');
     const panels = [...container.querySelectorAll('[role="tabpanel"]')];
@@ -197,19 +200,25 @@ describe('Call Agent six-stage system', () => {
     }
   });
 
-  it('uses inbound connection and outbound operations videos in both locales', () => {
+  it('loads inbound and outbound video sources only when selected in both locales', () => {
     vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
     const zh = render(<CallAgentSystemStage locale="zh" />);
     expect(screen.getAllByText('内呼连接').length).toBeGreaterThan(0);
     expect(screen.getAllByText('外呼运营').length).toBeGreaterThan(0);
-    expect(zh.container.querySelector('video[src="/videos/call-agent/agent-connect.mp4"]')).toBeInTheDocument();
-    expect(zh.container.querySelector('video[src="/videos/call-agent/agent-operate.mp4"]')).toBeInTheDocument();
+    expect(zh.container.querySelectorAll('[data-call-agent-media-stage] video')).toHaveLength(1);
+    fireEvent.click(screen.getByRole('tab', { name: '内呼连接' }));
+    expect(zh.container.querySelector('[data-call-agent-media-stage] video')).toHaveAttribute('src', '/videos/call-agent/agent-connect.mp4');
+    fireEvent.click(screen.getByRole('tab', { name: '外呼运营' }));
+    expect(zh.container.querySelector('[data-call-agent-media-stage] video')).toHaveAttribute('src', '/videos/call-agent/agent-operate.mp4');
     zh.unmount();
 
     const en = render(<CallAgentSystemStage locale="en" />);
     expect(screen.getAllByText('Inbound connection').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Outbound operations').length).toBeGreaterThan(0);
-    expect(en.container.querySelector('video[src="/videos/call-agent/agent-connect.mp4"]')).toBeInTheDocument();
-    expect(en.container.querySelector('video[src="/videos/call-agent/agent-operate.mp4"]')).toBeInTheDocument();
+    expect(en.container.querySelectorAll('[data-call-agent-media-stage] video')).toHaveLength(1);
+    fireEvent.click(screen.getByRole('tab', { name: 'Inbound connection' }));
+    expect(en.container.querySelector('[data-call-agent-media-stage] video')).toHaveAttribute('src', '/videos/call-agent/agent-connect.mp4');
+    fireEvent.click(screen.getByRole('tab', { name: 'Outbound operations' }));
+    expect(en.container.querySelector('[data-call-agent-media-stage] video')).toHaveAttribute('src', '/videos/call-agent/agent-operate.mp4');
   });
 });

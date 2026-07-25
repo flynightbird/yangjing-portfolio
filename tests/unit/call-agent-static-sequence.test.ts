@@ -29,4 +29,13 @@ describe('Call Agent static stage sequence', () => {
     );
     expect(printCss).not.toMatch(/div:(?:first|last)-child/);
   });
+
+  it('keeps metadata labels at the approved eleven-pixel size', () => {
+    const layoutCss = readFileSync(
+      'components/call-agent/call-agent-layout.module.css',
+      'utf8',
+    );
+
+    expect(layoutCss).toMatch(/\.facts dt\s*\{[^}]*font:\s*500 0\.6875rem\/1\.2 var\(--call-mono\);/);
+  });
 });

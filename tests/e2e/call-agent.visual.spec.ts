@@ -89,6 +89,17 @@ test.describe('Call Agent responsive system story', () => {
         await page.keyboard.press(key);
         await expect(tab).toBeFocused();
         await expect(tab).toHaveAttribute('aria-selected', 'true');
+        const focusStyle = await tab.evaluate((element) => {
+          const style = getComputedStyle(element);
+          return {
+            color: style.outlineColor,
+            style: style.outlineStyle,
+            width: Number.parseFloat(style.outlineWidth),
+          };
+        });
+        expect(focusStyle.style).not.toBe('none');
+        expect(focusStyle.width).toBeGreaterThanOrEqual(2);
+        expect(focusStyle.color).toBe('rgb(72, 102, 0)');
         await expect.poll(async () => tab.evaluate((element) => {
           const tabRect = element.getBoundingClientRect();
           const listRect = element.closest('[role="tablist"]')?.getBoundingClientRect();
@@ -124,14 +135,16 @@ test.describe('Call Agent responsive system story', () => {
       const h2 = root.querySelector('article[data-case-study] > section > h2');
       const lead = root.querySelector('article[data-case-study] > section .call-reading--lead');
       const body = root.querySelector('article[data-case-study] > section .call-reading:not(.call-reading--lead)');
-      if (!h1 || !h2 || !lead || !body) throw new Error('Expected Call Agent typography samples');
-      return { h1: metrics(h1), h2: metrics(h2), lead: metrics(lead), body: metrics(body) };
+      const factsLabel = root.querySelector('dl dt');
+      if (!h1 || !h2 || !lead || !body || !factsLabel) throw new Error('Expected Call Agent typography samples');
+      return { h1: metrics(h1), h2: metrics(h2), lead: metrics(lead), body: metrics(body), factsLabel: metrics(factsLabel) };
     });
 
     expect(type.h1.lineHeight / type.h1.fontSize).toBeCloseTo(1.06, 2);
     expect(type.h2.fontWeight).toBe('600');
     expect(type.lead.fontSize).toBe(19);
     expect(type.body.fontSize).toBe(16);
+    expect(type.factsLabel.fontSize).toBe(11);
   });
 
   test('desktop hero title stays within three lines', async ({ page }, testInfo) => {
@@ -214,6 +227,10 @@ test.describe('Call Agent responsive system story', () => {
 
   test('reduced motion keeps the tab interface and poster evidence', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop');
+    const videoRequests: string[] = [];
+    page.on('request', (request) => {
+      if (/\.mp4(?:$|\?)/.test(request.url())) videoRequests.push(request.url());
+    });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.reload({ waitUntil: 'networkidle' });
 
@@ -223,5 +240,7 @@ test.describe('Call Agent responsive system story', () => {
     const activePanel = page.getByRole('tabpanel', { name: '创建', exact: true });
     await expect(activePanel.locator('img')).toBeVisible();
     await expect(activePanel.locator('video')).toHaveCount(0);
+    await expect(page.locator('[data-static-sequence] video')).toHaveCount(0);
+    expect(videoRequests).toEqual([]);
   });
 });
