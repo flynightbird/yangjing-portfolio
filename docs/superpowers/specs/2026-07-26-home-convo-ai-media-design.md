@@ -29,6 +29,7 @@ Keep the current Web-primary composition: one virtual browser is the main eviden
 
 - Keep the Web image at `/images/convo-ai/figma/web-ready.png`.
 - Keep the existing virtual browser chrome and address label.
+- Keep the virtual browser bar at `38px`, matching the adjacent Call Agent media card.
 - Replace fixed bottom positioning that crops or stretches the Web surface with a content-driven viewport using the source image ratio of `1440 / 800`.
 - Let the virtual browser height equal the browser bar plus the proportional Web viewport height.
 - Keep the Web image fully visible with `object-fit: contain` and top-left positioning.
@@ -69,6 +70,7 @@ Do not change the current mobile composition.
 ## Responsive Geometry
 
 - The outer ConvoAI media card keeps its current desktop and tablet footprint.
+- The virtual browser bar remains `38px` at desktop and tablet widths.
 - The virtual browser derives its height from the `1440 / 800` viewport ratio instead of a fixed height or negative bottom inset.
 - The phone uses `aspect-ratio: 592 / 1280` and remains visually secondary.
 - At all supported widths, neither the browser nor phone may overflow the media-card border radius or create page-level horizontal overflow.
@@ -86,6 +88,7 @@ Add or update focused tests before implementation to assert:
 
 - The homepage phone uses the approved orb conversation video and poster.
 - The phone video is autoplaying, muted, looping, inline, and has no controls.
+- The ConvoAI and Call Agent virtual browser bars both remain `38px` high.
 - The Web viewport uses `aspect-ratio: 1440 / 800` and no negative bottom crop.
 - The phone uses `aspect-ratio: 592 / 1280`, `14px` outer radius, and `10px` inner radius.
 - The mobile loop and reduced-motion poster sources remain unchanged.
