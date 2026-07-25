@@ -62,6 +62,7 @@ export function HeroMotion({
 }: HeroMotionProps) {
   const heroRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const echoRef = useRef<HTMLImageElement>(null);
   const dividerRef = useRef<HTMLButtonElement>(null);
   const splitRef = useRef(DEFAULT_SPLIT);
   const draggingRef = useRef(false);
@@ -174,7 +175,8 @@ export function HeroMotion({
   useEffect(() => {
     const canvas = canvasRef.current;
     const hero = heroRef.current;
-    if (!canvas || !hero) return;
+    const echo = echoRef.current;
+    if (!canvas || !hero || !echo) return;
 
     window.__heroMotion = { scanRuns: 0, split: DEFAULT_SPLIT };
     if (navigator.userAgent.includes('jsdom')) {
@@ -195,6 +197,7 @@ export function HeroMotion({
     let scanRuns = 0;
     let smoothX = pointerRef.current.x;
     let smoothY = pointerRef.current.y;
+    let echoAnimation: Animation | null = null;
 
     const codeFragments = [
       { text: 'build()', u: 0.12, v: 0.16, size: 46, depth: 0.95, accent: false },
@@ -212,7 +215,32 @@ export function HeroMotion({
       scanRuns += 1;
       scanStart = performance.now();
       canvas.dataset.scanRuns = String(scanRuns);
+      echo.dataset.echoRuns = String(scanRuns);
       if (window.__heroMotion) window.__heroMotion.scanRuns = scanRuns;
+
+      if (typeof echo.animate === 'function') {
+        echoAnimation?.cancel();
+        echoAnimation = echo.animate(
+          [
+            { opacity: 0, transform: 'translateX(-50%)' },
+            {
+              opacity: 0.16,
+              transform: 'translateX(calc(-50% + 12px))',
+              offset: 0.22,
+            },
+            {
+              opacity: 0.06,
+              transform: 'translateX(calc(-50% + 4px))',
+              offset: 0.68,
+            },
+            { opacity: 0, transform: 'translateX(-50%)' },
+          ],
+          {
+            duration: 720,
+            easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+          },
+        );
+      }
     };
     scanRef.current = triggerScan;
 
@@ -326,6 +354,7 @@ export function HeroMotion({
       if (media.matches) {
         clearReset();
         stopSettle();
+        echoAnimation?.cancel();
       }
     };
     media.addEventListener('change', handleMotionChange);
@@ -339,6 +368,7 @@ export function HeroMotion({
       media.removeEventListener('change', handleMotionChange);
       clearReset();
       stopSettle();
+      echoAnimation?.cancel();
       scanRef.current = null;
       delete window.__heroMotion;
     };
@@ -361,6 +391,17 @@ export function HeroMotion({
 
       <div className={`${styles.heroLayer} ${styles.builderField}`} aria-hidden="true">
         <canvas ref={canvasRef} className={styles.codeCanvas} data-hero-code-canvas />
+        <Image
+          ref={echoRef}
+          className={`${styles.heroPortrait} ${styles.builderEcho}`}
+          data-hero-builder-echo
+          data-echo-runs="0"
+          src={BUILDER_PORTRAIT_SRC}
+          width={990}
+          height={1055}
+          alt=""
+          priority
+        />
         <Image
           className={styles.heroPortrait}
           data-portrait-role="builder"

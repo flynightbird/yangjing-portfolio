@@ -438,6 +438,40 @@ test.describe('portfolio homepage framework', () => {
     );
   });
 
+  test('keeps the 90 percent portraits aligned to the Hero baseline', async ({ page }) => {
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+    const viewport = page.viewportSize();
+    if (!viewport) throw new Error('Missing viewport');
+
+    const geometry = await page.evaluate(() => {
+      const hero = document.querySelector<HTMLElement>('[data-media="portrait"]');
+      const designer = document.querySelector<HTMLImageElement>(
+        '[data-portrait-role="designer"]',
+      );
+      const builder = document.querySelector<HTMLImageElement>(
+        '[data-portrait-role="builder"]',
+      );
+      if (!hero || !designer || !builder) throw new Error('Missing Hero portrait geometry');
+      return {
+        rootFontSize: Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
+        hero: hero.getBoundingClientRect().toJSON(),
+        designer: designer.getBoundingClientRect().toJSON(),
+        builder: builder.getBoundingClientRect().toJSON(),
+      };
+    });
+    const expectedWidth = viewport.width < 768
+      ? Math.min(viewport.width * 1.305, geometry.rootFontSize * 34.2)
+      : Math.min(viewport.width * 0.495, geometry.rootFontSize * 42.1875);
+
+    expect(geometry.designer.width).toBeCloseTo(expectedWidth, 0);
+    expect(geometry.builder.width).toBeCloseTo(expectedWidth, 0);
+    expect(geometry.designer.x).toBeCloseTo(geometry.builder.x, 1);
+    expect(geometry.designer.y).toBeCloseTo(geometry.builder.y, 1);
+    expect(geometry.designer.height).toBeCloseTo(geometry.builder.height, 1);
+    expect(geometry.hero.bottom - geometry.designer.bottom).toBeLessThanOrEqual(1);
+    expect(geometry.hero.bottom - geometry.builder.bottom).toBeLessThanOrEqual(1);
+  });
+
   test('renders the approved flagship materials and desktop focus motion', async ({
     page,
   }, testInfo) => {
@@ -1367,6 +1401,9 @@ test.describe('portfolio homepage framework', () => {
       'data-scan-runs',
       '0',
     );
+    const builderEcho = page.locator('[data-hero-builder-echo]');
+    await expect(builderEcho).toHaveAttribute('data-echo-runs', '0');
+    await expect(builderEcho).toHaveCSS('display', 'none');
     await expect(page.locator('[data-designer-art="material-blueprint"]')).toBeVisible();
     expect(hydrationErrors).toEqual([]);
   });
@@ -1382,11 +1419,19 @@ test.describe('portfolio homepage framework', () => {
 
     const divider = page.getByRole('separator', { name: 'Adjust identity reveal' });
     const canvas = page.locator('[data-hero-code-canvas]');
+    const builderEcho = page.locator('[data-hero-builder-echo]');
+    const echoRunsBeforeKey = Number(await builderEcho.getAttribute('data-echo-runs'));
     await expect(divider).toHaveAttribute('aria-valuenow', '48');
 
     await divider.focus();
     await divider.press('ArrowRight');
     await expect(divider).toHaveAttribute('aria-valuenow', '52');
+    await expect
+      .poll(async () => Number(await builderEcho.getAttribute('data-echo-runs')))
+      .toBeGreaterThan(echoRunsBeforeKey);
+    await expect
+      .poll(() => builderEcho.evaluate((element) => element.getAnimations().length))
+      .toBeGreaterThan(0);
 
     const dividerBox = await divider.boundingBox();
     if (!dividerBox) throw new Error('Missing Hero divider bounds');

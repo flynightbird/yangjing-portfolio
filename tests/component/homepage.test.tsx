@@ -45,6 +45,16 @@ describe('DualIdentityHero', () => {
       expect.stringContaining('yang-jing-builder.png'),
     );
     expect(builderPortrait).toHaveAttribute('alt', '');
+    const builderEchoes = portraitScene?.querySelectorAll<HTMLImageElement>(
+      '[data-hero-builder-echo]',
+    );
+    expect(builderEchoes).toHaveLength(1);
+    expect(builderEchoes?.[0]).toHaveAttribute(
+      'src',
+      expect.stringContaining('yang-jing-builder.png'),
+    );
+    expect(builderEchoes?.[0]).toHaveAttribute('alt', '');
+    expect(builderEchoes?.[0]).toHaveAttribute('data-echo-runs', '0');
 
     expect(screen.getByRole('separator', { name: 'Adjust identity reveal' })).toHaveAttribute(
       'aria-valuenow',
