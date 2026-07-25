@@ -54,6 +54,9 @@ describe('portfolio detail visual system', () => {
     expect(css).not.toMatch(
       /@media \(min-width:\s*901px\) and \(max-width:\s*1100px\)/,
     );
+    expect(css).toMatch(
+      /@media \(min-width:\s*1101px\) and \(max-width:\s*1199px\)\s*\{[\s\S]*?\.root\[data-compact-at='default'\]\s*\{[^}]*position:\s*sticky;/,
+    );
   });
 
   it('defines the semantic case-study heading token contract', () => {
