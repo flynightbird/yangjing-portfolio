@@ -552,11 +552,16 @@ describe('portfolio detail visual system', () => {
     expect(languagePaths).toContain('margin-block-start: 0;');
   });
 
-  it('keeps the Meeting final capability captions clear of the next chapter divider', () => {
+  it('keeps the final Meeting capability group clear of the next chapter divider', () => {
     const css = read('components/meeting/meeting-showcase.module.css');
     const polishDeck = ruleBlock(css, '.polishDeck');
+    const finalCapabilityGroup = ruleBlock(
+      css,
+      '.capabilityGroup:last-child',
+    );
 
-    expect(polishDeck).toContain(
+    expect(polishDeck).toContain('margin-block-end: 0;');
+    expect(finalCapabilityGroup).toContain(
       'margin-block-end: clamp(2.75rem, 5vw, 4.5rem);',
     );
   });

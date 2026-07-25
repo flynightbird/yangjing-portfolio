@@ -393,6 +393,10 @@
   padding-top: clamp(0.35rem, 1vw, 0.8rem);
 }
 
+.capabilityGroup:last-child {
+  margin-block-end: clamp(2.75rem, 5vw, 4.5rem);
+}
+
 .capabilityGroupHeader {
   display: grid;
   gap: 0.55rem;
