@@ -160,29 +160,139 @@ describe('portfolio detail visual system', () => {
     const browserCss = read(
       'components/call-agent/call-agent-browser-video.module.css',
     );
+    const root = ruleBlock(stageCss, '.root');
+    const tabs = ruleBlock(stageCss, '.tabs');
     const tabButton = ruleBlock(stageCss, '.tabs button');
+    const hoveredTab = ruleBlock(stageCss, '.tabs button:hover');
+    const focusedTab = ruleBlock(stageCss, '.tabs button:focus-visible');
     const activeTab = ruleBlock(stageCss, ".tabs button[data-active='true']");
+    const mediaStage = ruleBlock(stageCss, '.mediaStage');
     const mediaLayer = ruleBlock(stageCss, '.mediaLayer');
+    const activeMediaLayer = ruleBlock(
+      stageCss,
+      ".mediaLayer[data-active='true']",
+    );
+    const summary = ruleBlock(stageCss, '.summary');
     const staticSequence = ruleBlock(stageCss, '.staticSequence');
+    const browser = ruleBlock(browserCss, '.browser');
+    const chrome = ruleBlock(browserCss, '.chrome');
     const viewport = ruleBlock(browserCss, '.viewport');
     const media = ruleBlock(browserCss, [
       '.viewport img',
       '.viewport video',
     ]);
 
-    expect(stageCss).toMatch(/\.tabs\s*\{[^}]*overflow-x:\s*auto/s);
-    expect(tabButton).toContain('height: 38px;');
-    expect(tabButton).toContain('border-radius: 999px;');
+    for (const declaration of [
+      'min-width: 0;',
+      'margin-top: clamp(2rem, 5vw, 3.5rem);',
+    ]) {
+      expect(root).toContain(declaration);
+    }
+
+    for (const declaration of [
+      'display: flex;',
+      'gap: 0.5rem;',
+      'width: 100%;',
+      'padding-bottom: 0.75rem;',
+      'overflow-x: auto;',
+      'scrollbar-width: thin;',
+      'scroll-snap-type: x proximity;',
+    ]) {
+      expect(tabs).toContain(declaration);
+    }
+
+    for (const declaration of [
+      'flex: none;',
+      'height: 38px;',
+      'padding-inline: 1rem;',
+      'border: 1px solid var(--call-line);',
+      'border-radius: 999px;',
+      'background: #f1f3ef;',
+      'color: var(--call-ink);',
+      'font: 600 0.875rem/1 var(--call-font);',
+      'letter-spacing: 0;',
+      'scroll-snap-align: start;',
+    ]) {
+      expect(tabButton).toContain(declaration);
+    }
+    expect(hoveredTab).toContain('border-color: #9ba196;');
+    expect(hoveredTab).toContain('background: #e8ebe5;');
+    expect(focusedTab).toContain(
+      'outline: 2px solid var(--call-signal-ink);',
+    );
+    expect(focusedTab).toContain('outline-offset: 2px;');
+    expect(activeTab).toContain('border-color: var(--call-signal);');
     expect(activeTab).toContain('background: var(--call-signal);');
-    expect(mediaLayer).toContain('grid-area: 1 / 1;');
-    expect(stageCss).not.toContain('min-height: 33vh');
-    expect(stageCss).not.toContain('position: sticky');
+    expect(activeTab).toContain('color: #0a0a0a;');
 
-    expect(viewport).toContain('aspect-ratio: 16 / 10;');
-    expect(media).toContain('object-fit: contain;');
-    expect(browserCss).not.toContain('object-fit: fill');
+    for (const declaration of [
+      'display: grid;',
+      'min-width: 0;',
+      'margin-top: 0.75rem;',
+    ]) {
+      expect(mediaStage).toContain(declaration);
+    }
+    for (const declaration of [
+      'grid-area: 1 / 1;',
+      'min-width: 0;',
+      'opacity: 0;',
+      'visibility: hidden;',
+      'pointer-events: none;',
+    ]) {
+      expect(mediaLayer).toContain(declaration);
+    }
+    for (const declaration of [
+      'z-index: 1;',
+      'opacity: 1;',
+      'visibility: visible;',
+      'pointer-events: auto;',
+    ]) {
+      expect(activeMediaLayer).toContain(declaration);
+    }
 
+    for (const declaration of [
+      'max-width: 54rem;',
+      'min-height: 3.5rem;',
+      'margin-top: 1rem;',
+      'color: #61675f;',
+      'font: 400 1rem/1.65 var(--call-font);',
+    ]) {
+      expect(summary).toContain(declaration);
+    }
     expect(staticSequence).toContain('display: none;');
+
+    expect(stageCss).toMatch(
+      /@media \(max-width: 767px\)[\s\S]*?\.root\s*\{[^}]*margin-top:\s*2rem;[^}]*\}[\s\S]*?\.tabs\s*\{[^}]*width:\s*calc\(100% \+ 2rem\);[^}]*margin-inline:\s*-1rem;[^}]*padding-inline:\s*1rem;[^}]*\}[\s\S]*?\.summary\s*\{[^}]*min-height:\s*4\.75rem;/,
+    );
+    expect(stageCss).toMatch(
+      /@media \(prefers-reduced-motion: reduce\)[\s\S]*?\.tabs button,\s*\.mediaLayer\s*\{[^}]*transition:\s*none;/,
+    );
+
+    for (const obsoletePattern of [
+      'position: sticky',
+      'position: absolute',
+      'transform: scale',
+      'min-height: 33vh',
+      'min-height: 40vh',
+      'min-height: 52vw',
+      '.desktopStage',
+      '.steps',
+    ]) {
+      expect(stageCss).not.toContain(obsoletePattern);
+    }
+
+    expect(browser).toContain('border-radius: 12px;');
+    expect(chrome).toContain('height: 32px;');
+    expect(viewport).toContain('border-radius: 0 0 11px 11px;');
+    expect(viewport).toContain('aspect-ratio: 16 / 10;');
+    for (const declaration of [
+      'width: 100%;',
+      'height: 100%;',
+      'object-fit: contain;',
+    ]) {
+      expect(media).toContain(declaration);
+    }
+    expect(browserCss).not.toContain('object-fit: fill');
   });
 
   it('maps shared case-study headings to their semantic roles', () => {
