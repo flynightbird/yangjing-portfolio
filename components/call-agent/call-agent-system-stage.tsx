@@ -1,19 +1,11 @@
 'use client';
 
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState, type KeyboardEvent } from 'react';
 
 import type { Locale } from '@/content/types';
 
 import { CallAgentBrowserImage, CallAgentBrowserVideo } from './call-agent-browser-video';
-import { resolveCallAgentMotionMode, type CallAgentMotionMode } from './call-agent-motion-mode';
 import styles from './call-agent-system-stage.module.css';
-
-if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
-  gsap.registerPlugin(ScrollTrigger, useGSAP);
-}
 
 interface StageItem {
   readonly id: 'create' | 'orchestrate' | 'preview' | 'publish' | 'connect' | 'operate';
@@ -51,52 +43,70 @@ function StageMedia({ item, active }: { readonly item: StageItem; readonly activ
 
 export function CallAgentSystemStage({ locale }: { readonly locale: Locale }) {
   const items = copy[locale];
-  const rootRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [mode, setMode] = useState<CallAgentMotionMode>('static');
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
-  useEffect(() => {
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => setMode(resolveCallAgentMotionMode({ width: window.innerWidth, reducedMotion: media.matches }));
-    update();
-    media.addEventListener?.('change', update);
-    window.addEventListener('resize', update);
-    return () => { media.removeEventListener?.('change', update); window.removeEventListener('resize', update); };
-  }, []);
+  const selectTab = (index: number) => {
+    setActiveIndex(index);
+    const destination = tabRefs.current[index];
+    destination?.focus();
+    destination?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+  };
 
-  useGSAP(() => {
-    if (mode !== 'cinematic' || !rootRef.current) return;
-    const triggers = items.map((item, index) => ScrollTrigger.create({
-      trigger: `[data-stage-id="${item.id}"]`,
-      start: 'top 52%',
-      end: 'bottom 48%',
-      onEnter: () => setActiveIndex(index),
-      onEnterBack: () => setActiveIndex(index),
-    }));
-    return () => triggers.forEach((trigger) => trigger.kill());
-  }, { scope: rootRef, dependencies: [mode] });
+  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    let nextIndex: number | undefined;
+    if (event.key === 'ArrowLeft') nextIndex = (index - 1 + items.length) % items.length;
+    if (event.key === 'ArrowRight') nextIndex = (index + 1) % items.length;
+    if (event.key === 'Home') nextIndex = 0;
+    if (event.key === 'End') nextIndex = items.length - 1;
+    if (nextIndex === undefined) return;
+
+    event.preventDefault();
+    selectTab(nextIndex);
+  };
 
   return (
-    <div ref={rootRef} className={styles.root} data-system-mode={mode}>
+    <div className={styles.root} data-system-mode="tabs">
       <div className={styles.desktopStage}>
-        <ol className={styles.steps}>
+        <div className={styles.steps} role="tablist" aria-label={locale === 'zh' ? '产品阶段' : 'Product stages'}>
           {items.map((item, index) => (
-            <li key={item.id} data-stage-id={item.id} data-active={index === activeIndex}>
-              <button type="button" onClick={() => setActiveIndex(index)} aria-pressed={index === activeIndex}>
-                <span>{String(index + 1).padStart(2, '0')}</span><strong>{item.title}</strong><p>{item.summary}</p>
-              </button>
-            </li>
+            <button
+              key={item.id}
+              ref={(node) => { tabRefs.current[index] = node; }}
+              id={`call-agent-tab-${item.id}`}
+              type="button"
+              role="tab"
+              aria-selected={index === activeIndex}
+              aria-controls={`call-agent-panel-${item.id}`}
+              tabIndex={index === activeIndex ? 0 : -1}
+              data-stage-id={item.id}
+              data-active={index === activeIndex}
+              onClick={() => setActiveIndex(index)}
+              onKeyDown={(event) => handleKeyDown(event, index)}
+            >
+              {item.title}
+            </button>
           ))}
-        </ol>
+        </div>
         <div className={styles.mediaStage} data-call-agent-media-stage>
           {items.map((item, index) => (
-            <div key={item.id} className={styles.mediaLayer} data-active={index === activeIndex} aria-hidden={index !== activeIndex}>
+            <div
+              key={item.id}
+              id={`call-agent-panel-${item.id}`}
+              className={styles.mediaLayer}
+              role="tabpanel"
+              aria-labelledby={`call-agent-tab-${item.id}`}
+              aria-hidden={index !== activeIndex}
+              inert={index !== activeIndex}
+              data-active={index === activeIndex}
+            >
               <StageMedia item={item} active={index === activeIndex} />
             </div>
           ))}
         </div>
+        <p className={styles.summary} data-stage-summary aria-live="polite">{items[activeIndex].summary}</p>
       </div>
-      <div className={styles.staticSequence}>
+      <div className={styles.staticSequence} data-static-sequence aria-hidden="true">
         {items.map((item, index) => (
           <article key={item.id} data-static-stage data-stage-id={item.id}>
             <span>{String(index + 1).padStart(2, '0')}</span><h3>{item.title}</h3><p>{item.summary}</p><StageMedia item={item} active={false} />

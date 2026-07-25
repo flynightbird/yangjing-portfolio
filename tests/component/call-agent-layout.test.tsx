@@ -80,14 +80,53 @@ describe('Call Agent dedicated layout', () => {
 });
 
 describe('Call Agent six-stage system', () => {
-  it('keeps the approved sequence and one stable media stage', () => {
+  it('renders six title-only tabs with one selected stage and summary', () => {
     vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
-    const { container } = render(<CallAgentSystemStage locale="en" />);
-    expect([...container.querySelectorAll('ol [data-stage-id]')].map((node) => node.getAttribute('data-stage-id'))).toEqual([
-      'create', 'orchestrate', 'preview', 'publish', 'connect', 'operate',
+    const { container } = render(<CallAgentSystemStage locale="zh" />);
+    const tabs = screen.getAllByRole('tab');
+
+    expect(tabs.map((tab) => tab.textContent)).toEqual([
+      '创建', '编排', '预览', '发布', '内呼连接', '外呼运营',
     ]);
+    expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
+    expect(tabs[0]).not.toHaveTextContent('从空白或客服模板开始');
+    expect(container.querySelectorAll('[role="tabpanel"]')).toHaveLength(6);
     expect(container.querySelectorAll('[data-call-agent-media-stage]')).toHaveLength(1);
-    expect(container.querySelectorAll('[data-static-stage]')).toHaveLength(6);
+    expect(container.querySelector('[data-stage-summary]')).toHaveTextContent('从空白或客服模板开始，用有意义的默认值降低冷启动负担。');
+  });
+
+  it('selects the requested stage and updates its summary and active media', () => {
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+    const { container } = render(<CallAgentSystemStage locale="en" />);
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Publish' }));
+
+    expect(screen.getByRole('tab', { name: 'Publish' })).toHaveAttribute('aria-selected', 'true');
+    expect(container.querySelector('[data-stage-summary]')).toHaveTextContent('Separate unpublished drafts from released versions and preserve recovery.');
+    const activePanel = container.querySelector('[role="tabpanel"][data-active="true"]');
+    expect(activePanel).toHaveAttribute('id', 'call-agent-panel-publish');
+    expect(activePanel?.querySelector('video')).toHaveAttribute('src', '/videos/call-agent/agent-publish.mp4');
+  });
+
+  it('moves selection and focus with ArrowRight, End, and Home', () => {
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+    render(<CallAgentSystemStage locale="en" />);
+    const create = screen.getByRole('tab', { name: 'Create' });
+    const orchestrate = screen.getByRole('tab', { name: 'Orchestrate' });
+    const operate = screen.getByRole('tab', { name: 'Outbound operations' });
+
+    create.focus();
+    fireEvent.keyDown(create, { key: 'ArrowRight' });
+    expect(orchestrate).toHaveAttribute('aria-selected', 'true');
+    expect(orchestrate).toHaveFocus();
+
+    fireEvent.keyDown(orchestrate, { key: 'End' });
+    expect(operate).toHaveAttribute('aria-selected', 'true');
+    expect(operate).toHaveFocus();
+
+    fireEvent.keyDown(operate, { key: 'Home' });
+    expect(create).toHaveAttribute('aria-selected', 'true');
+    expect(create).toHaveFocus();
   });
 
   it('uses inbound connection and outbound operations videos in both locales', () => {
