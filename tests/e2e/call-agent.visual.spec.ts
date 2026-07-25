@@ -40,7 +40,7 @@ test.describe('Call Agent responsive system story', () => {
     const mediaBox = await heroMedia.boundingBox();
     expect(topBox).not.toBeNull();
     expect(mediaBox).not.toBeNull();
-    expect(topBox!.y + topBox!.height).toBeLessThanOrEqual(mediaBox!.y + 1);
+    expect(topBox!.y + topBox!.height).toBeLessThanOrEqual(mediaBox!.y);
   });
 
   test('uses the approved responsive type scale', async ({ page }) => {
