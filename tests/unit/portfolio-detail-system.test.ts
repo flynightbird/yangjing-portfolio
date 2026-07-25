@@ -183,6 +183,8 @@ describe('portfolio detail visual system', () => {
     ]);
 
     for (const declaration of [
+      '--call-signal: #c7ff38;',
+      '--call-signal-ink: #486600;',
       'min-width: 0;',
       'margin-top: clamp(2rem, 5vw, 3.5rem);',
     ]) {
