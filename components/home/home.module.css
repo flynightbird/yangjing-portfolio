@@ -156,7 +156,7 @@
 }
 
 .builderField .heroPortrait {
-  filter: grayscale(1) contrast(1.16) brightness(0.74);
+  filter: grayscale(0.28) saturate(0.82) contrast(1.08) brightness(0.9);
 }
 
 .designerField .heroPortrait {

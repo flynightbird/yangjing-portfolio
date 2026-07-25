@@ -15,7 +15,8 @@ import { withBasePath } from '@/lib/i18n/locales';
 const DEFAULT_SPLIT = 48;
 const MIN_SPLIT = 8;
 const MAX_SPLIT = 92;
-const PORTRAIT_SRC = withBasePath('/images/profile/yang-jing-hero-placeholder.png');
+const DESIGNER_PORTRAIT_SRC = withBasePath('/images/profile/yang-jing-designer.png');
+const BUILDER_PORTRAIT_SRC = withBasePath('/images/profile/yang-jing-builder.png');
 
 interface HeroMotionProps {
   readonly name: string;
@@ -362,9 +363,10 @@ export function HeroMotion({
         <canvas ref={canvasRef} className={styles.codeCanvas} data-hero-code-canvas />
         <Image
           className={styles.heroPortrait}
-          src={PORTRAIT_SRC}
-          width={500}
-          height={750}
+          data-portrait-role="builder"
+          src={BUILDER_PORTRAIT_SRC}
+          width={990}
+          height={1055}
           alt=""
           priority
         />
@@ -391,9 +393,10 @@ export function HeroMotion({
         </div>
         <Image
           className={styles.heroPortrait}
-          src={PORTRAIT_SRC}
-          width={500}
-          height={750}
+          data-portrait-role="designer"
+          src={DESIGNER_PORTRAIT_SRC}
+          width={990}
+          height={1055}
           alt={portraitLabel}
           priority
         />

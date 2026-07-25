@@ -28,11 +28,23 @@ describe('DualIdentityHero', () => {
     const portraitScene = container.querySelector('[data-media="portrait"]');
     expect(portraitScene).toBeInTheDocument();
     expect(portraitScene).not.toHaveAttribute('data-publication-state', 'draft');
-    expect(
-      within(portraitScene as HTMLElement).getByRole('img', {
-        name: 'Yang Jing portrait frame',
-      }),
-    ).toHaveAttribute('src', expect.stringContaining('yang-jing-hero-placeholder.png'));
+    const designerPortrait = portraitScene?.querySelector<HTMLImageElement>(
+      '[data-portrait-role="designer"]',
+    );
+    const builderPortrait = portraitScene?.querySelector<HTMLImageElement>(
+      '[data-portrait-role="builder"]',
+    );
+
+    expect(designerPortrait).toHaveAttribute(
+      'src',
+      expect.stringContaining('yang-jing-designer.png'),
+    );
+    expect(designerPortrait).toHaveAttribute('alt', 'Yang Jing portrait frame');
+    expect(builderPortrait).toHaveAttribute(
+      'src',
+      expect.stringContaining('yang-jing-builder.png'),
+    );
+    expect(builderPortrait).toHaveAttribute('alt', '');
 
     expect(screen.getByRole('separator', { name: 'Adjust identity reveal' })).toHaveAttribute(
       'aria-valuenow',
