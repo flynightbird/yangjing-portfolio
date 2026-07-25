@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, type KeyboardEvent } from 'react';
+import { useId, useRef, useState, type KeyboardEvent } from 'react';
 
 import type { Locale } from '@/content/types';
 
@@ -43,6 +43,7 @@ function StageMedia({ item, active }: { readonly item: StageItem; readonly activ
 
 export function CallAgentSystemStage({ locale }: { readonly locale: Locale }) {
   const items = copy[locale];
+  const instanceId = useId();
   const [activeIndex, setActiveIndex] = useState(0);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
@@ -68,40 +69,48 @@ export function CallAgentSystemStage({ locale }: { readonly locale: Locale }) {
   return (
     <div className={styles.root} data-system-mode="tabs">
       <div className={styles.tabs} role="tablist" aria-label={locale === 'zh' ? '产品阶段' : 'Product stages'}>
-        {items.map((item, index) => (
-          <button
-            key={item.id}
-            ref={(node) => { tabRefs.current[index] = node; }}
-            id={`call-agent-tab-${item.id}`}
-            type="button"
-            role="tab"
-            aria-selected={index === activeIndex}
-            aria-controls={`call-agent-panel-${item.id}`}
-            tabIndex={index === activeIndex ? 0 : -1}
-            data-stage-id={item.id}
-            data-active={index === activeIndex}
-            onClick={() => setActiveIndex(index)}
-            onKeyDown={(event) => handleKeyDown(event, index)}
-          >
-            {item.title}
-          </button>
-        ))}
+        {items.map((item, index) => {
+          const tabId = `${instanceId}-call-agent-tab-${item.id}`;
+          const panelId = `${instanceId}-call-agent-panel-${item.id}`;
+          return (
+            <button
+              key={item.id}
+              ref={(node) => { tabRefs.current[index] = node; }}
+              id={tabId}
+              type="button"
+              role="tab"
+              aria-selected={index === activeIndex}
+              aria-controls={panelId}
+              tabIndex={index === activeIndex ? 0 : -1}
+              data-stage-id={item.id}
+              data-active={index === activeIndex}
+              onClick={() => selectTab(index)}
+              onKeyDown={(event) => handleKeyDown(event, index)}
+            >
+              {item.title}
+            </button>
+          );
+        })}
       </div>
       <div className={styles.mediaStage} data-call-agent-media-stage>
-        {items.map((item, index) => (
-          <div
-            key={item.id}
-            id={`call-agent-panel-${item.id}`}
-            className={styles.mediaLayer}
-            role="tabpanel"
-            aria-labelledby={`call-agent-tab-${item.id}`}
-            aria-hidden={index !== activeIndex}
-            inert={index !== activeIndex}
-            data-active={index === activeIndex}
-          >
-            <StageMedia item={item} active={index === activeIndex} />
-          </div>
-        ))}
+        {items.map((item, index) => {
+          const active = index === activeIndex;
+          return (
+            <div
+              key={item.id}
+              id={`${instanceId}-call-agent-panel-${item.id}`}
+              className={styles.mediaLayer}
+              role="tabpanel"
+              aria-labelledby={`${instanceId}-call-agent-tab-${item.id}`}
+              aria-hidden={!active}
+              inert={!active}
+              tabIndex={active ? 0 : -1}
+              data-active={active}
+            >
+              <StageMedia item={item} active={active} />
+            </div>
+          );
+        })}
       </div>
       <p className={styles.summary} data-stage-summary aria-live="polite">{items[activeIndex].summary}</p>
       <div className={styles.staticSequence} data-static-sequence aria-hidden="true">
