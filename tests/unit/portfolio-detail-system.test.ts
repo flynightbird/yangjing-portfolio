@@ -106,7 +106,7 @@ describe('portfolio detail visual system', () => {
     const browserCss = read('components/call-agent/call-agent-browser-video.module.css');
     const layoutCss = read('components/call-agent/call-agent-layout.module.css');
 
-    expect(browserCss).toMatch(/\.browser\s*\{[^}]*border-radius:\s*20px/);
+    expect(browserCss).toMatch(/\.browser\s*\{[^}]*border-radius:\s*12px/);
     expect(browserCss).toMatch(/\.viewport\s*\{[^}]*overflow:\s*hidden/);
     expect(layoutCss).toMatch(
       /:global\(\.call-dark-band\)\s*\{[^}]*border-radius:\s*20px/,
@@ -118,22 +118,12 @@ describe('portfolio detail visual system', () => {
 
   it('maps Call Agent headings directly to their semantic roles', () => {
     const layoutCss = read('components/call-agent/call-agent-layout.module.css');
-    const stageCss = read(
-      'components/call-agent/call-agent-system-stage.module.css',
-    );
     const heroTitle = ruleBlock(layoutCss, '.hero h1');
     const proposition = ruleBlock(layoutCss, '.proposition');
     const chapterTitle = ruleBlock(layoutCss, '.case > section h2');
     const chapterBody = ruleBlock(
       layoutCss,
       '.case > section h2 + :global(.call-reading)',
-    );
-    const desktopStageTitle = ruleBlock(stageCss, '.steps button strong');
-    const desktopStageBody = ruleBlock(stageCss, '.steps button p');
-    const staticStageTitle = ruleBlock(stageCss, '.staticSequence h3');
-    const staticStageBody = ruleBlock(
-      stageCss,
-      '.staticSequence article > p',
     );
 
     for (const declaration of [
@@ -160,22 +150,39 @@ describe('portfolio detail visual system', () => {
     }
     expect(chapterBody).toContain('margin-block-start: 0;');
 
-    for (const title of [desktopStageTitle, staticStageTitle]) {
-      for (const declaration of [
-        'max-width: var(--case-card-title-max);',
-        'margin-block: var(--case-index-title-gap) var(--case-title-body-gap);',
-        'font-size: var(--case-card-title-size);',
-        'font-weight: var(--case-card-title-weight);',
-        'line-height: var(--case-card-title-leading);',
-      ]) {
-        expect(title).toContain(declaration);
-      }
-    }
-    expect(desktopStageBody).toContain('margin-block: 0;');
-    expect(staticStageBody).toContain('margin-block: 0 24px;');
-
     expect(layoutCss).not.toMatch(/var\(--case-h[123]-(?:size|weight|leading)\)/);
-    expect(stageCss).not.toMatch(/var\(--case-h[123]-(?:size|weight|leading)\)/);
+  });
+
+  it('uses compact Call Agent tabs with stable, undistorted media layers', () => {
+    const stageCss = read(
+      'components/call-agent/call-agent-system-stage.module.css',
+    );
+    const browserCss = read(
+      'components/call-agent/call-agent-browser-video.module.css',
+    );
+    const tabButton = ruleBlock(stageCss, '.tabs button');
+    const activeTab = ruleBlock(stageCss, ".tabs button[data-active='true']");
+    const mediaLayer = ruleBlock(stageCss, '.mediaLayer');
+    const staticSequence = ruleBlock(stageCss, '.staticSequence');
+    const viewport = ruleBlock(browserCss, '.viewport');
+    const media = ruleBlock(browserCss, [
+      '.viewport img',
+      '.viewport video',
+    ]);
+
+    expect(stageCss).toMatch(/\.tabs\s*\{[^}]*overflow-x:\s*auto/s);
+    expect(tabButton).toContain('height: 38px;');
+    expect(tabButton).toContain('border-radius: 999px;');
+    expect(activeTab).toContain('background: var(--call-signal);');
+    expect(mediaLayer).toContain('grid-area: 1 / 1;');
+    expect(stageCss).not.toContain('min-height: 33vh');
+    expect(stageCss).not.toContain('position: sticky');
+
+    expect(viewport).toContain('aspect-ratio: 16 / 10;');
+    expect(media).toContain('object-fit: contain;');
+    expect(browserCss).not.toContain('object-fit: fill');
+
+    expect(staticSequence).toContain('display: none;');
   });
 
   it('maps shared case-study headings to their semantic roles', () => {
