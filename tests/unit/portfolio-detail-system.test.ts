@@ -46,6 +46,14 @@ describe('portfolio detail visual system', () => {
     );
     expect(css).not.toMatch(/box-shadow:\s*inset\s+2px/);
     expect(css).not.toMatch(/color:\s*var\(--color-cobalt\)/);
+    expect(css).toMatch(/@media \(max-width:\s*1199px\)/);
+    expect(css).toMatch(
+      /@media \(min-width:\s*901px\) and \(max-width:\s*1199px\)[\s\S]*?\.root\[data-compact-at='default'\]/,
+    );
+    expect(css).not.toMatch(/@media \(max-width:\s*1100px\)/);
+    expect(css).not.toMatch(
+      /@media \(min-width:\s*901px\) and \(max-width:\s*1100px\)/,
+    );
   });
 
   it('defines the semantic case-study heading token contract', () => {
@@ -122,6 +130,7 @@ describe('portfolio detail visual system', () => {
     expect(layoutCss).toMatch(
       /:global\(\[data-call-agent-browser\]\)\s*\+\s*:global\(\[data-call-agent-browser\]\)\s*\{[^}]*margin-top:\s*2rem/,
     );
+    expect(ruleBlock(layoutCss, '.facts dt')).toContain('color: #61675f;');
     expect(layoutCss).not.toContain('font-size: clamp(1.3rem, 2vw, 2rem)');
     expect(layoutCss).not.toContain('border-radius: 20px');
     expect(layoutCss).not.toContain('margin: 220px 0 0 -4vw');
@@ -136,6 +145,10 @@ describe('portfolio detail visual system', () => {
       layoutCss,
       '.case > section h2 + :global(.call-reading)',
     );
+    const chineseTitles = ruleBlock(layoutCss, [
+      '.root .hero h1:lang(zh)',
+      '.root .case > section h2:lang(zh)',
+    ]);
 
     for (const declaration of [
       'max-width: var(--case-project-title-max);',
@@ -143,6 +156,7 @@ describe('portfolio detail visual system', () => {
       'font-size: var(--case-project-title-size);',
       'font-weight: var(--case-project-title-weight);',
       'line-height: var(--case-project-title-leading);',
+      'font-family: var(--font-display);',
     ]) {
       expect(heroTitle).toContain(declaration);
     }
@@ -156,10 +170,12 @@ describe('portfolio detail visual system', () => {
       'font-size: var(--case-chapter-title-size);',
       'font-weight: var(--case-chapter-title-weight);',
       'line-height: var(--case-chapter-title-leading);',
+      'font-family: var(--font-display);',
     ]) {
       expect(chapterTitle).toContain(declaration);
     }
     expect(chapterBody).toContain('margin-block-start: 0;');
+    expect(chineseTitles).toContain('font-family: var(--font-chinese);');
 
     expect(layoutCss).not.toMatch(/var\(--case-h[123]-(?:size|weight|leading)\)/);
   });
