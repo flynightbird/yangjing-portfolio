@@ -42,6 +42,13 @@ for (const locale of ['en', 'zh'] as const) {
         await toggle.click();
         await expect(navigation).toBeVisible();
       }
+      const tablist = page.getByRole('tablist', {
+        name: locale === 'zh' ? '产品阶段' : 'Product stages',
+        includeHidden: true,
+      });
+      await tablist.scrollIntoViewIfNeeded();
+      await expect(tablist).toBeVisible();
+      await expect(tablist.getByRole('tab')).toHaveCount(6);
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow).toBeLessThanOrEqual(1);
     });
@@ -50,7 +57,9 @@ for (const locale of ['en', 'zh'] as const) {
       await page.emulateMedia({ media: 'print', reducedMotion: 'reduce' });
       await expect(page.locator('[data-call-agent-case] video:visible')).toHaveCount(0);
       await expect(page.locator('[data-call-agent-case] [data-call-agent-browser] img').first()).toBeVisible();
-      await expect(page.locator('[data-static-stage]')).toHaveCount(6);
+      const staticStages = page.locator('[data-static-stage]');
+      await expect(staticStages).toHaveCount(6);
+      for (const stage of await staticStages.all()) await expect(stage).toBeVisible();
     });
   });
 }

@@ -19,6 +19,7 @@
 .tabs button {
   flex: none;
   height: 38px;
+  min-height: 38px;
   padding-inline: 1rem;
   border: 1px solid var(--call-line);
   border-radius: 999px;

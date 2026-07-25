@@ -1,48 +1,70 @@
-import { expect, test, type Locator } from '@playwright/test';
-
-async function expectVideoToMeetViewportEdges(viewport: Locator) {
-  const gaps = await viewport.evaluate((element) => {
-    const video = element.querySelector('video');
-    if (!video) throw new Error('Expected a video in the browser viewport');
-
-    const viewportRect = element.getBoundingClientRect();
-    const videoRect = video.getBoundingClientRect();
-    return [
-      Math.abs(videoRect.top - viewportRect.top),
-      Math.abs(videoRect.right - viewportRect.right),
-      Math.abs(videoRect.bottom - viewportRect.bottom),
-      Math.abs(videoRect.left - viewportRect.left),
-    ];
-  });
-
-  expect(Math.max(...gaps)).toBeLessThanOrEqual(1);
-}
+import { expect, test } from '@playwright/test';
 
 test.describe('Call Agent responsive system story', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/zh/work/call-agent/', { waitUntil: 'networkidle' });
   });
 
-  test('desktop keeps one stable right-side browser while left selection changes', async ({ page }, testInfo) => {
-    test.skip(testInfo.project.name !== 'desktop');
+  test('keeps six stable tabs above one responsive media stage', async ({ page }) => {
+    const tablist = page.getByRole('tablist', { name: '产品阶段', includeHidden: true });
     const media = page.locator('[data-call-agent-media-stage]');
-    await media.scrollIntoViewIfNeeded();
-    const initial = await media.boundingBox();
-    const publish = page.locator('ol [data-stage-id="publish"]');
-    await publish.scrollIntoViewIfNeeded();
-    await publish.locator('button').click();
-    await expect(publish).toHaveAttribute('data-active', 'true');
-    const next = await media.boundingBox();
-    expect(initial).not.toBeNull();
-    expect(next).not.toBeNull();
-    expect(Math.abs(next!.width - initial!.width)).toBeLessThanOrEqual(1);
-    expect(Math.abs(next!.height - initial!.height)).toBeLessThanOrEqual(1);
+    await tablist.scrollIntoViewIfNeeded();
+    await expect(tablist).toBeVisible();
+    await expect(media).toBeVisible();
+
+    const tabs = tablist.getByRole('tab');
+    await expect(tabs).toHaveCount(6);
+    expect(await tabs.evaluateAll((items) => items.map((item) => getComputedStyle(item).height))).toEqual(
+      Array(6).fill('38px'),
+    );
+
+    const tablistBox = await tablist.boundingBox();
+    const initialMediaBox = await media.boundingBox();
+    expect(tablistBox).not.toBeNull();
+    expect(initialMediaBox).not.toBeNull();
+    expect(tablistBox!.y + tablistBox!.height).toBeLessThanOrEqual(initialMediaBox!.y + 1);
+
+    await tablist.getByRole('tab', { name: '发布', exact: true }).click();
+    const publishPanel = page.getByRole('tabpanel', { name: '发布', exact: true });
+    await expect(publishPanel).toHaveAttribute('data-active', 'true');
+    const nextMediaBox = await media.boundingBox();
+    expect(nextMediaBox).not.toBeNull();
+    expect(Math.abs(nextMediaBox!.width - initialMediaBox!.width)).toBeLessThanOrEqual(1);
+    expect(Math.abs(nextMediaBox!.height - initialMediaBox!.height)).toBeLessThanOrEqual(1);
   });
 
-  test('mobile and reduced motion expose all six static stages', async ({ page }, testInfo) => {
-    test.skip(testInfo.project.name === 'desktop');
-    await expect(page.locator('[data-static-stage]')).toHaveCount(6);
-    await expect(page.locator('[data-call-agent-media-stage]')).toBeHidden();
+  test('keeps the complete hero top above hero media', async ({ page }) => {
+    const heroTop = page.locator('[data-call-agent-hero-top]');
+    const heroMedia = page.locator('[data-call-agent-hero-media]');
+    const topBox = await heroTop.boundingBox();
+    const mediaBox = await heroMedia.boundingBox();
+    expect(topBox).not.toBeNull();
+    expect(mediaBox).not.toBeNull();
+    expect(topBox!.y + topBox!.height).toBeLessThanOrEqual(mediaBox!.y + 1);
+  });
+
+  test('uses the approved responsive type scale', async ({ page }) => {
+    const type = await page.locator('[data-call-agent-case]').evaluate((root) => {
+      const metrics = (element: Element) => {
+        const style = getComputedStyle(element);
+        return {
+          fontSize: Number.parseFloat(style.fontSize),
+          lineHeight: Number.parseFloat(style.lineHeight),
+          fontWeight: style.fontWeight,
+        };
+      };
+      const h1 = root.querySelector('[data-call-agent-hero] h1');
+      const h2 = root.querySelector('article[data-case-study] > section > h2');
+      const lead = root.querySelector('article[data-case-study] > section .call-reading--lead');
+      const body = root.querySelector('article[data-case-study] > section .call-reading:not(.call-reading--lead)');
+      if (!h1 || !h2 || !lead || !body) throw new Error('Expected Call Agent typography samples');
+      return { h1: metrics(h1), h2: metrics(h2), lead: metrics(lead), body: metrics(body) };
+    });
+
+    expect(type.h1.lineHeight / type.h1.fontSize).toBeCloseTo(1.06, 2);
+    expect(type.h2.fontWeight).toBe('600');
+    expect(type.lead.fontSize).toBe(19);
+    expect(type.body.fontSize).toBe(16);
   });
 
   test('desktop hero title stays within three lines', async ({ page }, testInfo) => {
@@ -56,44 +78,44 @@ test.describe('Call Agent responsive system story', () => {
     expect(lines).toBeLessThanOrEqual(3);
   });
 
-  test('videos fill their browser viewport and operational stages use the approved clips', async ({ page }, testInfo) => {
-    test.skip(testInfo.project.name !== 'desktop');
-
-    const heroViewport = page.locator('[data-call-agent-hero] [data-hero-clip][data-active="true"] [data-call-agent-video-viewport]');
-    await expectVideoToMeetViewportEdges(heroViewport);
-
-    const system = page.locator('[data-system-mode]');
-    await expect(system).toHaveAttribute('data-system-mode', 'cinematic');
-    const media = system.locator('[data-call-agent-media-stage]');
-    await media.scrollIntoViewIfNeeded();
-    await expect(media).toBeVisible();
-
+  test('selects approved operational clips with contained video geometry', async ({ page }) => {
+    const tablist = page.getByRole('tablist', { name: '产品阶段', includeHidden: true });
     const cases = [
-      { id: 'connect', title: '内呼连接', source: '/videos/call-agent/agent-connect.mp4' },
-      { id: 'operate', title: '外呼运营', source: '/videos/call-agent/agent-operate.mp4' },
+      { title: '内呼连接', source: '/videos/call-agent/agent-connect.mp4' },
+      { title: '外呼运营', source: '/videos/call-agent/agent-operate.mp4' },
     ] as const;
 
+    await tablist.scrollIntoViewIfNeeded();
     for (const item of cases) {
-      const stage = system.locator(`ol [data-stage-id="${item.id}"]`);
-      await stage.locator('button').evaluate((button: HTMLButtonElement) => button.click());
-      await expect(stage).toHaveAttribute('data-active', 'true');
-      await expect(stage).toContainText(item.title);
-
-      const activeMedia = media.locator('[data-active="true"]');
-      await expect(activeMedia.locator('video')).toHaveAttribute('src', item.source);
-      await expectVideoToMeetViewportEdges(activeMedia.locator('[data-call-agent-video-viewport]'));
+      await tablist.getByRole('tab', { name: item.title, exact: true }).click();
+      const panel = page.getByRole('tabpanel', { name: item.title, exact: true });
+      await expect(panel).toHaveAttribute('data-active', 'true');
+      const video = panel.locator('[data-call-agent-video-viewport] video');
+      await expect(video).toHaveAttribute('src', item.source);
+      await expect(video).toHaveCSS('object-fit', 'contain');
+      const boxes = await panel.locator('[data-call-agent-video-viewport]').evaluate((viewport) => {
+        const media = viewport.querySelector('video');
+        if (!media) throw new Error('Expected a video in the active stage');
+        const viewportBox = viewport.getBoundingClientRect();
+        const mediaBox = media.getBoundingClientRect();
+        return { viewport: { width: viewportBox.width, height: viewportBox.height }, media: { width: mediaBox.width, height: mediaBox.height } };
+      });
+      expect(Math.abs(boxes.media.width - boxes.viewport.width)).toBeLessThanOrEqual(1);
+      expect(Math.abs(boxes.media.height - boxes.viewport.height)).toBeLessThanOrEqual(1);
     }
   });
 
-  test('Hero handoff and detail media geometry match the approved video treatment', async ({ page }, testInfo) => {
+  test('advances hero evidence and preserves detail media treatment', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop');
 
     const hero = page.locator('[data-call-agent-hero-sequence]');
     const clips = hero.locator('[data-hero-clip]');
     await expect(clips).toHaveCount(3);
-    await expect(clips.nth(0)).toHaveAttribute('data-hero-clip', 'create');
-    await expect(clips.nth(1)).toHaveAttribute('data-hero-clip', 'preview');
-    await expect(clips.nth(2)).toHaveAttribute('data-hero-clip', 'operate');
+    expect(await clips.evaluateAll((items) => items.map((item) => item.getAttribute('data-hero-clip')))).toEqual([
+      'create',
+      'preview',
+      'operate',
+    ]);
     await expect(clips.nth(0)).toHaveAttribute('data-active', 'true');
     await clips.nth(0).locator('video').dispatchEvent('ended');
     await expect(clips.nth(1)).toHaveAttribute('data-active', 'true');
@@ -107,53 +129,32 @@ test.describe('Call Agent responsive system story', () => {
     const browserRadius = await validateRelease.locator('[data-call-agent-browser]').first().evaluate(
       (browser) => getComputedStyle(browser.firstElementChild as Element).borderRadius,
     );
-    expect(browserRadius).toBe('20px');
-    await expect(validateRelease).toHaveCSS('border-radius', '20px');
+    expect(browserRadius).toBe('12px');
+    await expect(validateRelease).toHaveCSS('border-radius', '0px');
 
     for (const sectionId of ['validate-release', 'operationalize']) {
       const section = page.locator(`#${sectionId}`);
       await section.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(850);
-      const measurements = await section.evaluate((element) => {
+      await expect.poll(() => section.evaluate((element) => {
         const media = [...element.querySelectorAll(':scope > [data-call-agent-browser]')];
         if (media.length !== 2) throw new Error(`Expected two media figures in ${element.id}`);
         const first = media[0].getBoundingClientRect();
         const second = media[1].getBoundingClientRect();
-        return {
-          gap: second.top - first.bottom,
-          marginTop: getComputedStyle(media[1]).marginTop,
-        };
-      });
-      expect(measurements.marginTop).toBe('32px');
-      expect(measurements.gap).toBeCloseTo(32, 0);
+        return second.top - first.bottom;
+      })).toBeCloseTo(32, 0);
     }
   });
 
-  test('desktop gives the final stage dwell before the sticky media releases', async ({ page }, testInfo) => {
+  test('reduced motion keeps the tab interface and poster evidence', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop');
-    await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.reload({ waitUntil: 'networkidle' });
 
-    const system = page.locator('[data-system-mode]');
-    await expect(system).toHaveAttribute('data-system-mode', 'cinematic');
-    const finalStage = system.locator('ol [data-stage-id="operate"]');
-    const media = system.locator('[data-call-agent-media-stage]');
-
-    const activationScroll = await finalStage.evaluate((stage) => {
-      const stageTop = stage.getBoundingClientRect().top + window.scrollY;
-      return stageTop - window.innerHeight * 0.52 + 4;
-    });
-    await page.evaluate((top) => window.scrollTo(0, top), activationScroll);
-    await expect(finalStage).toHaveAttribute('data-active', 'true');
-    const before = await media.boundingBox();
-
-    await page.evaluate(() => window.scrollBy(0, window.innerHeight * 0.4));
-    await expect(finalStage).toHaveAttribute('data-active', 'true');
-    const after = await media.boundingBox();
-
-    expect(before).not.toBeNull();
-    expect(after).not.toBeNull();
-    expect(Math.abs(after!.y - before!.y)).toBeLessThanOrEqual(16);
-    expect(after!.y).toBeGreaterThanOrEqual(0);
-    expect(after!.y + after!.height).toBeLessThanOrEqual(testInfo.project.use.viewport!.height + 1);
+    const tablist = page.getByRole('tablist', { name: '产品阶段', includeHidden: true });
+    await expect(tablist).toBeVisible();
+    await expect(tablist.getByRole('tab')).toHaveCount(6);
+    const activePanel = page.getByRole('tabpanel', { name: '创建', exact: true });
+    await expect(activePanel.locator('img')).toBeVisible();
+    await expect(activePanel.locator('video')).toHaveCount(0);
   });
 });
