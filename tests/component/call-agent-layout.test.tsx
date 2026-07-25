@@ -48,7 +48,25 @@ describe('Call Agent dedicated layout', () => {
 
     expect(container.querySelector('[data-call-agent-case]')).toBeInTheDocument();
     expect(container.querySelector('article[data-case-study]')).toBeInTheDocument();
-    expect(container.querySelector('[data-call-agent-hero] [data-call-agent-browser]')).toBeInTheDocument();
+    const heroTop = container.querySelector('[data-call-agent-hero-top]');
+    const heroCopy = container.querySelector('[data-call-agent-hero-copy]');
+    const heroMeta = container.querySelector('[data-call-agent-hero-meta]');
+    const heroMedia = container.querySelector('[data-call-agent-hero-media]');
+
+    expect(heroTop).toBeInTheDocument();
+    expect(heroCopy).toContainElement(screen.getByRole('heading', { level: 1 }));
+    expect(heroTop).toContainElement(heroCopy as HTMLElement);
+    expect(heroTop).toContainElement(heroMeta as HTMLElement);
+    expect(heroMeta).toContainElement(screen.getByText(meta.role));
+    expect(heroMeta).toContainElement(screen.getByRole('button', { name: '下载案例' }));
+    expect(heroMedia).toContainElement(
+      container.querySelector('[data-call-agent-hero-sequence]') as HTMLElement,
+    );
+    expect(heroTop).not.toContainElement(heroMedia as HTMLElement);
+    expect(container.querySelector('[data-case-web-control]')).toHaveAttribute(
+      'data-accent',
+      'signal',
+    );
     expect(screen.getByText(meta.role)).toBeVisible();
     expect(screen.getByText(meta.status)).toBeVisible();
     expect(screen.getByRole('button', { name: '下载案例' })).toBeVisible();
@@ -80,29 +98,127 @@ describe('Call Agent dedicated layout', () => {
 });
 
 describe('Call Agent six-stage system', () => {
-  it('keeps the approved sequence and one stable media stage', () => {
+  it('renders six title-only tabs with one selected stage and summary', () => {
     vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
-    const { container } = render(<CallAgentSystemStage locale="en" />);
-    expect([...container.querySelectorAll('ol [data-stage-id]')].map((node) => node.getAttribute('data-stage-id'))).toEqual([
-      'create', 'orchestrate', 'preview', 'publish', 'connect', 'operate',
+    const { container } = render(<CallAgentSystemStage locale="zh" />);
+    const tabs = screen.getAllByRole('tab');
+    const root = container.querySelector('[data-system-mode="tabs"]');
+
+    expect(tabs.map((tab) => tab.textContent)).toEqual([
+      '创建', '编排', '预览', '发布', '内呼连接', '外呼运营',
     ]);
+    expect(root?.querySelector(':scope > [role="tablist"]')).toBeInTheDocument();
+    expect(root?.querySelector(':scope > [data-call-agent-media-stage]')).toBeInTheDocument();
+    expect(root?.querySelector(':scope > [data-stage-summary]')).toBeInTheDocument();
+    expect(root?.querySelector(':scope > [data-static-sequence]')).toBeInTheDocument();
+    expect(root?.querySelector(':scope > [data-static-sequence]')).not.toHaveAttribute('aria-hidden');
+    expect(root?.querySelectorAll(':scope > [data-static-sequence] video')).toHaveLength(0);
+    expect(root?.querySelectorAll(':scope > [data-static-sequence] img')).toHaveLength(6);
+    expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
+    expect(tabs[0]).not.toHaveTextContent('从空白或客服模板开始');
+    const panels = [...container.querySelectorAll('[role="tabpanel"]')];
+    expect(panels).toHaveLength(6);
+    expect(tabs.filter((tab) => tab.tabIndex === 0)).toHaveLength(1);
+    tabs.forEach((tab, index) => {
+      const panel = panels[index];
+      expect(tab).toHaveAttribute('aria-controls', panel.id);
+      expect(panel).toHaveAttribute('aria-labelledby', tab.id);
+      expect(panel).toHaveAttribute('tabindex', index === 0 ? '0' : '-1');
+      if (index === 0) {
+        expect(panel).toHaveAttribute('aria-hidden', 'false');
+        expect(panel).not.toHaveAttribute('inert');
+      } else {
+        expect(panel).toHaveAttribute('aria-hidden', 'true');
+        expect(panel).toHaveAttribute('inert');
+      }
+    });
     expect(container.querySelectorAll('[data-call-agent-media-stage]')).toHaveLength(1);
-    expect(container.querySelectorAll('[data-static-stage]')).toHaveLength(6);
+    expect(container.querySelector('[data-stage-summary]')).toHaveTextContent('从空白或客服模板开始，用有意义的默认值降低冷启动负担。');
   });
 
-  it('uses inbound connection and outbound operations videos in both locales', () => {
+  it('selects the requested stage and updates its summary and active media', () => {
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+    const { container } = render(<CallAgentSystemStage locale="en" />);
+
+    const create = screen.getByRole('tab', { name: 'Create' });
+    const publish = screen.getByRole('tab', { name: 'Publish' });
+    create.focus();
+    fireEvent.click(publish);
+
+    expect(publish).toHaveAttribute('aria-selected', 'true');
+    expect(publish).toHaveFocus();
+    expect(container.querySelector('[data-stage-summary]')).toHaveTextContent('Separate unpublished drafts from released versions and preserve recovery.');
+    const activePanel = container.querySelector('[role="tabpanel"][data-active="true"]');
+    expect(activePanel?.id).toMatch(/call-agent-panel-publish$/);
+    expect(activePanel?.querySelector('video')).toHaveAttribute('src', '/videos/call-agent/agent-publish.mp4');
+  });
+
+  it('moves selection and focus with ArrowRight, End, and Home', () => {
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+    render(<CallAgentSystemStage locale="en" />);
+    const create = screen.getByRole('tab', { name: 'Create' });
+    const orchestrate = screen.getByRole('tab', { name: 'Orchestrate' });
+    const operate = screen.getByRole('tab', { name: 'Outbound operations' });
+
+    create.focus();
+    fireEvent.keyDown(create, { key: 'ArrowRight' });
+    expect(orchestrate).toHaveAttribute('aria-selected', 'true');
+    expect(orchestrate).toHaveFocus();
+
+    fireEvent.keyDown(orchestrate, { key: 'End' });
+    expect(operate).toHaveAttribute('aria-selected', 'true');
+    expect(operate).toHaveFocus();
+
+    fireEvent.keyDown(operate, { key: 'Home' });
+    expect(create).toHaveAttribute('aria-selected', 'true');
+    expect(create).toHaveFocus();
+
+    fireEvent.keyDown(create, { key: 'ArrowLeft' });
+    expect(operate).toHaveAttribute('aria-selected', 'true');
+    expect(operate).toHaveFocus();
+
+    fireEvent.keyDown(operate, { key: 'ArrowRight' });
+    expect(create).toHaveAttribute('aria-selected', 'true');
+    expect(create).toHaveFocus();
+  });
+
+  it('uses unique, locally associated ids for multiple instances', () => {
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+    const first = render(<CallAgentSystemStage locale="en" />);
+    const second = render(<CallAgentSystemStage locale="zh" />);
+    const allTabs = screen.getAllByRole('tab');
+
+    expect(new Set(allTabs.map((tab) => tab.id)).size).toBe(12);
+    for (const { container } of [first, second]) {
+      const tabs = [...container.querySelectorAll<HTMLElement>('[role="tab"]')];
+      for (const tab of tabs) {
+        const panelId = tab.getAttribute('aria-controls');
+        const panel = container.querySelector<HTMLElement>(`[id="${panelId}"]`);
+        expect(panel).toBeInTheDocument();
+        expect(panel).toHaveAttribute('aria-labelledby', tab.id);
+      }
+    }
+  });
+
+  it('loads inbound and outbound video sources only when selected in both locales', () => {
     vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
     const zh = render(<CallAgentSystemStage locale="zh" />);
     expect(screen.getAllByText('内呼连接').length).toBeGreaterThan(0);
     expect(screen.getAllByText('外呼运营').length).toBeGreaterThan(0);
-    expect(zh.container.querySelector('video[src="/videos/call-agent/agent-connect.mp4"]')).toBeInTheDocument();
-    expect(zh.container.querySelector('video[src="/videos/call-agent/agent-operate.mp4"]')).toBeInTheDocument();
+    expect(zh.container.querySelectorAll('[data-call-agent-media-stage] video')).toHaveLength(1);
+    fireEvent.click(screen.getByRole('tab', { name: '内呼连接' }));
+    expect(zh.container.querySelector('[data-call-agent-media-stage] video')).toHaveAttribute('src', '/videos/call-agent/agent-connect.mp4');
+    fireEvent.click(screen.getByRole('tab', { name: '外呼运营' }));
+    expect(zh.container.querySelector('[data-call-agent-media-stage] video')).toHaveAttribute('src', '/videos/call-agent/agent-operate.mp4');
     zh.unmount();
 
     const en = render(<CallAgentSystemStage locale="en" />);
     expect(screen.getAllByText('Inbound connection').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Outbound operations').length).toBeGreaterThan(0);
-    expect(en.container.querySelector('video[src="/videos/call-agent/agent-connect.mp4"]')).toBeInTheDocument();
-    expect(en.container.querySelector('video[src="/videos/call-agent/agent-operate.mp4"]')).toBeInTheDocument();
+    expect(en.container.querySelectorAll('[data-call-agent-media-stage] video')).toHaveLength(1);
+    fireEvent.click(screen.getByRole('tab', { name: 'Inbound connection' }));
+    expect(en.container.querySelector('[data-call-agent-media-stage] video')).toHaveAttribute('src', '/videos/call-agent/agent-connect.mp4');
+    fireEvent.click(screen.getByRole('tab', { name: 'Outbound operations' }));
+    expect(en.container.querySelector('[data-call-agent-media-stage] video')).toHaveAttribute('src', '/videos/call-agent/agent-operate.mp4');
   });
 });

@@ -17,22 +17,26 @@ export function CallAgentLayout({ meta, locale, children, actions }: ContentLayo
     <CallAgentMotion>
       <main className={styles.root} data-call-agent-case>
         <div className={styles.frame}>
-          <aside className={styles.rail}><ChapterNav chapters={meta.chapters ?? []} locale={locale} compactAt="wide" surface="light" /></aside>
+          <aside className={styles.rail}><ChapterNav chapters={meta.chapters ?? []} locale={locale} compactAt="wide" surface="light" accent="signal" /></aside>
           <article className={styles.case} data-case-study>
             <header className={styles.hero} data-call-agent-hero>
-              <div className={styles.heroCopy} data-hero-copy>
-                <p className={styles.eyebrow}>{text.eyebrow}</p>
-                <p className={styles.audience}>{text.audience}</p>
-                <h1>{meta.title}</h1>
-                <p className={styles.proposition}>{meta.proposition}</p>
-                <dl className={styles.facts} aria-label={text.facts}>
-                  <div><dt>{text.role}</dt><dd>{meta.role}</dd></div>
-                  <div><dt>{text.duration}</dt><dd>{meta.duration}</dd></div>
-                  <div><dt>{text.status}</dt><dd>{meta.status}</dd></div>
-                </dl>
-                {actions}
+              <div className={styles.heroTop} data-call-agent-hero-top>
+                <div className={styles.heroCopy} data-hero-copy data-call-agent-hero-copy>
+                  <p className={styles.eyebrow}>{text.eyebrow}</p>
+                  <p className={styles.audience}>{text.audience}</p>
+                  <h1>{meta.title}</h1>
+                  <p className={styles.proposition}>{meta.proposition}</p>
+                </div>
+                <div className={styles.heroMeta} data-call-agent-hero-meta>
+                  <dl className={styles.facts} aria-label={text.facts}>
+                    <div><dt>{text.role}</dt><dd>{meta.role}</dd></div>
+                    <div><dt>{text.duration}</dt><dd>{meta.duration}</dd></div>
+                    <div><dt>{text.status}</dt><dd>{meta.status}</dd></div>
+                  </dl>
+                  {actions}
+                </div>
               </div>
-              <div className={styles.heroMedia}>
+              <div className={styles.heroMedia} data-call-agent-hero-media>
                 <CallAgentHeroSequence locale={locale} />
               </div>
             </header>

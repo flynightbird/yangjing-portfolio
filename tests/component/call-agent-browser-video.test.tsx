@@ -1,4 +1,5 @@
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { renderToString } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { CallAgentBrowserVideo } from '@/components/call-agent/call-agent-browser-video';
@@ -36,6 +37,14 @@ const props = {
 };
 
 describe('CallAgentBrowserVideo', () => {
+  it('server-renders a stable poster without video markup', () => {
+    const markup = renderToString(<CallAgentBrowserVideo {...props} />);
+
+    expect(markup).toContain(props.poster);
+    expect(markup).not.toContain('<video');
+    expect(markup).not.toContain(props.src);
+  });
+
   it('renders one browser boundary and complete media semantics', () => {
     const { container } = render(<CallAgentBrowserVideo {...props} />);
     const video = container.querySelector('video');
@@ -88,21 +97,30 @@ describe('CallAgentBrowserVideo', () => {
     expect(onEnded).toHaveBeenCalledTimes(1);
   });
 
-  it('rewinds a completed clip before a sequence plays it again', async () => {
+  it('starts a remounted sequence clip from the beginning', () => {
     const { container, rerender } = render(
       <CallAgentBrowserVideo {...props} loop={false} active={false} />,
     );
-    const video = container.querySelector('video') as HTMLVideoElement;
-    video.currentTime = 26.3;
-    Object.defineProperty(video, 'ended', { value: true, configurable: true });
+    expect(container.querySelector('video')).not.toBeInTheDocument();
 
     rerender(<CallAgentBrowserVideo {...props} loop={false} active />);
-    await act(async () => observerCallback(
-      [{ target: video, isIntersecting: true } as unknown as IntersectionObserverEntry],
-      {} as IntersectionObserver,
-    ));
+    const video = container.querySelector('video') as HTMLVideoElement;
 
     expect(video.currentTime).toBe(0);
+  });
+
+  it('does not mount or source inactive video media', () => {
+    const { container } = render(<CallAgentBrowserVideo {...props} active={false} />);
+
+    expect(container.querySelector('video')).not.toBeInTheDocument();
+    expect(screen.getByRole('img', { name: props.title })).toHaveAttribute('src', props.poster);
+  });
+
+  it('resolves missing matchMedia support to motion allowed for an active clip', async () => {
+    vi.stubGlobal('matchMedia', undefined);
+    const { container } = render(<CallAgentBrowserVideo {...props} />);
+
+    await waitFor(() => expect(container.querySelector('video')).toHaveAttribute('src', props.src));
   });
 
   it('uses only the poster when reduced motion is requested', () => {

@@ -201,7 +201,7 @@ test.describe('Xuelang visual matrix', () => {
     }
   }
 
-  test('refreshed cases share the wider compact chapter breakpoint', async ({
+  test('wide cases share the 1200px compact chapter breakpoint', async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'This test sets exact breakpoint widths.');
@@ -209,14 +209,14 @@ test.describe('Xuelang visual matrix', () => {
     const toggle = page.getByRole('button', { name: 'Open chapter index' });
     const navigation = page.getByRole('navigation', { name: 'Case study chapters' });
 
-    for (const width of [1024, 1100]) {
+    for (const width of [1024, 1100, 1101, 1199]) {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('/en/work/xuelang/', { waitUntil: 'networkidle' });
       await expect(toggle, `Xuelang should use its compact index at ${width}px`).toBeVisible();
       await expect(navigation).toBeHidden();
     }
 
-    for (const width of [1101, 1199, 1200]) {
+    for (const width of [1200]) {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('/en/work/xuelang/', { waitUntil: 'networkidle' });
       await expect(toggle, `Xuelang should restore its rail at ${width}px`).toBeHidden();
@@ -228,9 +228,14 @@ test.describe('Xuelang visual matrix', () => {
     await expect(toggle, 'Refreshed shared cases should use the compact index at 1024px').toBeVisible();
     await expect(navigation).toBeHidden();
 
-    await page.setViewportSize({ width: 1101, height: 800 });
+    await page.setViewportSize({ width: 1199, height: 800 });
     await page.goto('/en/work/call-agent/', { waitUntil: 'networkidle' });
-    await expect(toggle, 'Refreshed shared cases should restore the rail above 1100px').toBeHidden();
+    await expect(toggle, 'Wide shared cases should keep the compact index through 1199px').toBeVisible();
+    await expect(navigation).toBeHidden();
+
+    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.goto('/en/work/call-agent/', { waitUntil: 'networkidle' });
+    await expect(toggle, 'Wide shared cases should restore the rail at 1200px').toBeHidden();
     await expect(navigation).toBeVisible();
   });
 

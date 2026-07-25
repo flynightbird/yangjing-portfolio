@@ -8,6 +8,8 @@
   [data-call-agent-case] [data-productization-grid] { break-inside: avoid; }
   [data-call-agent-case] [data-static-stage] { break-inside: avoid; }
   [data-call-agent-case] .call-dark-band { background: #fff !important; color: #000 !important; }
-  [data-call-agent-case] [data-system-mode] > div:first-child { display: none !important; }
-  [data-call-agent-case] [data-system-mode] > div:last-child { display: grid !important; grid-template-columns: 1fr 1fr; gap: 32px; }
+  [data-call-agent-case] [role='tablist'],
+  [data-call-agent-case] [data-call-agent-media-stage],
+  [data-call-agent-case] [data-stage-summary] { display: none !important; }
+  [data-call-agent-case] [data-static-sequence] { display: grid !important; grid-template-columns: 1fr 1fr; gap: 32px; }
 }

@@ -6,13 +6,9 @@
 .browser {
   overflow: hidden;
   border: 1px solid #d9dde3;
-  border-radius: 20px;
+  border-radius: 12px;
   background: #fff;
   box-shadow: 0 24px 60px rgba(10, 10, 10, 0.12), 0 2px 8px rgba(10, 10, 10, 0.06);
-}
-
-[data-media-kind='image'] .browser {
-  aspect-ratio: 16 / 10;
 }
 
 .chrome {
@@ -44,35 +40,22 @@
 .viewport {
   position: relative;
   overflow: hidden;
-  border-radius: 0 0 19px 19px;
+  border-radius: 0 0 11px 11px;
+  aspect-ratio: 16 / 10;
   background: #f5f7fa;
 }
 
-[data-media-kind='image'] .viewport {
-  height: calc(100% - 32px);
-}
-
-.viewport img {
+.viewport img,
+.viewport video {
   display: block;
   width: 100%;
-}
-
-[data-media-kind='image'] .viewport img {
   height: 100%;
   object-fit: contain;
-}
-
-[data-media-kind='video'] .viewport img {
-  height: auto;
 }
 
 .viewport video {
   position: absolute;
   inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
 }
 
 .root figcaption {

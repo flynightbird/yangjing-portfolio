@@ -49,6 +49,51 @@ async function offsetBox(locator: Locator): Promise<ElementBox> {
   });
 }
 
+async function transformMetrics(locator: Locator) {
+  return locator.evaluate((element) => {
+    const transform = getComputedStyle(element).transform;
+    const matrix = new DOMMatrixReadOnly(transform === 'none' ? undefined : transform);
+    return {
+      scaleX: matrix.a,
+      skewY: matrix.b,
+      skewX: matrix.c,
+      scaleY: matrix.d,
+      translateX: matrix.e,
+      translateY: matrix.f,
+    };
+  });
+}
+
+function identityTransformDelta(metrics: Awaited<ReturnType<typeof transformMetrics>>) {
+  return Math.max(
+    Math.abs(metrics.scaleX - 1),
+    Math.abs(metrics.skewY),
+    Math.abs(metrics.skewX),
+    Math.abs(metrics.scaleY - 1),
+    Math.abs(metrics.translateX),
+    Math.abs(metrics.translateY),
+  );
+}
+
+async function stageLayout(locator: Locator) {
+  return locator.evaluate((element) => {
+    const media = element as HTMLElement;
+    const browser = media.querySelector<HTMLElement>('[data-stt-browser-window]');
+    const viewport = media.querySelector<HTMLElement>('[data-stt-stage-viewport]');
+    if (!browser || !viewport) throw new Error('Missing STT stage layout element');
+
+    const browserStyle = getComputedStyle(browser);
+    return {
+      browserOffsetParentIsMedia: browser.offsetParent === media,
+      browserPosition: browserStyle.position,
+      browserBottom: browserStyle.bottom,
+      viewportOffsetParentIsBrowser: viewport.offsetParent === browser,
+      browserClientHeight: browser.clientHeight,
+      viewportBottom: viewport.offsetTop + viewport.offsetHeight,
+    };
+  });
+}
+
 async function holdStageEmbed(page: Page) {
   let releaseRequest = () => undefined;
   let markRequestHeld = () => undefined;
@@ -125,12 +170,10 @@ test.describe('STT homepage live-stage presentation', () => {
         await fallback.evaluate((image) => (image as HTMLImageElement).naturalWidth),
       ).toBeGreaterThan(0);
       await page.evaluate(() => document.fonts.ready.then(() => undefined));
-      const mediaBox = await media.boundingBox();
       const browserBoxBefore = await browserWindow.boundingBox();
       const viewportBox = await viewport.boundingBox();
       const browserOffsetsBefore = await offsetBox(browserWindow);
       const viewportOffsetsBefore = await offsetBox(viewport);
-      expect(mediaBox).not.toBeNull();
       await expect(media).toHaveCSS(
         'aspect-ratio',
         testInfo.project.name === 'desktop' ? '4 / 3' : '1.05 / 1',
@@ -140,20 +183,18 @@ test.describe('STT homepage live-stage presentation', () => {
       await expect(viewport).toHaveCSS('aspect-ratio', '633 / 560');
       await expect(fallback).toHaveCSS('object-fit', 'contain');
       await expect(fallback).toHaveCSS('object-position', '50% 0%');
-      expect(
-        Math.abs(
-          (viewportBox?.y ?? 0) +
-            (viewportBox?.height ?? 0) -
-            ((browserBoxBefore?.y ?? 0) + (browserBoxBefore?.height ?? 0)),
-        ),
-      ).toBeLessThanOrEqual(1);
-      expect(
-        Math.abs(
-          (browserBoxBefore?.y ?? 0) +
-            (browserBoxBefore?.height ?? 0) -
-            ((mediaBox?.y ?? 0) + (mediaBox?.height ?? 0)),
-        ),
-      ).toBeLessThanOrEqual(1);
+      const layout = await stageLayout(media);
+      expect(layout.browserOffsetParentIsMedia).toBe(true);
+      expect(layout.browserPosition).toBe('absolute');
+      expect(layout.browserBottom).toBe('0px');
+      expect(layout.viewportOffsetParentIsBrowser).toBe(true);
+      expect(layout.viewportBottom).toBe(layout.browserClientHeight);
+      await expect
+        .poll(async () => identityTransformDelta(await transformMetrics(browserWindow)))
+        .toBeLessThanOrEqual(1e-6);
+      await expect
+        .poll(async () => identityTransformDelta(await transformMetrics(viewport)))
+        .toBeLessThanOrEqual(1e-6);
       expect(
         await fallback.evaluate((image) => {
           const rendered = image as HTMLImageElement;

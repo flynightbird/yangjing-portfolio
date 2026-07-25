@@ -60,10 +60,13 @@ export function CallAgentBrowserVideo({
   const posterSrc = withBasePath(poster);
   const videoRef = useRef<HTMLVideoElement>(null);
   const descriptionId = useId();
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (typeof window.matchMedia !== 'function') return;
+    if (typeof window.matchMedia !== 'function') {
+      queueMicrotask(() => setReducedMotion(false));
+      return;
+    }
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     const update = () => setReducedMotion(media.matches);
     update();
@@ -73,14 +76,14 @@ export function CallAgentBrowserVideo({
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || reducedMotion) return;
+    if (!video || reducedMotion !== false) return;
     video.defaultPlaybackRate = playbackRate;
     video.playbackRate = playbackRate;
   }, [playbackRate, reducedMotion]);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || reducedMotion) return;
+    if (!video || reducedMotion !== false) return;
     if (!active) {
       video.pause();
       return;
@@ -117,7 +120,7 @@ export function CallAgentBrowserVideo({
         <div className={styles.viewport} data-call-agent-video-viewport>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className={styles.poster} src={posterSrc} alt={title} loading={priority ? 'eager' : 'lazy'} />
-          {!reducedMotion ? (
+          {reducedMotion === false && active ? (
             <video
               ref={videoRef}
               src={mediaSrc}

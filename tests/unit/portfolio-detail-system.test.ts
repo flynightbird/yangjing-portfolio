@@ -46,6 +46,17 @@ describe('portfolio detail visual system', () => {
     );
     expect(css).not.toMatch(/box-shadow:\s*inset\s+2px/);
     expect(css).not.toMatch(/color:\s*var\(--color-cobalt\)/);
+    expect(css).toMatch(/@media \(max-width:\s*1199px\)/);
+    expect(css).toMatch(
+      /@media \(min-width:\s*901px\) and \(max-width:\s*1199px\)[\s\S]*?\.root\[data-compact-at='default'\]/,
+    );
+    expect(css).not.toMatch(/@media \(max-width:\s*1100px\)/);
+    expect(css).not.toMatch(
+      /@media \(min-width:\s*901px\) and \(max-width:\s*1100px\)/,
+    );
+    expect(css).toMatch(
+      /@media \(min-width:\s*1101px\) and \(max-width:\s*1199px\)\s*\{[\s\S]*?\.root\[data-compact-at='default'\]\s*\{[^}]*position:\s*sticky;/,
+    );
   });
 
   it('defines the semantic case-study heading token contract', () => {
@@ -102,25 +113,34 @@ describe('portfolio detail visual system', () => {
     );
   });
 
-  it('clips Call Agent media cleanly and spaces paired evidence by 32px', () => {
+  it('clips Call Agent media cleanly and aligns its detail-page tokens', () => {
     const browserCss = read('components/call-agent/call-agent-browser-video.module.css');
     const layoutCss = read('components/call-agent/call-agent-layout.module.css');
 
-    expect(browserCss).toMatch(/\.browser\s*\{[^}]*border-radius:\s*20px/);
+    expect(browserCss).toMatch(/\.browser\s*\{[^}]*border-radius:\s*12px/);
     expect(browserCss).toMatch(/\.viewport\s*\{[^}]*overflow:\s*hidden/);
+    expect(layoutCss).toContain('--call-signal: #c7ff38;');
+    expect(layoutCss).toContain('--call-signal-ink: #486600;');
     expect(layoutCss).toMatch(
-      /:global\(\.call-dark-band\)\s*\{[^}]*border-radius:\s*20px/,
+      /(?:\.hero h1|\.case > section h2)[^{]*\{[^}]*font-family:\s*var\(--font-display\)/s,
     );
     expect(layoutCss).toMatch(
-      /:global\(\[data-call-agent-browser\]\)\s*\+\s*:global\(\[data-call-agent-browser\]\)\s*\{[^}]*margin-top:\s*32px/,
+      /:global\(\.call-reading--lead\)\s*\{[^}]*font-size:\s*1\.1875rem/s,
     );
+    expect(layoutCss).toMatch(
+      /:global\(\.call-reading\)\s*\{[^}]*font-size:\s*1rem/s,
+    );
+    expect(layoutCss).toMatch(
+      /:global\(\[data-call-agent-browser\]\)\s*\+\s*:global\(\[data-call-agent-browser\]\)\s*\{[^}]*margin-top:\s*2rem/,
+    );
+    expect(ruleBlock(layoutCss, '.facts dt')).toContain('color: #61675f;');
+    expect(layoutCss).not.toContain('font-size: clamp(1.3rem, 2vw, 2rem)');
+    expect(layoutCss).not.toContain('border-radius: 20px');
+    expect(layoutCss).not.toContain('margin: 220px 0 0 -4vw');
   });
 
   it('maps Call Agent headings directly to their semantic roles', () => {
     const layoutCss = read('components/call-agent/call-agent-layout.module.css');
-    const stageCss = read(
-      'components/call-agent/call-agent-system-stage.module.css',
-    );
     const heroTitle = ruleBlock(layoutCss, '.hero h1');
     const proposition = ruleBlock(layoutCss, '.proposition');
     const chapterTitle = ruleBlock(layoutCss, '.case > section h2');
@@ -128,13 +148,10 @@ describe('portfolio detail visual system', () => {
       layoutCss,
       '.case > section h2 + :global(.call-reading)',
     );
-    const desktopStageTitle = ruleBlock(stageCss, '.steps button strong');
-    const desktopStageBody = ruleBlock(stageCss, '.steps button p');
-    const staticStageTitle = ruleBlock(stageCss, '.staticSequence h3');
-    const staticStageBody = ruleBlock(
-      stageCss,
-      '.staticSequence article > p',
-    );
+    const chineseTitles = ruleBlock(layoutCss, [
+      '.root .hero h1:lang(zh)',
+      '.root .case > section h2:lang(zh)',
+    ]);
 
     for (const declaration of [
       'max-width: var(--case-project-title-max);',
@@ -142,6 +159,7 @@ describe('portfolio detail visual system', () => {
       'font-size: var(--case-project-title-size);',
       'font-weight: var(--case-project-title-weight);',
       'line-height: var(--case-project-title-leading);',
+      'font-family: var(--font-display);',
     ]) {
       expect(heroTitle).toContain(declaration);
     }
@@ -155,27 +173,158 @@ describe('portfolio detail visual system', () => {
       'font-size: var(--case-chapter-title-size);',
       'font-weight: var(--case-chapter-title-weight);',
       'line-height: var(--case-chapter-title-leading);',
+      'font-family: var(--font-display);',
     ]) {
       expect(chapterTitle).toContain(declaration);
     }
     expect(chapterBody).toContain('margin-block-start: 0;');
-
-    for (const title of [desktopStageTitle, staticStageTitle]) {
-      for (const declaration of [
-        'max-width: var(--case-card-title-max);',
-        'margin-block: var(--case-index-title-gap) var(--case-title-body-gap);',
-        'font-size: var(--case-card-title-size);',
-        'font-weight: var(--case-card-title-weight);',
-        'line-height: var(--case-card-title-leading);',
-      ]) {
-        expect(title).toContain(declaration);
-      }
-    }
-    expect(desktopStageBody).toContain('margin-block: 0;');
-    expect(staticStageBody).toContain('margin-block: 0 24px;');
+    expect(chineseTitles).toContain('font-family: var(--font-chinese);');
 
     expect(layoutCss).not.toMatch(/var\(--case-h[123]-(?:size|weight|leading)\)/);
-    expect(stageCss).not.toMatch(/var\(--case-h[123]-(?:size|weight|leading)\)/);
+  });
+
+  it('uses compact Call Agent tabs with stable, undistorted media layers', () => {
+    const stageCss = read(
+      'components/call-agent/call-agent-system-stage.module.css',
+    );
+    const browserCss = read(
+      'components/call-agent/call-agent-browser-video.module.css',
+    );
+    const root = ruleBlock(stageCss, '.root');
+    const tabs = ruleBlock(stageCss, '.tabs');
+    const tabButton = ruleBlock(stageCss, '.tabs button');
+    const hoveredTab = ruleBlock(stageCss, '.tabs button:hover');
+    const focusedTab = ruleBlock(stageCss, '.tabs button:focus-visible');
+    const activeTab = ruleBlock(stageCss, ".tabs button[data-active='true']");
+    const mediaStage = ruleBlock(stageCss, '.mediaStage');
+    const mediaLayer = ruleBlock(stageCss, '.mediaLayer');
+    const activeMediaLayer = ruleBlock(
+      stageCss,
+      ".mediaLayer[data-active='true']",
+    );
+    const summary = ruleBlock(stageCss, '.summary');
+    const staticSequence = ruleBlock(stageCss, '.staticSequence');
+    const browser = ruleBlock(browserCss, '.browser');
+    const chrome = ruleBlock(browserCss, '.chrome');
+    const viewport = ruleBlock(browserCss, '.viewport');
+    const media = ruleBlock(browserCss, [
+      '.viewport img',
+      '.viewport video',
+    ]);
+
+    for (const declaration of [
+      '--call-signal: #c7ff38;',
+      '--call-signal-ink: #486600;',
+      'min-width: 0;',
+      'margin-top: clamp(2rem, 5vw, 3.5rem);',
+    ]) {
+      expect(root).toContain(declaration);
+    }
+
+    for (const declaration of [
+      'display: flex;',
+      'gap: 0.5rem;',
+      'width: 100%;',
+      'padding-bottom: 0.75rem;',
+      'overflow-x: auto;',
+      'scrollbar-width: thin;',
+      'scroll-snap-type: x proximity;',
+    ]) {
+      expect(tabs).toContain(declaration);
+    }
+
+    for (const declaration of [
+      'flex: none;',
+      'height: 38px;',
+      'padding-inline: 1rem;',
+      'border: 1px solid var(--call-line);',
+      'border-radius: 999px;',
+      'background: #f1f3ef;',
+      'color: var(--call-ink);',
+      'font: 600 0.875rem/1 var(--call-font);',
+      'letter-spacing: 0;',
+      'scroll-snap-align: start;',
+    ]) {
+      expect(tabButton).toContain(declaration);
+    }
+    expect(hoveredTab).toContain('border-color: #9ba196;');
+    expect(hoveredTab).toContain('background: #e8ebe5;');
+    expect(focusedTab).toContain(
+      'outline: 2px solid var(--call-signal-ink);',
+    );
+    expect(focusedTab).toContain('outline-offset: -2px;');
+    expect(activeTab).toContain('border-color: var(--call-signal);');
+    expect(activeTab).toContain('background: var(--call-signal);');
+    expect(activeTab).toContain('color: #0a0a0a;');
+
+    for (const declaration of [
+      'display: grid;',
+      'min-width: 0;',
+      'margin-top: 0.75rem;',
+    ]) {
+      expect(mediaStage).toContain(declaration);
+    }
+    for (const declaration of [
+      'grid-area: 1 / 1;',
+      'min-width: 0;',
+      'opacity: 0;',
+      'visibility: hidden;',
+      'pointer-events: none;',
+    ]) {
+      expect(mediaLayer).toContain(declaration);
+    }
+    for (const declaration of [
+      'z-index: 1;',
+      'opacity: 1;',
+      'visibility: visible;',
+      'pointer-events: auto;',
+    ]) {
+      expect(activeMediaLayer).toContain(declaration);
+    }
+
+    for (const declaration of [
+      'max-width: 54rem;',
+      'min-height: 3.5rem;',
+      'margin-top: 1rem;',
+      'color: #61675f;',
+      'font: 400 1rem/1.65 var(--call-font);',
+    ]) {
+      expect(summary).toContain(declaration);
+    }
+    expect(staticSequence).toContain('display: none;');
+
+    expect(stageCss).toMatch(
+      /@media \(max-width: 767px\)[\s\S]*?\.root\s*\{[^}]*margin-top:\s*2rem;[^}]*\}[\s\S]*?\.tabs\s*\{[^}]*width:\s*calc\(100% \+ 2rem\);[^}]*margin-inline:\s*-1rem;[^}]*padding-inline:\s*1rem;[^}]*\}[\s\S]*?\.summary\s*\{[^}]*min-height:\s*4\.75rem;/,
+    );
+    expect(stageCss).toMatch(
+      /@media \(prefers-reduced-motion: reduce\)[\s\S]*?\.tabs button,\s*\.mediaLayer\s*\{[^}]*transition:\s*none;/,
+    );
+
+    for (const obsoletePattern of [
+      'position: sticky',
+      'position: absolute',
+      'transform: scale',
+      'min-height: 33vh',
+      'min-height: 40vh',
+      'min-height: 52vw',
+      '.desktopStage',
+      '.steps',
+    ]) {
+      expect(stageCss).not.toContain(obsoletePattern);
+    }
+
+    expect(browser).toContain('border-radius: 12px;');
+    expect(chrome).toContain('height: 32px;');
+    expect(viewport).toContain('border-radius: 0 0 11px 11px;');
+    expect(viewport).toContain('aspect-ratio: 16 / 10;');
+    for (const declaration of [
+      'width: 100%;',
+      'height: 100%;',
+      'object-fit: contain;',
+    ]) {
+      expect(media).toContain(declaration);
+    }
+    expect(browserCss).not.toContain('object-fit: fill');
   });
 
   it('maps shared case-study headings to their semantic roles', () => {

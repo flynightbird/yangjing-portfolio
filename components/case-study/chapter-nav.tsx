@@ -15,6 +15,7 @@ interface ChapterNavProps {
   readonly indexStart?: number;
   readonly variant?: 'default' | 'xuelang';
   readonly surface?: 'light' | 'dark';
+  readonly accent?: 'default' | 'signal';
 }
 
 const subscribeToHydration = () => () => {};
@@ -26,6 +27,7 @@ export function ChapterNav({
   indexStart = 1,
   variant = 'default',
   surface = 'dark',
+  accent = 'default',
 }: ChapterNavProps) {
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState(chapters[0]?.id);
@@ -88,6 +90,7 @@ export function ChapterNav({
       data-chapter-variant={variant}
       data-compact-at={compactAt}
       data-surface={sectionSurface}
+      data-accent={accent}
     >
       <button
         className={styles.toggle}

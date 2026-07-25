@@ -117,6 +117,26 @@ describe('ChapterNav', () => {
     ).toHaveAttribute('data-surface', 'light');
   });
 
+  it('keeps the default accent unless the signal accent is explicit', () => {
+    const defaultNav = render(<ChapterNav chapters={chapters} locale="en" />);
+    expect(
+      screen.getByRole('navigation', { name: 'Case study chapters' }).parentElement,
+    ).toHaveAttribute('data-accent', 'default');
+    defaultNav.unmount();
+
+    render(
+      <ChapterNav
+        chapters={chapters}
+        locale="en"
+        surface="light"
+        accent="signal"
+      />,
+    );
+    expect(
+      screen.getByRole('navigation', { name: 'Case study chapters' }).parentElement,
+    ).toHaveAttribute('data-accent', 'signal');
+  });
+
   it('updates the chapter rail from the shared navigation tone event', () => {
     render(<ChapterNav chapters={chapters} locale="en" surface="dark" />);
     const root = screen.getByRole('navigation', { name: 'Case study chapters' }).parentElement;
