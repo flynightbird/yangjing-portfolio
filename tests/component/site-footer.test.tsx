@@ -51,6 +51,17 @@ describe('SiteFooter', () => {
       'width',
       '16',
     );
+    const homeContacts = container.querySelector('[data-home-footer-contacts]');
+    expect(homeContacts).toBeInTheDocument();
+    expect(
+      within(homeContacts as HTMLElement).getByText('flydesigner_yangj'),
+    ).toBeInTheDocument();
+    expect(
+      within(homeContacts as HTMLElement).getByRole('link', {
+        name: 'amanda.yangj@gmail.com',
+      }),
+    ).toHaveAttribute('href', 'mailto:amanda.yangj@gmail.com');
+    expect(container.querySelector('[data-footer-reveal-motion]')).not.toBeInTheDocument();
     expect(
       Array.from(actions?.children ?? []).slice(0, 3).map((element) =>
         element.getAttribute('data-footer-email-control'),
@@ -110,5 +121,70 @@ describe('SiteFooter', () => {
       'href',
       'mailto:amanda.yangj@gmail.com',
     );
+  });
+
+  it('copies homepage contacts independently and resets both icons', async () => {
+    vi.useFakeTimers();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    installClipboard(writeText);
+    const { container } = render(<SiteFooter locale="en" />);
+    const email = container.querySelector<HTMLButtonElement>(
+      '[data-home-footer-contacts] [data-contact-copy="email"]',
+    );
+    const wechat = container.querySelector<HTMLButtonElement>(
+      '[data-home-footer-contacts] [data-contact-copy="wechat"]',
+    );
+    if (!email || !wechat) throw new Error('Missing homepage copy controls');
+
+    fireEvent.click(email);
+    await act(async () => Promise.resolve());
+    expect(writeText).toHaveBeenLastCalledWith('amanda.yangj@gmail.com');
+    expect(email).toHaveAttribute('data-copy-state', 'copied');
+    expect(email.querySelector('[data-copy-icon="check"]')).toBeInTheDocument();
+    expect(wechat).toHaveAttribute('data-copy-state', 'idle');
+
+    fireEvent.click(wechat);
+    await act(async () => Promise.resolve());
+    expect(writeText).toHaveBeenLastCalledWith('flydesigner_yangj');
+    expect(wechat.querySelector('[data-copy-icon="check"]')).toBeInTheDocument();
+
+    act(() => vi.advanceTimersByTime(1800));
+    expect(email.querySelector('[data-copy-icon="copy"]')).toBeInTheDocument();
+    expect(wechat.querySelector('[data-copy-icon="copy"]')).toBeInTheDocument();
+  });
+
+  it('restarts a contact reset timer after a repeated click', async () => {
+    vi.useFakeTimers();
+    installClipboard(vi.fn().mockResolvedValue(undefined));
+    const { container } = render(<SiteFooter locale="en" />);
+    const button = container.querySelector<HTMLButtonElement>(
+      '[data-contact-copy="wechat"]',
+    );
+    if (!button) throw new Error('Missing WeChat copy control');
+
+    fireEvent.click(button);
+    await act(async () => Promise.resolve());
+    act(() => vi.advanceTimersByTime(1200));
+    fireEvent.click(button);
+    await act(async () => Promise.resolve());
+    act(() => vi.advanceTimersByTime(700));
+    expect(button).toHaveAttribute('data-copy-state', 'copied');
+    act(() => vi.advanceTimersByTime(1100));
+    expect(button).toHaveAttribute('data-copy-state', 'idle');
+  });
+
+  it('keeps Copy visible and announces a localized WeChat failure', async () => {
+    installClipboard(vi.fn().mockRejectedValue(new Error('denied')));
+    const { container } = render(<SiteFooter locale="zh" />);
+    const button = container.querySelector<HTMLButtonElement>(
+      '[data-contact-copy="wechat"]',
+    );
+    if (!button) throw new Error('Missing WeChat copy control');
+
+    fireEvent.click(button);
+    await act(async () => Promise.resolve());
+    expect(button).toHaveAttribute('data-copy-state', 'failed');
+    expect(button.querySelector('[data-copy-icon="copy"]')).toBeInTheDocument();
+    expect(button).toHaveTextContent('微信复制失败，请手动复制');
   });
 });
