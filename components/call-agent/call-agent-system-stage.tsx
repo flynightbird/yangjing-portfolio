@@ -51,7 +51,7 @@ export function CallAgentSystemStage({ locale }: { readonly locale: Locale }) {
     setActiveIndex(index);
     const destination = tabRefs.current[index];
     destination?.focus();
-    destination?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+    destination?.scrollIntoView?.({ block: 'nearest', inline: 'center' });
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {

@@ -33,14 +33,70 @@ test.describe('Call Agent responsive system story', () => {
     expect(Math.abs(nextMediaBox!.height - initialMediaBox!.height)).toBeLessThanOrEqual(1);
   });
 
-  test('keeps the complete hero top above hero media', async ({ page }) => {
-    const heroTop = page.locator('[data-call-agent-hero-top]');
-    const heroMedia = page.locator('[data-call-agent-hero-media]');
-    const topBox = await heroTop.boundingBox();
-    const mediaBox = await heroMedia.boundingBox();
-    expect(topBox).not.toBeNull();
-    expect(mediaBox).not.toBeNull();
-    expect(topBox!.y + topBox!.height).toBeLessThanOrEqual(mediaBox!.y);
+  test('keeps bilingual hero copy and titles strictly above hero media', async ({ page }) => {
+    for (const locale of ['zh', 'en'] as const) {
+      await page.goto(`/${locale}/work/call-agent/`, { waitUntil: 'networkidle' });
+      await page.evaluate(() => document.fonts.ready);
+
+      const heroTop = page.locator('[data-call-agent-hero-top]');
+      const heroTitle = heroTop.locator('h1');
+      const heroMedia = page.locator('[data-call-agent-hero-media]');
+      await expect(heroMedia).toBeVisible();
+      await expect.poll(async () => {
+        const [topBox, titleBox, mediaBox] = await Promise.all([
+          heroTop.boundingBox(),
+          heroTitle.boundingBox(),
+          heroMedia.boundingBox(),
+        ]);
+        if (!topBox || !titleBox || !mediaBox) throw new Error(`Expected ${locale} hero geometry`);
+        return Math.max(
+          topBox.y + topBox.height - mediaBox.y,
+          titleBox.y + titleBox.height - mediaBox.y,
+        );
+      }).toBeLessThanOrEqual(0);
+
+      const [topBox, titleBox, mediaBox] = await Promise.all([
+        heroTop.boundingBox(),
+        heroTitle.boundingBox(),
+        heroMedia.boundingBox(),
+      ]);
+      expect(topBox).not.toBeNull();
+      expect(titleBox).not.toBeNull();
+      expect(mediaBox).not.toBeNull();
+      expect(topBox!.y + topBox!.height).toBeLessThanOrEqual(mediaBox!.y);
+      expect(titleBox!.y + titleBox!.height).toBeLessThanOrEqual(mediaBox!.y);
+    }
+  });
+
+  test('mobile keyboard navigation keeps the active tab within its scrollport', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'mobile');
+    const tablist = page.getByRole('tablist', { name: '产品阶段', includeHidden: true });
+    await tablist.scrollIntoViewIfNeeded();
+    await expect(tablist).toBeVisible();
+
+    const tabs = tablist.getByRole('tab');
+    const firstTab = tabs.first();
+    const lastTab = tabs.last();
+    await firstTab.focus();
+    await firstTab.press('End');
+    await expect(lastTab).toBeFocused();
+    await expect(lastTab).toHaveAttribute('aria-selected', 'true');
+
+    await expect.poll(async () => {
+      const [tablistBox, lastTabBox] = await Promise.all([tablist.boundingBox(), lastTab.boundingBox()]);
+      if (!tablistBox || !lastTabBox) throw new Error('Expected mobile tab geometry');
+      const left = lastTabBox.x - tablistBox.x;
+      const right = tablistBox.x + tablistBox.width - lastTabBox.x - lastTabBox.width;
+      return Math.min(left, right);
+    }).toBeGreaterThanOrEqual(-1);
+
+    const [tablistBox, lastTabBox] = await Promise.all([tablist.boundingBox(), lastTab.boundingBox()]);
+    expect(tablistBox).not.toBeNull();
+    expect(lastTabBox).not.toBeNull();
+    expect(lastTabBox!.x).toBeGreaterThanOrEqual(tablistBox!.x - 1);
+    expect(lastTabBox!.x + lastTabBox!.width).toBeLessThanOrEqual(tablistBox!.x + tablistBox!.width + 1);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(1);
   });
 
   test('uses the approved responsive type scale', async ({ page }) => {
