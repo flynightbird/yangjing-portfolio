@@ -48,7 +48,25 @@ describe('Call Agent dedicated layout', () => {
 
     expect(container.querySelector('[data-call-agent-case]')).toBeInTheDocument();
     expect(container.querySelector('article[data-case-study]')).toBeInTheDocument();
-    expect(container.querySelector('[data-call-agent-hero] [data-call-agent-browser]')).toBeInTheDocument();
+    const heroTop = container.querySelector('[data-call-agent-hero-top]');
+    const heroCopy = container.querySelector('[data-call-agent-hero-copy]');
+    const heroMeta = container.querySelector('[data-call-agent-hero-meta]');
+    const heroMedia = container.querySelector('[data-call-agent-hero-media]');
+
+    expect(heroTop).toBeInTheDocument();
+    expect(heroCopy).toContainElement(screen.getByRole('heading', { level: 1 }));
+    expect(heroTop).toContainElement(heroCopy as HTMLElement);
+    expect(heroTop).toContainElement(heroMeta as HTMLElement);
+    expect(heroMeta).toContainElement(screen.getByText(meta.role));
+    expect(heroMeta).toContainElement(screen.getByRole('button', { name: '下载案例' }));
+    expect(heroMedia).toContainElement(
+      container.querySelector('[data-call-agent-hero-sequence]') as HTMLElement,
+    );
+    expect(heroTop).not.toContainElement(heroMedia as HTMLElement);
+    expect(container.querySelector('[data-case-web-control]')).toHaveAttribute(
+      'data-accent',
+      'signal',
+    );
     expect(screen.getByText(meta.role)).toBeVisible();
     expect(screen.getByText(meta.status)).toBeVisible();
     expect(screen.getByRole('button', { name: '下载案例' })).toBeVisible();

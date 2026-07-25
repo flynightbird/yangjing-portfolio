@@ -102,18 +102,29 @@ describe('portfolio detail visual system', () => {
     );
   });
 
-  it('clips Call Agent media cleanly and spaces paired evidence by 32px', () => {
+  it('clips Call Agent media cleanly and aligns its detail-page tokens', () => {
     const browserCss = read('components/call-agent/call-agent-browser-video.module.css');
     const layoutCss = read('components/call-agent/call-agent-layout.module.css');
 
     expect(browserCss).toMatch(/\.browser\s*\{[^}]*border-radius:\s*12px/);
     expect(browserCss).toMatch(/\.viewport\s*\{[^}]*overflow:\s*hidden/);
+    expect(layoutCss).toContain('--call-signal: #c7ff38;');
+    expect(layoutCss).toContain('--call-signal-ink: #486600;');
     expect(layoutCss).toMatch(
-      /:global\(\.call-dark-band\)\s*\{[^}]*border-radius:\s*20px/,
+      /(?:\.hero h1|\.case > section h2)[^{]*\{[^}]*font-family:\s*var\(--font-display\)/s,
     );
     expect(layoutCss).toMatch(
-      /:global\(\[data-call-agent-browser\]\)\s*\+\s*:global\(\[data-call-agent-browser\]\)\s*\{[^}]*margin-top:\s*32px/,
+      /:global\(\.call-reading--lead\)\s*\{[^}]*font-size:\s*1\.1875rem/s,
     );
+    expect(layoutCss).toMatch(
+      /:global\(\.call-reading\)\s*\{[^}]*font-size:\s*1rem/s,
+    );
+    expect(layoutCss).toMatch(
+      /:global\(\[data-call-agent-browser\]\)\s*\+\s*:global\(\[data-call-agent-browser\]\)\s*\{[^}]*margin-top:\s*2rem/,
+    );
+    expect(layoutCss).not.toContain('font-size: clamp(1.3rem, 2vw, 2rem)');
+    expect(layoutCss).not.toContain('border-radius: 20px');
+    expect(layoutCss).not.toContain('margin: 220px 0 0 -4vw');
   });
 
   it('maps Call Agent headings directly to their semantic roles', () => {

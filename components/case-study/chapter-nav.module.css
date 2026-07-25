@@ -21,6 +21,14 @@
   --chapter-border-strong: var(--theme-light-border-strong);
 }
 
+.root[data-accent='signal'] {
+  --chapter-accent: #c7ff38;
+}
+
+.root[data-accent='signal'][data-surface='light'] {
+  --chapter-accent: #486600;
+}
+
 .toggle {
   display: none;
 }
