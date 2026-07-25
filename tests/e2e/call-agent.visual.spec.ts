@@ -68,35 +68,46 @@ test.describe('Call Agent responsive system story', () => {
     }
   });
 
-  test('mobile keyboard navigation keeps the active tab within its scrollport', async ({ page }, testInfo) => {
-    test.skip(testInfo.project.name !== 'mobile');
-    const tablist = page.getByRole('tablist', { name: '产品阶段', includeHidden: true });
-    await tablist.scrollIntoViewIfNeeded();
-    await expect(tablist).toBeVisible();
+  test('compact keyboard navigation keeps bilingual edge tabs and focus rings visible', async ({ page }, testInfo) => {
+    test.skip(!['mobile', 'tablet'].includes(testInfo.project.name));
 
-    const tabs = tablist.getByRole('tab');
-    const firstTab = tabs.first();
-    const lastTab = tabs.last();
-    await firstTab.focus();
-    await firstTab.press('End');
-    await expect(lastTab).toBeFocused();
-    await expect(lastTab).toHaveAttribute('aria-selected', 'true');
+    for (const locale of ['zh', 'en'] as const) {
+      await page.goto(`/${locale}/work/call-agent/`, { waitUntil: 'networkidle' });
+      const tablist = page.getByRole('tablist', {
+        name: locale === 'zh' ? '产品阶段' : 'Product stages',
+        includeHidden: true,
+      });
+      await tablist.scrollIntoViewIfNeeded();
+      await expect(tablist).toBeVisible();
 
-    await expect.poll(async () => {
-      const [tablistBox, lastTabBox] = await Promise.all([tablist.boundingBox(), lastTab.boundingBox()]);
-      if (!tablistBox || !lastTabBox) throw new Error('Expected mobile tab geometry');
-      const left = lastTabBox.x - tablistBox.x;
-      const right = tablistBox.x + tablistBox.width - lastTabBox.x - lastTabBox.width;
-      return Math.min(left, right);
-    }).toBeGreaterThanOrEqual(-1);
+      const tabs = tablist.getByRole('tab');
+      const firstTab = tabs.first();
+      const lastTab = tabs.last();
+      await firstTab.focus();
 
-    const [tablistBox, lastTabBox] = await Promise.all([tablist.boundingBox(), lastTab.boundingBox()]);
-    expect(tablistBox).not.toBeNull();
-    expect(lastTabBox).not.toBeNull();
-    expect(lastTabBox!.x).toBeGreaterThanOrEqual(tablistBox!.x - 1);
-    expect(lastTabBox!.x + lastTabBox!.width).toBeLessThanOrEqual(tablistBox!.x + tablistBox!.width + 1);
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-    expect(overflow).toBeLessThanOrEqual(1);
+      for (const { key, tab } of [{ key: 'End', tab: lastTab }, { key: 'Home', tab: firstTab }]) {
+        await page.keyboard.press(key);
+        await expect(tab).toBeFocused();
+        await expect(tab).toHaveAttribute('aria-selected', 'true');
+        await expect.poll(async () => tab.evaluate((element) => {
+          const tabRect = element.getBoundingClientRect();
+          const listRect = element.closest('[role="tablist"]')?.getBoundingClientRect();
+          if (!listRect) throw new Error('Expected compact tablist geometry');
+          const style = getComputedStyle(element);
+          const outlineExtent = Math.max(
+            0,
+            Number.parseFloat(style.outlineWidth) + Number.parseFloat(style.outlineOffset),
+          );
+          return Math.min(
+            tabRect.left - outlineExtent - listRect.left,
+            listRect.right - tabRect.right - outlineExtent,
+          );
+        })).toBeGreaterThanOrEqual(-1);
+      }
+
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      expect(overflow).toBeLessThanOrEqual(1);
+    }
   });
 
   test('uses the approved responsive type scale', async ({ page }) => {

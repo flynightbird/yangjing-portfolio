@@ -252,7 +252,7 @@ describe('portfolio detail visual system', () => {
     expect(focusedTab).toContain(
       'outline: 2px solid var(--call-signal-ink);',
     );
-    expect(focusedTab).toContain('outline-offset: 2px;');
+    expect(focusedTab).toContain('outline-offset: -2px;');
     expect(activeTab).toContain('border-color: var(--call-signal);');
     expect(activeTab).toContain('background: var(--call-signal);');
     expect(activeTab).toContain('color: #0a0a0a;');

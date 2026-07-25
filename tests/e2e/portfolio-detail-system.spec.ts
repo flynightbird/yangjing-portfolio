@@ -20,13 +20,13 @@ const fontSize = async (locator: Locator) =>
 const roleCases = [
   {
     route: '/zh/work/call-agent/',
-    roleSelector: '[data-call-agent-case] [data-stage-id] button strong',
-    expectedSize: 22,
+    roleSelector: '[data-call-agent-case] [role="tab"][data-stage-id]',
+    expectedSize: 14,
   },
   {
     route: '/en/work/call-agent/',
-    roleSelector: '[data-call-agent-case] [data-stage-id] button strong',
-    expectedSize: 22,
+    roleSelector: '[data-call-agent-case] [role="tab"][data-stage-id]',
+    expectedSize: 14,
   },
   {
     route: '/zh/work/meeting/',
