@@ -84,10 +84,15 @@ describe('Call Agent six-stage system', () => {
     vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
     const { container } = render(<CallAgentSystemStage locale="zh" />);
     const tabs = screen.getAllByRole('tab');
+    const root = container.querySelector('[data-system-mode="tabs"]');
 
     expect(tabs.map((tab) => tab.textContent)).toEqual([
       '创建', '编排', '预览', '发布', '内呼连接', '外呼运营',
     ]);
+    expect(root?.querySelector(':scope > [role="tablist"]')).toBeInTheDocument();
+    expect(root?.querySelector(':scope > [data-call-agent-media-stage]')).toBeInTheDocument();
+    expect(root?.querySelector(':scope > [data-stage-summary]')).toBeInTheDocument();
+    expect(root?.querySelector(':scope > [data-static-sequence]')).toBeInTheDocument();
     expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
     expect(tabs[0]).not.toHaveTextContent('从空白或客服模板开始');
     expect(container.querySelectorAll('[role="tabpanel"]')).toHaveLength(6);
