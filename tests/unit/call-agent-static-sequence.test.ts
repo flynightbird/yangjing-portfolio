@@ -15,8 +15,18 @@ describe('Call Agent static stage sequence', () => {
 
     expect(stageCss).toMatch(/\.staticSequence\s*\{[^}]*display:\s*none;/s);
     expect(stageCss).not.toMatch(/\.staticSequence\s*\{[^}]*display:\s*grid;/s);
+    for (const selector of [
+      "[role='tablist']",
+      '[data-call-agent-media-stage]',
+      '[data-stage-summary]',
+    ]) {
+      expect(printCss).toMatch(
+        new RegExp(`${selector.replace(/[\[\]]/g, '\\$&')}[^{}]*\\{[^}]*display:\\s*none\\s*!important;`, 's'),
+      );
+    }
     expect(printCss).toMatch(
-      /\[data-system-mode\]\s*>\s*div:last-child\s*\{[^}]*display:\s*grid\s*!important;/s,
+      /\[data-static-sequence\]\s*\{[^}]*display:\s*grid\s*!important;/s,
     );
+    expect(printCss).not.toMatch(/div:(?:first|last)-child/);
   });
 });
