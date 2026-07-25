@@ -1,16 +1,11 @@
-'use client';
-
-import { ArrowUpRight, Check, Copy } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { ArrowUpRight } from 'lucide-react';
 
 import type { Locale } from '@/content/types';
 
+import { FooterCopyButton } from './footer-copy-button';
 import styles from './site-footer.module.css';
 
 const EMAIL = 'amanda.yangj@gmail.com';
-const RESET_DELAY = 1800;
-
-type CopyState = 'idle' | 'copied' | 'failed';
 
 const labels = {
   en: {
@@ -28,28 +23,7 @@ const labels = {
 } as const;
 
 export function FooterEmailActions({ locale }: { readonly locale: Locale }) {
-  const [copyState, setCopyState] = useState<CopyState>('idle');
-  const resetTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const text = labels[locale];
-  const feedback = copyState === 'idle' ? '' : text[copyState];
-  const buttonLabel = feedback || text.copy;
-
-  useEffect(() => () => {
-    if (resetTimer.current) clearTimeout(resetTimer.current);
-  }, []);
-
-  async function copyEmail() {
-    try {
-      if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
-      await navigator.clipboard.writeText(EMAIL);
-      setCopyState('copied');
-    } catch {
-      setCopyState('failed');
-    }
-
-    if (resetTimer.current) clearTimeout(resetTimer.current);
-    resetTimer.current = setTimeout(() => setCopyState('idle'), RESET_DELAY);
-  }
 
   return (
     <div className={styles.emailActions} data-footer-email-actions>
@@ -60,30 +34,14 @@ export function FooterEmailActions({ locale }: { readonly locale: Locale }) {
       >
         {EMAIL}
       </a>
-      <button
-        className={styles.copyButton}
-        type="button"
-        onClick={copyEmail}
-        aria-label={buttonLabel}
-        data-copy-state={copyState}
-        data-footer-email-control="copy"
-      >
-        {copyState === 'copied' ? (
-          <Check
-            aria-hidden="true"
-            size={16}
-            strokeWidth={1.7}
-            data-footer-email-icon="check"
-          />
-        ) : (
-          <Copy
-            aria-hidden="true"
-            size={16}
-            strokeWidth={1.7}
-            data-footer-email-icon="copy"
-          />
-        )}
-      </button>
+      <FooterCopyButton
+        value={EMAIL}
+        channel="email"
+        labels={{ copy: text.copy, copied: text.copied, failed: text.failed }}
+        buttonClassName={styles.copyButton}
+        feedbackClassName={styles.emailFeedback}
+        legacyControl
+      />
       <a
         className={styles.emailArrow}
         href={`mailto:${EMAIL}`}
@@ -98,9 +56,6 @@ export function FooterEmailActions({ locale }: { readonly locale: Locale }) {
           data-footer-email-icon="arrow"
         />
       </a>
-      <span className={styles.emailFeedback} role="status" aria-live="polite">
-        {feedback}
-      </span>
     </div>
   );
 }

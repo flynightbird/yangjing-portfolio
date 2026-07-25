@@ -1,7 +1,7 @@
 import type { Locale } from '@/content/types';
 
 import { FooterEmailActions } from './footer-email-actions';
-import { FooterRevealMotion } from './footer-reveal-motion';
+import { HomeFooterContacts } from './home-footer-contacts';
 import styles from './site-footer.module.css';
 
 interface SiteFooterProps {
@@ -21,19 +21,28 @@ export function SiteFooter({ locale }: SiteFooterProps) {
 
   return (
     <footer className={styles.root} data-site-footer>
-      <div className={styles.revealLayer} data-footer-reveal-layer>
+      <div className={styles.revealLayer} data-footer-surface data-footer-reveal-layer>
+        <div
+          className={`${styles.liquidRibbon} ${styles.ribbonOne}`}
+          aria-hidden="true"
+        />
+        <div
+          className={`${styles.liquidRibbon} ${styles.ribbonTwo}`}
+          aria-hidden="true"
+        />
+        <div className={styles.liquidSheen} aria-hidden="true" />
         <div className={styles.inner}>
           <div className={styles.cta} data-footer-cta>
             <p>{copy.eyebrow}</p>
             <h2>{copy.title}</h2>
             <FooterEmailActions locale={locale} />
+            <HomeFooterContacts locale={locale} />
           </div>
           <div className={styles.meta} data-footer-meta>
             <p>© 2026 Yang Jing</p>
           </div>
         </div>
       </div>
-      <FooterRevealMotion />
     </footer>
   );
 }
