@@ -361,8 +361,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .liquidRibbon,
-  .liquidSheen,
+  :global(body:has([data-homepage])) .liquidRibbon,
+  :global(body:has([data-homepage])) .liquidSheen,
   .contactCapsule::before {
     animation: none;
   }

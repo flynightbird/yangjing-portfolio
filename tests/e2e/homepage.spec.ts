@@ -152,8 +152,11 @@ test.describe('portfolio homepage framework', () => {
         }),
       ).toBeVisible();
       await expect(
-        page.locator('footer a[href="mailto:amanda.yangj@gmail.com"]'),
+        page.locator(
+          '[data-home-footer-contacts] a[href="mailto:amanda.yangj@gmail.com"]',
+        ),
       ).toHaveCount(2);
+      await expect(page.locator('[data-footer-email-actions]')).toBeHidden();
 
       await expect(page.locator('[data-project-kind="build-lab"]')).toHaveCount(1);
       await expect(page.locator('[data-archive-card]')).toHaveCount(4);

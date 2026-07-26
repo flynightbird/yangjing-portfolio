@@ -25,12 +25,18 @@ export function SiteFooter({ locale }: SiteFooterProps) {
         <div
           className={`${styles.liquidRibbon} ${styles.ribbonOne}`}
           aria-hidden="true"
+          data-footer-liquid="ribbon-one"
         />
         <div
           className={`${styles.liquidRibbon} ${styles.ribbonTwo}`}
           aria-hidden="true"
+          data-footer-liquid="ribbon-two"
         />
-        <div className={styles.liquidSheen} aria-hidden="true" />
+        <div
+          className={styles.liquidSheen}
+          aria-hidden="true"
+          data-footer-liquid="sheen"
+        />
         <div className={styles.inner}>
           <div className={styles.cta} data-footer-cta>
             <p>{copy.eyebrow}</p>

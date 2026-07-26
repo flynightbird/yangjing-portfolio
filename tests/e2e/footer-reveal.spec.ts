@@ -1,194 +1,114 @@
 import { expect, test } from '@playwright/test';
 
-test.describe('homepage Footer reveal', () => {
+test.describe('homepage liquid Footer', () => {
   test.beforeEach(({}, testInfo) => {
     testInfo.setTimeout(90_000);
     test.skip(
       !['desktop', 'mobile'].includes(testInfo.project.name),
-      'Footer reveal is verified at desktop and 390px mobile bounds.',
+      'Footer flow is verified at desktop and 390px mobile bounds.',
     );
   });
 
   for (const locale of ['en', 'zh'] as const) {
-    test(`${locale} reveals the Footer as a lower layer`, async ({ page }, testInfo) => {
+    test(`${locale} ends in a normal-flow liquid contact surface`, async ({ page }) => {
+      await page.addInitScript(() => {
+        Object.defineProperty(navigator, 'clipboard', {
+          configurable: true,
+          value: { writeText: async () => undefined },
+        });
+      });
       await page.goto(`/${locale}/`, { waitUntil: 'networkidle' });
+
       const homepage = page.locator('[data-homepage]');
       const footer = page.locator('[data-site-footer]');
-      const layer = footer.locator('[data-footer-reveal-layer]');
+      const contacts = footer.locator('[data-home-footer-contacts]');
 
       await expect(footer).toHaveCount(1);
-      await expect(page.locator('[data-footer-reveal-layer]')).toHaveCount(1);
-      await expect(page.locator('[data-footer-email-actions]')).toHaveCount(1);
-      await expect(homepage.locator('[data-site-footer]')).toHaveCount(0);
-      await expect(
-        footer.getByText(
-          locale === 'zh' ? '有一个值得实现的想法？' : 'Have an idea worth making real?',
-          { exact: true },
-        ),
-      ).toBeVisible();
-      await expect(
-        footer.getByRole('heading', {
-          name: locale === 'zh'
-            ? '让我们一起把它变成真实体验。'
-            : "Let's turn it into an experience.",
-        }),
-      ).toBeVisible();
-      await expect(
-        footer.locator('a[href="mailto:amanda.yangj@gmail.com"]'),
-      ).toHaveCount(2);
-      await expect(
-        footer.getByRole('button', {
-          name: locale === 'zh' ? '复制邮箱' : 'Copy email address',
-        }),
-      ).toBeVisible();
-
-      await expect(homepage).toHaveCSS('border-bottom-left-radius', '32px');
-      await expect(homepage).toHaveCSS('border-bottom-right-radius', '32px');
-      await expect(footer).toHaveCSS('position', 'sticky');
+      await expect(footer).toHaveCSS('position', 'relative');
       await expect(footer).toHaveCSS('bottom', '0px');
-      expect(
-        await footer.evaluate((element) =>
-          getComputedStyle(element).getPropertyValue('--footer-reveal-offset').trim(),
-        ),
-      ).toBe(testInfo.project.name === 'mobile' ? '4%' : '8%');
+      await expect(homepage).toHaveCSS('border-bottom-left-radius', '0px');
+      await expect(contacts).toBeVisible();
+      await expect(footer.locator('[data-footer-email-actions]')).toBeHidden();
+      await expect(contacts.locator('[data-contact-capsule]')).toHaveCount(2);
+      await expect(contacts.getByText('flydesigner_yangj')).toBeVisible();
 
       await page.evaluate(() => {
         document.documentElement.style.scrollBehavior = 'auto';
         window.scrollTo(0, document.documentElement.scrollHeight);
       });
-      await expect
-        .poll(() =>
-          footer.evaluate((element) =>
-            Number(
-              getComputedStyle(element).getPropertyValue('--footer-reveal-progress'),
-            ),
-          ),
-        )
-        .toBeCloseTo(1, 1);
-      await expect
-        .poll(() =>
-          layer.evaluate((element) => {
-            const transform = new DOMMatrixReadOnly(getComputedStyle(element).transform);
-            return Math.hypot(transform.m41, transform.m42);
-          }),
-        )
-        .toBeLessThanOrEqual(0.05);
-      await expect(
-        footer.getByRole('link', { name: 'amanda.yangj@gmail.com', exact: true }),
-      ).toBeVisible();
-      await expect(footer.getByText('© 2026 Yang Jing')).toBeVisible();
+
+      const flow = await page.evaluate(() => {
+        const homepageElement = document.querySelector('[data-homepage]');
+        const footerElement = document.querySelector('[data-site-footer]');
+        if (!homepageElement || !footerElement) return null;
+        return {
+          gap: footerElement.getBoundingClientRect().top
+            - homepageElement.getBoundingClientRect().bottom,
+          overflow: document.documentElement.scrollWidth
+            - document.documentElement.clientWidth,
+        };
+      });
+      expect(flow).not.toBeNull();
+      expect(Math.abs(flow?.gap ?? Number.POSITIVE_INFINITY)).toBeLessThanOrEqual(1);
+      expect(flow?.overflow ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(1);
+
+      const wechatCopy = contacts.locator('[data-contact-copy="wechat"]');
+      await wechatCopy.click();
+      await expect(wechatCopy).toHaveAttribute('data-copy-state', 'copied');
+      await expect(wechatCopy.locator('[data-copy-icon="check"]')).toHaveCount(1);
+      await expect(wechatCopy).toHaveAttribute('data-copy-state', 'idle', {
+        timeout: 2_500,
+      });
+      await expect(wechatCopy.locator('[data-copy-icon="copy"]')).toHaveCount(1);
 
       const visualContract = await footer.evaluate((element) => {
-        const title = element.querySelector('h2');
-        const layer = element.querySelector<HTMLElement>('[data-footer-reveal-layer]');
-        const address = element.querySelector<HTMLElement>(
-          '[data-footer-email-control="address"]',
+        const capsule = element.querySelector<HTMLElement>(
+          '[data-contact-capsule="email"]',
         );
-        const copy = element.querySelector<HTMLElement>(
-          '[data-footer-email-control="copy"]',
+        const ribbons = Array.from(
+          element.querySelectorAll<HTMLElement>('[data-footer-liquid^="ribbon-"]'),
         );
-        const arrow = element.querySelector<HTMLElement>(
-          '[data-footer-email-control="arrow"]',
-        );
-        const copyIcon = element.querySelector<SVGElement>(
-          '[data-footer-email-icon="copy"]',
-        );
-        const arrowIcon = element.querySelector<SVGElement>(
-          '[data-footer-email-icon="arrow"]',
-        );
-        if (!title || !layer || !address || !copy || !arrow || !copyIcon || !arrowIcon) {
-          return null;
-        }
-
-        const titleStyle = getComputedStyle(title);
-        const addressStyle = getComputedStyle(address);
+        if (!capsule || ribbons.length !== 2) return null;
+        const style = getComputedStyle(capsule);
         return {
-          titleSize: Number.parseFloat(titleStyle.fontSize),
-          titleLineHeight: Number.parseFloat(titleStyle.lineHeight),
-          backgroundImage: getComputedStyle(layer).backgroundImage,
-          addressLineHeight: Number.parseFloat(addressStyle.lineHeight),
-          copyHeight: copy.getBoundingClientRect().height,
-          arrowHeight: arrow.getBoundingClientRect().height,
-          copyIconWidth: copyIcon.getBoundingClientRect().width,
-          arrowIconWidth: arrowIcon.getBoundingClientRect().width,
-          copyTranslate: getComputedStyle(copy).translate,
-          arrowTranslate: getComputedStyle(arrow).translate,
-          footerCanvasCount: element.querySelectorAll('[data-liquid-field="footer"]').length,
+          borderTopWidth: style.borderTopWidth,
+          borderRadius: style.borderRadius,
+          backgroundColor: style.backgroundColor,
+          ribbonAnimations: ribbons.map((ribbon) => getComputedStyle(ribbon).animationName),
+          footerCanvasCount: element.querySelectorAll('canvas').length,
         };
       });
 
       expect(visualContract).not.toBeNull();
-      if (!visualContract) throw new Error('Missing Footer visual contract');
-      expect(visualContract.footerCanvasCount).toBe(0);
-      expect(visualContract.backgroundImage.match(/radial-gradient/g)).toHaveLength(4);
-      expect(visualContract.titleLineHeight / visualContract.titleSize).toBeCloseTo(1.08, 2);
-      expect(visualContract.titleSize).toBeLessThanOrEqual(
-        testInfo.project.name === 'mobile' ? 36 : 76,
-      );
-      expect(visualContract.copyHeight).toBeLessThanOrEqual(
-        visualContract.addressLineHeight,
-      );
-      expect(visualContract.arrowHeight).toBeLessThanOrEqual(
-        visualContract.addressLineHeight,
-      );
-      expect(visualContract.copyIconWidth).toBe(16);
-      expect(visualContract.arrowIconWidth).toBe(16);
-      expect(visualContract.copyTranslate).toBe('0px 3px');
-      expect(visualContract.arrowTranslate).toBe('0px 3px');
-
-      if (testInfo.project.name === 'desktop') {
-        const spacing = await footer.evaluate((element) => {
-          const layer = element.querySelector('[data-footer-reveal-layer]');
-          const cta = element.querySelector('[data-footer-cta]');
-          const meta = element.querySelector('[data-footer-meta]');
-          if (!layer || !cta || !meta) return null;
-          const layerBox = layer.getBoundingClientRect();
-          const ctaBox = cta.getBoundingClientRect();
-          const metaBox = meta.getBoundingClientRect();
-          return {
-            before: ctaBox.top - layerBox.top,
-            after: metaBox.top - ctaBox.bottom,
-          };
-        });
-        expect(spacing).not.toBeNull();
-        expect(Math.abs((spacing?.before ?? 0) - (spacing?.after ?? 0))).toBeLessThanOrEqual(4);
-      }
-
-      expect(
-        await page.evaluate(
-          () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-        ),
-      ).toBeLessThanOrEqual(1);
-      expect(
-        await page.evaluate(() => ({
-          body: getComputedStyle(document.body).scrollSnapType,
-          html: getComputedStyle(document.documentElement).scrollSnapType,
-        })),
-      ).toEqual({ body: 'none', html: 'none' });
+      expect(visualContract?.borderTopWidth).toBe('0px');
+      expect(visualContract?.borderRadius).toBe('999px');
+      expect(visualContract?.backgroundColor).toBe('rgba(34, 27, 38, 0.58)');
+      expect(visualContract?.ribbonAnimations).toHaveLength(2);
+      expect(visualContract?.ribbonAnimations).not.toContain('none');
+      expect(visualContract?.footerCanvasCount).toBe(0);
     });
   }
 
-  test('reduced motion keeps a static rounded layer', async ({ page }) => {
+  test('reduced motion freezes every decorative liquid layer', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/en/', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('[data-footer-reveal-layer]')).toHaveCSS(
-      'transform',
-      'none',
-    );
-    await expect(page.locator('[data-homepage]')).toHaveCSS(
-      'border-bottom-left-radius',
-      '32px',
-    );
+
+    const layers = page.locator('[data-footer-liquid]');
+    await expect(layers).toHaveCount(3);
+    for (let index = 0; index < 3; index += 1) {
+      await expect(layers.nth(index)).toHaveCSS('animation-name', 'none');
+    }
   });
 
-  test('non-homepage routes retain normal Footer flow', async ({ page }, testInfo) => {
+  test('non-home routes keep the legacy email row', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'Route isolation is viewport-independent.');
     await page.goto('/en/about/', { waitUntil: 'domcontentloaded' });
+
+    const footer = page.locator('[data-site-footer]');
     await expect(page.locator('[data-homepage]')).toHaveCount(0);
-    await expect(page.locator('[data-site-footer]')).toHaveCSS('position', 'relative');
-    await expect(page.locator('#main-content')).toHaveCSS(
-      'border-bottom-left-radius',
-      '0px',
-    );
+    await expect(footer).toHaveCSS('position', 'relative');
+    await expect(footer.locator('[data-home-footer-contacts]')).toBeHidden();
+    await expect(footer.locator('[data-footer-email-actions]')).toBeVisible();
+    await expect(footer.getByText('flydesigner_yangj')).toBeHidden();
   });
 });
