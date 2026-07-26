@@ -40,26 +40,27 @@ export function MeetingPreview({ copy, href }: MeetingPreviewProps) {
           <p className={styles.projectProposition}>{copy.proposition}</p>
         </div>
 
-        <a
-          href={href}
-          className={styles.meetingStates}
-          aria-label={copy.mediaLabel}
-          data-page-transition-tone="dark"
-          data-scroll-reveal-group="media"
-        >
-          <MeetingHomeMedia />
-          <ol>
+        <div className={styles.meetingMediaColumn} data-scroll-reveal-group="media">
+          <a
+            href={href}
+            className={styles.meetingMediaLink}
+            aria-label={copy.mediaLabel}
+            data-page-transition-tone="dark"
+          >
+            <MeetingHomeMedia />
+          </a>
+          <ol className={styles.meetingStates}>
             {copy.states.map((state, index) => (
-              <li key={state}>
-              <span aria-hidden="true">0{index + 1}</span>
+              <li key={state} data-meeting-state>
+                <span aria-hidden="true">0{index + 1}</span>
                 <span>{state}</span>
               </li>
             ))}
           </ol>
-          <p>
+          <p className={styles.meetingPlatformTrack} data-meeting-platform-track>
             {copy.platforms.map((platform) => <span key={platform}>{platform}</span>)}
           </p>
-        </a>
+        </div>
 
         <div className={styles.meetingAction} data-scroll-reveal-group="text">
           <p>{copy.role} · {copy.status}</p>

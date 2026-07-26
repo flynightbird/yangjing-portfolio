@@ -668,6 +668,19 @@ describe('FeaturedWork', () => {
     expect(meeting?.querySelector('source[src$=".mp4"]')).not.toBeInTheDocument();
   });
 
+  it('exposes one unpinned Meeting scrub sequence with stable media layers', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+    const meeting = container.querySelector<HTMLElement>('[data-project-id="meeting"]');
+    const motionRoot = meeting?.querySelector('[data-meeting-home-media]');
+
+    expect(motionRoot).toHaveAttribute('data-meeting-motion', 'scrub');
+    expect(motionRoot).not.toHaveAttribute('data-meeting-pin');
+    expect(motionRoot?.querySelector('[data-meeting-web-surface]')).toBeInTheDocument();
+    expect(motionRoot?.querySelector('[data-meeting-phone]')).toBeInTheDocument();
+    expect(meeting?.querySelectorAll('[data-meeting-state]')).toHaveLength(3);
+    expect(meeting?.querySelector('[data-meeting-platform-track]')).toBeInTheDocument();
+  });
+
   it.each([
     {
       locale: 'en' as const,
