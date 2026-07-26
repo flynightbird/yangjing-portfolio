@@ -21,14 +21,13 @@ test.describe('homepage liquid Footer', () => {
 
       const homepage = page.locator('[data-homepage]');
       const footer = page.locator('[data-site-footer]');
-      const contacts = footer.locator('[data-home-footer-contacts]');
+      const contacts = footer.locator('[data-footer-contacts]');
 
       await expect(footer).toHaveCount(1);
       await expect(footer).toHaveCSS('position', 'relative');
       await expect(footer).toHaveCSS('bottom', '0px');
       await expect(homepage).toHaveCSS('border-bottom-left-radius', '0px');
       await expect(contacts).toBeVisible();
-      await expect(footer.locator('[data-footer-email-actions]')).toBeHidden();
       await expect(contacts.locator('[data-contact-capsule]')).toHaveCount(2);
       await expect(contacts.getByText('flydesigner_yangj')).toBeVisible();
 
@@ -100,15 +99,22 @@ test.describe('homepage liquid Footer', () => {
     }
   });
 
-  test('non-home routes keep the legacy email row', async ({ page }, testInfo) => {
-    test.skip(testInfo.project.name !== 'desktop', 'Route isolation is viewport-independent.');
-    await page.goto('/en/about/', { waitUntil: 'domcontentloaded' });
+  test('localized content routes share the liquid Footer', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'Route coverage is viewport-independent.');
 
-    const footer = page.locator('[data-site-footer]');
-    await expect(page.locator('[data-homepage]')).toHaveCount(0);
-    await expect(footer).toHaveCSS('position', 'relative');
-    await expect(footer.locator('[data-home-footer-contacts]')).toBeHidden();
-    await expect(footer.locator('[data-footer-email-actions]')).toBeVisible();
-    await expect(footer.getByText('flydesigner_yangj')).toBeHidden();
+    for (const path of [
+      '/en/about/',
+      '/zh/work/call-agent/',
+      '/en/build/stt-demo/',
+    ]) {
+      await page.goto(path, { waitUntil: 'domcontentloaded' });
+      const footer = page.locator('[data-site-footer]');
+      const contacts = footer.locator('[data-footer-contacts]');
+      await expect(footer).toHaveCount(1);
+      await expect(contacts).toBeVisible();
+      await expect(contacts.locator('[data-contact-capsule]')).toHaveCount(2);
+      await expect(contacts.getByText('flydesigner_yangj')).toBeVisible();
+      await expect(footer.locator('[data-footer-liquid]')).toHaveCount(3);
+    }
   });
 });

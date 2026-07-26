@@ -41,11 +41,11 @@ const labels = {
   },
 } as const;
 
-export function HomeFooterContacts({ locale }: { readonly locale: Locale }) {
+export function FooterContacts({ locale }: { readonly locale: Locale }) {
   const text = labels[locale];
 
   return (
-    <div className={styles.homeContacts} data-home-footer-contacts>
+    <div className={styles.footerContacts} data-footer-contacts>
       <div className={styles.contactCapsule} data-contact-capsule="email">
         <a
           className={styles.contactValue}
@@ -60,11 +60,11 @@ export function HomeFooterContacts({ locale }: { readonly locale: Locale }) {
             value={EMAIL}
             channel="email"
             labels={text.emailCopy}
-            buttonClassName={styles.homeCopyButton}
+            buttonClassName={styles.contactCopyButton}
             feedbackClassName={styles.emailFeedback}
           />
           <a
-            className={styles.homeMailAction}
+            className={styles.contactMailAction}
             href={`mailto:${EMAIL}`}
             aria-label={text.send}
           >
@@ -82,7 +82,7 @@ export function HomeFooterContacts({ locale }: { readonly locale: Locale }) {
             value={WECHAT}
             channel="wechat"
             labels={text.wechatCopy}
-            buttonClassName={styles.homeCopyButton}
+            buttonClassName={styles.contactCopyButton}
             feedbackClassName={styles.emailFeedback}
           />
         </div>

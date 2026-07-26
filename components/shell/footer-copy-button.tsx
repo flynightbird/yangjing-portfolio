@@ -13,7 +13,6 @@ interface FooterCopyButtonProps {
   };
   readonly buttonClassName: string;
   readonly feedbackClassName: string;
-  readonly legacyControl?: boolean;
 }
 
 const RESET_DELAY = 1800;
@@ -26,7 +25,6 @@ export function FooterCopyButton({
   labels,
   buttonClassName,
   feedbackClassName,
-  legacyControl = false,
 }: FooterCopyButtonProps) {
   const [state, setState] = useState<CopyState>('idle');
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -61,7 +59,6 @@ export function FooterCopyButton({
       aria-label={feedback || labels.copy}
       data-contact-copy={channel}
       data-copy-state={state}
-      data-footer-email-control={legacyControl ? 'copy' : undefined}
     >
       {state === 'copied' ? (
         <Check
@@ -69,7 +66,6 @@ export function FooterCopyButton({
           size={16}
           strokeWidth={1.7}
           data-copy-icon="check"
-          data-footer-email-icon={legacyControl ? 'check' : undefined}
         />
       ) : (
         <Copy
@@ -77,7 +73,6 @@ export function FooterCopyButton({
           size={16}
           strokeWidth={1.7}
           data-copy-icon="copy"
-          data-footer-email-icon={legacyControl ? 'copy' : undefined}
         />
       )}
       <span className={feedbackClassName} role="status" aria-live="polite">
