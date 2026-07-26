@@ -1576,8 +1576,8 @@ test.describe('portfolio homepage framework', () => {
     })));
 
     await meeting.scrollIntoViewIfNeeded();
-    await meeting.evaluate((element) => {
-      const target = element.offsetTop + element.offsetHeight - window.innerHeight * 0.4;
+    await media.evaluate((element) => {
+      const target = element.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.1;
       window.scrollTo({ top: target, behavior: 'auto' });
     });
     await page.evaluate(() => new Promise<void>((resolve) => {
