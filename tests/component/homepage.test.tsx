@@ -706,6 +706,16 @@ describe('FeaturedWork', () => {
     const browser = media?.querySelector('[data-convo-web-browser]');
 
     expect(media).toBeInTheDocument();
+    const backgrounds = media?.querySelectorAll<HTMLImageElement>(
+      '[data-convo-card-background]',
+    );
+    expect(backgrounds).toHaveLength(1);
+    expect(backgrounds?.[0]).toHaveAttribute(
+      'src',
+      '/images/convo-ai/home-card-background.png',
+    );
+    expect(backgrounds?.[0]).toHaveAttribute('alt', '');
+    expect(backgrounds?.[0]).toHaveAttribute('aria-hidden', 'true');
     expect(browser).not.toHaveAttribute('aria-hidden');
     const webSource = browser?.querySelector('source');
     const webImage = browser?.querySelector('img');

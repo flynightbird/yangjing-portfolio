@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './home.module.css';
@@ -7,6 +9,16 @@ const INERT_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
 export function ConvoAiMedia() {
   return (
     <div className={styles.convoHomeMedia} data-convo-home-media>
+      <Image
+        className={styles.convoCardBackground}
+        data-convo-card-background
+        src={withBasePath('/images/convo-ai/home-card-background.png')}
+        alt=""
+        aria-hidden="true"
+        fill
+        sizes="(max-width: 767px) calc(100vw - 2rem), 40vw"
+        unoptimized
+      />
       <div className={styles.convoWebBrowser} data-convo-web-browser>
         <div className={styles.convoBrowserBar}>
           <span className={styles.convoTrafficLights}>
