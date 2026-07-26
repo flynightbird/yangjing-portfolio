@@ -931,13 +931,7 @@ a.whiteCta:focus-visible {
 .flagshipConvoMedia {
   z-index: 1;
   background-color: #c7c7c1;
-  background-image:
-    linear-gradient(
-      138deg,
-      rgba(154, 145, 173, 0.72) 0%,
-      rgba(169, 177, 165, 0.68) 52%,
-      rgba(205, 199, 190, 0.82) 100%
-    );
+  background-image: none;
   transform-origin: right center;
 }
 
@@ -948,8 +942,22 @@ a.whiteCta:focus-visible {
   border-radius: inherit;
 }
 
+.convoCardBackground {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  user-select: none;
+}
+
 .convoWebBrowser {
   position: absolute;
+  z-index: 1;
   top: clamp(1.25rem, 3vw, 1.75rem);
   right: clamp(1rem, 3vw, 1.75rem);
   bottom: -1rem;
@@ -1071,6 +1079,8 @@ a.whiteCta:focus-visible {
 
 .convoMobileLoop,
 .convoMobilePoster {
+  position: relative;
+  z-index: 1;
   display: none;
 }
 

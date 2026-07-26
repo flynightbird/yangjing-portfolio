@@ -491,6 +491,7 @@ test.describe('portfolio homepage framework', () => {
 
     expect(convoAssetRequests).toEqual(
       expect.arrayContaining([
+        '/images/convo-ai/home-card-background.png',
         '/images/convo-ai/figma/web-ready.png',
         '/images/convo-ai/figma/avatar-video.png',
       ]),
@@ -506,6 +507,7 @@ test.describe('portfolio homepage framework', () => {
     const convoMedia = page.locator('[data-project-id="convo-ai"] [data-media-radius="20"]');
     const callMediaReveal = callProject.locator('[data-flagship-media-reveal]');
     const convoMediaReveal = convoProject.locator('[data-flagship-media-reveal]');
+    const convoBackground = convoMedia.locator('[data-convo-card-background]');
     const convoBrowser = convoMedia.locator('[data-convo-web-browser]');
     const convoViewport = convoBrowser.locator('[data-convo-web-viewport]');
     const convoWebImage = convoViewport.locator('img');
@@ -520,7 +522,10 @@ test.describe('portfolio homepage framework', () => {
     await expect(callMedia).toHaveCSS('background-color', 'rgb(232, 221, 187)');
     await expect(convoMedia).toHaveCSS('background-color', 'rgb(199, 199, 193)');
     await expect(callMedia).toHaveCSS('background-image', 'none');
-    await expect(convoMedia).not.toHaveCSS('background-image', 'none');
+    await expect(convoMedia).toHaveCSS('background-image', 'none');
+    await expect(convoBackground).toBeVisible();
+    await expect(convoBackground).toHaveCSS('object-fit', 'cover');
+    await expect(convoBackground).toHaveCSS('object-position', '50% 50%');
     await expect(convoBrowser).toBeVisible();
     await expect(convoBrowser).toHaveCSS('left', '28px');
     await expect(convoBrowser).toHaveCSS('right', '28px');
@@ -529,10 +534,16 @@ test.describe('portfolio homepage framework', () => {
     await expect(convoPhone).toBeVisible();
 
     const mediaBox = await convoMedia.boundingBox();
+    const backgroundBox = await convoBackground.boundingBox();
     const viewportBox = await convoViewport.boundingBox();
     const webImageBox = await convoWebImage.boundingBox();
     const phoneBox = await convoPhone.boundingBox();
     expect(mediaBox).not.toBeNull();
+    expect(backgroundBox).not.toBeNull();
+    expect(backgroundBox?.x).toBeCloseTo(mediaBox?.x ?? 0, 0);
+    expect(backgroundBox?.y).toBeCloseTo(mediaBox?.y ?? 0, 0);
+    expect(backgroundBox?.width).toBeCloseTo(mediaBox?.width ?? 0, 0);
+    expect(backgroundBox?.height).toBeCloseTo(mediaBox?.height ?? 0, 0);
     expect(viewportBox).not.toBeNull();
     expect(webImageBox).not.toBeNull();
     expect(phoneBox).not.toBeNull();
@@ -629,6 +640,7 @@ test.describe('portfolio homepage framework', () => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
     expect(convoAssetRequests).toContain('/images/convo-ai/home-mobile-loop.gif');
+    expect(convoAssetRequests).toContain('/images/convo-ai/home-card-background.png');
     expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop-poster.webp');
     expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/web-ready.png');
     expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/avatar-video.png');
@@ -637,6 +649,7 @@ test.describe('portfolio homepage framework', () => {
     const convo = page.locator('[data-project-id="convo-ai"]');
     const callMedia = call.locator('[data-media-radius="20"]');
     const convoMedia = convo.locator('[data-media-radius="20"]');
+    const convoBackground = convoMedia.locator('[data-convo-card-background]');
     const callMediaReveal = call.locator('[data-flagship-media-reveal]');
     const convoMediaReveal = convo.locator('[data-flagship-media-reveal]');
     const convoLoop = convoMedia.locator('[data-convo-mobile-loop]');
@@ -644,6 +657,7 @@ test.describe('portfolio homepage framework', () => {
     const convoBox = await convo.boundingBox();
     const callMediaBox = await callMedia.boundingBox();
     const convoMediaBox = await convoMedia.boundingBox();
+    const convoBackgroundBox = await convoBackground.boundingBox();
     const callRevealBox = await callMediaReveal.boundingBox();
     const convoRevealBox = await convoMediaReveal.boundingBox();
 
@@ -654,6 +668,13 @@ test.describe('portfolio homepage framework', () => {
     expect(convoBox?.y ?? 0).toBeGreaterThan((callBox?.y ?? 0) + (callBox?.height ?? 0));
     await expect(callMedia).toHaveCSS('transform', 'none');
     await expect(convoMedia).toHaveCSS('transform', 'none');
+    await expect(convoBackground).toBeVisible();
+    await expect(convoBackground).toHaveCSS('object-fit', 'cover');
+    expect(convoBackgroundBox).not.toBeNull();
+    expect(convoBackgroundBox?.x).toBeCloseTo(convoMediaBox?.x ?? 0, 0);
+    expect(convoBackgroundBox?.y).toBeCloseTo(convoMediaBox?.y ?? 0, 0);
+    expect(convoBackgroundBox?.width).toBeCloseTo(convoMediaBox?.width ?? 0, 0);
+    expect(convoBackgroundBox?.height).toBeCloseTo(convoMediaBox?.height ?? 0, 0);
     await expect(convoMedia.locator('[data-convo-web-browser]')).toBeHidden();
     await expect(convoMedia.locator('[data-convo-phone]')).toBeHidden();
     await expect(convoLoop).toBeVisible();
@@ -694,12 +715,14 @@ test.describe('portfolio homepage framework', () => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
     expect(convoAssetRequests).toContain('/images/convo-ai/home-mobile-loop-poster.webp');
+    expect(convoAssetRequests).toContain('/images/convo-ai/home-card-background.png');
     expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop.gif');
     expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/web-ready.png');
     expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/avatar-video.png');
 
     const convoMedia = page.locator('[data-project-id="convo-ai"] [data-convo-home-media]');
     await convoMedia.scrollIntoViewIfNeeded();
+    const convoBackground = convoMedia.locator('[data-convo-card-background]');
     const loop = convoMedia.locator('[data-convo-mobile-loop]');
     const poster = convoMedia.locator('[data-convo-mobile-poster]');
     await expect(loop.locator('source')).toHaveAttribute(
@@ -713,6 +736,8 @@ test.describe('portfolio homepage framework', () => {
     await expect(loop).toBeHidden();
     await expect(poster).toBeVisible();
     await expect(poster.locator('img')).toHaveCSS('object-fit', 'contain');
+    await expect(convoBackground).toBeVisible();
+    await expect(convoBackground).toHaveCSS('object-fit', 'cover');
   });
 
   test('uses a media-dominant STT stage with direct prototype actions', async ({
