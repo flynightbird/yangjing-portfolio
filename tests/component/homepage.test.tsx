@@ -447,11 +447,12 @@ describe('FeaturedWork', () => {
     expect.soft(project('convo-ai').queryByText('唯一产品设计师')).toBeVisible();
     expect.soft(
       project('meeting').queryByText(
-        '在参会者、内容、角色与设备持续变化的会议场景中，构建覆盖桌面端、Web、App 与 Pad 的实时协作体验。',
+        '一套会议规则，适配四类终端与持续变化的会中状态。',
       ),
     ).toBeVisible();
-    expect.soft(project('meeting').queryByText('唯一产品设计师')).toBeVisible();
-    expect.soft(project('meeting').queryByText('已在四类终端上线')).toBeVisible();
+    expect.soft(
+      project('meeting').queryByText('唯一产品设计师 · 已在四类终端上线'),
+    ).toBeVisible();
     expect.soft(project('aidx').queryByText('网站已上线')).toBeVisible();
     expect.soft(
       project('stt-demo').queryByText('让双语对话的实时转写与翻译更清晰。'),
@@ -537,18 +538,60 @@ describe('FeaturedWork', () => {
     expect(screen.queryByRole('link', { name: /AIDX case/i })).not.toBeInTheDocument();
   });
 
-  it('describes Meeting through three system decisions without drawing fake UI', () => {
-    const { container } = render(<FeaturedWork locale="en" />);
+  it.each([
+    {
+      locale: 'en' as const,
+      proposition:
+        'One meeting system, adapting across four platforms and constantly changing live states.',
+      evidence: 'Sole Product Designer · Shipped across four platforms',
+      states: ['Adaptive stage', 'Collaborative workspace', 'Real-time information'],
+      platforms: ['Desktop', 'Web', 'Tablet', 'Mobile'],
+      mediaLink: 'Explore Agora Meeting across Web and mobile',
+      actionLink: 'View case study Agora Meeting',
+      href: '/en/work/meeting/',
+    },
+    {
+      locale: 'zh' as const,
+      proposition: '一套会议规则，适配四类终端与持续变化的会中状态。',
+      evidence: '唯一产品设计师 · 已在四类终端上线',
+      states: ['自适应舞台', '协作工作区', '实时信息层'],
+      platforms: ['桌面端', 'Web', '平板端', '移动端'],
+      mediaLink: '查看 Agora Meeting Web 与移动端产品界面',
+      actionLink: '查看案例 Agora Meeting',
+      href: '/zh/work/meeting/',
+    },
+  ])('renders the approved Meeting system entry in $locale', ({
+    locale,
+    proposition,
+    evidence,
+    states,
+    platforms,
+    mediaLink,
+    actionLink,
+    href,
+  }) => {
+    const { container } = render(<FeaturedWork locale={locale} />);
     const meeting = container.querySelector<HTMLElement>('[data-project-id="meeting"]');
+    const scope = within(meeting as HTMLElement);
 
     expect(meeting).toBeInTheDocument();
     expect(meeting).toHaveAttribute('data-publication-state', 'complete');
-    expect(within(meeting as HTMLElement).getByText('Adaptive stage')).toBeVisible();
-    expect(within(meeting as HTMLElement).getByText('Collaborative workspace')).toBeVisible();
-    expect(within(meeting as HTMLElement).getByText('Real-time information')).toBeVisible();
-    expect(within(meeting as HTMLElement).queryByText('Before the meeting')).not.toBeInTheDocument();
-    expect(within(meeting as HTMLElement).queryByText('After the meeting')).not.toBeInTheDocument();
-    expect(within(meeting as HTMLElement).queryByRole('img')).not.toBeInTheDocument();
+    expect(scope.getByText(proposition)).toBeVisible();
+    expect(scope.getByText(evidence)).toBeVisible();
+    for (const state of states) expect(scope.getByText(state)).toBeVisible();
+    for (const platform of platforms) expect(scope.getByText(platform)).toBeVisible();
+
+    const links = scope.getAllByRole('link');
+    expect(links).toHaveLength(3);
+    expect(scope.getByRole('link', { name: 'Agora Meeting' })).toHaveAttribute('href', href);
+    expect(scope.getByRole('link', { name: mediaLink })).toHaveAttribute('href', href);
+    expect(scope.getByRole('link', { name: actionLink })).toHaveAttribute('href', href);
+    for (const link of links) expect(link).toHaveAttribute('data-page-transition-tone', 'dark');
+
+    expect(scope.queryByText(/Meeting events change content priority/)).not.toBeInTheDocument();
+    expect(scope.queryByText(/会议事件改变内容优先级/)).not.toBeInTheDocument();
+    expect(scope.queryByText('Before the meeting')).not.toBeInTheDocument();
+    expect(scope.queryByText('After the meeting')).not.toBeInTheDocument();
   });
 
   it.each([

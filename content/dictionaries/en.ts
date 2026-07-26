@@ -46,7 +46,8 @@ export interface Dictionary {
         temporaryNotice: string;
       };
       meeting: ProjectCopy & {
-        stages: readonly ProjectStageCopy[];
+        states: readonly string[];
+        platforms: readonly string[];
       };
       aidx: ProjectCopy & {
         scope: readonly string[];
@@ -131,11 +132,6 @@ export interface Dictionary {
     email: string;
     linkedin: string;
   };
-}
-
-interface ProjectStageCopy {
-  title: string;
-  description: string;
 }
 
 interface ProjectCopy {
@@ -233,28 +229,13 @@ export const enDictionary = {
         kind: 'Enterprise meeting aPaaS',
         title: 'Agora Meeting',
         proposition:
-          'A multi-device real-time collaboration system shaped by changing people, content, roles, and devices.',
-        role: 'Sole Product Designer · 2024-2026',
+          'One meeting system, adapting across four platforms and constantly changing live states.',
+        role: 'Sole Product Designer',
         status: 'Shipped across four platforms',
-        mediaLabel: 'Three meeting-system decisions',
+        mediaLabel: 'Explore Agora Meeting across Web and mobile',
         action: 'View case study',
-        stages: [
-          {
-            title: 'Adaptive stage',
-            description:
-              'Meeting events change content priority and layout state.',
-          },
-          {
-            title: 'Collaborative workspace',
-            description:
-              'Whiteboard keeps creation primary without losing participant awareness.',
-          },
-          {
-            title: 'Real-time information',
-            description:
-              'Captions and transcription separate personal control from host governance.',
-          },
-        ],
+        states: ['Adaptive stage', 'Collaborative workspace', 'Real-time information'],
+        platforms: ['Desktop', 'Web', 'Tablet', 'Mobile'],
       },
       aidx: {
         company: 'Singapore AI company',

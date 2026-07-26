@@ -4,11 +4,6 @@ import { ProjectMeta } from './project-meta';
 
 import styles from './home.module.css';
 
-interface MeetingDecision {
-  readonly title: string;
-  readonly description: string;
-}
-
 interface MeetingPreviewProps {
   readonly copy: {
     readonly kind: string;
@@ -19,7 +14,8 @@ interface MeetingPreviewProps {
     readonly status: string;
     readonly mediaLabel: string;
     readonly action: string;
-    readonly stages: readonly MeetingDecision[];
+    readonly states: readonly string[];
+    readonly platforms: readonly string[];
   };
   readonly href: string;
 }
@@ -36,28 +32,36 @@ export function MeetingPreview({ copy, href }: MeetingPreviewProps) {
         <div className={styles.meetingHeading} data-scroll-reveal-group="text">
           <ProjectMeta companyId="agora" company={copy.company} kind={copy.kind} />
           <h2 className={styles.coreProjectTitle} data-core-project-title>
-            {copy.title}
+            <a href={href} data-page-transition-tone="dark">
+              {copy.title}
+            </a>
           </h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
-          <p className={styles.meetingStatus}>{copy.status}</p>
         </div>
 
-        <div
+        <a
+          href={href}
           className={styles.meetingStates}
           aria-label={copy.mediaLabel}
+          data-page-transition-tone="dark"
           data-scroll-reveal-group="media"
         >
-          {copy.stages.map((stage, index) => (
-            <section key={stage.title}>
+          <div aria-hidden="true" data-meeting-media-placeholder />
+          <ol>
+            {copy.states.map((state, index) => (
+              <li key={state}>
               <span aria-hidden="true">0{index + 1}</span>
-              <h3>{stage.title}</h3>
-              <p>{stage.description}</p>
-            </section>
-          ))}
-        </div>
+                <span>{state}</span>
+              </li>
+            ))}
+          </ol>
+          <p>
+            {copy.platforms.map((platform) => <span key={platform}>{platform}</span>)}
+          </p>
+        </a>
 
         <div className={styles.meetingAction} data-scroll-reveal-group="text">
-          <p>{copy.role}</p>
+          <p>{copy.role} · {copy.status}</p>
           <ActionLink
             href={href}
             data-page-transition-tone="dark"
