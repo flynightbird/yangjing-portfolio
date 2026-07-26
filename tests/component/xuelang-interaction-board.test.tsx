@@ -37,5 +37,7 @@ describe('XuelangInteractionBoard', () => {
       expect(container).toHaveTextContent(value);
     }
     expect(container.querySelector('[data-interaction-board]')).toBeInTheDocument();
+    expect(container).not.toHaveTextContent('产品画面保持完整');
+    expect(container).not.toHaveTextContent('The product canvas stays intact');
   });
 });

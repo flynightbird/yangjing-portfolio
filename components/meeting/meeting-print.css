@@ -18,4 +18,21 @@
   [data-meeting-case] table {
     break-inside: avoid;
   }
+
+  [data-meeting-case] [data-meeting-video] {
+    display: none !important;
+  }
+
+  [data-meeting-case] [data-meeting-video-poster] {
+    position: static !important;
+    opacity: 1 !important;
+  }
+
+  [data-meeting-case] .logoMotionVideo {
+    display: none !important;
+  }
+
+  [data-meeting-case] .logoMotionFallback {
+    display: block !important;
+  }
 }

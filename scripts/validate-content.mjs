@@ -235,9 +235,20 @@ export async function validateSite(options = {}) {
     rootDir,
     'evidence/call-agent/checksums.json',
   );
+  const videoManifestPath = path.join(
+    rootDir,
+    'evidence/call-agent/video-manifest.json',
+  );
   const manifestText = await fsPromises.readFile(manifestPath, 'utf8');
+  const videoManifestText = await fsPromises
+    .readFile(videoManifestPath, 'utf8')
+    .catch((error) => {
+      if (error?.code === 'ENOENT') return '{"version":1,"clips":[]}';
+      throw error;
+    });
   const checksumText = await fsPromises.readFile(checksumPath, 'utf8');
   const manifest = JSON.parse(manifestText);
+  const videoManifest = JSON.parse(videoManifestText);
   const checksumContract = JSON.parse(checksumText);
   const errors = [
     ...contents.flatMap(findSensitiveText),
@@ -289,7 +300,7 @@ export async function validateSite(options = {}) {
       !entry ||
       typeof entry.path !== 'string' ||
       !/^[a-f0-9]{64}$/.test(entry.sha256) ||
-      !['image', 'pdf'].includes(entry.kind)
+      !['image', 'video'].includes(entry.kind)
     ) {
       errors.push(`invalid checksum entry ${index}`);
       continue;
@@ -304,8 +315,13 @@ export async function validateSite(options = {}) {
   const expectedImagePaths = outputs.map(
     (output) => `public/images/call-agent/${output}`,
   );
-  const pdfPath = 'public/files/call-agent-case-study-zh.pdf';
-  const expectedPublicPaths = uniqueValues([...expectedImagePaths, pdfPath]);
+  const expectedVideoPaths = (videoManifest.clips ?? []).map(
+    ({ output }) => `public/videos/call-agent/${output}`,
+  );
+  const expectedPublicPaths = uniqueValues([
+    ...expectedImagePaths,
+    ...expectedVideoPaths,
+  ]);
   for (const publicPath of expectedPublicPaths) {
     if (!approvedByPath.has(publicPath)) {
       errors.push(`missing approved checksum for ${publicPath}`);
@@ -327,6 +343,19 @@ export async function validateSite(options = {}) {
   }
   for (const publicPath of actualImagePaths) {
     if (!expectedImagePaths.includes(publicPath)) {
+      errors.push(`unexpected public file ${publicPath}`);
+    }
+  }
+  const videoDirectory = 'public/videos/call-agent';
+  let actualVideoPaths = [];
+  try {
+    const names = await fsPromises.readdir(path.join(rootDir, videoDirectory));
+    actualVideoPaths = names.map((name) => `${videoDirectory}/${name}`);
+  } catch {
+    errors.push(`missing public directory ${videoDirectory}`);
+  }
+  for (const publicPath of actualVideoPaths) {
+    if (!expectedVideoPaths.includes(publicPath)) {
       errors.push(`unexpected public file ${publicPath}`);
     }
   }
@@ -386,11 +415,10 @@ export async function validateSite(options = {}) {
       } catch {
         errors.push(`image decode failed for ${publicPath}`);
       }
-    } else if (
-      approved.kind === 'pdf' &&
-      !bytes.subarray(0, 5).equals(Buffer.from('%PDF-'))
-    ) {
-      errors.push(`invalid PDF signature for ${publicPath}`);
+    } else if (approved.kind === 'video') {
+      if (!bytes.subarray(0, 32).includes(Buffer.from('ftyp'))) {
+        errors.push(`invalid MP4 signature for ${publicPath}`);
+      }
     }
   }
 

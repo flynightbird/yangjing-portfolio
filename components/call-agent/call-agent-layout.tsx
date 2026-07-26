@@ -1,0 +1,49 @@
+import { ChapterNav } from '@/components/case-study/chapter-nav';
+import type { ContentLayoutProps } from '@/components/case-study/case-layout';
+
+import { CallAgentHeroSequence } from './call-agent-hero-sequence';
+import styles from './call-agent-layout.module.css';
+import { CallAgentMotion } from './call-agent-motion';
+import './call-agent-print.css';
+
+const copy = {
+  zh: { eyebrow: '声网 · CALL AGENT', audience: '为企业呼叫运营人员打造', facts: '项目概况', role: '角色', duration: '周期', status: '状态' },
+  en: { eyebrow: 'AGORA · CALL AGENT', audience: 'Built for enterprise call operators', facts: 'Project facts', role: 'Role', duration: 'Duration', status: 'Status' },
+} as const;
+
+export function CallAgentLayout({ meta, locale, children, actions }: ContentLayoutProps) {
+  const text = copy[locale];
+  return (
+    <CallAgentMotion>
+      <main className={styles.root} data-call-agent-case>
+        <div className={styles.frame}>
+          <aside className={styles.rail}><ChapterNav chapters={meta.chapters ?? []} locale={locale} compactAt="wide" surface="light" accent="signal" /></aside>
+          <article className={styles.case} data-case-study>
+            <header className={styles.hero} data-call-agent-hero>
+              <div className={styles.heroTop} data-call-agent-hero-top>
+                <div className={styles.heroCopy} data-hero-copy data-call-agent-hero-copy>
+                  <p className={styles.eyebrow}>{text.eyebrow}</p>
+                  <p className={styles.audience}>{text.audience}</p>
+                  <h1>{meta.title}</h1>
+                  <p className={styles.proposition}>{meta.proposition}</p>
+                </div>
+                <div className={styles.heroMeta} data-call-agent-hero-meta>
+                  <dl className={styles.facts} aria-label={text.facts}>
+                    <div><dt>{text.role}</dt><dd>{meta.role}</dd></div>
+                    <div><dt>{text.duration}</dt><dd>{meta.duration}</dd></div>
+                    <div><dt>{text.status}</dt><dd>{meta.status}</dd></div>
+                  </dl>
+                  {actions}
+                </div>
+              </div>
+              <div className={styles.heroMedia} data-call-agent-hero-media>
+                <CallAgentHeroSequence locale={locale} />
+              </div>
+            </header>
+            {children}
+          </article>
+        </div>
+      </main>
+    </CallAgentMotion>
+  );
+}

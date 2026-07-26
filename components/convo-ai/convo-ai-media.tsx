@@ -189,6 +189,7 @@ export function ConvoAiInlineHeading({ kind, children }: { readonly kind: keyof 
 export function ConvoAiStage({ locale, eyebrow, title, description, webId, appId, hero = false }: { readonly locale: Locale; readonly eyebrow: string; readonly title: string; readonly description: string; readonly webId: ConvoAiMediaId; readonly appId: ConvoAiMediaId; readonly hero?: boolean }) {
   const [activePlatform, setActivePlatform] = useState<'web' | 'app' | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const descriptionId = useId();
   const SemanticHeading = hero ? 'h1' : 'h3';
   const updateTilt = (event: React.PointerEvent<HTMLDivElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -204,11 +205,11 @@ export function ConvoAiStage({ locale, eyebrow, title, description, webId, appId
       <p>{eyebrow}</p>
       <span className={styles.stageDisplayTitle} data-stage-display-title aria-hidden="true">{title}</span>
       <SemanticHeading className={styles.stageSemanticTitle} data-stage-semantic-title>{title}</SemanticHeading>
-      <div>{description}</div>
+      <div id={descriptionId}>{description}</div>
     </div>
     <div className={styles.terrain} aria-hidden="true"><i /><i /><i /></div>
-    <div className={styles.webPlane} data-convo-web-plane><ConvoAiViewportVideo id={webId} locale={locale} /></div>
-    <div className={styles.appDevice} data-convo-app-device><div><ConvoAiViewportVideo id={appId} locale={locale} /></div></div>
+    <div className={styles.webPlane} data-convo-web-plane><ConvoAiViewportVideo id={webId} locale={locale} describedBy={descriptionId} /></div>
+    <div className={styles.appDevice} data-convo-app-device><div><ConvoAiViewportVideo id={appId} locale={locale} describedBy={descriptionId} /></div></div>
     <div className={styles.stageControls}><button type="button" onClick={() => setActivePlatform('web')}><Monitor aria-hidden="true" size={17} />{locale === 'zh' ? '聚焦 Web 录屏' : 'Focus Web recording'}</button><button type="button" onClick={() => setActivePlatform('app')}><Smartphone aria-hidden="true" size={17} />{locale === 'zh' ? '聚焦 App 录屏' : 'Focus App recording'}</button></div>
   </div>;
 }
@@ -319,7 +320,7 @@ export function ConvoAiAppShowcase({ locale }: { readonly locale: Locale }) {
     <div className={styles.appShowcaseVideo}>
       {includeVideo
         ? <ConvoAiViewportVideo key={activeId} id={activeId} locale={locale} describedBy={`${descriptionId}-${placement}`} videoRef={videoRef} />
-        : <img src={activeMedia.poster} alt="" />}
+        : <img src={activeMedia.poster} alt={activeMedia.copy[locale].title} />}
     </div>
     <figcaption id={`${descriptionId}-${placement}`} aria-live="polite">{activeMedia.copy[locale].title}</figcaption>
   </figure>;

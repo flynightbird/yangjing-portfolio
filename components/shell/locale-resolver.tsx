@@ -2,18 +2,20 @@
 
 import { useEffect } from 'react';
 
+import { withBasePath } from '@/lib/i18n/locales';
+
 const localeStorageKey = 'yj-locale';
 
 export function LocaleResolver() {
   useEffect(() => {
-    let destination = '/en/';
+    let destination = withBasePath('/en/');
 
     try {
       if (window.localStorage.getItem(localeStorageKey) === 'zh') {
-        destination = '/zh/';
+        destination = withBasePath('/zh/');
       }
     } catch {
-      destination = '/en/';
+      destination = withBasePath('/en/');
     }
 
     window.location.replace(destination);

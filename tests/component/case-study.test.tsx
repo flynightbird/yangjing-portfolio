@@ -58,10 +58,12 @@ describe('ChapterNav', () => {
         locale="en"
         indexStart={0}
         variant="xuelang"
+        surface="light"
       />,
     );
 
     expect(container.querySelector('[data-chapter-variant="xuelang"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-surface="light"]')).toBeInTheDocument();
     expect(container.querySelector('[data-chapter-index="00"]')).toHaveTextContent('00');
     expect(container.querySelector('[data-chapter-index="01"]')).toHaveTextContent('01');
     expect(screen.getByRole('link', { name: 'Overview' })).toBeVisible();
@@ -113,6 +115,26 @@ describe('ChapterNav', () => {
     expect(
       screen.getByRole('navigation', { name: 'Case study chapters' }).parentElement,
     ).toHaveAttribute('data-surface', 'light');
+  });
+
+  it('keeps the default accent unless the signal accent is explicit', () => {
+    const defaultNav = render(<ChapterNav chapters={chapters} locale="en" />);
+    expect(
+      screen.getByRole('navigation', { name: 'Case study chapters' }).parentElement,
+    ).toHaveAttribute('data-accent', 'default');
+    defaultNav.unmount();
+
+    render(
+      <ChapterNav
+        chapters={chapters}
+        locale="en"
+        surface="light"
+        accent="signal"
+      />,
+    );
+    expect(
+      screen.getByRole('navigation', { name: 'Case study chapters' }).parentElement,
+    ).toHaveAttribute('data-accent', 'signal');
   });
 
   it('updates the chapter rail from the shared navigation tone event', () => {

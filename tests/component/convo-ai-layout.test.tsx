@@ -33,4 +33,22 @@ describe('ConvoAiLayout', () => {
     expect(container.querySelector('[data-project-previous]')).toBeNull();
     expect(container.querySelector('[data-project-next]')).toBeNull();
   });
+
+  it('connects every hero video to a readable stage description', () => {
+    const { container } = render(
+      <ConvoAiLayout meta={meta} locale="en">
+        <section id="context-thesis">Story</section>
+      </ConvoAiLayout>,
+    );
+
+    const videos = Array.from(container.querySelectorAll('video'));
+    expect(videos).toHaveLength(2);
+    videos.forEach((video) => {
+      const descriptionId = video.getAttribute('aria-describedby');
+      expect(descriptionId).toBeTruthy();
+      expect(container.querySelector(`#${descriptionId}`)).toHaveTextContent(
+        'Make invisible real-time states legible.',
+      );
+    });
+  });
 });

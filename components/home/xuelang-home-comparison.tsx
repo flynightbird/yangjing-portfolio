@@ -1,0 +1,349 @@
+'use client';
+
+import { MoveHorizontal } from 'lucide-react';
+import type { CSSProperties, KeyboardEvent, PointerEvent as ReactPointerEvent } from 'react';
+import { useEffect, useRef } from 'react';
+
+import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
+
+import styles from './xuelang-home-comparison.module.css';
+
+export const MIN_POSITION = 4;
+export const MAX_POSITION = 96;
+export const INITIAL_POSITION = 38;
+
+const KEYBOARD_STEP = 3;
+const TOUCH_INTENT_THRESHOLD = 8;
+const AUTO_KEYFRAMES = [INITIAL_POSITION, 82, 18, 82, INITIAL_POSITION] as const;
+const AUTO_LEG_DURATION = 650;
+
+type AutoState = 'idle' | 'running' | 'complete' | 'cancelled' | 'disabled';
+type TouchIntent = 'pending' | 'horizontal' | 'vertical';
+
+interface TouchGesture {
+  readonly pointerId: number;
+  readonly pointerType: string;
+  readonly startX: number;
+  readonly startY: number;
+  readonly startPosition: number;
+  captured: boolean;
+  intent: TouchIntent;
+}
+
+interface XuelangHomeComparisonProps {
+  readonly locale: Locale;
+}
+
+const copy = {
+  en: {
+    before: 'Before',
+    after: 'After',
+    beforeAlt:
+      'Xuelang before redesign: product interfaces centered on content delivery with disconnected learning actions',
+    afterAlt:
+      'Xuelang after redesign: interfaces connecting viewing, interaction, notes, and accumulated learning into one continuous experience',
+    controlLabel: 'Compare the old and new Xuelang learning experience',
+  },
+  zh: {
+    before: '旧版',
+    after: '新版',
+    beforeAlt: '改版前以内容交付为主、学习动作彼此分离的学浪产品界面集合',
+    afterAlt: '改版后连接观看、互动、笔记与学习沉淀的连续学习体验界面集合',
+    controlLabel: '对比学浪旧版与新版学习体验',
+  },
+} as const;
+
+function clampPosition(value: number) {
+  return Math.min(MAX_POSITION, Math.max(MIN_POSITION, value));
+}
+
+export function XuelangHomeComparison({ locale }: XuelangHomeComparisonProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const controlRef = useRef<HTMLInputElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const frameRef = useRef<number | null>(null);
+  const autoStateRef = useRef<AutoState>('idle');
+  const touchGestureRef = useRef<TouchGesture | null>(null);
+  const labels = copy[locale];
+
+  function setPosition(value: number) {
+    const position = clampPosition(value);
+    rootRef.current?.style.setProperty('--wipe-position', `${position}%`);
+    if (controlRef.current) {
+      controlRef.current.value = String(position);
+      controlRef.current.setAttribute('aria-valuenow', String(Math.round(position)));
+    }
+  }
+
+  function setAutoState(state: AutoState, leg?: number) {
+    autoStateRef.current = state;
+    rootRef.current?.setAttribute('data-auto-state', state);
+    if (leg !== undefined) rootRef.current?.setAttribute('data-auto-leg', String(leg));
+  }
+
+  function cancelAutoMotion() {
+    observerRef.current?.disconnect();
+    if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+    frameRef.current = null;
+    if (autoStateRef.current !== 'complete' && autoStateRef.current !== 'disabled') {
+      setAutoState('cancelled');
+    }
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    cancelAutoMotion();
+    const currentPosition = Number(event.currentTarget.value);
+    let nextPosition: number | undefined;
+
+    if (event.key === 'ArrowLeft') nextPosition = currentPosition - KEYBOARD_STEP;
+    if (event.key === 'ArrowRight') nextPosition = currentPosition + KEYBOARD_STEP;
+    if (event.key === 'Home') nextPosition = MIN_POSITION;
+    if (event.key === 'End') nextPosition = MAX_POSITION;
+    if (nextPosition === undefined) return;
+
+    event.preventDefault();
+    setPosition(nextPosition);
+  }
+
+  function positionFromClientX(clientX: number) {
+    const bounds = rootRef.current?.getBoundingClientRect();
+    if (!bounds?.width) return INITIAL_POSITION;
+    return Math.round(MIN_POSITION + ((clientX - bounds.left) / bounds.width) * (MAX_POSITION - MIN_POSITION));
+  }
+
+  function handlePointerDown(event: ReactPointerEvent<HTMLDivElement>) {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    controlRef.current?.focus({ preventScroll: true });
+    cancelAutoMotion();
+    const isTouch = event.pointerType === 'touch';
+    const startPosition = Number(controlRef.current?.value ?? INITIAL_POSITION);
+    touchGestureRef.current = {
+      pointerId: event.pointerId,
+      pointerType: event.pointerType,
+      startX: event.clientX,
+      startY: event.clientY,
+      startPosition,
+      captured: false,
+      intent: isTouch ? 'pending' : 'horizontal',
+    };
+    if (!isTouch) {
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+      touchGestureRef.current.captured = true;
+      setPosition(positionFromClientX(event.clientX));
+    }
+  }
+
+  function handlePointerMove(event: ReactPointerEvent<HTMLDivElement>) {
+    const gesture = touchGestureRef.current;
+    if (!gesture || gesture.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const deltaX = event.clientX - gesture.startX;
+    const deltaY = event.clientY - gesture.startY;
+    if (gesture.intent === 'pending') {
+      if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < TOUCH_INTENT_THRESHOLD) return;
+      gesture.intent = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+      if (gesture.intent === 'horizontal' && event.currentTarget.setPointerCapture) {
+        event.currentTarget.setPointerCapture(event.pointerId);
+        gesture.captured = true;
+      }
+    }
+    if (gesture.intent !== 'horizontal') return;
+
+    if (gesture.pointerType === 'touch') {
+      const width = rootRef.current?.getBoundingClientRect().width ?? 0;
+      if (width <= 0) return;
+      setPosition(
+        Math.round(gesture.startPosition + (deltaX / width) * (MAX_POSITION - MIN_POSITION)),
+      );
+    } else {
+      setPosition(positionFromClientX(event.clientX));
+    }
+  }
+
+  function handlePointerUp(event: ReactPointerEvent<HTMLDivElement>) {
+    clearPointerGesture(event);
+  }
+
+  function handlePointerCancel(event: ReactPointerEvent<HTMLDivElement>) {
+    const gesture = touchGestureRef.current;
+    if (gesture?.pointerId !== event.pointerId) return;
+    clearPointerGesture(event);
+  }
+
+  function clearPointerGesture(event: ReactPointerEvent<HTMLDivElement>) {
+    const gesture = touchGestureRef.current;
+    if (gesture?.pointerId !== event.pointerId) return;
+    touchGestureRef.current = null;
+    if (gesture.captured && event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const observerRoot: HTMLDivElement = root;
+    const markInteractionReady = () => {
+      observerRoot.dataset.interactionReady = 'true';
+    };
+
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setAutoState('disabled', 0);
+      markInteractionReady();
+      return;
+    }
+
+    if (!('IntersectionObserver' in window)) {
+      markInteractionReady();
+      return;
+    }
+
+    let resizeFrame: number | null = null;
+    let triggerConsumed = false;
+
+    function runLeg(leg: number) {
+      const from = AUTO_KEYFRAMES[leg - 1];
+      const to = AUTO_KEYFRAMES[leg];
+      const startedAt = performance.now();
+      setAutoState('running', leg);
+
+      function animate(now: number) {
+        if (autoStateRef.current !== 'running') return;
+        const progress = Math.min(1, (now - startedAt) / AUTO_LEG_DURATION);
+        const eased = progress * progress * (3 - 2 * progress);
+        setPosition(from + (to - from) * eased);
+
+        if (progress < 1) {
+          frameRef.current = requestAnimationFrame(animate);
+        } else if (leg < AUTO_KEYFRAMES.length - 1) {
+          runLeg(leg + 1);
+        } else {
+          frameRef.current = null;
+          setPosition(INITIAL_POSITION);
+          setAutoState('complete', AUTO_KEYFRAMES.length - 1);
+        }
+      }
+
+      frameRef.current = requestAnimationFrame(animate);
+    }
+
+    function createObserver() {
+      if (triggerConsumed || autoStateRef.current !== 'idle') return;
+      observerRef.current?.disconnect();
+
+      const inset = Math.round(window.innerHeight * 0.3);
+      const rootMargin = `-${inset}px 0px -${inset}px 0px`;
+      observerRoot.dataset.observerRootMargin = rootMargin;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (
+            observerRef.current !== observer ||
+            triggerConsumed ||
+            autoStateRef.current !== 'idle' ||
+            !entries.some((entry) => entry.isIntersecting)
+          ) {
+            return;
+          }
+          triggerConsumed = true;
+          observer.disconnect();
+          observerRef.current = null;
+          runLeg(1);
+        },
+        { rootMargin, threshold: 0.01 },
+      );
+      observerRef.current = observer;
+      observer.observe(observerRoot);
+    }
+
+    function scheduleObserverRebuild() {
+      if (triggerConsumed || autoStateRef.current !== 'idle') return;
+      if (resizeFrame !== null) cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = null;
+        createObserver();
+      });
+    }
+
+    createObserver();
+    window.addEventListener('resize', scheduleObserverRebuild);
+    markInteractionReady();
+
+    return () => {
+      window.removeEventListener('resize', scheduleObserverRebuild);
+      observerRef.current?.disconnect();
+      observerRef.current = null;
+      if (resizeFrame !== null) cancelAnimationFrame(resizeFrame);
+      resizeFrame = null;
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
+    };
+  }, []);
+
+  const style = { '--wipe-position': `${INITIAL_POSITION}%` } as CSSProperties;
+
+  return (
+    <div
+      ref={rootRef}
+      className={styles.root}
+      style={style}
+      data-xuelang-home-comparison
+      data-auto-state="idle"
+      data-auto-leg="0"
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
+      onLostPointerCapture={handlePointerCancel}
+    >
+      {/* Both layers must share exact geometry for the wipe boundary. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        className={styles.afterImage}
+        src={withBasePath('/images/xuelang/learning-after-board.webp')}
+        width={1662}
+        height={1080}
+        alt={labels.afterAlt}
+        loading="lazy"
+        decoding="async"
+        draggable={false}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        className={styles.beforeImage}
+        src={withBasePath('/images/xuelang/learning-before-board.webp')}
+        width={1662}
+        height={1080}
+        alt={labels.beforeAlt}
+        loading="lazy"
+        decoding="async"
+        draggable={false}
+      />
+      <span className={`${styles.label} ${styles.beforeLabel}`}>{labels.before}</span>
+      <span className={`${styles.label} ${styles.afterLabel}`}>{labels.after}</span>
+      <span className={styles.divider} aria-hidden="true" />
+      <span className={styles.handle} aria-hidden="true">
+        <MoveHorizontal size={19} strokeWidth={1.8} />
+      </span>
+      <input
+        ref={controlRef}
+        className={styles.control}
+        type="range"
+        min={MIN_POSITION}
+        max={MAX_POSITION}
+        step={1}
+        defaultValue={INITIAL_POSITION}
+        aria-label={labels.controlLabel}
+        aria-valuenow={INITIAL_POSITION}
+        onFocus={cancelAutoMotion}
+        onChange={(event) => {
+          cancelAutoMotion();
+          setPosition(Number(event.currentTarget.value));
+        }}
+        onKeyDown={handleKeyDown}
+      />
+    </div>
+  );
+}

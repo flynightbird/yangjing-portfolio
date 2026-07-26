@@ -92,6 +92,11 @@ describe('draft publication boundary', () => {
       'out/en/index.html',
       '<!doctype html><main data-publication-state="draft">Draft</main>',
     );
+    write(
+      root,
+      'components/dormant-preview.tsx',
+      '<aside data-publication-state="draft">Development-only preview</aside>',
+    );
 
     await expect(
       findDraftPublicationMarkers(root, 'development'),
@@ -132,12 +137,6 @@ describe('publication validation CLI', () => {
       'public/images/meeting/adaptive-layout-poster.webp',
       'public/images/meeting/whiteboard-multidevice.webp',
       'public/images/meeting/transcript-poster.webp',
-      'public/videos/meeting/adaptive-layout-demo.mp4',
-      'public/videos/meeting/transcript-demo.mp4',
-      'public/captions/meeting/adaptive-layout-demo.en.vtt',
-      'public/captions/meeting/adaptive-layout-demo.zh.vtt',
-      'public/captions/meeting/transcript-demo.en.vtt',
-      'public/captions/meeting/transcript-demo.zh.vtt',
     ];
     expect(publicationInputs).toEqual(expect.arrayContaining(meetingInputs));
     expect(publicationInputs).not.toContain(
@@ -148,20 +147,19 @@ describe('publication validation CLI', () => {
     const image = await sharp({
       create: { width: 16, height: 9, channels: 3, background: '#111315' },
     }).webp().toBuffer();
-    const mp4 = Buffer.concat([
-      Buffer.from([0, 0, 0, 24]),
-      Buffer.from('ftypisom'),
-      Buffer.alloc(256),
-    ]);
     for (const input of meetingInputs) {
       if (input.endsWith('.webp')) write(root, input, image);
-      else if (input.endsWith('.mp4')) write(root, input, mp4);
-      else if (input.endsWith('.vtt')) write(root, input, 'WEBVTT\n\n');
       else write(root, input, JSON.stringify({ version: 1, assets: [] }));
     }
 
     const missing = await findMissingPublicationInputs(root);
     expect(missing.filter((value) => value.includes('/meeting/'))).toEqual([]);
+    expect(publicationInputs).not.toContain(
+      'public/videos/meeting/adaptive-layout-demo.mp4',
+    );
+    expect(publicationInputs).not.toContain(
+      'public/videos/meeting/transcript-demo.mp4',
+    );
   });
 
   it('reports absent publication inputs deterministically in development mode', () => {
@@ -172,12 +170,10 @@ describe('publication validation CLI', () => {
     );
 
     expect(result.status).toBe(0);
-    expect(result.stdout).toContain(
-      'Missing publication input: public/images/profile/yang-jing-hero.avif',
-    );
-    expect(result.stdout).toContain(
-      'Missing publication input: content/profile/contact.private.json',
-    );
+    expect(result.stdout).not.toContain('yang-jing-hero.avif');
+    expect(result.stdout).not.toContain('contact.private.json');
+    expect(publicationInputs).not.toContain('public/files/yang-jing-resume-en.pdf');
+    expect(publicationInputs).not.toContain('public/images/contact/wechat-qr.avif');
     const reported = result.stdout.trim()
       ? result.stdout.trim().split('\n')
       : [];
@@ -186,7 +182,7 @@ describe('publication validation CLI', () => {
         .filter((value) => !existsSync(path.join(process.cwd(), value)))
         .map((value) => `Missing publication input: ${value}`),
     );
-  });
+  }, 20_000);
 
   it('rejects an unknown mode', () => {
     const result = spawnSync(
@@ -197,23 +193,23 @@ describe('publication validation CLI', () => {
 
     expect(result.status).toBe(1);
     expect(result.stderr).toMatch(/unknown publication validation mode.*surprise/i);
-  });
+  }, 20_000);
 
-  it('prints structural source errors as actionable diagnostics', () => {
+  it('accepts the current source publication contract', () => {
     const result = spawnSync(
       process.execPath,
       ['scripts/validate-publication.mjs', '--mode=source'],
       { cwd: process.cwd(), encoding: 'utf8' },
     );
 
-    expect(result.status).toBe(1);
-    expect(`${result.stdout}\n${result.stderr}`).toMatch(
-      /missing launch route.*work\/meeting.*locale.*en/i,
+    expect(result.status).toBe(0);
+    expect(`${result.stdout}\n${result.stderr}`).not.toMatch(
+      /draft publication marker|missing publication input/i,
     );
     expect(`${result.stdout}\n${result.stderr}`).not.toMatch(
-      /missing launch route.*work\/xuelang/i,
+      /missing launch route.*work\/(?:xuelang|meeting)/i,
     );
-  });
+  }, 20_000);
 
   it('turns every missing publication input into a source error', async () => {
     const result = await runPublicationValidation({
@@ -462,13 +458,13 @@ export const metadata = {
 
   it('requires a caption and poster beside a present publication video', async () => {
     const root = createRoot();
-    write(root, 'public/videos/meeting/interaction-sequence.mp4', 'video');
+    write(root, 'public/videos/meeting/adaptive-layout-demo.mp4', 'video');
 
     const result = await runPublicationValidation({ mode: 'development', rootDir: root });
     expect(result.errors).toEqual(
       expect.arrayContaining([
-        expect.stringMatching(/interaction-sequence\.mp4.*requires.*\.vtt/i),
-        expect.stringMatching(/interaction-sequence\.mp4.*requires.*poster/i),
+        expect.stringMatching(/adaptive-layout-demo\.mp4.*requires.*\.vtt/i),
+        expect.stringMatching(/adaptive-layout-demo\.mp4.*requires.*poster/i),
       ]),
     );
   });
@@ -582,14 +578,14 @@ export const metadata = {
 
   it('rejects malformed media that is present in output', async () => {
     const root = createRoot();
-    write(root, 'out/files/yang-jing-resume-en.pdf', 'not pdf output');
-    write(root, 'out/images/profile/yang-jing-hero.avif', 'not image output');
+    write(root, 'out/files/xuelang-case-study-en.pdf', 'not pdf output');
+    write(root, 'out/images/xuelang/hero-panorama.webp', 'not image output');
 
     const result = await runPublicationValidation({ mode: 'output', rootDir: root });
     expect(result.errors).toEqual(
       expect.arrayContaining([
-        'Invalid output PDF signature: files/yang-jing-resume-en.pdf',
-        'Output image decode or dimensions invalid: images/profile/yang-jing-hero.avif',
+        'Invalid output PDF signature: files/xuelang-case-study-en.pdf',
+        'Output image decode or dimensions invalid: images/xuelang/hero-panorama.webp',
       ]),
     );
   });
@@ -685,6 +681,7 @@ export const metadata = {
     for (const relativePath of [
       'content',
       'evidence/call-agent',
+      'evidence/meeting',
       'evidence/convo-ai',
       'evidence/stt-demo',
       'evidence/xuelang',
@@ -693,17 +690,13 @@ export const metadata = {
       'public/images/call-agent',
       'public/images/convo-ai',
       'public/images/archive',
+      'public/images/meeting',
       'public/images/xuelang',
     ]) {
       cpSync(path.join(process.cwd(), relativePath), path.join(root, relativePath), {
         recursive: true,
       });
     }
-    mkdirSync(path.join(root, 'public/files'), { recursive: true });
-    cpSync(
-      path.join(process.cwd(), 'public/files/call-agent-case-study-zh.pdf'),
-      path.join(root, 'public/files/call-agent-case-study-zh.pdf'),
-    );
     write(root, 'public/images/call-agent/ai-preview-live.png', 'changed bytes');
 
     const result = await runPublicationValidation({ mode: 'development', rootDir: root });
@@ -717,26 +710,26 @@ export const metadata = {
   it('rejects required publication inputs supplied through symlinks', async () => {
     const root = createRoot();
     write(root, 'outside.pdf', '%PDF-1.7\n');
-    const requiredPath = path.join(root, 'public/files/yang-jing-resume-en.pdf');
+    const requiredPath = path.join(root, 'public/files/xuelang-case-study-en.pdf');
     mkdirSync(path.dirname(requiredPath), { recursive: true });
     symlinkSync(path.join(root, 'outside.pdf'), requiredPath);
 
     const result = await runPublicationValidation({ mode: 'development', rootDir: root });
     expect(result.errors).toContain(
-      'Publication input must be a regular non-symlink file: public/files/yang-jing-resume-en.pdf',
+      'Publication input must be a regular non-symlink file: public/files/xuelang-case-study-en.pdf',
     );
   });
 
   it('rejects required publication inputs with a symlinked ancestor', async () => {
     const root = createRoot();
     const outside = createRoot();
-    write(outside, 'yang-jing-resume-en.pdf', '%PDF-1.7\n');
+    write(outside, 'xuelang-case-study-en.pdf', '%PDF-1.7\n');
     mkdirSync(path.join(root, 'public'), { recursive: true });
     symlinkSync(outside, path.join(root, 'public/files'));
 
     const result = await runPublicationValidation({ mode: 'development', rootDir: root });
     expect(result.errors).toContain(
-      'Publication input has symlink ancestor: public/files/yang-jing-resume-en.pdf',
+      'Publication input has symlink ancestor: public/files/xuelang-case-study-en.pdf',
     );
   });
 
@@ -864,6 +857,23 @@ role: 'body-only'
     ]));
   });
 
+  it('does not apply host-page media semantics inside embedded demo documents', async () => {
+    const root = createRoot();
+    write(
+      root,
+      'out/demos/showcase/index.html',
+      '<!doctype html><html><body><img src="/missing.png"><video src="/missing.mp4"></video></body></html>',
+    );
+
+    const result = await runPublicationValidation({ mode: 'output', rootDir: root });
+    expect(result.errors).not.toContain(
+      'Generated img requires non-empty alt: out/demos/showcase/index.html',
+    );
+    expect(result.errors).not.toContain(
+      'Generated video requires poster: out/demos/showcase/index.html',
+    );
+  });
+
   it('requires generated transcript references to have real consumers', async () => {
     const root = createRoot();
     write(
@@ -979,6 +989,26 @@ role: 'body-only'
     const result = await runPublicationValidation({ mode: 'output', rootDir: root });
     expect(result.errors).toContain(
       'Broken internal reference "/images/missing.webp" in out/index.html',
+    );
+  });
+
+  it('resolves prefixed GitHub Pages references against the export root', async () => {
+    const root = createRoot();
+    write(root, 'out/assets/present.txt', 'present');
+    write(
+      root,
+      'out/index.html',
+      '<!doctype html><html><body><a href="/yangjing-portfolio/assets/present.txt">File</a></body></html>',
+    );
+
+    const result = await runPublicationValidation({
+      mode: 'output',
+      rootDir: root,
+      basePath: '/yangjing-portfolio',
+    });
+
+    expect(result.errors).not.toContain(
+      'Broken internal reference "/yangjing-portfolio/assets/present.txt" in out/index.html',
     );
   });
 

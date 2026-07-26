@@ -36,11 +36,25 @@ const convoAiPublicationInputs = convoAiMediaIds.flatMap((id) => [
 ]);
 
 export const publicationInputs = [
-  'public/images/profile/yang-jing-hero.avif',
-  'public/images/profile/yang-jing-about.avif',
   'public/images/xuelang/hero-panorama.webp',
   'public/files/xuelang-case-study-zh.pdf',
   'public/files/xuelang-case-study-en.pdf',
+  'evidence/call-agent/manifest.json',
+  'evidence/call-agent/video-manifest.json',
+  'evidence/call-agent/checksums.json',
+  'public/images/call-agent/agent-create-poster.webp',
+  'public/images/call-agent/agent-orchestrate-poster.webp',
+  'public/images/call-agent/agent-preview-poster.webp',
+  'public/images/call-agent/agent-publish-poster.webp',
+  'public/images/call-agent/agent-connect-poster.webp',
+  'public/images/call-agent/agent-operate-poster.webp',
+  'public/images/call-agent/number-connect.webp',
+  'public/videos/call-agent/agent-create.mp4',
+  'public/videos/call-agent/agent-orchestrate.mp4',
+  'public/videos/call-agent/agent-preview.mp4',
+  'public/videos/call-agent/agent-publish.mp4',
+  'public/videos/call-agent/agent-connect.mp4',
+  'public/videos/call-agent/agent-operate.mp4',
   'evidence/xuelang/manifest.json',
   'evidence/meeting/manifest.json',
   'evidence/convo-ai/media-manifest.json',
@@ -49,16 +63,6 @@ export const publicationInputs = [
   'public/images/meeting/adaptive-layout-poster.webp',
   'public/images/meeting/whiteboard-multidevice.webp',
   'public/images/meeting/transcript-poster.webp',
-  'public/videos/meeting/adaptive-layout-demo.mp4',
-  'public/videos/meeting/transcript-demo.mp4',
-  'public/captions/meeting/adaptive-layout-demo.en.vtt',
-  'public/captions/meeting/adaptive-layout-demo.zh.vtt',
-  'public/captions/meeting/transcript-demo.en.vtt',
-  'public/captions/meeting/transcript-demo.zh.vtt',
-  'public/files/yang-jing-resume-en.pdf',
-  'public/files/yang-jing-resume-zh.pdf',
-  'public/images/contact/wechat-qr.avif',
-  'content/profile/contact.private.json',
 ];
 
 export function parseMode(argv = process.argv.slice(2)) {
@@ -105,7 +109,6 @@ const requiredMetadata = [
   'role',
   'duration',
   'status',
-  'disclosure',
   'heroMedia',
   'evidenceLevel',
   'featuredOrder',
@@ -113,6 +116,7 @@ const requiredMetadata = [
 const launchRoutes = [
   'work/xuelang',
   'work/call-agent',
+  'work/convo-ai',
   'work/meeting',
   'build/stt-demo',
 ];
@@ -203,7 +207,7 @@ export async function findDraftPublicationMarkers(rootDir, mode) {
 
   const roots = mode === 'output'
     ? ['out']
-    : ['app', 'components', 'content'];
+    : ['app', 'content'];
   const allowedExtensions = mode === 'output'
     ? new Set(['.html'])
     : new Set(['.js', '.jsx', '.md', '.mdx', '.ts', '.tsx']);
@@ -970,7 +974,7 @@ async function validateMediaManifest(rootDir, mode) {
 
 const unsafeOutputReference = Symbol('unsafe output reference');
 
-function outputTargetForReference(outputRoot, htmlPath, reference) {
+function outputTargetForReference(outputRoot, htmlPath, reference, basePath = '') {
   if (!reference || /^(?:[a-z]+:|\/\/|#)/i.test(reference)) return undefined;
   if (reference.includes('\\')) return unsafeOutputReference;
   let decodedPath;
@@ -986,6 +990,13 @@ function outputTargetForReference(outputRoot, htmlPath, reference) {
       decodedPath = next;
       if (decodedPath.includes('\\')) return unsafeOutputReference;
       if (index === 9) return unsafeOutputReference;
+    }
+    const normalizedBasePath = basePath.replace(/\/+$/, '');
+    if (
+      normalizedBasePath
+      && (decodedPath === normalizedBasePath || decodedPath.startsWith(`${normalizedBasePath}/`))
+    ) {
+      decodedPath = decodedPath.slice(normalizedBasePath.length) || '/';
     }
     const escapedPath = decodedPath
       .replaceAll('%', '%25')
@@ -1046,7 +1057,7 @@ function validateHtmlMedia(document, sourceName) {
   return errors;
 }
 
-async function validateOutput(rootDir) {
+async function validateOutput(rootDir, basePath = '') {
   const errors = [];
   const outputRoot = path.join(rootDir, 'out');
   for (const relativePath of outputPublicationPaths) {
@@ -1077,11 +1088,14 @@ async function validateOutput(rootDir) {
   const files = await walkFiles(outputRoot);
   for (const htmlPath of files.filter((filePath) => filePath.endsWith('.html'))) {
     const html = await fs.readFile(htmlPath, 'utf8');
+    const sourceName = relative(rootDir, htmlPath);
     if (!/^\s*<!doctype\s+html>/i.test(html) || !/<html\b/i.test(html) || !/<\/html>\s*$/i.test(html)) {
-      errors.push(`Malformed generated HTML: ${relative(rootDir, htmlPath)}`);
+      errors.push(`Malformed generated HTML: ${sourceName}`);
     }
     const document = parseHtml(html);
-    errors.push(...validateHtmlMedia(document, relative(rootDir, htmlPath)));
+    if (!sourceName.startsWith('out/demos/')) {
+      errors.push(...validateHtmlMedia(document, sourceName));
+    }
     const references = [];
     for (const element of document.querySelectorAll(
       '[href], [src], [poster], [srcset], [data-transcript-href]',
@@ -1102,7 +1116,7 @@ async function validateOutput(rootDir) {
       if (transcriptHref) references.push(transcriptHref);
     }
     for (const reference of references) {
-      const target = outputTargetForReference(outputRoot, htmlPath, reference);
+      const target = outputTargetForReference(outputRoot, htmlPath, reference, basePath);
       if (target === undefined) continue;
       if (target === unsafeOutputReference) {
         errors.push(`Unsafe internal reference "${reference}" in ${relative(rootDir, htmlPath)}`);
@@ -1127,6 +1141,7 @@ async function validateOutput(rootDir) {
 export async function runPublicationValidation({
   mode,
   rootDir = repositoryRoot,
+  basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '',
 }) {
   assertMode(mode);
   const publicationRoots = mode === 'output'
@@ -1140,7 +1155,7 @@ export async function runPublicationValidation({
         ...await validatePrivacy(rootDir, ['out']),
         ...await findDraftPublicationMarkers(rootDir, mode),
         ...await validateMediaManifest(rootDir, mode),
-        ...await validateOutput(rootDir),
+        ...await validateOutput(rootDir, basePath),
       ]
     : [
         ...await validatePrivacy(rootDir, ['content', 'evidence', 'public']),

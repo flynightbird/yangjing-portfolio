@@ -86,10 +86,12 @@ describe('shell dictionaries', () => {
     });
     expect(enDictionary.home.projects.callAgent.company).toBe('Agora / 声网');
     expect(zhDictionary.home.projects.xuelang.company).toBe('ByteDance / 字节跳动');
-    expect(enDictionary.home.projects.aidx.company).toBe('Singapore AIDX');
+    expect(enDictionary.home.projects.aidx.company).toBe('Singapore AI company');
+    expect(zhDictionary.home.projects.aidx.company).toBe('新加坡 AI 公司');
     expect(zhDictionary.home.projects.sttDemo.company).toBe('Agora / 声网');
     expect(enDictionary.actions).toHaveProperty('downloadPdf');
-    expect(enDictionary.actions).toHaveProperty('next');
+    expect(enDictionary.actions).not.toHaveProperty('previous');
+    expect(enDictionary.actions).not.toHaveProperty('next');
     expect(enDictionary.notFound).toHaveProperty('title');
     expect(enDictionary.directContact).toHaveProperty('email');
     expect(enDictionary.menu.label).toBe('Menu');

@@ -2,6 +2,7 @@
 
 import { motion, useMotionValue, useReducedMotion, useSpring } from 'motion/react';
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from 'react';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import mediaStyles from './build-lab-media.module.css';
 import styles from './home.module.css';
@@ -143,6 +144,7 @@ export function BuildLabMedia({ href }: BuildLabMediaProps) {
       aria-label="Open the interactive STT Demo in a new tab"
       data-stt-media-stage
       data-stt-ready={isReady ? 'true' : 'false'}
+      data-scroll-reveal-group="media"
       onPointerMove={handlePointerMove}
       onPointerLeave={resetPosition}
       onBlur={resetPosition}
@@ -162,7 +164,7 @@ export function BuildLabMedia({ href }: BuildLabMediaProps) {
             <iframe
               ref={setIframeNode}
               className={mediaStyles.stageFrame}
-              src="/demos/stt-demo/index.html?embed=stage"
+              src={withBasePath('/demos/stt-demo/index.html?embed=stage')}
               title="Animated STT Demo conversation stage"
               aria-hidden="true"
               tabIndex={-1}
@@ -173,7 +175,7 @@ export function BuildLabMedia({ href }: BuildLabMediaProps) {
           <img
             className={mediaStyles.stageFallback}
             data-stt-stage-fallback
-            src="/images/stt-demo/stt-product-stage@2x.png"
+            src={withBasePath('/images/stt-demo/stt-product-stage@2x.png')}
             width={1266}
             height={1120}
             alt="STT Demo product stage showing a speaker, bilingual transcript, translation, and participants"

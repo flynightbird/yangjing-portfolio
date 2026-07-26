@@ -1,4 +1,5 @@
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './xuelang-interaction-board.module.css';
 
@@ -6,7 +7,6 @@ const copy = {
   zh: {
     alt: '多种学习界面展示沉浸播放、倍速控制与课时切换',
     label: '学习控制证据',
-    caption: '产品画面保持完整，设计判断与行为信号由网页文字独立呈现。',
     items: [
       {
         title: '沉浸与顺滑',
@@ -25,7 +25,6 @@ const copy = {
   en: {
     alt: 'Learning interfaces showing immersive playback, speed controls, and lesson switching',
     label: 'Learning-control evidence',
-    caption: 'The product canvas stays intact while design rationale and observed signals remain editable HTML.',
     items: [
       {
         title: 'Immersion and smooth control',
@@ -52,7 +51,7 @@ export function XuelangInteractionBoard({ locale }: { readonly locale: Locale })
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           className={styles.productImage}
-          src="/images/xuelang/learning-interaction.webp"
+          src={withBasePath('/images/xuelang/learning-interaction.webp')}
           alt={text.alt}
         />
         <ol className={styles.rail} aria-label={text.label}>
@@ -67,7 +66,6 @@ export function XuelangInteractionBoard({ locale }: { readonly locale: Locale })
           ))}
         </ol>
       </div>
-      <figcaption>{text.caption}</figcaption>
     </figure>
   );
 }

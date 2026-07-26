@@ -11,6 +11,7 @@ const viewports = [
 ] as const;
 
 const visualPeakSelectors = [
+  '[data-xuelang-cover]',
   '[data-hero-panorama]',
   '[data-testid="xuelang-dark-stage"]',
   '[data-story-variant="result"]',
@@ -44,22 +45,31 @@ test.describe('Xuelang visual matrix', () => {
           { timeout: 30_000 },
         ).toBe(true);
 
+        const cover = page.locator('[data-xuelang-cover]');
+        await expect(cover).toBeInViewport();
         await expect(page.locator('[data-xuelang-hero] h1')).toBeInViewport();
-        await expect(page.locator('[data-xuelang-hero] [data-case-web-control]')).toBeInViewport();
-        await expect(page.locator('[data-hero-panorama]')).toBeInViewport();
 
-        if (viewport.width >= 1280) {
-          const visiblePanoramaHeight = await page.locator('[data-hero-panorama]').evaluate(
-            (element) => {
-              const box = element.getBoundingClientRect();
-              return Math.max(0, Math.min(box.bottom, window.innerHeight) - Math.max(box.top, 0));
-            },
-          );
-          expect(
-            visiblePanoramaHeight,
-            'The product panorama should be meaningfully visible in the first desktop viewport',
-          ).toBeGreaterThanOrEqual(220);
-        }
+        const openingGeometry = await page.evaluate(() => {
+          const coverElement = document.querySelector<HTMLElement>('[data-xuelang-cover]');
+          const coverImage = coverElement?.querySelector<HTMLImageElement>('img');
+          const panoramaElement = document.querySelector<HTMLElement>('[data-hero-panorama]');
+          if (!coverElement || !coverImage || !panoramaElement) {
+            throw new Error('Missing Xuelang opening media');
+          }
+          const coverBox = coverElement.getBoundingClientRect();
+          const imageBox = coverImage.getBoundingClientRect();
+          const panoramaBox = panoramaElement.getBoundingClientRect();
+          return {
+            coverBottom: coverBox.bottom,
+            imageRatio: imageBox.width / imageBox.height,
+            panoramaTop: panoramaBox.top,
+          };
+        });
+        expect(openingGeometry.imageRatio).toBeCloseTo(16 / 9, 2);
+        expect(
+          openingGeometry.panoramaTop,
+          'The product panorama should begin after the cover-first hero',
+        ).toBeGreaterThan(openingGeometry.coverBottom);
 
         const overflow = await page.evaluate(
           () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -88,6 +98,10 @@ test.describe('Xuelang visual matrix', () => {
 
             return elements.flatMap((element) => {
               if (!isVisible(element)) return [];
+              const tablist = element.getAttribute('role') === 'tab'
+                ? element.closest<HTMLElement>('[role="tablist"]')
+                : null;
+              if (tablist && tablist.scrollWidth > tablist.clientWidth) return [];
               const box = element.getBoundingClientRect();
               const defects: string[] = [];
 
@@ -187,7 +201,7 @@ test.describe('Xuelang visual matrix', () => {
     }
   }
 
-  test('Xuelang owns the wider compact chapter breakpoint without changing shared cases', async ({
+  test('wide cases share the 1200px compact chapter breakpoint', async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'This test sets exact breakpoint widths.');
@@ -195,14 +209,14 @@ test.describe('Xuelang visual matrix', () => {
     const toggle = page.getByRole('button', { name: 'Open chapter index' });
     const navigation = page.getByRole('navigation', { name: 'Case study chapters' });
 
-    for (const width of [1024, 1100]) {
+    for (const width of [1024, 1100, 1101, 1199]) {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('/en/work/xuelang/', { waitUntil: 'networkidle' });
       await expect(toggle, `Xuelang should use its compact index at ${width}px`).toBeVisible();
       await expect(navigation).toBeHidden();
     }
 
-    for (const width of [1101, 1199, 1200]) {
+    for (const width of [1200]) {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('/en/work/xuelang/', { waitUntil: 'networkidle' });
       await expect(toggle, `Xuelang should restore its rail at ${width}px`).toBeHidden();
@@ -211,7 +225,17 @@ test.describe('Xuelang visual matrix', () => {
 
     await page.setViewportSize({ width: 1024, height: 800 });
     await page.goto('/en/work/call-agent/', { waitUntil: 'networkidle' });
-    await expect(toggle, 'Shared cases should retain the original 900px breakpoint').toBeHidden();
+    await expect(toggle, 'Refreshed shared cases should use the compact index at 1024px').toBeVisible();
+    await expect(navigation).toBeHidden();
+
+    await page.setViewportSize({ width: 1199, height: 800 });
+    await page.goto('/en/work/call-agent/', { waitUntil: 'networkidle' });
+    await expect(toggle, 'Wide shared cases should keep the compact index through 1199px').toBeVisible();
+    await expect(navigation).toBeHidden();
+
+    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.goto('/en/work/call-agent/', { waitUntil: 'networkidle' });
+    await expect(toggle, 'Wide shared cases should restore the rail at 1200px').toBeHidden();
     await expect(navigation).toBeVisible();
   });
 

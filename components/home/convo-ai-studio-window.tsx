@@ -1,6 +1,7 @@
 'use client';
 
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './home.module.css';
 
@@ -10,7 +11,7 @@ interface ConvoAiStudioWindowProps {
 
 export function ConvoAiStudioWindow({ locale }: ConvoAiStudioWindowProps) {
   const isChinese = locale === 'zh';
-  const source = `/demos/convo-ai-studio/${locale}/index.html`;
+  const source = withBasePath(`/demos/convo-ai-studio/${locale}/index.html`);
 
   return (
     <div

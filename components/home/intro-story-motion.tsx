@@ -11,6 +11,11 @@ interface IntroScrollTrigger {
   kill: () => void;
 }
 
+interface IntroSupportFragment {
+  readonly text: string;
+  readonly emphasis?: boolean;
+}
+
 interface IntroStoryMotionProps {
   readonly locale: Locale;
   readonly label: string;
@@ -20,11 +25,7 @@ interface IntroStoryMotionProps {
     readonly lead: string;
     readonly emphasis: string;
     readonly trail: string;
-    readonly support?: {
-      readonly lead: string;
-      readonly emphasis: string;
-      readonly trail: string;
-    };
+    readonly support?: readonly IntroSupportFragment[];
   }[];
 }
 
@@ -203,9 +204,20 @@ export function IntroStoryMotion({
                 </p>
                 {scene.support ? (
                   <p className={styles.introSupport} data-intro-support>
-                    {scene.support.lead}
-                    <strong data-intro-vibe>{scene.support.emphasis}</strong>
-                    {scene.support.trail}
+                    {scene.support.map((fragment, fragmentIndex) =>
+                      fragment.emphasis ? (
+                        <strong
+                          key={`${fragmentIndex}-${fragment.text}`}
+                          data-intro-support-emphasis
+                        >
+                          {fragment.text}
+                        </strong>
+                      ) : (
+                        <span key={`${fragmentIndex}-${fragment.text}`}>
+                          {fragment.text}
+                        </span>
+                      ),
+                    )}
                   </p>
                 ) : null}
               </div>

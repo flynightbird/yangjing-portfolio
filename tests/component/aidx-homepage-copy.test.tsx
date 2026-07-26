@@ -9,23 +9,22 @@ describe('AIDX Singapore positioning', () => {
   it.each([
     {
       locale: 'en' as const,
-      kind: 'Singapore AI company',
+      descriptor: 'Singapore AI company',
       proposition:
         'A new website for AIDX, a Singapore AI safety company, shaped through interface, information structure, and motion.',
     },
     {
       locale: 'zh' as const,
-      kind: '新加坡 AI 公司',
-      proposition:
-        '为新加坡 AI 安全公司 AIDX 打造的全新线上官网，通过界面、信息结构与动效塑造品牌表达。',
+      descriptor: '新加坡 AI 公司',
+      proposition: '通过界面、信息架构与动效，为 AIDX 打造清晰、可信的品牌官网。',
     },
-  ])('renders the approved $locale positioning', ({ locale, kind, proposition }) => {
+  ])('renders the approved $locale positioning', ({ locale, descriptor, proposition }) => {
     const { container } = render(<FeaturedWork locale={locale} />);
     const aidx = container.querySelector<HTMLElement>('[data-project-id="aidx"]');
 
     expect(aidx).toBeInTheDocument();
-    expect(within(aidx as HTMLElement).getByText(kind)).toBeVisible();
-    expect(within(aidx as HTMLElement).getByText(proposition)).toBeVisible();
+    expect.soft(within(aidx as HTMLElement).queryByText(descriptor)).toBeVisible();
+    expect.soft(within(aidx as HTMLElement).queryByText(proposition)).toBeVisible();
     const links = within(aidx as HTMLElement).getAllByRole('link');
     expect(links).toHaveLength(2);
     for (const link of links) {

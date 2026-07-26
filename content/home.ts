@@ -219,7 +219,7 @@ export const archiveProjects = [
     },
     description: {
       en: "A home-design tool and platform from Alibaba. We unified the app and main website experience while strengthening the product's brand expression.",
-      zh: '阿里巴巴旗下的家居装修设计师工具和平台，我们统一 APP 与官网主站体验，并同步提升产品品牌表达。',
+      zh: '面向家居装修设计师的工具与平台。升级 App 与官网主站体验，并强化产品的品牌表达。',
     },
     skills: ['UX', 'UI'],
     coverVariant: 'alibaba',
@@ -232,6 +232,71 @@ export const archiveProjects = [
         zh: '躺平设计家 APP 与官网界面系统',
       },
     },
+    gallery: [
+      {
+        src: '/images/archive/details/tangping/06.jpg',
+        width: 2880,
+        height: 1620,
+        alt: {
+          en: 'Tangping Designer project presentation, page 6',
+          zh: '躺平设计家项目展示，第 6 页',
+        },
+      },
+      {
+        src: '/images/archive/details/tangping/10.jpg',
+        width: 2880,
+        height: 1620,
+        alt: {
+          en: 'Tangping Designer project presentation, page 10',
+          zh: '躺平设计家项目展示，第 10 页',
+        },
+      },
+      {
+        src: '/images/archive/details/tangping/11.jpg',
+        width: 2880,
+        height: 1620,
+        alt: {
+          en: 'Tangping Designer project presentation, page 11',
+          zh: '躺平设计家项目展示，第 11 页',
+        },
+      },
+      {
+        src: '/images/archive/details/tangping/23.jpg',
+        width: 2880,
+        height: 1620,
+        alt: {
+          en: 'Tangping Designer project presentation, page 23',
+          zh: '躺平设计家项目展示，第 23 页',
+        },
+      },
+      {
+        src: '/images/archive/details/tangping/24.jpg',
+        width: 2880,
+        height: 1620,
+        alt: {
+          en: 'Tangping Designer project presentation, page 24',
+          zh: '躺平设计家项目展示，第 24 页',
+        },
+      },
+      {
+        src: '/images/archive/details/tangping/51.jpg',
+        width: 2880,
+        height: 1620,
+        alt: {
+          en: 'Tangping Designer project presentation, page 51',
+          zh: '躺平设计家项目展示，第 51 页',
+        },
+      },
+      {
+        src: '/images/archive/details/tangping/50.jpg',
+        width: 6731,
+        height: 3680,
+        alt: {
+          en: 'Tangping Designer project presentation, page 50',
+          zh: '躺平设计家项目展示，第 50 页',
+        },
+      },
+    ],
   },
   {
     key: 'bytedance-open-language',
@@ -248,7 +313,7 @@ export const archiveProjects = [
     },
     description: {
       en: 'A language-learning app from ByteDance. We explored a new set of design principles to improve visual consistency and experience quality.',
-      zh: '字节跳动旗下的语言学习 app，为它探索新的设计原则，提升产品视觉一致性与体验品质。',
+      zh: '字节跳动旗下的语言学习 App。探索新的设计原则，提升视觉一致性与体验品质。',
     },
     skills: ['UX', 'UI'],
     coverVariant: 'open-language',
@@ -280,7 +345,7 @@ export const archiveProjects = [
     },
     description: {
       en: "A children's language-learning app from ByteDance. We designed an English adventure experience that made learning tasks more intuitive and playful.",
-      zh: '字节跳动旗下的儿童语言学习 app，设计英语闯关体验，让学习任务更直观、更具游戏感。',
+      zh: '字节跳动旗下的儿童语言学习 App。设计英语闯关体验，让学习任务更直观，也更具游戏感。',
     },
     skills: ['UX', 'UI'],
     coverVariant: 'doudou-fox',
@@ -376,7 +441,7 @@ export const archiveProjects = [
     },
     description: {
       en: 'Created an extensible brand IP for Tongcheng Travel, including the 3D character, motion, and visual expression.',
-      zh: '为同程旅游塑造可延展的品牌 IP 形象，并完成三维角色、动作与视觉表达。',
+      zh: '为同程旅游某业务线打造可延展的品牌 IP，并完成三维角色、动作与视觉表达。',
     },
     skills: ['IP Design', '3D', 'C4D'],
     coverVariant: 'mr-chong',

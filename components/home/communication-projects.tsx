@@ -5,7 +5,7 @@ import { MeetingPreview } from './meeting-preview';
 import styles from './home.module.css';
 
 type MeetingProps = Parameters<typeof MeetingPreview>[0];
-type SttProps = Parameters<typeof BuildLabPreview>[0];
+type SttProps = Omit<Parameters<typeof BuildLabPreview>[0], 'locale'>;
 
 export function CommunicationProjects({
   locale,
@@ -23,7 +23,7 @@ export function CommunicationProjects({
       aria-label={locale === 'zh' ? '通信系统' : 'Communication systems'}
     >
       <MeetingPreview {...meeting} />
-      <BuildLabPreview {...stt} />
+      <BuildLabPreview locale={locale} {...stt} />
     </section>
   );
 }

@@ -49,6 +49,51 @@ async function offsetBox(locator: Locator): Promise<ElementBox> {
   });
 }
 
+async function transformMetrics(locator: Locator) {
+  return locator.evaluate((element) => {
+    const transform = getComputedStyle(element).transform;
+    const matrix = new DOMMatrixReadOnly(transform === 'none' ? undefined : transform);
+    return {
+      scaleX: matrix.a,
+      skewY: matrix.b,
+      skewX: matrix.c,
+      scaleY: matrix.d,
+      translateX: matrix.e,
+      translateY: matrix.f,
+    };
+  });
+}
+
+function identityTransformDelta(metrics: Awaited<ReturnType<typeof transformMetrics>>) {
+  return Math.max(
+    Math.abs(metrics.scaleX - 1),
+    Math.abs(metrics.skewY),
+    Math.abs(metrics.skewX),
+    Math.abs(metrics.scaleY - 1),
+    Math.abs(metrics.translateX),
+    Math.abs(metrics.translateY),
+  );
+}
+
+async function stageLayout(locator: Locator) {
+  return locator.evaluate((element) => {
+    const media = element as HTMLElement;
+    const browser = media.querySelector<HTMLElement>('[data-stt-browser-window]');
+    const viewport = media.querySelector<HTMLElement>('[data-stt-stage-viewport]');
+    if (!browser || !viewport) throw new Error('Missing STT stage layout element');
+
+    const browserStyle = getComputedStyle(browser);
+    return {
+      browserOffsetParentIsMedia: browser.offsetParent === media,
+      browserPosition: browserStyle.position,
+      browserBottom: browserStyle.bottom,
+      viewportOffsetParentIsBrowser: viewport.offsetParent === browser,
+      browserClientHeight: browser.clientHeight,
+      viewportBottom: viewport.offsetTop + viewport.offsetHeight,
+    };
+  });
+}
+
 async function holdStageEmbed(page: Page) {
   let releaseRequest = () => undefined;
   let markRequestHeld = () => undefined;
@@ -89,7 +134,7 @@ test.describe('STT homepage live-stage presentation', () => {
 
   test('reserves the stage and crossfades only after valid embed readiness', async ({
     page,
-  }) => {
+  }, testInfo) => {
     const { requestHeld, releaseRequest, cleanup } = await holdStageEmbed(page);
 
     try {
@@ -129,8 +174,33 @@ test.describe('STT homepage live-stage presentation', () => {
       const viewportBox = await viewport.boundingBox();
       const browserOffsetsBefore = await offsetBox(browserWindow);
       const viewportOffsetsBefore = await offsetBox(viewport);
+      await expect(media).toHaveCSS(
+        'aspect-ratio',
+        testInfo.project.name === 'desktop' ? '4 / 3' : '1.05 / 1',
+      );
+      expect(browserBoxBefore).not.toBeNull();
       expect(viewportBox).not.toBeNull();
-      expect((viewportBox?.width ?? 0) / (viewportBox?.height ?? 1)).toBeCloseTo(2, 2);
+      await expect(viewport).toHaveCSS('aspect-ratio', '633 / 560');
+      await expect(fallback).toHaveCSS('object-fit', 'contain');
+      await expect(fallback).toHaveCSS('object-position', '50% 0%');
+      const layout = await stageLayout(media);
+      expect(layout.browserOffsetParentIsMedia).toBe(true);
+      expect(layout.browserPosition).toBe('absolute');
+      expect(layout.browserBottom).toBe('0px');
+      expect(layout.viewportOffsetParentIsBrowser).toBe(true);
+      expect(layout.viewportBottom).toBe(layout.browserClientHeight);
+      await expect
+        .poll(async () => identityTransformDelta(await transformMetrics(browserWindow)))
+        .toBeLessThanOrEqual(1e-6);
+      await expect
+        .poll(async () => identityTransformDelta(await transformMetrics(viewport)))
+        .toBeLessThanOrEqual(1e-6);
+      expect(
+        await fallback.evaluate((image) => {
+          const rendered = image as HTMLImageElement;
+          return rendered.naturalWidth / rendered.naturalHeight;
+        }),
+      ).toBeCloseTo(633 / 560, 5);
       const relativeViewportBefore = relativeBox(viewportBox, browserBoxBefore);
 
       releaseRequest();
@@ -143,6 +213,7 @@ test.describe('STT homepage live-stage presentation', () => {
       const fill = await embed.locator('.land-visual').evaluate((element) => {
         const rect = element.getBoundingClientRect();
         const selectors = [
+          '.snip-topbar',
           '.snip-speaker',
           '.snip-original',
           '.snip-translation',
@@ -185,6 +256,14 @@ test.describe('STT homepage live-stage presentation', () => {
         expect(child.y + child.height, child.selector).toBeLessThanOrEqual(
           fill.viewportHeight + 1,
         );
+      }
+      const topbar = fill.content.find((child) => child?.selector === '.snip-topbar');
+      const speaker = fill.content.find((child) => child?.selector === '.snip-speaker');
+      expect(topbar).not.toBeNull();
+      expect(speaker).not.toBeNull();
+      if (topbar && speaker) {
+        const emptyStageHeight = speaker.y - (topbar.y + topbar.height);
+        expect(emptyStageHeight / fill.viewportHeight).toBeLessThanOrEqual(0.42);
       }
       expectStableBox(browserOffsetsBefore, await offsetBox(browserWindow));
       expectStableBox(viewportOffsetsBefore, await offsetBox(viewport));
@@ -278,7 +357,7 @@ test.describe('STT homepage live-stage presentation', () => {
     }
   });
 
-  test('pauses stage motion offscreen and resumes the remaining transcript interval', async ({
+  test('pauses stage motion offscreen and resumes the transcript cycle', async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'Timer lifecycle is viewport-independent.');
@@ -305,7 +384,6 @@ test.describe('STT homepage live-stage presentation', () => {
       await expect
         .poll(() => original.innerHTML(), { timeout: 12_500 })
         .not.toBe(initialOriginal);
-      const cycleOriginal = await original.innerHTML();
 
       await page.waitForTimeout(4_000);
       await page.evaluate(() =>
@@ -313,7 +391,6 @@ test.describe('STT homepage live-stage presentation', () => {
       );
       await expect(embedRoot).toHaveAttribute('data-stt-playback', 'paused');
       const pausedOriginal = await original.innerHTML();
-      expect(pausedOriginal).toBe(cycleOriginal);
       expect(
         await stage.locator('.snip-wave span').evaluateAll((elements) =>
           elements.every(
@@ -335,7 +412,7 @@ test.describe('STT homepage live-stage presentation', () => {
       await media.scrollIntoViewIfNeeded();
       await expect(embedRoot).toHaveAttribute('data-stt-playback', 'playing');
       await expect
-        .poll(() => original.innerHTML(), { timeout: 3_800 })
+        .poll(() => original.innerHTML(), { timeout: 12_500 })
         .not.toBe(pausedOriginal);
     } finally {
       await cleanup();

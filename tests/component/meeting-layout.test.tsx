@@ -24,7 +24,7 @@ const meta: ContentMeta = {
 };
 
 it('presents product proof, approved facts, and chapter navigation', () => {
-  render(
+  const { container } = render(
     <MeetingLayout meta={meta} locale="en">
       <section id="business-context">Context</section>
     </MeetingLayout>,
@@ -33,15 +33,21 @@ it('presents product proof, approved facts, and chapter navigation', () => {
   expect(screen.getByRole('heading', { level: 1, name: meta.title })).toBeVisible();
   expect(screen.getByRole('heading', { level: 1 }).querySelector('br')).toBeNull();
   expect(screen.getByText('Sole Product Designer')).toBeVisible();
-  expect(screen.getByText('2024-2026 · 1.5 years')).toBeVisible();
-  expect(screen.getByRole('img', { name: /Agora Meeting desktop stage/i })).toHaveAttribute(
-    'src',
-    '/images/meeting/meeting-hero.webp',
-  );
+  expect(screen.queryByText('2024-2026 · 1.5 years')).toBeNull();
+  expect(container.querySelector('[data-meeting-logo-motion]')).not.toBeNull();
+  expect(container.querySelector('[data-meeting-logo-row]')).not.toBeNull();
+  expect(container.querySelectorAll('[data-meeting-meta-row]')).toHaveLength(2);
+  expect(screen.getByRole('button', { name: 'Replay' })).toBeVisible();
+  expect(screen.getByText('Agora Meeting')).toBeVisible();
   expect(screen.getByRole('navigation', { name: 'Case study chapters' })).toBeVisible();
+  expect(container.querySelectorAll('[data-meeting-video]')).toHaveLength(2);
+  for (const video of container.querySelectorAll('[data-meeting-video]')) {
+    expect(video).toHaveAttribute('aria-hidden', 'true');
+  }
+  expect(container.querySelectorAll('[data-meeting-video-poster]')).toHaveLength(2);
 });
 
-it('prevents forced word breaks and gives chapter links explicit light-theme ink', () => {
+it('prevents forced word breaks and uses the shared chapter treatment', () => {
   const layoutStyles = readFileSync(
     'components/meeting/meeting-layout.module.css',
     'utf8',
@@ -50,10 +56,24 @@ it('prevents forced word breaks and gives chapter links explicit light-theme ink
     'components/case-study/chapter-nav.module.css',
     'utf8',
   );
+  const printStyles = readFileSync(
+    'components/meeting/meeting-print.css',
+    'utf8',
+  );
 
   expect(layoutStyles).toMatch(/word-break:\s*normal/);
   expect(layoutStyles).toMatch(/overflow-wrap:\s*break-word/);
   expect(layoutStyles).toMatch(/text-wrap:\s*balance/);
-  expect(chapterStyles).toMatch(/--chapter-link-color:\s*#[0-9a-f]{6}/i);
-  expect(chapterStyles).toMatch(/color:\s*var\(--chapter-link-color\)/);
+  expect(layoutStyles).toMatch(/\.heroMedia\s*\{\s*order:\s*1;/);
+  expect(layoutStyles).not.toMatch(/\.content > section\s*\{[^}]*border-top:/s);
+  expect(chapterStyles).toMatch(
+    /--chapter-accent:\s*var\(--color-iris-deep\)/,
+  );
+  expect(chapterStyles).toMatch(/opacity:\s*0\.48/);
+  expect(printStyles).toMatch(
+    /\[data-meeting-case\]\s+\[data-meeting-video\]\s*\{[^}]*display:\s*none\s*!important/s,
+  );
+  expect(printStyles).toMatch(
+    /\[data-meeting-case\]\s+\[data-meeting-video-poster\]\s*\{[^}]*opacity:\s*1\s*!important/s,
+  );
 });

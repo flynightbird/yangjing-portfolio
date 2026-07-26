@@ -21,14 +21,14 @@
 }
 
 .logo[data-company-logo='agora'] {
-  mask-image: url('/images/brands/agora.svg');
+  mask-image: url('../../public/images/brands/agora.svg');
 }
 
 .logo[data-company-logo='bytedance'] {
-  mask-image: url('/images/brands/bytedance.svg');
+  mask-image: url('../../public/images/brands/bytedance.svg');
 }
 
 .logo[data-company-logo='aidx'] {
   width: 2.75rem;
-  mask-image: url('/images/brands/aidx.svg');
+  mask-image: url('../../public/images/brands/aidx.svg');
 }

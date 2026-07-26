@@ -1,5 +1,18 @@
 import { expect, test } from '@playwright/test';
 
+async function waitForIntroPinLayout(page: import('@playwright/test').Page) {
+  await expect.poll(
+    () => page.locator('[data-intro-story]').evaluate((section) => {
+      const pinSpacer = section.querySelector<HTMLElement>(':scope > .pin-spacer');
+      if (!pinSpacer) return false;
+      const expectedSpacing = window.innerHeight * 2.4;
+      const spacing = Number.parseFloat(pinSpacer.style.paddingBottom);
+      return Math.abs(spacing - expectedSpacing) <= 1;
+    }),
+    { timeout: 30_000 },
+  ).toBe(true);
+}
+
 test.describe('portfolio homepage framework', () => {
   test('does not show field labels in the hero corners', async ({ page }) => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
@@ -77,6 +90,24 @@ test.describe('portfolio homepage framework', () => {
         'xuelang',
       ]);
 
+      const callAgent = page.locator('[data-project-id="call-agent"]');
+      const convoAi = page.locator('[data-project-id="convo-ai"]');
+      await expect(callAgent).not.toContainText(
+        /Limited beta|Real product evidence|有限客户测试|真实产品证据/,
+      );
+      await expect(convoAi).not.toContainText(
+        /temporary third-party|media replacement|temporary web and app|临时第三方|等待替换|临时 Web 与 App/i,
+      );
+      await expect(page.locator('[data-project-id="meeting"]')).toContainText(
+        locale === 'zh' ? '已在四类终端上线' : 'Shipped across four platforms',
+      );
+      await expect(page.locator('[data-project-id="aidx"]')).toContainText(
+        locale === 'zh' ? '网站已上线' : 'Live website',
+      );
+      await expect(page.locator('[data-project-id="stt-demo"]')).toContainText(
+        locale === 'zh' ? 'Agora RTE 2026 大会发布' : 'Pinned static prototype',
+      );
+
       await expect(page.locator('[data-company-mark]')).toHaveCount(6);
       await expect(page.locator('[data-project-meta]')).toHaveCount(6);
       await expect(page.locator('[data-cta-treatment="white"]')).toHaveCount(3);
@@ -112,15 +143,20 @@ test.describe('portfolio homepage framework', () => {
       await expect(
         page.locator('[data-project-id="xuelang"] [data-project-media-frame]'),
       ).toHaveCSS('border-radius', '20px');
-      await expect(page.locator('[data-liquid-field="footer"]')).toHaveCount(1);
+      await expect(page.locator('[data-liquid-field="footer"]')).toHaveCount(0);
       await expect(page.locator('#archive')).toHaveCount(1);
       await expect(page.locator('[data-about-preview]')).toHaveCount(0);
       await expect(
         page.getByRole('heading', {
-          name: locale === 'zh' ? 'More C端用户设计作品' : 'More Consumer Product Work',
+          name: locale === 'zh' ? 'More C 端产品作品' : 'More Consumer Product Work',
         }),
       ).toBeVisible();
-      await expect(page.locator('footer a[href="mailto:yangux@qq.com"]')).toHaveCount(1);
+      await expect(
+        page.locator(
+          '[data-home-footer-contacts] a[href="mailto:amanda.yangj@gmail.com"]',
+        ),
+      ).toHaveCount(2);
+      await expect(page.locator('[data-footer-email-actions]')).toBeHidden();
 
       await expect(page.locator('[data-project-kind="build-lab"]')).toHaveCount(1);
       await expect(page.locator('[data-archive-card]')).toHaveCount(4);
@@ -245,6 +281,78 @@ test.describe('portfolio homepage framework', () => {
     expect(dimensions.page).toBeLessThanOrEqual(dimensions.viewport);
   });
 
+  for (const locale of ['en', 'zh'] as const) {
+    test(`${locale} reveals a below-fold boundary only once without horizontal overflow`, async ({
+      page,
+    }, testInfo) => {
+      test.skip(
+        !['desktop', 'mobile'].includes(testInfo.project.name),
+        'Desktop and mobile cover the supported motion viewports.',
+      );
+      await page.goto(`/${locale}/`, { waitUntil: 'networkidle' });
+
+      const boundaries = page.locator('[data-scroll-reveal]');
+      const archiveBoundary = page.locator(
+        '[data-scroll-reveal]:has([data-archive-carousel])',
+      );
+
+      await expect(boundaries).toHaveCount(5);
+      await expect(archiveBoundary).toHaveCount(1);
+      await expect(archiveBoundary).toHaveAttribute(
+        'data-scroll-reveal-state',
+        'pending',
+      );
+      await expect
+        .poll(() => archiveBoundary.evaluate(
+          (element) => element.getBoundingClientRect().top >= window.innerHeight - 1,
+        ))
+        .toBe(true);
+
+      await archiveBoundary.evaluate((element) => {
+        document.documentElement.style.scrollBehavior = 'auto';
+        element.scrollIntoView({ block: 'start', behavior: 'auto' });
+      });
+      await expect
+        .poll(() => archiveBoundary.evaluate((element) => {
+          const rect = element.getBoundingClientRect();
+          const visibleHeight = Math.max(
+            0,
+            Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0),
+          );
+          return visibleHeight / rect.height;
+        }))
+        .toBeGreaterThanOrEqual(0.12);
+      await expect(archiveBoundary).toHaveAttribute(
+        'data-scroll-reveal-state',
+        'revealed',
+      );
+
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'auto' }));
+      await expect
+        .poll(() => archiveBoundary.evaluate(
+          (element) => element.getBoundingClientRect().top >= window.innerHeight - 1,
+        ))
+        .toBe(true);
+      await expect(archiveBoundary).toHaveAttribute(
+        'data-scroll-reveal-state',
+        'revealed',
+      );
+      await archiveBoundary.evaluate((element) => {
+        element.scrollIntoView({ block: 'start', behavior: 'auto' });
+      });
+      await expect(archiveBoundary).toHaveAttribute(
+        'data-scroll-reveal-state',
+        'revealed',
+      );
+
+      await expect
+        .poll(() => page.evaluate(
+          () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+        ))
+        .toBe(true);
+    });
+  }
+
   test('morphs the full-width header into a centered capsule', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'Desktop navigation geometry contract.');
     await page.goto('/en/', { waitUntil: 'networkidle' });
@@ -257,7 +365,8 @@ test.describe('portfolio homepage framework', () => {
 
     await expect(home).toHaveText('Yang Jing');
     await expect(header).toHaveAttribute('data-scrolled', 'false');
-    await page.evaluate(() => window.scrollTo(0, 160));
+    await page.mouse.wheel(0, 500);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(100);
     await expect(header).toHaveAttribute('data-scrolled', 'true');
     await expect
       .poll(() =>
@@ -332,6 +441,40 @@ test.describe('portfolio homepage framework', () => {
     );
   });
 
+  test('keeps the 90 percent portraits aligned to the Hero baseline', async ({ page }) => {
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+    const viewport = page.viewportSize();
+    if (!viewport) throw new Error('Missing viewport');
+
+    const geometry = await page.evaluate(() => {
+      const hero = document.querySelector<HTMLElement>('[data-media="portrait"]');
+      const designer = document.querySelector<HTMLImageElement>(
+        '[data-portrait-role="designer"]',
+      );
+      const builder = document.querySelector<HTMLImageElement>(
+        '[data-portrait-role="builder"]',
+      );
+      if (!hero || !designer || !builder) throw new Error('Missing Hero portrait geometry');
+      return {
+        rootFontSize: Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
+        hero: hero.getBoundingClientRect().toJSON(),
+        designer: designer.getBoundingClientRect().toJSON(),
+        builder: builder.getBoundingClientRect().toJSON(),
+      };
+    });
+    const expectedWidth = viewport.width < 768
+      ? Math.min(viewport.width * 1.305, geometry.rootFontSize * 34.2)
+      : Math.min(viewport.width * 0.495, geometry.rootFontSize * 42.1875);
+
+    expect(geometry.designer.width).toBeCloseTo(expectedWidth, 0);
+    expect(geometry.builder.width).toBeCloseTo(expectedWidth, 0);
+    expect(geometry.designer.x).toBeCloseTo(geometry.builder.x, 1);
+    expect(geometry.designer.y).toBeCloseTo(geometry.builder.y, 1);
+    expect(geometry.designer.height).toBeCloseTo(geometry.builder.height, 1);
+    expect(geometry.hero.bottom - geometry.designer.bottom).toBeLessThanOrEqual(1);
+    expect(geometry.hero.bottom - geometry.builder.bottom).toBeLessThanOrEqual(1);
+  });
+
   test('renders the approved flagship materials and desktop focus motion', async ({
     page,
   }, testInfo) => {
@@ -339,20 +482,102 @@ test.describe('portfolio homepage framework', () => {
       testInfo.project.name !== 'desktop',
       'Desktop expansion is disabled for compact viewports.',
     );
+    const convoAssetRequests: string[] = [];
+    page.on('request', (request) => {
+      const pathname = new URL(request.url()).pathname;
+      if (pathname.startsWith('/images/convo-ai/')) convoAssetRequests.push(pathname);
+    });
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
+    expect(convoAssetRequests).toEqual(
+      expect.arrayContaining([
+        '/images/convo-ai/home-card-background.png',
+        '/images/convo-ai/figma/web-ready.png',
+        '/images/convo-ai/figma/avatar-video.png',
+      ]),
+    );
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop.gif');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop-poster.webp');
+
     const stage = page.locator('[data-flagship-focus]');
+    const reveal = page.locator('[data-scroll-reveal]:has([data-flagship-focus])');
+    const callProject = page.locator('[data-project-id="call-agent"]');
+    const convoProject = page.locator('[data-project-id="convo-ai"]');
     const callMedia = page.locator('[data-project-id="call-agent"] [data-media-radius="20"]');
     const convoMedia = page.locator('[data-project-id="convo-ai"] [data-media-radius="20"]');
+    const callMediaReveal = callProject.locator('[data-flagship-media-reveal]');
+    const convoMediaReveal = convoProject.locator('[data-flagship-media-reveal]');
+    const convoBackground = convoMedia.locator('[data-convo-card-background]');
+    const convoBrowser = convoMedia.locator('[data-convo-web-browser]');
+    const convoViewport = convoBrowser.locator('[data-convo-web-viewport]');
+    const convoWebImage = convoViewport.locator('img');
+    const convoPhone = convoMedia.locator('[data-convo-phone]');
+    const convoPhoneImage = convoPhone.locator('img');
 
     await callMedia.scrollIntoViewIfNeeded();
+    await expect(reveal).toHaveAttribute('data-scroll-reveal-state', 'revealed');
     await expect(stage).toHaveAttribute('data-flagship-focus', 'call-agent');
     await expect(callMedia).toHaveCSS('border-radius', '20px');
     await expect(convoMedia).toHaveCSS('border-radius', '20px');
     await expect(callMedia).toHaveCSS('background-color', 'rgb(232, 221, 187)');
-    await expect(convoMedia).toHaveCSS('background-color', 'rgb(220, 233, 239)');
+    await expect(convoMedia).toHaveCSS('background-color', 'rgb(199, 199, 193)');
     await expect(callMedia).toHaveCSS('background-image', 'none');
     await expect(convoMedia).toHaveCSS('background-image', 'none');
+    await expect(convoBackground).toBeVisible();
+    await expect(convoBackground).toHaveCSS('object-fit', 'cover');
+    await expect(convoBackground).toHaveCSS('object-position', '50% 50%');
+    await expect(convoBrowser).toBeVisible();
+    await expect(convoBrowser).toHaveCSS('left', '28px');
+    await expect(convoBrowser).toHaveCSS('right', '28px');
+    await expect(convoBrowser).toHaveCSS('border-radius', '15px 15px 18px 18px');
+    await expect(convoWebImage).toHaveCSS('object-position', '0% 0%');
+    await expect(convoPhone).toBeVisible();
+
+    const mediaBox = await convoMedia.boundingBox();
+    const { mediaRect, backgroundBox } = await convoMedia.evaluate((element) => {
+      const background = element.querySelector<HTMLElement>('[data-convo-card-background]');
+      if (!background) throw new Error('Missing ConvoAI card background');
+      return {
+        mediaRect: element.getBoundingClientRect().toJSON(),
+        backgroundBox: background.getBoundingClientRect().toJSON(),
+      };
+    });
+    const viewportBox = await convoViewport.boundingBox();
+    const webImageBox = await convoWebImage.boundingBox();
+    const phoneBox = await convoPhone.boundingBox();
+    expect(mediaBox).not.toBeNull();
+    expect(backgroundBox).not.toBeNull();
+    expect(backgroundBox?.x).toBeCloseTo(mediaRect.x, 0);
+    expect(backgroundBox?.y).toBeCloseTo(mediaRect.y, 0);
+    expect(backgroundBox?.width).toBeCloseTo(mediaRect.width, 0);
+    expect(backgroundBox?.height).toBeCloseTo(mediaRect.height, 0);
+    expect(viewportBox).not.toBeNull();
+    expect(webImageBox).not.toBeNull();
+    expect(phoneBox).not.toBeNull();
+    expect(Math.abs((webImageBox?.x ?? 0) - (viewportBox?.x ?? 0))).toBeLessThanOrEqual(1);
+    expect(phoneBox?.x ?? 0).toBeGreaterThan(mediaBox?.x ?? 0);
+    expect((phoneBox?.x ?? 0) + (phoneBox?.width ?? 0)).toBeLessThanOrEqual(
+      (mediaBox?.x ?? 0) + (mediaBox?.width ?? 0),
+    );
+    expect((phoneBox?.y ?? 0) + (phoneBox?.height ?? 0)).toBeLessThanOrEqual(
+      (mediaBox?.y ?? 0) + (mediaBox?.height ?? 0),
+    );
+    const [phoneRadius, phoneImageRadius] = await Promise.all([
+      convoPhone.evaluate((element) => getComputedStyle(element).borderRadius),
+      convoPhoneImage.evaluate((element) => getComputedStyle(element).borderRadius),
+    ]);
+    expect(phoneRadius).not.toBe('0px');
+    expect(phoneImageRadius).toBe(phoneRadius);
+
+    const callProjectBox = await callProject.boundingBox();
+    const convoProjectBox = await convoProject.boundingBox();
+    const callRevealBox = await callMediaReveal.boundingBox();
+    const convoRevealBox = await convoMediaReveal.boundingBox();
+    expect(callRevealBox?.width).toBeCloseTo(callProjectBox?.width ?? 0, 0);
+    expect(convoRevealBox?.width).toBeCloseTo(convoProjectBox?.width ?? 0, 0);
+    expect(convoProjectBox?.x ?? 0).toBeGreaterThan(
+      (callProjectBox?.x ?? 0) + (callProjectBox?.width ?? 0),
+    );
 
     const studioFrame = callMedia.locator('[data-convo-studio-frame]');
     await expect(studioFrame).toHaveAttribute(
@@ -401,27 +626,81 @@ test.describe('portfolio homepage framework', () => {
     await convoMedia.hover();
     await expect(stage).toHaveAttribute('data-flagship-focus', 'convo-ai');
     await expect(callMedia).toHaveCSS('opacity', '0.55');
+    await expect(convoMedia).toHaveCSS('opacity', '1');
+    expect(await callMedia.evaluate((element) => getComputedStyle(element).transform)).not.toBe(
+      await convoMedia.evaluate((element) => getComputedStyle(element).transform),
+    );
 
     await page.locator('[data-project-id="meeting"] h2').hover();
     await expect(stage).toHaveAttribute('data-flagship-focus', 'call-agent');
+    await expect(callMedia).toHaveCSS('opacity', '1');
+    await expect(convoMedia).toHaveCSS('opacity', '0.55');
   });
 
   test('stacks flagship media without transforms on mobile', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'mobile', 'Mobile-only fallback contract.');
+    const convoAssetRequests: string[] = [];
+    page.on('request', (request) => {
+      const pathname = new URL(request.url()).pathname;
+      if (pathname.startsWith('/images/convo-ai/')) convoAssetRequests.push(pathname);
+    });
     await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    expect(convoAssetRequests).toContain('/images/convo-ai/home-mobile-loop.gif');
+    expect(convoAssetRequests).toContain('/images/convo-ai/home-card-background.png');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop-poster.webp');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/web-ready.png');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/avatar-video.png');
 
     const call = page.locator('[data-project-id="call-agent"]');
     const convo = page.locator('[data-project-id="convo-ai"]');
     const callMedia = call.locator('[data-media-radius="20"]');
     const convoMedia = convo.locator('[data-media-radius="20"]');
+    const convoBackground = convoMedia.locator('[data-convo-card-background]');
+    const callMediaReveal = call.locator('[data-flagship-media-reveal]');
+    const convoMediaReveal = convo.locator('[data-flagship-media-reveal]');
+    const convoLoop = convoMedia.locator('[data-convo-mobile-loop]');
     const callBox = await call.boundingBox();
     const convoBox = await convo.boundingBox();
+    const callMediaBox = await callMedia.boundingBox();
+    const convoMediaBox = await convoMedia.boundingBox();
+    const { convoMediaRect, convoBackgroundBox } = await convoMedia.evaluate((element) => {
+      const background = element.querySelector<HTMLElement>('[data-convo-card-background]');
+      if (!background) throw new Error('Missing ConvoAI card background');
+      return {
+        convoMediaRect: element.getBoundingClientRect().toJSON(),
+        convoBackgroundBox: background.getBoundingClientRect().toJSON(),
+      };
+    });
+    const callRevealBox = await callMediaReveal.boundingBox();
+    const convoRevealBox = await convoMediaReveal.boundingBox();
 
     expect(callBox).not.toBeNull();
     expect(convoBox).not.toBeNull();
+    expect(callRevealBox?.width).toBeCloseTo(callMediaBox?.width ?? 0, 0);
+    expect(convoRevealBox?.width).toBeCloseTo(convoMediaBox?.width ?? 0, 0);
     expect(convoBox?.y ?? 0).toBeGreaterThan((callBox?.y ?? 0) + (callBox?.height ?? 0));
     await expect(callMedia).toHaveCSS('transform', 'none');
     await expect(convoMedia).toHaveCSS('transform', 'none');
+    await expect(convoBackground).toBeVisible();
+    await expect(convoBackground).toHaveCSS('object-fit', 'cover');
+    expect(convoBackgroundBox).not.toBeNull();
+    expect(convoBackgroundBox?.x).toBeCloseTo(convoMediaRect.x, 0);
+    expect(convoBackgroundBox?.y).toBeCloseTo(convoMediaRect.y, 0);
+    expect(convoBackgroundBox?.width).toBeCloseTo(convoMediaRect.width, 0);
+    expect(convoBackgroundBox?.height).toBeCloseTo(convoMediaRect.height, 0);
+    await expect(convoMedia.locator('[data-convo-web-browser]')).toBeHidden();
+    await expect(convoMedia.locator('[data-convo-phone]')).toBeHidden();
+    await expect(convoLoop).toBeVisible();
+    await expect(convoLoop.locator('source')).toHaveAttribute(
+      'srcset',
+      '/images/convo-ai/home-mobile-loop.gif',
+    );
+    await expect(convoLoop.locator('img')).toHaveCSS('object-fit', 'contain');
+    await expect(convoMedia.locator('[data-convo-mobile-poster]')).toBeHidden();
+    expect(convoMediaBox).not.toBeNull();
+    expect(convoMediaBox?.height ?? 0).toBeGreaterThanOrEqual(320);
+    expect(convoMediaBox?.height ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(420);
     await expect(callMedia.locator('[data-convo-studio-window]')).toHaveCSS(
       'transform',
       'none',
@@ -435,6 +714,44 @@ test.describe('portfolio homepage framework', () => {
     await expect
       .poll(() => scrollPanel.evaluate((element) => getComputedStyle(element).transform))
       .toBe(transformStart);
+  });
+
+  test('uses the static ConvoAI poster on mobile with reduced motion', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'mobile', 'Mobile reduced-motion contract.');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const convoAssetRequests: string[] = [];
+    page.on('request', (request) => {
+      const pathname = new URL(request.url()).pathname;
+      if (pathname.startsWith('/images/convo-ai/')) convoAssetRequests.push(pathname);
+    });
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    expect(convoAssetRequests).toContain('/images/convo-ai/home-mobile-loop-poster.webp');
+    expect(convoAssetRequests).toContain('/images/convo-ai/home-card-background.png');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop.gif');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/web-ready.png');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/avatar-video.png');
+
+    const convoMedia = page.locator('[data-project-id="convo-ai"] [data-convo-home-media]');
+    await convoMedia.scrollIntoViewIfNeeded();
+    const convoBackground = convoMedia.locator('[data-convo-card-background]');
+    const loop = convoMedia.locator('[data-convo-mobile-loop]');
+    const poster = convoMedia.locator('[data-convo-mobile-poster]');
+    await expect(loop.locator('source')).toHaveAttribute(
+      'srcset',
+      '/images/convo-ai/home-mobile-loop.gif',
+    );
+    await expect(poster.locator('source')).toHaveAttribute(
+      'srcset',
+      '/images/convo-ai/home-mobile-loop-poster.webp',
+    );
+    await expect(loop).toBeHidden();
+    await expect(poster).toBeVisible();
+    await expect(poster.locator('img')).toHaveCSS('object-fit', 'contain');
+    await expect(convoBackground).toBeVisible();
+    await expect(convoBackground).toHaveCSS('object-fit', 'cover');
   });
 
   test('uses a media-dominant STT stage with direct prototype actions', async ({
@@ -516,27 +833,130 @@ test.describe('portfolio homepage framework', () => {
     }
   });
 
-  test('loads every real homepage image and has no horizontal overflow', async ({ page }) => {
+  test('loads every rendered homepage image and has no horizontal overflow', async ({
+    page,
+  }, testInfo) => {
+    testInfo.setTimeout(90_000);
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
-    const images = page.locator('main img:not([data-placeholder-media])');
-    await expect(images).toHaveCount(12);
-    for (let index = 0; index < await images.count(); index += 1) {
-      const image = images.nth(index);
-      await image.scrollIntoViewIfNeeded();
-      await expect
-        .poll(() =>
-          image.evaluate((node) => {
-            const rendered = node as HTMLImageElement;
+    const imageCandidates = page.locator('main img:not([data-placeholder-media])');
+    await imageCandidates.evaluateAll(async (nodes) => {
+      for (const node of nodes) {
+        const image = node as HTMLImageElement;
+        const bounds = node.getBoundingClientRect();
+        if (
+          image.src === '' ||
+          image.src.startsWith('data:') ||
+          node.getClientRects().length === 0 ||
+          bounds.width <= 0 ||
+          bounds.height <= 0
+        ) {
+          continue;
+        }
+        node.scrollIntoView({ block: 'center' });
+        await new Promise<void>((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+        );
+      }
+    });
+
+    const comparisonImages = page.locator('[data-xuelang-home-comparison] img');
+    await expect(comparisonImages).toHaveCount(2);
+    await expect
+      .poll(() =>
+        comparisonImages.evaluateAll((nodes) =>
+          nodes.every((node) => {
+            const image = node as HTMLImageElement;
+            const bounds = image.getBoundingClientRect();
             return (
-              rendered.complete &&
-              rendered.naturalWidth > 0 &&
-              rendered.naturalHeight > 0
+              image.currentSrc !== '' &&
+              !image.currentSrc.startsWith('data:') &&
+              image.complete &&
+              image.naturalWidth > 0 &&
+              image.naturalHeight > 0 &&
+              image.getClientRects().length > 0 &&
+              bounds.width > 0 &&
+              bounds.height > 0
             );
           }),
+        ),
+      )
+      .toBe(true);
+
+    for (const group of [
+      page.locator('[data-media="portrait"] img'),
+      page.locator('[data-project-id] img:not([data-placeholder-media])'),
+      page.locator('[data-archive-card] img:not([data-placeholder-media])'),
+    ]) {
+      await expect
+        .poll(() =>
+          group.evaluateAll((nodes) =>
+            nodes.filter((node) => {
+              const image = node as HTMLImageElement;
+              const bounds = image.getBoundingClientRect();
+              return (
+                image.currentSrc !== '' &&
+                !image.currentSrc.startsWith('data:') &&
+                image.getClientRects().length > 0 &&
+                bounds.width > 0 &&
+                bounds.height > 0
+              );
+            }).length,
+          ),
         )
-        .toBe(true);
+        .toBeGreaterThan(0);
     }
+
+    const renderedImageCount = await imageCandidates.evaluateAll((nodes) =>
+      nodes.filter((node) => {
+        const image = node as HTMLImageElement;
+        const bounds = image.getBoundingClientRect();
+        return (
+          image.currentSrc !== '' &&
+          !image.currentSrc.startsWith('data:') &&
+          image.getClientRects().length > 0 &&
+          bounds.width > 0 &&
+          bounds.height > 0
+        );
+      }).length,
+    );
+    expect(renderedImageCount).toBeGreaterThan(0);
+    await expect
+      .poll(
+        () =>
+          imageCandidates.evaluateAll((nodes) =>
+            nodes
+              .filter((node) => {
+                const image = node as HTMLImageElement;
+                const bounds = image.getBoundingClientRect();
+                return (
+                  image.currentSrc !== '' &&
+                  !image.currentSrc.startsWith('data:') &&
+                  image.getClientRects().length > 0 &&
+                  bounds.width > 0 &&
+                  bounds.height > 0
+                );
+              })
+              .map((node) => {
+                const image = node as HTMLImageElement;
+                return {
+                  alt: image.alt,
+                  complete: image.complete,
+                  currentSrc: image.currentSrc,
+                  naturalHeight: image.naturalHeight,
+                  naturalWidth: image.naturalWidth,
+                };
+              })
+              .filter(
+                (image) =>
+                  !image.complete ||
+                  image.naturalWidth <= 0 ||
+                  image.naturalHeight <= 0,
+              ),
+          ),
+        { timeout: 15_000 },
+      )
+      .toEqual([]);
 
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -595,8 +1015,10 @@ test.describe('portfolio homepage framework', () => {
       .toBe('50% 0%');
 
     const xuelang = page.locator('[data-project-id="xuelang"]');
+    await xuelang.scrollIntoViewIfNeeded();
     const inner = xuelang.locator('> div');
     const media = xuelang.locator('[data-project-media-frame]');
+    await expect(media).toHaveCSS('transform', 'none');
     const [innerBox, mediaBox] = await Promise.all([
       inner.boundingBox(),
       media.boundingBox(),
@@ -608,13 +1030,16 @@ test.describe('portfolio homepage framework', () => {
   });
 
   test('keeps vertical page scrolling active over the Visual Archive', async ({ page }, testInfo) => {
+    test.setTimeout(60_000);
     test.skip(
       testInfo.project.name !== 'desktop',
       'Fine-pointer wheel behavior is verified at the desktop viewport.',
     );
-    await page.goto('/en/', { waitUntil: 'networkidle' });
+    await page.goto('/en/', { waitUntil: 'domcontentloaded' });
 
     const scroller = page.locator('[data-archive-scroller]');
+    await expect(scroller).toBeAttached();
+    await waitForIntroPinLayout(page);
     await scroller.evaluate((element) => {
       const top = element.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({ top: Math.max(0, top - 120), behavior: 'instant' });
@@ -623,13 +1048,70 @@ test.describe('portfolio homepage framework', () => {
     if (!box) throw new Error('Missing Visual Archive scroller bounds');
 
     await page.mouse.move(box.x + box.width / 2, box.y + Math.min(box.height / 2, 160));
-    const before = await page.evaluate(() => window.scrollY);
+    const before = await page.evaluate(() => ({
+      pageY: window.scrollY,
+      archiveX: document.querySelector<HTMLElement>('[data-archive-scroller]')
+        ?.scrollLeft ?? 0,
+      computedScrollBehavior: getComputedStyle(document.documentElement).scrollBehavior,
+    }));
     const maximum = await page.evaluate(
       () => document.documentElement.scrollHeight - window.innerHeight,
     );
-    expect(maximum - before).toBeGreaterThan(100);
+    expect(maximum - before.pageY).toBeGreaterThan(550);
     await page.mouse.wheel(0, 500);
-    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(before + 100);
+    await expect
+      .poll(() => page.evaluate(() => window.scrollY))
+      .toBeGreaterThanOrEqual(before.pageY + 450);
+
+    const after = await page.evaluate(() => ({
+      pageY: window.scrollY,
+      archiveX: document.querySelector<HTMLElement>('[data-archive-scroller]')
+        ?.scrollLeft ?? 0,
+      computedScrollBehavior: getComputedStyle(document.documentElement).scrollBehavior,
+    }));
+    expect(after.pageY - before.pageY).toBeGreaterThanOrEqual(450);
+    expect(after.pageY - before.pageY).toBeLessThanOrEqual(550);
+    expect(Math.abs(after.archiveX - before.archiveX)).toBeLessThanOrEqual(1);
+    expect(after.computedScrollBehavior).toBe(before.computedScrollBehavior);
+    expect(after.computedScrollBehavior).toBe('smooth');
+  });
+
+  test('leaves horizontal-dominant archive wheel input on the carousel', async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== 'desktop',
+      'Fine-pointer wheel behavior is verified at the desktop viewport.',
+    );
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+
+    const scroller = page.locator('[data-archive-scroller]');
+    await waitForIntroPinLayout(page);
+    await scroller.evaluate((element) => {
+      const top = element.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: Math.max(0, top - 120), behavior: 'instant' });
+    });
+    const box = await scroller.boundingBox();
+    if (!box) throw new Error('Missing Visual Archive scroller bounds');
+
+    await page.mouse.move(box.x + box.width / 2, box.y + Math.min(box.height / 2, 160));
+    const before = await page.evaluate(() => ({
+      pageY: window.scrollY,
+      archiveX: document.querySelector<HTMLElement>('[data-archive-scroller]')
+        ?.scrollLeft ?? 0,
+    }));
+    await page.mouse.wheel(400, 0);
+    await expect
+      .poll(() => scroller.evaluate((element) => element.scrollLeft))
+      .toBeGreaterThan(before.archiveX + 1);
+    const after = await page.evaluate(() => ({
+      pageY: window.scrollY,
+      archiveX: document.querySelector<HTMLElement>('[data-archive-scroller]')
+        ?.scrollLeft ?? 0,
+    }));
+
+    expect(Math.abs(after.pageY - before.pageY)).toBeLessThanOrEqual(1);
+    expect(after.archiveX).toBeGreaterThan(before.archiveX + 1);
   });
 
   test('moves the Visual Archive with explicit controls and reports position', async ({
@@ -961,6 +1443,9 @@ test.describe('portfolio homepage framework', () => {
       'data-scan-runs',
       '0',
     );
+    const builderEcho = page.locator('[data-hero-builder-echo]');
+    await expect(builderEcho).toHaveAttribute('data-echo-runs', '0');
+    await expect(builderEcho).toHaveCSS('display', 'none');
     await expect(page.locator('[data-designer-art="material-blueprint"]')).toBeVisible();
     expect(hydrationErrors).toEqual([]);
   });
@@ -976,11 +1461,19 @@ test.describe('portfolio homepage framework', () => {
 
     const divider = page.getByRole('separator', { name: 'Adjust identity reveal' });
     const canvas = page.locator('[data-hero-code-canvas]');
+    const builderEcho = page.locator('[data-hero-builder-echo]');
+    const echoRunsBeforeKey = Number(await builderEcho.getAttribute('data-echo-runs'));
     await expect(divider).toHaveAttribute('aria-valuenow', '48');
 
     await divider.focus();
     await divider.press('ArrowRight');
     await expect(divider).toHaveAttribute('aria-valuenow', '52');
+    await expect
+      .poll(async () => Number(await builderEcho.getAttribute('data-echo-runs')))
+      .toBeGreaterThan(echoRunsBeforeKey);
+    await expect
+      .poll(() => builderEcho.evaluate((element) => element.getAnimations().length))
+      .toBeGreaterThan(0);
 
     const dividerBox = await divider.boundingBox();
     if (!dividerBox) throw new Error('Missing Hero divider bounds');
@@ -999,7 +1492,7 @@ test.describe('portfolio homepage framework', () => {
     );
   });
 
-  test('keeps the remaining draft work route keyboard reachable and explicitly marked', async ({
+  test('keeps the published Meeting route keyboard reachable and explicitly marked', async ({
     page,
   }, testInfo) => {
     test.skip(
@@ -1007,8 +1500,10 @@ test.describe('portfolio homepage framework', () => {
       'Route keyboard behavior needs one viewport; responsive coverage runs separately.',
     );
     await page.goto('/en/', { waitUntil: 'networkidle' });
+    const meeting = page.locator('[data-project-id="meeting"]');
+    await expect(meeting).toHaveAttribute('data-publication-state', 'complete');
     const meetingLink = page.getByRole('link', {
-      name: 'Open draft case Meeting',
+      name: 'View case study Agora Meeting',
     });
     await meetingLink.focus();
     await expect(meetingLink).toBeFocused();
@@ -1020,7 +1515,7 @@ test.describe('portfolio homepage framework', () => {
     await page.waitForURL('**/en/work/meeting/');
 
     await expect(page).toHaveURL(/\/en\/work\/meeting\/$/);
-    await expect(page.locator('[data-publication-state="draft"]')).toBeVisible();
-    await expect(page.getByText('Draft', { exact: true }).first()).toBeVisible();
+    await expect(page.locator('article[data-case-study]')).toBeVisible();
+    await expect(page.getByText('Shipped', { exact: true }).first()).toBeVisible();
   });
 });

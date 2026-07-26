@@ -121,8 +121,6 @@ export interface Dictionary {
     downloadResume: string;
     viewPdf: string;
     downloadPdf: string;
-    previous: string;
-    next: string;
   };
   notFound: {
     title: string;
@@ -259,7 +257,7 @@ export const enDictionary = {
         ],
       },
       aidx: {
-        company: 'Singapore AIDX',
+        company: 'Singapore AI company',
         kind: 'Singapore AI company',
         title: 'AIDX',
         proposition:
@@ -362,8 +360,6 @@ export const enDictionary = {
     downloadResume: 'Download resume',
     viewPdf: 'View PDF',
     downloadPdf: 'Download PDF',
-    previous: 'Previous project',
-    next: 'Next project',
   },
   notFound: {
     title: 'Page not found',

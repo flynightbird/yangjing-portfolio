@@ -18,7 +18,9 @@ export default defineConfig({
   },
   webServer: {
     command: `npm run dev -- --port ${port}`,
-    url: `${baseURL}/en/work/call-agent/`,
+    // Probe the homepage used by this suite and allow a full cold Next compile.
+    url: `${baseURL}/en/`,
+    timeout: 120_000,
     reuseExistingServer: process.env.PW_REUSE_SERVER === '1',
   },
   projects: [

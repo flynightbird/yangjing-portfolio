@@ -5,9 +5,51 @@ import { AboutPage } from '@/components/about/about-page';
 
 afterEach(cleanup);
 
+function expectAboutRevealStructure(
+  container: HTMLElement,
+  sectionTitles: readonly [string, string, string],
+) {
+  const aboutPage = container.querySelector('[data-about-page]');
+  const hero = container.querySelector('[data-about-hero]');
+  const revealBoundaries = container.querySelectorAll(
+    '[data-about-page] [data-scroll-reveal]',
+  );
+
+  expect(aboutPage).not.toBeNull();
+  expect(hero).not.toBeNull();
+  expect(hero?.closest('[data-scroll-reveal]')).toBeNull();
+  expect(hero?.querySelectorAll('[data-scroll-reveal]')).toHaveLength(0);
+  expect(revealBoundaries).toHaveLength(3);
+
+  const sectionRevealBoundaries = sectionTitles.map((title) =>
+    within(aboutPage as HTMLElement)
+      .getByRole('heading', { level: 2, name: title })
+      .closest('[data-scroll-reveal]'),
+  );
+  sectionRevealBoundaries.forEach((boundary) => expect(boundary).not.toBeNull());
+  expect(new Set(sectionRevealBoundaries).size).toBe(3);
+
+  revealBoundaries.forEach((boundary) => {
+    expect(boundary.querySelectorAll('[data-scroll-reveal-group="text"]')).toHaveLength(1);
+    expect(boundary.querySelectorAll('[data-scroll-reveal-group="media"]')).toHaveLength(1);
+  });
+}
+
 describe('AboutPage', () => {
   it('presents the approved English capability and career structure', () => {
     const { container } = render(<AboutPage locale="en" />);
+
+    expectAboutRevealStructure(container, [
+      'The design problems I solve',
+      'Design value, beyond the screen',
+      'Step by step, to where I am now',
+    ]);
+    const capabilityOrbit = container.querySelector('[data-about-orbit-background]');
+    expect(capabilityOrbit).toHaveAttribute(
+      'data-about-orbit-background',
+      '/images/about/about-hero-blue-bg.png',
+    );
+    expect(capabilityOrbit).toHaveAttribute('data-orbit-material', 'ice-glass');
 
     expect(
       screen.getByRole('heading', {
@@ -25,11 +67,11 @@ describe('AboutPage', () => {
       expect(card.querySelector('svg')).not.toBeNull();
       expect(card.querySelectorAll('[data-card-corner]')).toHaveLength(2);
     });
-    expect(capabilitySection?.querySelector('[data-transform-arrow]')).toHaveAttribute(
-      'd',
-      'M106 55h37m-5-4.5 5 4.5-5 4.5',
-    );
-    expect(capabilitySection?.querySelector('[data-transform-spark]')).not.toBeNull();
+    const aiWorkflow = capabilitySection?.querySelector('[data-ai-workflow="continuous-signal"]');
+    expect(aiWorkflow).not.toBeNull();
+    expect(aiWorkflow?.querySelectorAll('[data-workflow-system]')).toHaveLength(2);
+    expect(aiWorkflow?.querySelector('[data-workflow-path]')).not.toBeNull();
+    expect(capabilitySection?.querySelector('[data-transform-spark]')).toBeNull();
     expect(screen.getByText('Make complexity feel clear')).toBeVisible();
     expect(screen.getByText('Expressive interfaces')).toBeVisible();
     expect(screen.getByText('Design and build, as one workflow.')).toBeVisible();
@@ -42,25 +84,79 @@ describe('AboutPage', () => {
     expect(screen.getByText('2022.07–Present')).toBeVisible();
     expect(screen.getByText('Alibaba · TDesign')).toBeVisible();
     expect(screen.getByText('Experience Design')).toBeVisible();
-    expect(screen.getByText('Not complex production backends')).toBeVisible();
+    expect(screen.getByText('Independent experience validation')).toBeVisible();
+    expect(screen.getByText('Research & Design')).toBeVisible();
+    expect(screen.queryByText('Research & Interaction')).not.toBeInTheDocument();
+    expect(screen.getByText('Product Designer (UI/UX)')).toBeVisible();
+
+    const agoraLink = within(timeline as HTMLElement).getByRole('link', { name: 'Agora' });
+    expect(agoraLink).toHaveAttribute('href', 'https://www.agora.io/');
+    expect(agoraLink).toHaveAttribute('target', '_blank');
+    expect(agoraLink).toHaveAttribute('rel', 'noreferrer');
+    expect(
+      screen.queryByText('全球领先的对话式 AI 与实时音视频云服务商', { exact: false }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Rapidly build interactive HTML with product logic using Codex and Claude.',
+      ),
+    ).toBeVisible();
+    expect(
+      screen.queryByText('* Outcomes are self-reported from my resume.'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Not complex production backends')).not.toBeInTheDocument();
+    const evidenceSection = screen
+      .getByRole('heading', { name: 'Design value, beyond the screen' })
+      .closest('section');
+    expect(evidenceSection).not.toBeNull();
+    expect(within(evidenceSection as HTMLElement).getAllByRole('article')).toHaveLength(3);
     expect(container).not.toHaveTextContent(/AIDX/i);
     expect(container).not.toHaveTextContent(/\bship\b/i);
   });
 
-  it('provides the Chinese version without changing the evidence boundary', () => {
+  it('provides the approved Chinese evidence copy', () => {
     const { container } = render(<AboutPage locale="zh" />);
 
+    expectAboutRevealStructure(container, [
+      '我解决的设计问题',
+      '设计价值，不止于屏幕',
+      '一步一步，走到现在',
+    ]);
     expect(
       screen.getByRole('heading', {
         level: 1,
         name: 'AI 原生产品设计师，让产品判断成为可体验的现实。',
       }),
     ).toBeVisible();
-    expect(screen.getByText('不承担复杂生产级后端开发')).toBeVisible();
+    expect(screen.getByText('可独立完成体验验证')).toBeVisible();
+    expect(
+      screen.getByText('通过 Codex、Claude 快速搭建涵盖产品逻辑的交互式 HTML'),
+    ).toBeVisible();
+    expect(
+      screen.queryByText('* 结果数据来自个人履历中的自述。'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('不承担复杂生产级后端开发')).not.toBeInTheDocument();
     expect(screen.getByText('阿里巴巴·躺平设计家')).toBeVisible();
     expect(screen.getByText('体验设计')).toBeVisible();
     expect(screen.getByText('字节跳动')).toBeVisible();
     expect(screen.getByText('声网 Agora')).toBeVisible();
+    expect(screen.getByText('研究与设计')).toBeVisible();
+    expect(screen.queryByText('研究与交互')).not.toBeInTheDocument();
+    expect(screen.getByText('产品设计师（UI/UX）')).toBeVisible();
+
+    const timeline = container.querySelector('[data-about-timeline]');
+    expect(timeline).not.toBeNull();
+    const shengwangLink = within(timeline as HTMLElement).getByRole('link', {
+      name: '声网 Agora',
+    });
+    expect(shengwangLink).toHaveAttribute('href', 'https://www.shengwang.cn/');
+    expect(shengwangLink).toHaveAttribute('target', '_blank');
+    expect(shengwangLink).toHaveAttribute('rel', 'noreferrer');
+    expect(
+      within(timeline as HTMLElement).getByText(
+        '（全球领先的对话式 AI 与实时音视频云服务商）',
+      ),
+    ).toBeVisible();
     expect(container).not.toHaveTextContent(/AIDX/i);
   });
 });

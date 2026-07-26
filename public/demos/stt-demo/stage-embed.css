@@ -65,6 +65,11 @@ html[data-stt-embed='stage'] .snip-side {
   display: grid !important;
 }
 
+html[data-stt-embed='stage'] .snip-stage {
+  align-content: center;
+  transform: translateY(3%);
+}
+
 @media (max-height: 360px) {
   html[data-stt-embed='stage'] .snip {
     grid-template-columns: minmax(0, 1fr) min(140px, 32%);

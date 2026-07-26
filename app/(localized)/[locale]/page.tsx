@@ -4,8 +4,8 @@ import { DualIdentityHero } from '@/components/home/dual-identity-hero';
 import { FeaturedWork } from '@/components/home/featured-work';
 import { IntroStory } from '@/components/home/intro-story';
 import { PointerField } from '@/components/home/pointer-field';
-import { SectionReveal } from '@/components/home/section-reveal';
 import { VisualArchive } from '@/components/home/visual-archive';
+import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { isLocale } from '@/lib/i18n/locales';
 
 import styles from '@/components/home/home.module.css';
@@ -33,9 +33,9 @@ export default async function LocaleHomePage({ params }: LocaleHomePageProps) {
         data-archive-bridge
         data-pointer-suppress
       >
-        <SectionReveal tone="dark">
+        <ScrollReveal>
           <VisualArchive locale={locale} />
-        </SectionReveal>
+        </ScrollReveal>
       </div>
     </div>
   );

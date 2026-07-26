@@ -1,6 +1,4 @@
 .root {
-  --footer-reveal-progress: 0;
-  --footer-reveal-offset: 8%;
   position: relative;
   min-height: min(46rem, 86dvh);
   overflow: hidden;
@@ -12,48 +10,31 @@
 .revealLayer {
   position: relative;
   min-height: inherit;
+  background:
+    radial-gradient(120% 105% at -18% 116%, rgba(47, 34, 62, 0.98) 0 36%, transparent 69%),
+    radial-gradient(105% 92% at 112% -8%, rgba(184, 177, 193, 0.9) 0 31%, transparent 68%),
+    radial-gradient(92% 88% at 72% 92%, rgba(119, 103, 139, 0.82) 0 30%, transparent 70%),
+    radial-gradient(105% 92% at 38% 34%, rgba(82, 67, 102, 0.88) 0 32%, transparent 72%),
+    #211a26;
   isolation: isolate;
 }
 
-:global(body:has([data-homepage]) #main-content) {
-  position: relative;
-  z-index: 1;
-}
-
-:global(body:has([data-homepage]) [data-homepage]) {
-  overflow: clip;
-  border-radius: 0 0 32px 32px;
-  background: var(--theme-canvas);
-  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.28);
-}
-
 :global(body:has([data-homepage])) .root {
-  position: sticky;
-  z-index: 0;
-  bottom: 0;
-  padding-top: 32px;
-  margin-top: -32px;
+  position: relative;
+  min-height: 42rem;
+  padding: 0;
+  margin: 0;
+  background: #19161b;
 }
 
 :global(body:has([data-homepage])) .revealLayer {
-  transform: translate3d(0, var(--footer-reveal-offset), 0);
-  will-change: transform;
-}
-
-.liquid {
-  z-index: -1;
-}
-
-.root::after {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: rgba(14, 16, 15, 0.24);
-  content: '';
-  pointer-events: none;
+  overflow: hidden;
+  background: #19161b;
 }
 
 .inner {
+  position: relative;
+  z-index: 1;
   display: grid;
   width: min(100%, var(--content-max));
   min-height: inherit;
@@ -79,37 +60,263 @@
   max-width: 15ch;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(3rem, 7vw, 6.75rem);
+  font-size: clamp(2.25rem, 5vw, 4.75rem);
   font-weight: 700;
-  line-height: 0.94;
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+
+.emailActions {
+  display: inline-grid;
+  max-width: 100%;
+  grid-template-columns: minmax(0, auto) 1.5rem 1.5rem;
+  align-items: center;
+  column-gap: 0.25rem;
+  margin-top: clamp(2rem, 5vh, 4rem);
 }
 
 .email {
-  display: inline-flex;
-  min-height: 3.5rem;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: clamp(2rem, 5vh, 4rem);
+  min-width: 0;
+  padding-block: 0.625rem;
   border-bottom: 1px solid rgba(244, 245, 242, 0.72);
   color: var(--color-paper);
   font-size: clamp(1.15rem, 2vw, 1.75rem);
+  overflow-wrap: anywhere;
   text-decoration: none;
+}
+
+.copyButton,
+.emailArrow {
+  display: grid;
+  width: 1.5rem;
+  height: 1.5rem;
+  min-height: 1.5rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--color-paper);
+  text-decoration: none;
+  translate: 0 3px;
+}
+
+.copyButton {
+  cursor: pointer;
+  transition: background-color 180ms var(--ease-out);
+}
+
+.copyButton:hover,
+.copyButton:focus-visible {
+  background: rgba(244, 245, 242, 0.12);
+}
+
+.copyButton:focus-visible,
+.emailArrow:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .emailIcon {
   display: block;
-  width: 1.75rem;
-  height: 1.75rem;
-  flex: 0 0 1.75rem;
-  align-self: center;
-  background: currentColor;
-  mask: url('/icons/remix/arrow-right-up-line.svg') center / contain no-repeat;
+  width: 1rem;
+  height: 1rem;
   transition: transform 350ms var(--ease-out);
 }
 
-.email:hover .emailIcon,
-.email:focus-visible .emailIcon {
-  transform: translate(0.2rem, -0.2rem);
+.emailArrow:hover .emailIcon,
+.emailArrow:focus-visible .emailIcon {
+  transform: translate(0.125rem, -0.125rem);
+}
+
+.emailFeedback {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.homeContacts,
+.liquidRibbon,
+.liquidSheen {
+  display: none;
+}
+
+:global(body:has([data-homepage])) .emailActions {
+  display: none;
+}
+
+:global(body:has([data-homepage])) .homeContacts {
+  display: grid;
+  grid-template-columns: minmax(0, 1.28fr) minmax(0, 0.72fr);
+  gap: 0.75rem;
+  margin-top: clamp(2.25rem, 5vh, 3rem);
+}
+
+:global(body:has([data-homepage])) .liquidRibbon,
+:global(body:has([data-homepage])) .liquidSheen {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+:global(body:has([data-homepage])) .liquidRibbon {
+  z-index: 0;
+  width: 120%;
+  height: 13rem;
+  border-radius: 44% 56% 63% 37% / 57% 42% 58% 43%;
+  filter: blur(26px);
+}
+
+:global(body:has([data-homepage])) .ribbonOne {
+  top: -4.5rem;
+  left: -48%;
+  background: #56445f;
+  opacity: 0.56;
+  animation: footer-river-one 9s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+}
+
+:global(body:has([data-homepage])) .ribbonTwo {
+  right: -52%;
+  bottom: -6rem;
+  background: #392a45;
+  opacity: 0.72;
+  animation: footer-river-two 12s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+}
+
+:global(body:has([data-homepage])) .liquidSheen {
+  z-index: 0;
+  top: 18%;
+  right: -32%;
+  width: 86%;
+  height: 6.25rem;
+  border-radius: 50%;
+  background: rgba(144, 122, 156, 0.16);
+  filter: blur(24px);
+  animation: footer-sheen 10s ease-in-out infinite alternate;
+}
+
+.contactCapsule {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.625rem 0.625rem 1.125rem;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(34, 27, 38, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.11),
+    inset 0 -16px 28px rgba(14, 9, 17, 0.18),
+    0 18px 38px rgba(8, 5, 10, 0.18);
+  backdrop-filter: blur(26px) saturate(112%);
+  isolation: isolate;
+}
+
+.contactCapsule::before {
+  position: absolute;
+  z-index: -1;
+  top: -95%;
+  left: -28%;
+  width: 72%;
+  height: 260%;
+  border-radius: 44% 56% 62% 38%;
+  background: rgba(110, 87, 124, 0.2);
+  content: '';
+  filter: blur(12px);
+  animation: capsule-flow 8s ease-in-out infinite alternate;
+}
+
+.contactValue small,
+.contactValue strong {
+  display: block;
+}
+
+.contactValue {
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.contactValue small {
+  color: rgba(241, 239, 242, 0.48);
+  font: 0.625rem/1.2 var(--font-mono);
+  text-transform: uppercase;
+}
+
+.contactValue strong {
+  margin-top: 0.25rem;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.93);
+  font-size: 0.875rem;
+  font-weight: 520;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contactActions {
+  display: flex;
+  gap: 0.3125rem;
+}
+
+.homeCopyButton,
+.homeMailAction {
+  position: relative;
+  display: grid;
+  width: 2.125rem;
+  height: 2.125rem;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.075);
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  place-items: center;
+  isolation: isolate;
+}
+
+.homeCopyButton::before,
+.homeMailAction::before {
+  position: absolute;
+  z-index: -1;
+  inset: 42% -35% -70%;
+  border-radius: 48% 52% 38% 62%;
+  background: #725c7e;
+  content: '';
+  transform: translateY(100%) rotate(-12deg);
+  transition: transform 480ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.homeCopyButton:hover::before,
+.homeCopyButton:focus-visible::before,
+.homeMailAction:hover::before,
+.homeMailAction:focus-visible::before {
+  transform: translateY(-45%) rotate(8deg);
+}
+
+.homeCopyButton:focus-visible,
+.homeMailAction:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.72);
+  outline-offset: 2px;
+}
+
+.homeMailAction svg {
+  transition: transform 220ms var(--ease-out);
+}
+
+.homeMailAction:hover svg,
+.homeMailAction:focus-visible svg {
+  transform: translate(0.125rem, -0.125rem);
 }
 
 .meta {
@@ -127,18 +334,87 @@
 
 @media (max-width: 767px) {
   .root {
-    --footer-reveal-offset: 4%;
     min-height: 42rem;
   }
 
+  .emailActions {
+    width: min(100%, 30rem);
+    grid-template-columns: minmax(0, 1fr) 1.5rem 1.5rem;
+    column-gap: 0.125rem;
+  }
+
+  .email {
+    font-size: 1rem;
+  }
+
+  :global(body:has([data-homepage])) .homeContacts {
+    grid-template-columns: 1fr;
+  }
+
+  :global(body:has([data-homepage])) .inner {
+    padding-inline: 1.25rem;
+  }
+
+  .contactValue strong {
+    overflow-wrap: anywhere;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :global(body:has([data-homepage])) .revealLayer {
-    transform: none;
+  :global(body:has([data-homepage])) .liquidRibbon,
+  :global(body:has([data-homepage])) .liquidSheen,
+  .contactCapsule::before {
+    animation: none;
   }
 
-  .emailIcon {
+  .copyButton,
+  .emailIcon,
+  .homeCopyButton,
+  .homeMailAction,
+  .homeCopyButton::before,
+  .homeMailAction::before {
     transition: none;
+  }
+}
+
+@keyframes footer-river-one {
+  from {
+    transform: translate3d(0, 0, 0) rotate(-7deg) scale(1, 0.86);
+  }
+
+  to {
+    transform: translate3d(46%, 0.75rem, 0) rotate(8deg) scale(0.95, 1.12);
+  }
+}
+
+@keyframes footer-river-two {
+  from {
+    transform: translate3d(0, 0, 0) rotate(5deg) scale(1.05, 0.86);
+  }
+
+  to {
+    transform: translate3d(-44%, -0.5rem, 0) rotate(-8deg) scale(1.08, 0.94);
+  }
+}
+
+@keyframes footer-sheen {
+  from {
+    opacity: 0.1;
+    transform: translate3d(0, 0, 0) rotate(-8deg) scaleX(0.82);
+  }
+
+  to {
+    opacity: 0.22;
+    transform: translate3d(-52%, 2.875rem, 0) rotate(5deg) scaleX(1.08);
+  }
+}
+
+@keyframes capsule-flow {
+  from {
+    transform: translateX(-12%) rotate(18deg) scale(0.84, 1);
+  }
+
+  to {
+    transform: translateX(96%) rotate(-8deg) scale(1.12, 0.82);
   }
 }

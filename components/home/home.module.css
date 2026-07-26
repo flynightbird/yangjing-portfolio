@@ -145,9 +145,10 @@
 .heroPortrait {
   position: absolute;
   z-index: 3;
-  inset-block-start: 5.25rem;
+  inset-block-start: auto;
+  inset-block-end: 0;
   inset-inline-start: 50%;
-  width: min(55vw, 46.875rem);
+  width: min(49.5vw, 42.1875rem);
   max-width: none;
   height: auto;
   pointer-events: none;
@@ -156,7 +157,14 @@
 }
 
 .builderField .heroPortrait {
-  filter: grayscale(1) contrast(1.16) brightness(0.74);
+  filter: grayscale(0.28) saturate(0.82) contrast(1.08) brightness(0.9);
+}
+
+.builderField .builderEcho {
+  z-index: 2;
+  opacity: 0;
+  filter: grayscale(0.2) saturate(0.9) contrast(1.02) brightness(0.9) blur(12px);
+  will-change: opacity, transform;
 }
 
 .designerField .heroPortrait {
@@ -318,8 +326,9 @@
   }
 
   .heroPortrait {
-    inset-block-start: 9rem;
-    width: min(145vw, 38rem);
+    inset-block-start: auto;
+    inset-block-end: 0;
+    width: min(130.5vw, 34.2rem);
   }
 
   .heroRole {
@@ -380,6 +389,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .builderEcho {
+    display: none;
+  }
+
   .blueprintPiece,
   .blueprintPath {
     opacity: 0.8;
@@ -670,6 +683,11 @@
   min-width: 0;
 }
 
+.flagshipMediaReveal {
+  width: 100%;
+  min-width: 0;
+}
+
 .flagshipCopy {
   display: flex;
   min-height: clamp(14.5rem, 20vw, 17rem);
@@ -711,13 +729,13 @@
   color: var(--projects-ink);
 }
 
-.flagshipTitleLink h2 {
+.coreProjectTitle {
   margin: 0;
-  font-family: var(--font-body);
-  font-size: clamp(3.25rem, 5.5vw, 4.75rem);
-  font-weight: 700;
-  line-height: 0.9;
-  text-wrap: nowrap;
+  font-family: var(--font-display);
+  font-size: var(--font-size-title);
+  font-weight: 400;
+  line-height: var(--line-height-title);
+  text-wrap: balance;
 }
 
 .flagshipSummary {
@@ -912,39 +930,158 @@ a.whiteCta:focus-visible {
 
 .flagshipConvoMedia {
   z-index: 1;
-  background: #dce9ef;
+  background-color: #c7c7c1;
+  background-image: none;
   transform-origin: right center;
 }
 
-.flagshipMedia img {
-  transition: transform 700ms var(--ease-out);
-}
-
-.flagshipConvoWeb {
+.convoHomeMedia {
   position: absolute;
-  right: -16%;
-  bottom: -1px;
-  width: 105%;
-  height: 86%;
-  object-fit: cover;
-  object-position: 54% center;
-  transform-origin: bottom right;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
 }
 
-.flagshipConvoPhone {
+.convoCardBackground {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  user-select: none;
+}
+
+.convoWebBrowser {
+  position: absolute;
+  z-index: 1;
+  top: clamp(1.25rem, 3vw, 1.75rem);
+  right: clamp(1rem, 3vw, 1.75rem);
+  bottom: -1rem;
+  left: clamp(1rem, 3vw, 1.75rem);
+  overflow: hidden;
+  border: 1px solid rgba(32, 36, 35, 0.16);
+  border-radius: 15px 15px 18px 18px;
+  background: #f4f5f3;
+  box-shadow:
+    0 2rem 4.5rem rgba(52, 49, 58, 0.2),
+    0 0.4rem 1.2rem rgba(52, 49, 58, 0.1);
+}
+
+.convoBrowserBar {
+  display: grid;
+  height: 38px;
+  grid-template-columns: 4.5rem minmax(0, 1fr) 4.5rem;
+  align-items: center;
+  border-bottom: 1px solid #e3e5e3;
+  background: rgba(250, 250, 249, 0.97);
+  color: #777d7a;
+}
+
+.convoTrafficLights {
+  display: flex;
+  gap: 5px;
+  padding-left: 14px;
+}
+
+.convoTrafficLights i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d0d3d1;
+}
+
+.convoTrafficLights i:first-child {
+  background: #ed766f;
+}
+
+.convoTrafficLights i:nth-child(2) {
+  background: #e4bd5d;
+}
+
+.convoTrafficLights i:last-child {
+  background: #69b977;
+}
+
+.convoAddress {
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px 1rem;
+  border: 1px solid #e2e4e2;
+  border-radius: 999px;
+  background: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.convoBrowserAction {
+  justify-self: end;
+  padding-right: 15px;
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+}
+
+.convoWebViewport {
+  position: absolute;
+  inset: 38px 0 0;
+  overflow: hidden;
+  border-radius: 0 0 17px 17px;
+  background: #f1f2f0;
+}
+
+.convoWebPicture,
+.convoWebImage {
+  display: block;
+  width: 100%;
+}
+
+.convoWebImage {
+  height: auto;
+  object-fit: contain;
+  object-position: left top;
+}
+
+.convoPhone {
   position: absolute;
   z-index: 2;
-  right: 7%;
-  bottom: 1.25rem;
-  width: 8.25rem;
-  height: 16.875rem;
-  object-fit: cover;
-  object-position: 68% center;
-  border: 5px solid #222428;
-  border-radius: 1.875rem;
-  box-shadow: 0 1.75rem 4.375rem rgba(0, 0, 0, 0.36);
+  right: 1.25rem;
+  bottom: 1rem;
+  width: clamp(6.75rem, 9.2vw, 8.25rem);
+  aspect-ratio: 375 / 812;
+  overflow: hidden;
+  border: 4px solid #222428;
+  border-radius: 26px;
+  background: #222428;
+  box-shadow: 0 1.5rem 3.5rem rgba(0, 0, 0, 0.34);
   transform: rotate(2deg);
   transform-origin: bottom center;
+}
+
+.convoPhonePicture,
+.convoPhoneImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 26px;
+}
+
+.convoPhoneImage {
+  object-fit: cover;
+  object-position: center top;
+}
+
+.convoMobileLoop,
+.convoMobilePoster {
+  position: relative;
+  z-index: 1;
+  display: none;
 }
 
 .flagshipStage[data-flagship-focus='call-agent'] .flagshipCallMedia {
@@ -971,18 +1108,10 @@ a.whiteCta:focus-visible {
   transform: translateX(-7px) scaleX(1.055) scaleY(1.018);
 }
 
-.flagshipStage[data-flagship-focus='convo-ai'] .flagshipConvoWeb,
-.flagshipStage[data-flagship-focus='convo-ai'] .flagshipConvoPhone {
-  transform: scale(1.025);
-}
-
-.flagshipStage[data-flagship-focus='convo-ai'] .flagshipConvoPhone {
-  transform: rotate(2deg) scale(1.025);
-}
-
-.flagshipSource {
-  margin: 1rem 0 0;
-  color: #777c78;
+.flagshipRole {
+  margin: 0.75rem 0 0;
+  color: #8f948f;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   line-height: 1.5;
 }
@@ -1001,33 +1130,33 @@ a.whiteCta:focus-visible {
     min-height: 14.75rem;
   }
 
-  .flagshipTitleLink h2 {
-    font-size: clamp(3rem, 15vw, 4rem);
-  }
-
   .flagshipMedia {
     height: min(72vw, 26.25rem);
     min-height: 20rem;
   }
 
-  .flagshipStage[data-flagship-focus] .flagshipMedia,
-  .flagshipStage[data-flagship-focus] .flagshipMedia img {
+  .flagshipStage[data-flagship-focus] .flagshipMedia {
     transform: none;
     opacity: 1;
   }
 
-  .flagshipStage[data-flagship-focus] .flagshipConvoPhone {
-    transform: rotate(2deg);
+  .convoWebBrowser,
+  .convoPhone {
+    display: none;
   }
 
-  .flagshipConvoWeb {
-    right: -8%;
+  .convoMobileLoop {
+    display: block;
     width: 100%;
+    height: 100%;
   }
 
-  .flagshipConvoPhone {
-    width: 7rem;
-    height: 14.375rem;
+  .convoMobileImage {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
   }
 
   .studioWindow {
@@ -1045,18 +1174,17 @@ a.whiteCta:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   .flagshipMedia,
-  .flagshipMedia img,
+  .convoMobileLoop,
   .flagshipCta svg {
     transition: none;
   }
 
-  .flagshipStage[data-flagship-focus] .flagshipMedia,
-  .flagshipStage[data-flagship-focus] .flagshipMedia img {
+  .flagshipStage[data-flagship-focus] .flagshipMedia {
     transform: none;
     opacity: 1;
   }
 
-  .flagshipStage[data-flagship-focus] .flagshipConvoPhone {
+  .convoPhone {
     transform: rotate(2deg);
   }
 
@@ -1064,6 +1192,18 @@ a.whiteCta:focus-visible {
   .flagshipStage[data-flagship-focus='call-agent'] .studioWindow {
     transform: none;
     transition: none;
+  }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .convoMobileLoop {
+    display: none;
+  }
+
+  .convoMobilePoster {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
 }
 
@@ -1169,10 +1309,6 @@ a.whiteCta:focus-visible {
   line-height: 1.4;
 }
 
-.projectCopy h2,
-.meetingHeading h2,
-.liveCopy h2,
-.buildCopy h2,
 .archiveIntro h2,
 .aboutInner h2 {
   margin: 0;
@@ -1226,14 +1362,14 @@ a.whiteCta:focus-visible {
   background: var(--theme-surface);
 }
 
-.projectMedia img {
+.projectMedia > img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 700ms var(--ease-out);
 }
 
-.projectBand:hover .projectMedia img {
+.projectBand:hover .projectMedia > img {
   transform: scale(1.012);
 }
 
@@ -1271,6 +1407,10 @@ a.whiteCta:focus-visible {
   overflow: hidden;
   border: 1px solid var(--theme-border);
   border-radius: 20px;
+}
+
+.evidence .projectMedia[data-custom-media] {
+  aspect-ratio: 1662 / 1080;
 }
 
 .meetingBand {
@@ -1361,6 +1501,14 @@ a.whiteCta:focus-visible {
   border-bottom: 1px solid var(--color-border);
 }
 
+.liveStatus {
+  margin: calc(-1 * var(--space-3)) 0 var(--space-6);
+  color: var(--color-iris-deep);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
 .liveMedia {
   grid-column: 1 / -1;
   margin: 0;
@@ -1402,7 +1550,7 @@ a.whiteCta:focus-visible {
   display: block;
   order: -1;
   min-width: 0;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1.05 / 1;
   overflow: hidden;
   border: 1px solid rgba(236, 240, 255, 0.28);
   border-radius: 20px;
@@ -1422,9 +1570,12 @@ a.whiteCta:focus-visible {
 
 .buildBrowserWindow {
   position: absolute;
-  top: 13%;
-  right: -2%;
-  width: 94%;
+  top: 4%;
+  right: 4%;
+  bottom: 0;
+  display: flex;
+  width: 92%;
+  flex-direction: column;
   overflow: hidden;
   border: 1px solid rgba(18, 24, 42, 0.14);
   border-radius: 18px 18px 0 0;
@@ -1455,9 +1606,6 @@ a.whiteCta:focus-visible {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 2 / 1;
-  object-fit: cover;
-  object-position: center 61%;
   transition: transform 700ms var(--ease-out);
 }
 
@@ -2060,6 +2208,10 @@ a.whiteCta:focus-visible {
     border-inline: 0 1px solid var(--color-carbon);
   }
 
+  .evidence .projectMedia[data-custom-media] {
+    aspect-ratio: 1662 / 1080;
+  }
+
   .archiveViewport {
     scroll-snap-type: x proximity;
   }
@@ -2102,6 +2254,7 @@ a.whiteCta:focus-visible {
 
   .buildMedia {
     order: 0;
+    aspect-ratio: 4 / 3;
   }
 
   .buildCopy {
@@ -2194,7 +2347,7 @@ a.whiteCta:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .projectMedia img,
+  .projectMedia > img,
   .buildBrowserWindow img,
   .archiveItem,
   .archiveProgress span,
@@ -2203,7 +2356,7 @@ a.whiteCta:focus-visible {
     transition: none;
   }
 
-  .projectBand:hover .projectMedia img,
+  .projectBand:hover .projectMedia > img,
   .buildMedia:hover .buildBrowserWindow img,
   .archiveItem:hover .archiveStage > img,
   .archiveItem:hover .archiveStage > button img,

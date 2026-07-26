@@ -28,7 +28,7 @@ import MeetingEn, { metadata as meetingEnMetadata } from '@/content/work/meeting
 import MeetingZh, { metadata as meetingZhMetadata } from '@/content/work/meeting.zh.mdx';
 import TangpingEn, { metadata as tangpingEnMetadata } from '@/content/work/tangping.en.mdx';
 import TangpingZh, { metadata as tangpingZhMetadata } from '@/content/work/tangping.zh.mdx';
-import { CallAgentActions } from '@/components/case-study/call-agent-actions';
+import { CallAgentLayout } from '@/components/call-agent/call-agent-layout';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
 import { MeetingLayout } from '@/components/meeting/meeting-layout';
 import { ConvoAiLayout } from '@/components/convo-ai/convo-ai-layout';
@@ -110,12 +110,12 @@ export const contentEntries: readonly ContentEntry[] = [
   {
     meta: contentMetaSchema.parse(callAgentEnMetadata),
     Component: CallAgentEn,
-    Actions: CallAgentActions,
+    Layout: CallAgentLayout,
   },
   {
     meta: contentMetaSchema.parse(callAgentZhMetadata),
     Component: CallAgentZh,
-    Actions: CallAgentActions,
+    Layout: CallAgentLayout,
   },
   {
     meta: contentMetaSchema.parse(convoAiEnMetadata),

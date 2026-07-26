@@ -31,9 +31,11 @@ jobs:
       - run: npm test
       - run: npm run test:e2e
       - run: npm run build
+        env:
+          NEXT_PUBLIC_BASE_PATH: /yangjing-portfolio
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: out
       - id: deployment
         uses: actions/deploy-pages@v4

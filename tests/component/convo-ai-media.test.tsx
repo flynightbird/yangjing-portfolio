@@ -523,7 +523,10 @@ describe('ConvoAiAppShowcase', () => {
     expect(mobileCard).toBeInTheDocument();
     expect(container.querySelectorAll('[data-convo-ai-video="true"]')).toHaveLength(1);
     expect(desktopCard.querySelector('video')).toBeInTheDocument();
-    expect(mobileCard.querySelector('img[alt=""]')).toBeInTheDocument();
+    expect(mobileCard.querySelector('img')).toHaveAttribute(
+      'alt',
+      'App entry and sign in',
+    );
 
     act(() => { media.setDesktop(false); });
 
@@ -532,7 +535,10 @@ describe('ConvoAiAppShowcase', () => {
     expect(desktopCard.firstElementChild).toHaveClass(desktopShellClass ?? '');
     expect(mobileCard.firstElementChild).toHaveClass(mobileShellClass ?? '');
     expect(container.querySelectorAll('[data-convo-ai-video="true"]')).toHaveLength(1);
-    expect(desktopCard.querySelector('img[alt=""]')).toBeInTheDocument();
+    expect(desktopCard.querySelector('img')).toHaveAttribute(
+      'alt',
+      'App entry and sign in',
+    );
     expect(mobileCard.querySelector('video')).toBeInTheDocument();
   });
 

@@ -14,6 +14,7 @@ const chapterIds = [
 for (const locale of ['en', 'zh'] as const) {
   test.describe(`${locale} Agora Meeting case`, () => {
     test.beforeEach(async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
       await page.goto(`/${locale}/work/meeting/`, { waitUntil: 'domcontentloaded' });
     });
 
@@ -25,6 +26,7 @@ for (const locale of ['en', 'zh'] as const) {
       expect(ids).toEqual(chapterIds);
       await expect(page.getByText(
         locale === 'zh' ? '唯一产品设计师' : 'Sole Product Designer',
+        { exact: true },
       )).toBeVisible();
       await expect(page.getByText(
         locale === 'zh' ? '已上线' : 'Shipped',
@@ -35,16 +37,24 @@ for (const locale of ['en', 'zh'] as const) {
       );
     });
 
-    test('loads accessible video evidence', async ({ page }) => {
-      const videos = page.locator('video');
-      await expect(videos).toHaveCount(2);
-      for (let index = 0; index < 2; index += 1) {
-        await expect(videos.nth(index)).toHaveAttribute(
-          'poster',
-          /\/images\/meeting\/.+\.webp$/,
-        );
-        await expect(videos.nth(index).locator('track[kind="captions"]')).toHaveCount(1);
-      }
+    test('loads committed static evidence without missing recordings', async ({ page }) => {
+      await expect(page.locator('video[src^="/videos/meeting/"]')).toHaveCount(15);
+      await expect(page.getByRole('button', { name: locale === 'zh' ? '重播' : 'Replay' })).toBeVisible();
+      await expect(page.getByText('Agora Meeting', { exact: true })).toBeVisible();
+      await expect(page.getByText(locale === 'zh' ? '横屏视窗' : 'Landscape viewport')).toBeVisible();
+      await expect(page.getByText(locale === 'zh' ? '竖屏视窗' : 'Portrait viewport')).toBeVisible();
+      await expect(page.locator('#adaptive-stage figure figcaption > span').filter({
+        hasText: locale === 'zh' ? '自适应舞台' : 'Adaptive stage',
+      }).first()).toBeVisible();
+      await expect(page.locator('#whiteboard-workspace figure figcaption > span').filter({
+        hasText: locale === 'zh' ? '屏幕共享标注' : 'Screen-share annotation',
+      }).first()).toBeVisible();
+      await expect(page.locator('#information-layer figure figcaption > span').filter({
+        hasText: locale === 'zh' ? '实时字幕' : 'Live captions',
+      }).first()).toBeVisible();
+      await expect(page.locator('#information-layer figure figcaption > span').filter({
+        hasText: locale === 'zh' ? '实时转写' : 'Live transcript',
+      }).first()).toBeVisible();
     });
 
     test('has no horizontal overflow', async ({ page }) => {

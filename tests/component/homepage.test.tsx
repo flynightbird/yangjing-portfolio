@@ -1,11 +1,13 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import LocaleHomePage from '@/app/(localized)/[locale]/page';
 import { AboutPreview } from '@/components/home/about-preview';
 import { DualIdentityHero } from '@/components/home/dual-identity-hero';
 import { FeaturedWork } from '@/components/home/featured-work';
 import { IntroStory } from '@/components/home/intro-story';
 import { VisualArchive } from '@/components/home/visual-archive';
+import { XuelangHomeComparison } from '@/components/home/xuelang-home-comparison';
 
 afterEach(cleanup);
 
@@ -26,11 +28,33 @@ describe('DualIdentityHero', () => {
     const portraitScene = container.querySelector('[data-media="portrait"]');
     expect(portraitScene).toBeInTheDocument();
     expect(portraitScene).not.toHaveAttribute('data-publication-state', 'draft');
-    expect(
-      within(portraitScene as HTMLElement).getByRole('img', {
-        name: 'Yang Jing portrait frame',
-      }),
-    ).toHaveAttribute('src', expect.stringContaining('yang-jing-hero-placeholder.png'));
+    const designerPortrait = portraitScene?.querySelector<HTMLImageElement>(
+      '[data-portrait-role="designer"]',
+    );
+    const builderPortrait = portraitScene?.querySelector<HTMLImageElement>(
+      '[data-portrait-role="builder"]',
+    );
+
+    expect(designerPortrait).toHaveAttribute(
+      'src',
+      expect.stringContaining('yang-jing-designer.png'),
+    );
+    expect(designerPortrait).toHaveAttribute('alt', 'Yang Jing portrait frame');
+    expect(builderPortrait).toHaveAttribute(
+      'src',
+      expect.stringContaining('yang-jing-builder.png'),
+    );
+    expect(builderPortrait).toHaveAttribute('alt', '');
+    const builderEchoes = portraitScene?.querySelectorAll<HTMLImageElement>(
+      '[data-hero-builder-echo]',
+    );
+    expect(builderEchoes).toHaveLength(1);
+    expect(builderEchoes?.[0]).toHaveAttribute(
+      'src',
+      expect.stringContaining('yang-jing-builder.png'),
+    );
+    expect(builderEchoes?.[0]).toHaveAttribute('alt', '');
+    expect(builderEchoes?.[0]).toHaveAttribute('data-echo-runs', '0');
 
     expect(screen.getByRole('separator', { name: 'Adjust identity reveal' })).toHaveAttribute(
       'aria-valuenow',
@@ -45,11 +69,19 @@ describe('DualIdentityHero', () => {
 
     expect(screen.getByRole('heading', { level: 2, name: 'Product Designer' })).toBeVisible();
     expect(screen.getByRole('heading', { level: 2, name: 'AI-native Builder' })).toBeVisible();
+    expect(
+      screen.getByText('专注于 C 端产品，以及复杂的 B2B 与 AI 系统设计。'),
+    ).toBeVisible();
+    expect(
+      screen.getByText(
+        '通过 Vibe Coding 探索、验证并构建可运行的产品体验，借助 AIGC 拓展视觉表达、提升设计效率。',
+      ),
+    ).toBeVisible();
   });
 });
 
 describe('IntroStory', () => {
-  it('renders three naturally wrapping English statements with one emphasis each', () => {
+  it('renders the approved three-stage English introduction and AI toolchain', () => {
     const { container } = render(<IntroStory locale="en" />);
     const scenes = container.querySelectorAll('[data-intro-scene]');
 
@@ -62,26 +94,33 @@ describe('IntroStory', () => {
     expect(scenes[2]).toHaveTextContent(
       /moving from concept and prototype to real experience/,
     );
+    expect(scenes[2]).toHaveTextContent(
+      'I work fluently with Codex, Claude Design, and Figma Make to explore ideas and turn designs into working products. With AIGC tools such as Midjourney and Jimeng AI, I expand the visual language and bring greater coherence and polish to the product.',
+    );
+    expect(
+      Array.from(scenes[2].querySelectorAll('[data-intro-support-emphasis]')).map(
+        (element) => element.textContent,
+      ),
+    ).toEqual(['Codex', 'Claude Design', 'Figma Make', 'Midjourney', 'Jimeng AI']);
   });
 
   it('renders the approved three-stage Chinese introduction', () => {
     const { container } = render(<IntroStory locale="zh" />);
     const scenes = container.querySelectorAll('[data-intro-scene]');
+    const normalizeSceneText = (text: string | null) =>
+      text?.replace(/\s+/g, ' ').replace(/。 (?=\S)/g, '。').trim();
 
-    expect(scenes[0]).toHaveTextContent(
-      '嗨，我是杨静，一名拥有十多年经验的 UX/UI 设计师。',
-    );
-    expect(scenes[1]).toHaveTextContent(/将复杂状态转化为清晰、可控的产品体验/);
-    expect(scenes[2]).toHaveTextContent(
-      '现在，我也使用 AI 将设计判断转化为可运行的产品，从概念、原型走向真实体验。',
-    );
-    expect(scenes[0]).toHaveTextContent(
-      '欢迎来到这个由我亲手设计，并通过 Vibe Coding 构建的作品集。',
-    );
+    expect(Array.from(scenes, (scene) => normalizeSceneText(scene.textContent))).toEqual([
+      '嗨，我是杨静，一名拥有十多年经验的 UX/UI 设计师，也长期从事用户研究。这是一个由我设计，并通过 Vibe Coding 构建的作品集。',
+      '我的工作覆盖大规模 C 端产品、复杂 B2B 产品与 AI 系统，结合 UX/UI 设计与用户研究，将复杂状态梳理为清晰、可控且具有一致视觉表达的产品体验。',
+      '现在，我也借助 AI 将设计判断转化为可运行的产品，从概念探索、原型验证走向真实体验。我使用 Codex、Claude Design 与 Figma Make 进行设计探索与产品构建，并结合 Midjourney、即梦等 AIGC 工具拓展视觉表达，提升产品的完整度与质感。',
+    ]);
     expect(scenes[0].querySelector('[data-intro-support]')).toBeInTheDocument();
-    expect(container.querySelector('[data-intro-vibe]')).toHaveTextContent(
-      'Vibe Coding',
-    );
+    expect(
+      Array.from(scenes[2].querySelectorAll('[data-intro-support-emphasis]')).map(
+        (element) => element.textContent,
+      ),
+    ).toEqual(['Codex', 'Claude Design', 'Figma Make', 'Midjourney', '即梦']);
   });
 
   it('provides three progress controls and exposes the first scene as current', () => {
@@ -97,6 +136,144 @@ describe('IntroStory', () => {
 });
 
 describe('FeaturedWork', () => {
+  it('uses four chapter boundaries with exact project text and media groups', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+    const boundaries = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-scroll-reveal]'),
+    );
+    const expectedGroups = {
+      'call-agent': { text: 1, media: 1 },
+      'convo-ai': { text: 1, media: 1 },
+      meeting: { text: 2, media: 1 },
+      'stt-demo': { text: 1, media: 1 },
+      aidx: { text: 1, media: 1 },
+      xuelang: { text: 1, media: 1 },
+    } as const;
+
+    expect(boundaries).toHaveLength(4);
+    expect(
+      boundaries.map(
+        (boundary) => boundary.querySelector('[data-project-chapter]')?.getAttribute(
+          'data-project-chapter',
+        ),
+      ),
+    ).toEqual([
+      'ai-products',
+      'communication-systems',
+      'visual-brand',
+      'product-foundation',
+    ]);
+
+    for (const [projectId, groups] of Object.entries(expectedGroups)) {
+      const project = container.querySelector<HTMLElement>(
+        `[data-project-id="${projectId}"]`,
+      );
+      expect(project).toBeInTheDocument();
+      expect(project?.querySelectorAll('[data-scroll-reveal-group="text"]')).toHaveLength(
+        groups.text,
+      );
+      expect(project?.querySelectorAll('[data-scroll-reveal-group="media"]')).toHaveLength(
+        groups.media,
+      );
+      expect(project?.closest('[data-scroll-reveal]')).toBe(
+        project?.closest('[data-project-chapter]')?.parentElement,
+      );
+    }
+
+    expect(container.querySelectorAll('[data-flagship-media-reveal]')).toHaveLength(2);
+    expect(
+      container.querySelectorAll(
+        '[data-flagship-media-reveal][data-scroll-reveal-group="media"]',
+      ),
+    ).toHaveLength(2);
+    expect(
+      container.querySelectorAll(
+        '[data-flagship-focus] [data-media-radius="20"][data-scroll-reveal-group]',
+      ),
+    ).toHaveLength(0);
+    const legacyRevealAttribute = ['data', 'section', 'reveal'].join('-');
+    expect(container.querySelector(`[${legacyRevealAttribute}]`)).not.toBeInTheDocument();
+  });
+
+  it('invalidates queued Xuelang observer callbacks on unmount', () => {
+    let observerCallback: IntersectionObserverCallback | undefined;
+    const disconnect = vi.fn();
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false })));
+    vi.stubGlobal('IntersectionObserver', class {
+      constructor(callback: IntersectionObserverCallback) {
+        observerCallback = callback;
+      }
+
+      observe = vi.fn();
+      disconnect = disconnect;
+    });
+    const requestFrame = vi.spyOn(window, 'requestAnimationFrame').mockReturnValue(1);
+
+    try {
+      const { unmount } = render(<XuelangHomeComparison locale="en" />);
+      expect(observerCallback).toBeTypeOf('function');
+      unmount();
+      expect(disconnect).toHaveBeenCalled();
+
+      observerCallback?.(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+      expect(requestFrame).not.toHaveBeenCalled();
+    } finally {
+      requestFrame.mockRestore();
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it('maps an explicit horizontal touch drag without changing on vertical intent', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+    const comparison = container.querySelector<HTMLElement>('[data-xuelang-home-comparison]');
+    const slider = within(comparison as HTMLElement).getByRole('slider');
+    vi.spyOn(comparison as HTMLElement, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      top: 0,
+      right: 400,
+      bottom: 260,
+      left: 0,
+      width: 400,
+      height: 260,
+      toJSON: () => ({}),
+    });
+
+    fireEvent.pointerDown(slider, {
+      pointerType: 'touch',
+      pointerId: 7,
+      clientX: 100,
+      clientY: 100,
+    });
+    fireEvent.pointerMove(slider, {
+      pointerType: 'touch',
+      pointerId: 7,
+      clientX: 190,
+      clientY: 104,
+    });
+    expect(slider).toHaveValue('59');
+    fireEvent.pointerUp(slider, { pointerType: 'touch', pointerId: 7 });
+
+    fireEvent.pointerDown(slider, {
+      pointerType: 'touch',
+      pointerId: 8,
+      clientX: 190,
+      clientY: 100,
+    });
+    fireEvent.pointerMove(slider, {
+      pointerType: 'touch',
+      pointerId: 8,
+      clientX: 194,
+      clientY: 150,
+    });
+    expect(slider).toHaveValue('59');
+    fireEvent.pointerCancel(slider, { pointerType: 'touch', pointerId: 8 });
+    expect(slider).toHaveValue('59');
+  });
+
   it('renders the six approved project treatments in order', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const projectIds = Array.from(
@@ -116,6 +293,22 @@ describe('FeaturedWork', () => {
     expect(container.querySelectorAll('[data-project-chapter]')).toHaveLength(4);
   });
 
+  it('uses one title treatment for all six core projects', () => {
+    const { container } = render(<FeaturedWork locale="en" />);
+    const projects = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-project-id]'),
+    );
+    const titles = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-core-project-title]'),
+    );
+
+    expect(titles).toHaveLength(6);
+    expect(projects).toHaveLength(6);
+    for (const project of projects) {
+      expect(project.querySelectorAll('[data-core-project-title]')).toHaveLength(1);
+    }
+  });
+
   it('aligns company and project type for all six projects and reserves white CTAs for the first three', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const projects = Array.from(
@@ -133,6 +326,36 @@ describe('FeaturedWork', () => {
       ),
     ).toEqual(['call-agent', 'convo-ai', 'meeting']);
   });
+
+  it.each([
+    { locale: 'en' as const, descriptor: 'Singapore AI company' },
+    { locale: 'zh' as const, descriptor: '新加坡 AI 公司' },
+  ])(
+    'uses company-only AIDX metadata while preserving default metadata in $locale',
+    ({ locale, descriptor }) => {
+      const { container } = render(<FeaturedWork locale={locale} />);
+      const aidx = container.querySelector<HTMLElement>('[data-project-id="aidx"]');
+      const aidxMeta = aidx?.querySelector<HTMLElement>('[data-project-meta]');
+
+      expect(aidxMeta).toHaveAttribute('data-meta-variant', 'company-only');
+      expect(
+        within(aidxMeta as HTMLElement).getByText(descriptor, { selector: '[data-company-mark] span' }),
+      ).toBeVisible();
+      expect(aidxMeta?.querySelector('[data-project-meta-separator]')).not.toBeInTheDocument();
+      expect(aidxMeta?.querySelector('[data-project-kind-label]')).not.toBeInTheDocument();
+
+      for (const projectId of ['call-agent', 'convo-ai', 'meeting', 'stt-demo', 'xuelang']) {
+        const project = container.querySelector<HTMLElement>(
+          `[data-project-id="${projectId}"]`,
+        );
+        const meta = project?.querySelector<HTMLElement>('[data-project-meta]');
+
+        expect(meta).toHaveAttribute('data-meta-variant', 'default');
+        expect(meta?.querySelector('[data-project-meta-separator]')).toHaveTextContent('/');
+        expect(meta?.querySelector('[data-project-kind-label]')).not.toBeEmptyDOMElement();
+      }
+    },
+  );
 
   it('uses one homepage CTA size hook and destination-aware external icons', () => {
     const { container } = render(<FeaturedWork locale="en" />);
@@ -184,7 +407,7 @@ describe('FeaturedWork', () => {
     {
       locale: 'zh' as const,
       convoAction: '查看案例 ConvoAI',
-      sttProposition: '让双语对话在实时转写与翻译中清晰呈现。',
+      sttProposition: '让双语对话的实时转写与翻译更清晰。',
     },
     {
       locale: 'en' as const,
@@ -202,6 +425,46 @@ describe('FeaturedWork', () => {
       expect(within(stt as HTMLElement).getByText(sttProposition)).toBeVisible();
     },
   );
+
+  it('renders the approved Chinese project propositions, roles, and statuses', () => {
+    const { container } = render(<FeaturedWork locale="zh" />);
+    const project = (id: string) =>
+      within(
+        container.querySelector<HTMLElement>(`[data-project-id="${id}"]`) as HTMLElement,
+      );
+
+    expect.soft(
+      project('call-agent').queryByText(
+        '面向 AI 对话配置的 SaaS 产品，让 AI 对话在发布前可见、可验证、可控。',
+      ),
+    ).toBeVisible();
+    expect.soft(
+      project('call-agent').queryByText('唯一产品设计师 · 前端原型构建（Vibe Coding）'),
+    ).toBeVisible();
+    expect.soft(
+      project('convo-ai').queryByText('为 AI 对话打造自然、清晰的跨端体验。'),
+    ).toBeVisible();
+    expect.soft(project('convo-ai').queryByText('唯一产品设计师')).toBeVisible();
+    expect.soft(
+      project('meeting').queryByText(
+        '在参会者、内容、角色与设备持续变化的会议场景中，构建覆盖桌面端、Web、App 与 Pad 的实时协作体验。',
+      ),
+    ).toBeVisible();
+    expect.soft(project('meeting').queryByText('唯一产品设计师')).toBeVisible();
+    expect.soft(project('meeting').queryByText('已在四类终端上线')).toBeVisible();
+    expect.soft(project('aidx').queryByText('网站已上线')).toBeVisible();
+    expect.soft(
+      project('stt-demo').queryByText('让双语对话的实时转写与翻译更清晰。'),
+    ).toBeVisible();
+    expect.soft(
+      project('stt-demo').queryByText('唯一产品设计师 · AI 辅助高保真原型'),
+    ).toBeVisible();
+    expect.soft(project('stt-demo').queryByText('Agora RTE 2026 大会发布')).toBeVisible();
+    expect.soft(
+      project('xuelang').queryByText('从卖课工具，走向高品质学习平台'),
+    ).toBeVisible();
+    expect.soft(project('xuelang').queryByText('项目主设计师')).toBeVisible();
+  });
 
   it('defaults to Call Agent focus and publishes owned ConvoAI media', () => {
     const { container } = render(<FeaturedWork locale="en" />);
@@ -288,13 +551,72 @@ describe('FeaturedWork', () => {
     expect(within(meeting as HTMLElement).queryByRole('img')).not.toBeInTheDocument();
   });
 
-  it('renders verified real media for Xuelang, Call Agent, AIDX, and STT Demo', () => {
+  it.each([
+    {
+      locale: 'en' as const,
+      beforeLabel: 'Before',
+      afterLabel: 'After',
+      beforeAlt:
+        'Xuelang before redesign: product interfaces centered on content delivery with disconnected learning actions',
+      afterAlt:
+        'Xuelang after redesign: interfaces connecting viewing, interaction, notes, and accumulated learning into one continuous experience',
+      controlLabel: 'Compare the old and new Xuelang learning experience',
+    },
+    {
+      locale: 'zh' as const,
+      beforeLabel: '旧版',
+      afterLabel: '新版',
+      beforeAlt: '改版前以内容交付为主、学习动作彼此分离的学浪产品界面集合',
+      afterAlt: '改版后连接观看、互动、笔记与学习沉淀的连续学习体验界面集合',
+      controlLabel: '对比学浪旧版与新版学习体验',
+    },
+  ])('renders localized Xuelang wipe media in $locale', ({
+    locale,
+    beforeLabel,
+    afterLabel,
+    beforeAlt,
+    afterAlt,
+    controlLabel,
+  }) => {
+    const { container } = render(<FeaturedWork locale={locale} />);
+    const xuelang = container.querySelector<HTMLElement>('[data-project-id="xuelang"]');
+    const comparison = xuelang?.querySelector<HTMLElement>('[data-xuelang-home-comparison]');
+
+    expect(comparison).toBeInTheDocument();
+    expect(within(comparison as HTMLElement).getByText(beforeLabel)).toBeVisible();
+    expect(within(comparison as HTMLElement).getByText(afterLabel)).toBeVisible();
+    const beforeImage = within(comparison as HTMLElement).getByRole('img', { name: beforeAlt });
+    const afterImage = within(comparison as HTMLElement).getByRole('img', { name: afterAlt });
+    expect(beforeImage).toHaveAttribute('src', '/images/xuelang/learning-before-board.webp');
+    expect(afterImage).toHaveAttribute('src', '/images/xuelang/learning-after-board.webp');
+    for (const image of [beforeImage, afterImage]) {
+      expect(image).toHaveAttribute('loading', 'lazy');
+      expect(image).toHaveAttribute('decoding', 'async');
+    }
+    expect(xuelang?.querySelector('img[src*="hero-panorama"]')).not.toBeInTheDocument();
+
+    const slider = within(comparison as HTMLElement).getByRole('slider', {
+      name: controlLabel,
+    });
+    expect(slider).toHaveAttribute('min', '4');
+    expect(slider).toHaveAttribute('max', '96');
+    expect(slider).toHaveAttribute('step', '1');
+    expect(slider).toHaveValue('38');
+    expect(comparison).toHaveAttribute('data-auto-state', 'idle');
+    expect(comparison).toHaveAttribute('data-auto-leg', '0');
+
+    fireEvent.keyDown(slider, { key: 'ArrowRight' });
+    expect(slider).toHaveValue('41');
+    expect(comparison).toHaveAttribute('data-auto-state', 'cancelled');
+    fireEvent.keyDown(slider, { key: 'Home' });
+    expect(slider).toHaveValue('4');
+    fireEvent.keyDown(slider, { key: 'End' });
+    expect(slider).toHaveValue('96');
+  });
+
+  it('renders verified real media for Call Agent, AIDX, and STT Demo', () => {
     const { container } = render(<FeaturedWork locale="en" />);
 
-    expect(screen.getByRole('img', { name: /Xuelang product panorama/i })).toHaveAttribute(
-      'src',
-      '/images/xuelang/hero-panorama.webp',
-    );
     const callAgent = container.querySelector<HTMLElement>('[data-project-id="call-agent"]');
     const studioFrame = callAgent?.querySelector<HTMLIFrameElement>('[data-convo-studio-frame]');
     expect(callAgent?.querySelector('[data-convo-studio-window]')).toHaveAttribute(
@@ -355,33 +677,131 @@ describe('FeaturedWork', () => {
   });
 
   it.each([
-    { locale: 'en' as const, status: 'Pinned static prototype' },
-    { locale: 'zh' as const, status: '固定版本的静态原型' },
-  ])('removes the homepage STT status row in $locale', ({ locale, status }) => {
+    {
+      locale: 'en' as const,
+      roleLabel: 'Role',
+      statusLabel: 'Status',
+      status: 'Pinned static prototype',
+    },
+    {
+      locale: 'zh' as const,
+      roleLabel: '角色',
+      statusLabel: '状态',
+      status: 'Agora RTE 2026 大会发布',
+    },
+  ])('renders localized STT facts in $locale', ({ locale, roleLabel, statusLabel, status }) => {
     const { container } = render(<FeaturedWork locale={locale} />);
     const stt = container.querySelector<HTMLElement>('[data-project-id="stt-demo"]');
     const sttScope = within(stt as HTMLElement);
 
-    expect(sttScope.getByText('Role')).toBeVisible();
-    expect(sttScope.queryByText('Status')).not.toBeInTheDocument();
-    expect(sttScope.queryByText(status)).not.toBeInTheDocument();
+    expect.soft(sttScope.queryByText(roleLabel)).toBeVisible();
+    expect.soft(sttScope.queryByText(statusLabel)).toBeVisible();
+    expect.soft(sttScope.queryByText(status)).toBeVisible();
   });
 
-  it('uses Figma-derived ConvoAI project media', () => {
+  it('publishes the responsive ConvoAI homepage media sources', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const convoAi = container.querySelector<HTMLElement>('[data-project-id="convo-ai"]');
+    const media = convoAi?.querySelector<HTMLElement>('[data-convo-home-media]');
+    const browser = media?.querySelector('[data-convo-web-browser]');
 
-    expect(
-      within(convoAi as HTMLElement).getByRole('img', { name: /ConvoAI web conversation ready/i }),
-    ).toHaveAttribute('src', '/images/convo-ai/figma/web-ready.png');
-    expect(
-      within(convoAi as HTMLElement).getByRole('img', { name: /ConvoAI app avatar and live video/i }),
-    ).toHaveAttribute('src', '/images/convo-ai/figma/avatar-video.png');
+    expect(media).toBeInTheDocument();
+    const backgrounds = media?.querySelectorAll<HTMLImageElement>(
+      '[data-convo-card-background]',
+    );
+    expect(backgrounds).toHaveLength(1);
+    expect(backgrounds?.[0]).toHaveAttribute(
+      'src',
+      '/images/convo-ai/home-card-background.png',
+    );
+    expect(backgrounds?.[0]).toHaveAttribute('alt', '');
+    expect(backgrounds?.[0]).toHaveAttribute('aria-hidden', 'true');
+    expect(browser).not.toHaveAttribute('aria-hidden');
+    const webSource = browser?.querySelector('source');
+    const webImage = browser?.querySelector('img');
+    expect(webSource).toHaveAttribute(
+      'srcset',
+      '/images/convo-ai/figma/web-ready.png',
+    );
+    expect(webSource).toHaveAttribute('media', '(min-width: 768px)');
+    expect(webImage?.getAttribute('src')).toMatch(/^data:image\/gif;base64,/);
+    expect(webImage).toHaveAttribute('alt', 'ConvoAI web conversation ready state');
+    const phone = media?.querySelector('[data-convo-phone]');
+    expect(phone?.querySelector('source')).toHaveAttribute(
+      'srcset',
+      '/images/convo-ai/figma/avatar-video.png',
+    );
+    expect(phone?.querySelector('source')).toHaveAttribute('media', '(min-width: 768px)');
+    expect(phone?.querySelector('img')?.getAttribute('src')).toMatch(/^data:image\/gif;base64,/);
+    const loop = media?.querySelector('[data-convo-mobile-loop]');
+    expect(loop?.querySelector('source')).toHaveAttribute(
+      'srcset',
+      '/images/convo-ai/home-mobile-loop.gif',
+    );
+    expect(loop?.querySelector('source')).toHaveAttribute(
+      'media',
+      '(max-width: 767px) and (prefers-reduced-motion: no-preference)',
+    );
+    expect(loop?.querySelector('img')?.getAttribute('src')).toMatch(/^data:image\/gif;base64,/);
+    const poster = media?.querySelector('[data-convo-mobile-poster]');
+    expect(poster?.querySelector('source')).toHaveAttribute(
+      'srcset',
+      '/images/convo-ai/home-mobile-loop-poster.webp',
+    );
+    expect(poster?.querySelector('source')).toHaveAttribute(
+      'media',
+      '(max-width: 767px) and (prefers-reduced-motion: reduce)',
+    );
+    expect(poster?.querySelector('img')?.getAttribute('src')).toMatch(/^data:image\/gif;base64,/);
   });
+
+  it.each(['en', 'zh'] as const)(
+    'removes Call Agent and ConvoAI status and media-production copy in %s',
+    (locale) => {
+      const { container } = render(<FeaturedWork locale={locale} />);
+      const callAgent = within(
+        container.querySelector<HTMLElement>('[data-project-id="call-agent"]') as HTMLElement,
+      );
+      const convoAiElement = container.querySelector<HTMLElement>(
+        '[data-project-id="convo-ai"]',
+      ) as HTMLElement;
+      const convoAi = within(convoAiElement);
+
+      for (const removed of locale === 'zh'
+        ? [
+            '有限客户测试',
+            '真实产品证据',
+            '公开产品，等待替换项目素材',
+            '临时 Web 与 App 素材',
+            '当前为临时第三方图片',
+          ]
+        : [
+            'Limited beta',
+            'Real product evidence',
+            'Public product, media replacement pending',
+            'Temporary web and app media',
+            'Temporary third-party imagery',
+          ]) {
+        expect.soft(callAgent.queryByText(removed, { exact: false })).not.toBeInTheDocument();
+        expect.soft(convoAi.queryByText(removed, { exact: false })).not.toBeInTheDocument();
+      }
+      expect.soft(convoAi.queryAllByRole('img')).toHaveLength(3);
+    },
+  );
 });
 
 describe('VisualArchive', () => {
-  it('forwards vertical wheel movement once per animation frame without cancelling it', () => {
+  it('uses only its stable header and scroller as reveal groups', () => {
+    const { container } = render(<VisualArchive locale="en" />);
+    const header = container.querySelector('[data-archive-header]');
+    const viewport = container.querySelector('[data-archive-scroller]');
+
+    expect(container.querySelectorAll('[data-scroll-reveal-group]')).toHaveLength(2);
+    expect(header).toHaveAttribute('data-scroll-reveal-group', 'text');
+    expect(viewport).toHaveAttribute('data-scroll-reveal-group', 'media');
+  });
+
+  it('forwards vertical wheel movement once per animation frame', () => {
     const scrollBy = vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);
     const frames: FrameRequestCallback[] = [];
     const requestFrame = vi
@@ -401,7 +821,7 @@ describe('VisualArchive', () => {
       }));
     wheels.forEach((wheel) => fireEvent(scroller, wheel));
 
-    expect(wheels.every((wheel) => !wheel.defaultPrevented)).toBe(true);
+    expect(wheels.every((wheel) => wheel.defaultPrevented)).toBe(true);
     expect(frames).toHaveLength(1);
     expect(scrollBy).not.toHaveBeenCalled();
     frames[0]?.(0);
@@ -410,6 +830,39 @@ describe('VisualArchive', () => {
 
     requestFrame.mockRestore();
     scrollBy.mockRestore();
+  });
+
+  it('forwards horizontal-dominant wheel movement to the archive scroller', () => {
+    const frames: FrameRequestCallback[] = [];
+    const requestFrame = vi
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => {
+        frames.push(callback);
+        return frames.length;
+      });
+    const { container } = render(<VisualArchive locale="en" />);
+    const scroller = container.querySelector('[data-archive-scroller]');
+    if (!(scroller instanceof HTMLElement)) throw new Error('Missing archive scroller');
+    const cards = Array.from(container.querySelectorAll<HTMLElement>('[data-archive-card]'));
+    cards.forEach((card, index) => {
+      Object.defineProperty(card, 'offsetLeft', { configurable: true, value: index * 400 });
+    });
+
+    const wheels = [250, 150].map((deltaX) => new WheelEvent('wheel', {
+      bubbles: true,
+      cancelable: true,
+      deltaX,
+      deltaY: 20,
+    }));
+    wheels.forEach((wheel) => fireEvent(scroller, wheel));
+
+    expect(wheels.every((wheel) => wheel.defaultPrevented)).toBe(true);
+    expect(frames).toHaveLength(1);
+    expect(scroller.scrollLeft).toBe(0);
+    frames[0]?.(0);
+    expect(scroller.scrollLeft).toBe(400);
+
+    requestFrame.mockRestore();
   });
 
   it('renders four real projects with distinct cover treatments', () => {
@@ -471,14 +924,14 @@ describe('VisualArchive', () => {
   });
 
   it('localizes project content and carousel controls in Chinese', () => {
-    render(<VisualArchive locale="zh" />);
+    const { container } = render(<VisualArchive locale="zh" />);
 
     expect(
-      screen.getByRole('heading', { name: 'More C端用户设计作品' }),
+      screen.getByRole('heading', { name: 'More C 端产品作品' }),
     ).toBeVisible();
     expect(
       screen.getByText(
-        '更多设计作品，将以图片为主，轻量呈现产品、品牌与角色设计作品。',
+        '以视觉卡片为主，呈现更多产品、品牌与角色设计。',
       ),
     ).toBeVisible();
     expect(screen.getByRole('button', { name: '上一个视觉项目' })).toBeVisible();
@@ -492,9 +945,24 @@ describe('VisualArchive', () => {
     expect(within(archive).queryByRole('link', { name: /躺平/ })).not.toBeInTheDocument();
     expect(screen.getByText('开言设计原则')).toBeVisible();
     expect(screen.getByText('豆豆狐')).toBeVisible();
-    expect(
-      screen.getByText(/阿里巴巴旗下的家居装修设计师工具和平台/),
-    ).toBeVisible();
+    const archiveCard = (variant: string) =>
+      within(
+        container.querySelector<HTMLElement>(
+          `[data-cover-variant="${variant}"]`,
+        ) as HTMLElement,
+      );
+    expect(archiveCard('alibaba').getByText(
+      '面向家居装修设计师的工具与平台。升级 App 与官网主站体验，并强化产品的品牌表达。',
+    )).toBeVisible();
+    expect(archiveCard('open-language').getByText(
+      '字节跳动旗下的语言学习 App。探索新的设计原则，提升视觉一致性与体验品质。',
+    )).toBeVisible();
+    expect(archiveCard('doudou-fox').getByText(
+      '字节跳动旗下的儿童语言学习 App。设计英语闯关体验，让学习任务更直观，也更具游戏感。',
+    )).toBeVisible();
+    expect(archiveCard('mr-chong').getByText(
+      '为同程旅游某业务线打造可延展的品牌 IP，并完成三维角色、动作与视觉表达。',
+    )).toBeVisible();
     expect(screen.getAllByText('技能')).toHaveLength(4);
   });
 
@@ -542,6 +1010,39 @@ describe('VisualArchive', () => {
       '01 / 04',
     );
     expect(baseElement.querySelectorAll('[data-gallery-mobile] img')).toHaveLength(4);
+  });
+
+  it('opens the seven-image Tangping gallery in Chinese', () => {
+    const { baseElement } = render(<VisualArchive locale="zh" />);
+
+    fireEvent.click(screen.getByRole('button', { name: '打开项目图片: 躺平' }));
+
+    expect(screen.getByRole('status', { name: '画廊位置: 01 / 07' })).toHaveTextContent(
+      '01 / 07',
+    );
+    expect(baseElement.querySelectorAll('[data-gallery-mobile] img')).toHaveLength(7);
+  });
+});
+
+describe('localized homepage composition', () => {
+  it('reveals four work chapters and one archive without wrapping Hero or Intro', async () => {
+    const page = await LocaleHomePage({ params: Promise.resolve({ locale: 'en' }) });
+    const { container } = render(page);
+    const boundaries = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-scroll-reveal]'),
+    );
+    const archiveBoundaries = boundaries.filter((boundary) =>
+      boundary.querySelector('[data-archive-carousel]'),
+    );
+    const hero = container.querySelector('[data-media="portrait"]');
+    const intro = container.querySelector('[data-intro-story]');
+
+    expect(boundaries).toHaveLength(5);
+    expect(archiveBoundaries).toHaveLength(1);
+    expect(hero).toBeInTheDocument();
+    expect(hero?.closest('[data-scroll-reveal]')).toBeNull();
+    expect(intro).toBeInTheDocument();
+    expect(intro?.closest('[data-scroll-reveal]')).toBeNull();
   });
 });
 

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type PointerEvent } from 'react';
 import { ActionLink } from '@/components/ui/action-link';
 import type { Locale } from '@/content/types';
 
+import { ConvoAiMedia } from './convo-ai-media';
 import { ConvoAiStudioWindow } from './convo-ai-studio-window';
 import { ProjectMeta } from './project-meta';
 import styles from './home.module.css';
@@ -16,11 +17,8 @@ interface FlagshipCopy {
   readonly kind: string;
   readonly title: string;
   readonly proposition: string;
+  readonly role: string;
   readonly action: string;
-}
-
-interface ConvoAiCopy extends FlagshipCopy {
-  readonly temporaryNotice: string;
 }
 
 interface FlagshipProjectsProps {
@@ -30,7 +28,7 @@ interface FlagshipProjectsProps {
     readonly href: string;
   };
   readonly convoAi: {
-    readonly copy: ConvoAiCopy;
+    readonly copy: FlagshipCopy;
     readonly href: string;
   };
 }
@@ -88,7 +86,7 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
           onPointerEnter={() => selectProject('call-agent')}
           onFocus={() => selectProject('call-agent')}
         >
-          <div className={styles.flagshipCopy}>
+          <div className={styles.flagshipCopy} data-scroll-reveal-group="text">
             <ProjectMeta
               companyId="agora"
               company={callAgent.copy.company}
@@ -100,9 +98,12 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
               aria-label={`View ${callAgent.copy.title} case study`}
               data-page-transition-tone="dark"
             >
-              <h2>{callAgent.copy.title}</h2>
+              <h2 className={styles.coreProjectTitle} data-core-project-title>
+                {callAgent.copy.title}
+              </h2>
             </a>
             <p className={styles.flagshipSummary}>{callAgent.copy.proposition}</p>
+            <p className={styles.flagshipRole}>{callAgent.copy.role}</p>
             <ActionLink
               className={`${styles.flagshipCta} ${styles.whiteCta} ${styles.homeProjectCta}`}
               href={callAgent.href}
@@ -117,18 +118,24 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
           </div>
 
           <div
-            className={`${styles.flagshipMedia} ${styles.flagshipCallMedia}`}
-            data-media-radius="20"
-            onPointerMove={updateStudioDrift}
-            onPointerLeave={resetStudioDrift}
+            className={styles.flagshipMediaReveal}
+            data-flagship-media-reveal
+            data-scroll-reveal-group="media"
           >
-            <ConvoAiStudioWindow locale={locale} />
-            <a
-              className={styles.flagshipMediaLink}
-              href={callAgent.href}
-              aria-label="Open Call Agent project media"
-              data-page-transition-tone="dark"
-            />
+            <div
+              className={`${styles.flagshipMedia} ${styles.flagshipCallMedia}`}
+              data-media-radius="20"
+              onPointerMove={updateStudioDrift}
+              onPointerLeave={resetStudioDrift}
+            >
+              <ConvoAiStudioWindow locale={locale} />
+              <a
+                className={styles.flagshipMediaLink}
+                href={callAgent.href}
+                aria-label="Open Call Agent project media"
+                data-page-transition-tone="dark"
+              />
+            </div>
           </div>
         </article>
 
@@ -139,7 +146,7 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
           onPointerEnter={() => selectProject('convo-ai')}
           onFocus={() => selectProject('convo-ai')}
         >
-          <div className={styles.flagshipCopy}>
+          <div className={styles.flagshipCopy} data-scroll-reveal-group="text">
             <ProjectMeta
               companyId="agora"
               company={convoAi.copy.company}
@@ -151,9 +158,12 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
               aria-label={`View ${convoAi.copy.title} project`}
               data-page-transition-tone="dark"
             >
-              <h2>{convoAi.copy.title}</h2>
+              <h2 className={styles.coreProjectTitle} data-core-project-title>
+                {convoAi.copy.title}
+              </h2>
             </a>
             <p className={styles.flagshipSummary}>{convoAi.copy.proposition}</p>
+            <p className={styles.flagshipRole}>{convoAi.copy.role}</p>
             <ActionLink
               className={`${styles.flagshipCta} ${styles.whiteCta} ${styles.homeProjectCta}`}
               href={convoAi.href}
@@ -167,26 +177,21 @@ export function FlagshipProjects({ locale, callAgent, convoAi }: FlagshipProject
             </ActionLink>
           </div>
 
-          <a
-            className={`${styles.flagshipMedia} ${styles.flagshipConvoMedia}`}
-            href={convoAi.href}
-            aria-label="Open ConvoAI project media"
-            data-media-radius="20"
-            data-page-transition-tone="dark"
+          <div
+            className={styles.flagshipMediaReveal}
+            data-flagship-media-reveal
+            data-scroll-reveal-group="media"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className={styles.flagshipConvoWeb}
-              src="/images/convo-ai/figma/web-ready.png"
-              alt="ConvoAI web conversation ready state"
-            />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className={styles.flagshipConvoPhone}
-              src="/images/convo-ai/figma/avatar-video.png"
-              alt="ConvoAI app avatar and live video state"
-            />
-          </a>
+            <a
+              className={`${styles.flagshipMedia} ${styles.flagshipConvoMedia}`}
+              href={convoAi.href}
+              aria-label="Open ConvoAI project media"
+              data-media-radius="20"
+              data-page-transition-tone="dark"
+            >
+              <ConvoAiMedia />
+            </a>
+          </div>
         </article>
       </div>
     </div>

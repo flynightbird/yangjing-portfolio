@@ -13,6 +13,7 @@ import {
   type ArchiveEntry,
 } from '@/content/home';
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './home.module.css';
 
@@ -59,36 +60,72 @@ export function VisualArchive({
   const programmaticIndexRef = useRef<number | null>(null);
   const total = parsedEntries.length;
 
-  useEffect(() => {
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
-
-    let frame = 0;
-    let pendingDelta = 0;
-    const flushVerticalWheel = () => {
-      const top = pendingDelta;
-      pendingDelta = 0;
-      frame = 0;
-      window.scrollBy({ top, behavior: 'auto' });
-    };
-    const forwardVerticalWheel = (event: globalThis.WheelEvent) => {
-      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-      pendingDelta += event.deltaY;
-      if (frame === 0) frame = window.requestAnimationFrame(flushVerticalWheel);
-    };
-
-    scroller.addEventListener('wheel', forwardVerticalWheel, { passive: true });
-    return () => {
-      scroller.removeEventListener('wheel', forwardVerticalWheel);
-      if (frame !== 0) window.cancelAnimationFrame(frame);
-    };
-  }, []);
-
   const getTrackInset = (card: HTMLElement) => {
     const track = card.parentElement;
     if (!track) return 0;
     return Number.parseFloat(getComputedStyle(track).paddingInlineStart) || 0;
   };
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    let frame = 0;
+    let pendingHorizontalDelta = 0;
+    let pendingVerticalDelta = 0;
+    const flushWheel = () => {
+      const left = pendingHorizontalDelta;
+      const top = pendingVerticalDelta;
+      pendingHorizontalDelta = 0;
+      pendingVerticalDelta = 0;
+      frame = 0;
+
+      if (left !== 0) {
+        const cards = cardRefs.current.filter((card): card is HTMLElement => card !== null);
+        const inset = cards[0] ? getTrackInset(cards[0]) : 0;
+        const currentIndex = cards.reduce((closestIndex, card, index) => {
+          const closestDistance = Math.abs(cards[closestIndex].offsetLeft - inset - scroller.scrollLeft);
+          const distance = Math.abs(card.offsetLeft - inset - scroller.scrollLeft);
+          return distance < closestDistance ? index : closestIndex;
+        }, 0);
+        const nextIndex = Math.max(0, Math.min(cards.length - 1, currentIndex + Math.sign(left)));
+        const targetCard = cards[nextIndex];
+        if (targetCard) {
+          const previousScrollBehavior = scroller.style.scrollBehavior;
+          scroller.style.scrollBehavior = 'auto';
+          programmaticIndexRef.current = nextIndex;
+          scroller.scrollLeft = targetCard.offsetLeft - inset;
+          scroller.style.scrollBehavior = previousScrollBehavior;
+        }
+      }
+      if (top === 0) return;
+
+      const root = document.documentElement;
+      const previousScrollBehavior = root.style.scrollBehavior;
+      root.style.scrollBehavior = 'auto';
+      try {
+        window.scrollBy({ top, behavior: 'auto' });
+      } finally {
+        root.style.scrollBehavior = previousScrollBehavior;
+      }
+    };
+    const forwardWheel = (event: globalThis.WheelEvent) => {
+      if (Math.abs(event.deltaX) >= Math.abs(event.deltaY) && event.deltaX !== 0) {
+        event.preventDefault();
+        pendingHorizontalDelta += event.deltaX;
+      } else {
+        event.preventDefault();
+        pendingVerticalDelta += event.deltaY;
+      }
+      if (frame === 0) frame = window.requestAnimationFrame(flushWheel);
+    };
+
+    scroller.addEventListener('wheel', forwardWheel, { passive: false });
+    return () => {
+      scroller.removeEventListener('wheel', forwardWheel);
+      if (frame !== 0) window.cancelAnimationFrame(frame);
+    };
+  }, []);
 
   const scrollToIndex = (nextIndex: number) => {
     const clampedIndex = Math.max(0, Math.min(nextIndex, total - 1));
@@ -155,7 +192,11 @@ export function VisualArchive({
       data-archive-carousel
       style={progressStyle}
     >
-      <div className={styles.archiveHeader}>
+      <div
+        className={styles.archiveHeader}
+        data-archive-header
+        data-scroll-reveal-group="text"
+      >
         <div className={styles.archiveIntro}>
           <h2 id="archive-title">{copy.title}</h2>
           <p>{copy.description}</p>
@@ -205,6 +246,7 @@ export function VisualArchive({
         role="region"
         aria-label={copy.carouselLabel}
         data-archive-scroller
+        data-scroll-reveal-group="media"
         onScroll={updateActiveIndex}
       >
         <div className={styles.archiveTrack}>
@@ -229,7 +271,7 @@ export function VisualArchive({
                       {/* Development-only composition reference, blocked by publication validation. */}
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={media.src}
+                        src={withBasePath(media.src)}
                         width={media.width}
                         height={media.height}
                         alt=""
@@ -260,7 +302,7 @@ export function VisualArchive({
             const end = entry.period.end;
             const alt = entry.image.alt[locale];
             const gallery = entry.gallery?.map((image) => ({
-              src: image.src,
+              src: withBasePath(image.src),
               width: image.width,
               height: image.height,
               alt: image.alt[locale],
@@ -279,7 +321,7 @@ export function VisualArchive({
                 <div className={styles.archiveStage}>
                   <Lightbox
                     variant="archive"
-                    src={entry.image.src}
+                    src={withBasePath(entry.image.src)}
                     width={entry.image.width}
                     height={entry.image.height}
                     alt={alt}

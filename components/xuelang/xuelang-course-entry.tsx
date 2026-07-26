@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './xuelang-course-entry.module.css';
 
@@ -205,7 +206,7 @@ export function XuelangCourseEntry({ locale }: { readonly locale: Locale }) {
             <div className={styles.phone}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={activeState.src}
+                src={withBasePath(activeState.src)}
                 width={activeState.width}
                 height={activeState.height}
                 alt={activeState.alt}
@@ -252,7 +253,7 @@ export function XuelangCourseEntry({ locale }: { readonly locale: Locale }) {
             <div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={state.src}
+                src={withBasePath(state.src)}
                 width={state.width}
                 height={state.height}
                 alt={`${state.label} - ${state.title}`}

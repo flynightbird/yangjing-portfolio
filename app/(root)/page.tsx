@@ -1,10 +1,10 @@
 import { LocaleResolver } from '@/components/shell/locale-resolver';
+import { withBasePath } from '@/lib/i18n/locales';
 
 export default function HomePage() {
   return (
     <main>
-      {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- This is the no-JS static-export escape link. */}
-      <a href="/en/">View portfolio in English</a>
+      <a href={withBasePath('/en/')}>View portfolio in English</a>
       <LocaleResolver />
     </main>
   );

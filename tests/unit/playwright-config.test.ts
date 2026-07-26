@@ -7,10 +7,10 @@ import nativeConfig from '@/playwright.config.mjs';
 import exportConfig from '@/playwright.export.config.mjs';
 
 describe('Playwright server ownership', () => {
-  it('starts only Next dev and warms the first dynamic route for the native suite', () => {
+  it('starts only Next dev and warms the homepage for the native suite', () => {
     expect(nativeConfig.webServer).toMatchObject({
       command: 'npm run dev -- --port 4174',
-      url: 'http://localhost:4174/en/work/call-agent/',
+      url: 'http://localhost:4174/en/',
       reuseExistingServer: false,
     });
     expect(Array.isArray(nativeConfig.webServer)).toBe(false);

@@ -2,11 +2,13 @@ import { CommunicationProjects } from '@/components/home/communication-projects'
 import { FeaturedProject } from '@/components/home/featured-project';
 import { FlagshipProjects } from '@/components/home/flagship-projects';
 import { LiveWebsiteProject } from '@/components/home/live-website-project';
-import { SectionReveal } from '@/components/home/section-reveal';
+import { XuelangHomeComparison } from '@/components/home/xuelang-home-comparison';
+import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
 import { homepageProjects } from '@/content/home';
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './home.module.css';
 
@@ -16,7 +18,7 @@ interface FeaturedWorkProps {
 
 export function FeaturedWork({ locale }: FeaturedWorkProps) {
   const copy = locale === 'zh' ? zhDictionary.home.projects : enDictionary.home.projects;
-  const localeRoot = `/${locale}/`;
+  const localeRoot = withBasePath(`/${locale}/`);
   const [xuelang, callAgent, convoAi, meeting, aidx, sttDemo] = homepageProjects;
 
   return (
@@ -25,7 +27,7 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
       className={styles.featuredWork}
       aria-label={locale === 'zh' ? '精选作品' : 'Selected work'}
     >
-      <SectionReveal tone="dark">
+      <ScrollReveal>
         <FlagshipProjects
           locale={locale}
           callAgent={{
@@ -37,20 +39,20 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
             href: `${localeRoot}${convoAi.href}`,
           }}
         />
-      </SectionReveal>
-      <SectionReveal tone="dark">
+      </ScrollReveal>
+      <ScrollReveal>
         <CommunicationProjects
           locale={locale}
           meeting={{ copy: copy.meeting, href: `${localeRoot}${meeting.href}` }}
-          stt={{ copy: copy.sttDemo, href: sttDemo.href }}
+          stt={{ copy: copy.sttDemo, href: withBasePath(sttDemo.href) }}
         />
-      </SectionReveal>
-      <SectionReveal tone="iris">
+      </ScrollReveal>
+      <ScrollReveal>
         <section data-project-chapter="visual-brand">
           <LiveWebsiteProject copy={copy.aidx} href={aidx.href} />
         </section>
-      </SectionReveal>
-      <SectionReveal tone="light">
+      </ScrollReveal>
+      <ScrollReveal>
         <section data-project-chapter="product-foundation">
           <FeaturedProject
             id="xuelang"
@@ -60,19 +62,11 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
             companyId="bytedance"
             order="06"
             variant="evidence"
-            media={{
-              src: '/images/xuelang/hero-panorama.webp',
-              width: 3000,
-              height: 1500,
-              alt:
-                locale === 'zh'
-                  ? '学浪产品体验全景，呈现发现、决策与学习的关键界面'
-                  : 'Xuelang product panorama showing key discovery, purchase, and learning interfaces',
-            }}
+            mediaContent={<XuelangHomeComparison locale={locale} />}
             transitionTone="light"
           />
         </section>
-      </SectionReveal>
+      </ScrollReveal>
     </section>
   );
 }

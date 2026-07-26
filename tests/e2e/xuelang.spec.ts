@@ -32,40 +32,33 @@ test.describe('Xuelang case study', () => {
         ? '学浪商业化体验升级'
         : 'Xuelang Commercial Experience Upgrade';
       const role = locale === 'zh' ? '项目主负责设计师' : 'Lead UX Designer';
-      const duration = locale === 'zh' ? '2022.03–05 · 2 个月' : 'Mar–May 2022 · 2 months';
+      const duration = locale === 'zh' ? '2022.03–04 · 2 个月' : 'Mar–Apr 2022 · 2 months';
       await expect(page.getByRole('heading', { level: 1, name: title })).toBeInViewport();
       await expect(page.getByText(role, { exact: true })).toBeInViewport();
       await expect(page.getByText(duration, { exact: true })).toBeInViewport();
+      const cover = page.locator('[data-xuelang-cover]');
       const heroPanorama = page.locator('[data-hero-panorama]');
-      await expect(heroPanorama).toBeInViewport();
+      await expect(cover).toBeInViewport();
       await expect(heroPanorama.locator('[data-hero-product-state]')).toHaveCount(4);
-      const pdfLink = page.getByRole('link', { name: /PDF/ });
-      await expect(pdfLink).toBeInViewport();
-      await expect(pdfLink).toHaveAttribute(
-        'href',
-        `/files/xuelang-case-study-${locale}.pdf`,
-      );
-      await expect(pdfLink).toHaveAttribute('download', '');
+      expect(await heroPanorama.evaluate((panorama) => {
+        const coverElement = document.querySelector('[data-xuelang-cover]');
+        if (!coverElement) return false;
+        return panorama.getBoundingClientRect().top
+          > coverElement.getBoundingClientRect().bottom;
+      })).toBe(true);
+      await expect(page.getByRole('link', { name: /PDF/ })).toHaveCount(0);
 
       for (const metric of ['+11.75%', '+1.36%', '+6.5%']) {
         await expect(page.getByText(metric, { exact: true }).last()).not.toBeInViewport();
       }
 
       await expect(page.locator('[data-testid="xuelang-dark-stage"]')).toHaveCount(1);
-      const noise = page.locator('[data-xuelang-noise]');
-      await expect(noise).toHaveCount(1);
-      await expect(noise).toHaveAttribute('aria-hidden', 'true');
-      await expect(noise).toHaveCSS('pointer-events', 'none');
-      await expect(noise).toHaveCSS('opacity', '0.035');
       await expect(page.locator('[data-testid="learning-state"]')).toHaveCount(5);
       await expect(page.getByRole('navigation', { name: locale === 'zh' ? '项目导航' : 'Project navigation' })).toHaveCount(0);
 
-      const evidence = page.locator([
-        '[data-evidence] img',
-        '[data-wipe-interactive] img',
-        '[data-course-entry-interactive] img',
-        '[data-interaction-board] img',
-      ].join(', '));
+      const evidence = page.locator(
+        '[data-evidence] img, [data-wipe-interactive] img, [data-course-entry-interactive] img, [data-interaction-board] img',
+      );
       expect(await evidence.count()).toBeGreaterThanOrEqual(12);
       for (let index = 0; index < await evidence.count(); index += 1) {
         const image = evidence.nth(index);
@@ -85,20 +78,23 @@ test.describe('Xuelang case study', () => {
       )).toBeVisible();
       await expect(page.locator('main')).not.toContainText(/灰度|gray release|long-term validated/i);
 
-      const email = locale === 'zh' ? 'yangux@qq.com' : 'amanda.yangj@gmail.com';
-      await expect(page.locator('#results').getByRole('link', { name: email })).toHaveAttribute(
-        'href',
-        `mailto:${email}`,
+      const siteFooter = page.locator('body > footer');
+      await expect(siteFooter).toBeVisible();
+      await expect(siteFooter.getByRole('link', {
+        name: 'amanda.yangj@gmail.com',
+        exact: true,
+      })).toHaveAttribute('href', 'mailto:amanda.yangj@gmail.com');
+      await expect(siteFooter.getByText('© 2026 Yang Jing')).toBeVisible();
+      await expect(page.locator('main')).not.toContainText(
+        /yangux@qq\.com|amanda\.yangj@gmail\.com|flydesigner_yangj/,
       );
     });
   }
 
-  test('desktop chapter rail, lightbox, and Chinese contact remain operable', async ({
-    context,
+  test('desktop chapter rail, lightbox, and global footer remain operable', async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'Interactions need one canonical viewport.');
-    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.goto('/zh/work/xuelang/', { waitUntil: 'networkidle' });
 
     for (const id of chapterIds) {
@@ -114,10 +110,16 @@ test.describe('Xuelang case study', () => {
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog', { name: '查看产品界面' })).toHaveCount(0);
 
-    await page.getByRole('button', { name: '复制微信号' }).click();
-    await expect(page.getByText('已复制微信号', { exact: true })).toBeVisible();
-    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText()))
-      .toBe('flydesigner_yangj');
+    const siteFooter = page.locator('body > footer');
+    await expect(siteFooter).toBeVisible();
+    await expect(siteFooter.getByRole('link', {
+      name: 'amanda.yangj@gmail.com',
+      exact: true,
+    })).toHaveAttribute(
+      'href',
+      'mailto:amanda.yangj@gmail.com',
+    );
+    await expect(siteFooter.getByText('© 2026 Yang Jing')).toBeVisible();
   });
 
   test('desktop creates one learning pin and reduced motion creates none', async ({

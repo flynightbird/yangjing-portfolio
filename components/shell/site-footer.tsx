@@ -1,7 +1,7 @@
-import { LiquidField } from '@/components/ui/liquid-field';
 import type { Locale } from '@/content/types';
 
-import { FooterRevealMotion } from './footer-reveal-motion';
+import { FooterEmailActions } from './footer-email-actions';
+import { HomeFooterContacts } from './home-footer-contacts';
 import styles from './site-footer.module.css';
 
 interface SiteFooterProps {
@@ -21,27 +21,34 @@ export function SiteFooter({ locale }: SiteFooterProps) {
 
   return (
     <footer className={styles.root} data-site-footer>
-      <div className={styles.revealLayer} data-footer-reveal-layer>
-        <LiquidField variant="footer" interactive className={styles.liquid} />
+      <div className={styles.revealLayer} data-footer-surface data-footer-reveal-layer>
+        <div
+          className={`${styles.liquidRibbon} ${styles.ribbonOne}`}
+          aria-hidden="true"
+          data-footer-liquid="ribbon-one"
+        />
+        <div
+          className={`${styles.liquidRibbon} ${styles.ribbonTwo}`}
+          aria-hidden="true"
+          data-footer-liquid="ribbon-two"
+        />
+        <div
+          className={styles.liquidSheen}
+          aria-hidden="true"
+          data-footer-liquid="sheen"
+        />
         <div className={styles.inner}>
           <div className={styles.cta} data-footer-cta>
             <p>{copy.eyebrow}</p>
             <h2>{copy.title}</h2>
-            <a className={styles.email} href="mailto:yangux@qq.com">
-              <span>yangux@qq.com</span>
-              <span
-                className={styles.emailIcon}
-                data-remix-icon="arrow-right-up-line"
-                aria-hidden="true"
-              />
-            </a>
+            <FooterEmailActions locale={locale} />
+            <HomeFooterContacts locale={locale} />
           </div>
           <div className={styles.meta} data-footer-meta>
             <p>© 2026 Yang Jing</p>
           </div>
         </div>
       </div>
-      <FooterRevealMotion />
     </footer>
   );
 }

@@ -7,6 +7,7 @@
   grid-template-columns: minmax(0, 1fr) minmax(13.5rem, 0.34fr);
   min-height: 42rem;
   overflow: hidden;
+  border-radius: var(--xuelang-media-radius);
   border: 1px solid #28322c;
   background: #101411;
   color: #f4f7f4;

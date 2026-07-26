@@ -3,6 +3,7 @@
 import { MoveHorizontal } from 'lucide-react';
 import type { CSSProperties, KeyboardEvent } from 'react';
 import { useState } from 'react';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './xuelang-wipe-comparison.module.css';
 
@@ -61,7 +62,7 @@ export function XuelangWipeComparison({
         <div className={styles.viewport}>
           <img
             className={styles.afterImage}
-            src={after.src}
+            src={withBasePath(after.src)}
             width={after.width}
             height={after.height}
             alt={after.alt}
@@ -69,7 +70,7 @@ export function XuelangWipeComparison({
           />
           <img
             className={styles.beforeImage}
-            src={before.src}
+            src={withBasePath(before.src)}
             width={before.width}
             height={before.height}
             alt={before.alt}
@@ -115,7 +116,7 @@ export function XuelangWipeComparison({
           <figure key={image.src}>
             <strong>{image.label}</strong>
             <img
-              src={image.src}
+              src={withBasePath(image.src)}
               width={image.width}
               height={image.height}
               alt={image.alt}

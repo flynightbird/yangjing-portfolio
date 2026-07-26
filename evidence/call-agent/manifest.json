@@ -59,6 +59,62 @@
       "purpose": "展示从智能体发布到外呼任务创建的运营路径",
       "alt": "外呼任务创建页面并列呈现任务配置和客户号码文件上传",
       "redactions": [{ "left": 0, "top": 1320, "width": 510, "height": 154, "color": "#f8fafc" }]
+    },
+    {
+      "source": "call-agent-frames/agent-create-defaults-06-006.24.jpg",
+      "output": "agent-create-poster.webp",
+      "chapter": "start",
+      "purpose": "作为创建智能体视频的静态降级证据",
+      "alt": "客服模板已预填智能体名称和描述",
+      "generator": "prepare-call-agent-videos"
+    },
+    {
+      "source": "call-agent-frames/replacement-2026-07-21/frame-001.8.jpg",
+      "output": "agent-orchestrate-poster.webp",
+      "chapter": "orchestrate",
+      "purpose": "作为智能体编排视频的静态降级证据",
+      "alt": "智能体编排页展示分层配置入口",
+      "generator": "prepare-call-agent-videos"
+    },
+    {
+      "source": "call-agent-frames/replacement-2026-07-21/frame-020.0.jpg",
+      "output": "agent-preview-poster.webp",
+      "chapter": "validate-release",
+      "purpose": "作为实时 Preview 视频的静态降级证据",
+      "alt": "配置旁的 Preview 显示实时连接和智能体输出",
+      "generator": "prepare-call-agent-videos"
+    },
+    {
+      "source": "call-agent-frames/agent-orchestration-page-10-010.43.jpg",
+      "output": "agent-publish-poster.webp",
+      "chapter": "validate-release",
+      "purpose": "作为草稿与发布版本视频的静态降级证据",
+      "alt": "版本侧栏区分未发布草稿和已发布版本",
+      "generator": "prepare-call-agent-videos"
+    },
+    {
+      "source": "call-agent-frames/agent-connect-012.0.jpg",
+      "output": "agent-connect-poster.webp",
+      "chapter": "operationalize",
+      "purpose": "作为内呼连接视频的静态降级证据",
+      "alt": "号码列表进入绑定弹窗并配置入呼智能体",
+      "generator": "prepare-call-agent-videos"
+    },
+    {
+      "source": "call-agent-frames/agent-operate-009.0.jpg",
+      "output": "agent-operate-poster.webp",
+      "chapter": "operationalize",
+      "purpose": "作为外呼运营视频的静态降级证据",
+      "alt": "外呼任务创建页填写任务名称并选择外呼号码",
+      "generator": "prepare-call-agent-videos"
+    },
+    {
+      "source": "call-agent-frames/my-number-06-029.93.jpg",
+      "output": "number-connect.webp",
+      "chapter": "operationalize",
+      "purpose": "展示号码与入呼智能体的绑定关系",
+      "alt": "号码绑定入呼智能体的配置弹窗",
+      "generator": "prepare-call-agent-videos"
     }
   ],
   "excluded": [

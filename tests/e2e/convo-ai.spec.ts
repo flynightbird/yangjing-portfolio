@@ -296,6 +296,7 @@ for (const locale of ['en', 'zh'] as const) {
 
     test('uses desktop scene commands to update the Chinese showcase forward and backward', async ({ page }, testInfo) => {
       test.skip(locale !== 'zh' || testInfo.project.name !== 'desktop', 'Showcase scroll commands are desktop-only.');
+      await page.emulateMedia({ reducedMotion: 'reduce' });
       const showcase = page.locator('[data-convo-app-showcase]');
       const card = showcase.locator('[data-app-showcase-placement="desktop"]');
 

@@ -27,15 +27,23 @@ export function LiveWebsiteProject({ copy, href }: LiveWebsiteProjectProps) {
       data-project-kind="live-launch"
     >
       <div className={styles.liveInner}>
-        <div className={styles.liveCopy}>
-          <ProjectMeta companyId="aidx" company={copy.company} kind={copy.kind} />
-          <h2>{copy.title}</h2>
+        <div className={styles.liveCopy} data-scroll-reveal-group="text">
+          <ProjectMeta
+            companyId="aidx"
+            company={copy.company}
+            kind={copy.kind}
+            variant="company-only"
+          />
+          <h2 className={styles.coreProjectTitle} data-core-project-title>
+            {copy.title}
+          </h2>
           <p className={styles.projectProposition}>{copy.proposition}</p>
           <ul className={styles.scopeList} aria-label={copy.role}>
             {copy.scope.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
+          <p className={styles.liveStatus}>{copy.status}</p>
           <ActionLink
             className={styles.homeProjectCta}
             href={href}
@@ -48,7 +56,7 @@ export function LiveWebsiteProject({ copy, href }: LiveWebsiteProjectProps) {
             {copy.action}
           </ActionLink>
         </div>
-        <div className={styles.liveMedia}>
+        <div className={styles.liveMedia} data-scroll-reveal-group="media">
           <AidxShowcase href={href} caption={copy.captureCaption} />
         </div>
       </div>
