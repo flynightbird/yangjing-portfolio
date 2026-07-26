@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import type { Locale } from '@/lib/i18n/locales';
+import type { Locale } from '@/content/types';
 
 import styles from './convo-ai-layout.module.css';
 
