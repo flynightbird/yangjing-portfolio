@@ -1,4 +1,7 @@
+'use client';
+
 import Image from 'next/image';
+import { useEffect, useRef, useState } from 'react';
 
 import { withBasePath } from '@/lib/i18n/locales';
 
@@ -7,8 +10,42 @@ import styles from './home.module.css';
 const INERT_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
 export function ConvoAiMedia() {
+  const mediaRef = useRef<HTMLDivElement>(null);
+  const [shouldLoadPhoneVideo, setShouldLoadPhoneVideo] = useState(false);
+
+  useEffect(() => {
+    const media = mediaRef.current;
+    if (!media) return;
+
+    const isDesktop = typeof window.matchMedia !== 'function'
+      || window.matchMedia('(min-width: 768px)').matches;
+    if (!isDesktop) return;
+
+    if (typeof IntersectionObserver === 'undefined') {
+      let isMounted = true;
+      queueMicrotask(() => {
+        if (isMounted) setShouldLoadPhoneVideo(true);
+      });
+      return () => {
+        isMounted = false;
+      };
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        setShouldLoadPhoneVideo(true);
+        observer.disconnect();
+      },
+      { rootMargin: '600px 0px' },
+    );
+
+    observer.observe(media);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className={styles.convoHomeMedia} data-convo-home-media>
+    <div ref={mediaRef} className={styles.convoHomeMedia} data-convo-home-media>
       <Image
         className={styles.convoCardBackground}
         data-convo-card-background
@@ -45,13 +82,27 @@ export function ConvoAiMedia() {
       </div>
 
       <div className={styles.convoPhone} data-convo-phone aria-hidden="true">
-        <picture className={styles.convoPhonePicture}>
-          <source
-            media="(min-width: 768px)"
-            srcSet={withBasePath('/images/convo-ai/figma/avatar-video.png')}
-          />
-          <img className={styles.convoPhoneImage} src={INERT_IMAGE} alt="" />
-        </picture>
+        <video
+          key={shouldLoadPhoneVideo ? 'video' : 'poster'}
+          className={styles.convoPhoneVideo}
+          poster={shouldLoadPhoneVideo
+            ? withBasePath('/images/convo-ai/posters/app-conversation-start.webp')
+            : undefined}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          tabIndex={-1}
+        >
+          {shouldLoadPhoneVideo ? (
+            <source
+              media="(min-width: 768px) and (prefers-reduced-motion: no-preference)"
+              src={withBasePath('/videos/convo-ai/app-conversation-start.mp4')}
+              type="video/mp4"
+            />
+          ) : null}
+        </video>
       </div>
 
       <picture className={styles.convoMobileLoop} data-convo-mobile-loop>

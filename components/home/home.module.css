@@ -960,7 +960,7 @@ a.whiteCta:focus-visible {
   z-index: 1;
   top: clamp(1.25rem, 3vw, 1.75rem);
   right: clamp(1rem, 3vw, 1.75rem);
-  bottom: -1rem;
+  bottom: auto;
   left: clamp(1rem, 3vw, 1.75rem);
   overflow: hidden;
   border: 1px solid rgba(32, 36, 35, 0.16);
@@ -1029,8 +1029,8 @@ a.whiteCta:focus-visible {
 }
 
 .convoWebViewport {
-  position: absolute;
-  inset: 38px 0 0;
+  position: relative;
+  aspect-ratio: 1440 / 800;
   overflow: hidden;
   border-radius: 0 0 17px 17px;
   background: #f1f2f0;
@@ -1040,10 +1040,10 @@ a.whiteCta:focus-visible {
 .convoWebImage {
   display: block;
   width: 100%;
+  height: 100%;
 }
 
 .convoWebImage {
-  height: auto;
   object-fit: contain;
   object-position: left top;
 }
@@ -1054,25 +1054,21 @@ a.whiteCta:focus-visible {
   right: 1.25rem;
   bottom: 1rem;
   width: clamp(6.75rem, 9.2vw, 8.25rem);
-  aspect-ratio: 375 / 812;
+  aspect-ratio: 592 / 1280;
   overflow: hidden;
   border: 4px solid #222428;
-  border-radius: 26px;
+  border-radius: 14px;
   background: #222428;
   box-shadow: 0 1.5rem 3.5rem rgba(0, 0, 0, 0.34);
   transform: rotate(2deg);
   transform-origin: bottom center;
 }
 
-.convoPhonePicture,
-.convoPhoneImage {
+.convoPhoneVideo {
   display: block;
   width: 100%;
   height: 100%;
-  border-radius: 26px;
-}
-
-.convoPhoneImage {
+  border-radius: 10px;
   object-fit: cover;
   object-position: center top;
 }

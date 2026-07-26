@@ -484,19 +484,12 @@ test.describe('portfolio homepage framework', () => {
     const convoAssetRequests: string[] = [];
     page.on('request', (request) => {
       const pathname = new URL(request.url()).pathname;
-      if (pathname.startsWith('/images/convo-ai/')) convoAssetRequests.push(pathname);
+      if (
+        pathname.startsWith('/images/convo-ai/')
+        || pathname.startsWith('/videos/convo-ai/')
+      ) convoAssetRequests.push(pathname);
     });
     await page.goto('/en/', { waitUntil: 'networkidle' });
-
-    expect(convoAssetRequests).toEqual(
-      expect.arrayContaining([
-        '/images/convo-ai/home-card-background.png',
-        '/images/convo-ai/figma/web-ready.png',
-        '/images/convo-ai/figma/avatar-video.png',
-      ]),
-    );
-    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop.gif');
-    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop-poster.webp');
 
     const stage = page.locator('[data-flagship-focus]');
     const reveal = page.locator('[data-scroll-reveal]:has([data-flagship-focus])');
@@ -511,9 +504,22 @@ test.describe('portfolio homepage framework', () => {
     const convoViewport = convoBrowser.locator('[data-convo-web-viewport]');
     const convoWebImage = convoViewport.locator('img');
     const convoPhone = convoMedia.locator('[data-convo-phone]');
-    const convoPhoneImage = convoPhone.locator('img');
+    const convoPhoneVideo = convoPhone.locator('video');
+    const convoPhoneSource = convoPhoneVideo.locator('source');
+    const callBrowserBar = callMedia.locator('[class*="studioBrowserBar"]');
+    const convoBrowserBar = convoBrowser.locator('[class*="convoBrowserBar"]');
 
     await callMedia.scrollIntoViewIfNeeded();
+    await expect.poll(() => convoAssetRequests).toEqual(
+      expect.arrayContaining([
+        '/images/convo-ai/home-card-background.png',
+        '/images/convo-ai/figma/web-ready.png',
+        '/images/convo-ai/posters/app-conversation-start.webp',
+        '/videos/convo-ai/app-conversation-start.mp4',
+      ]),
+    );
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop.gif');
+    expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop-poster.webp');
     await expect(reveal).toHaveAttribute('data-scroll-reveal-state', 'revealed');
     await expect(stage).toHaveAttribute('data-flagship-focus', 'call-agent');
     await expect(callMedia).toHaveCSS('border-radius', '20px');
@@ -531,6 +537,23 @@ test.describe('portfolio homepage framework', () => {
     await expect(convoBrowser).toHaveCSS('border-radius', '15px 15px 18px 18px');
     await expect(convoWebImage).toHaveCSS('object-position', '0% 0%');
     await expect(convoPhone).toBeVisible();
+    await expect(convoPhoneVideo).toHaveAttribute(
+      'poster',
+      '/images/convo-ai/posters/app-conversation-start.webp',
+    );
+    await expect(convoPhoneSource).toHaveAttribute(
+      'src',
+      '/videos/convo-ai/app-conversation-start.mp4',
+    );
+    await expect(convoPhoneVideo).toHaveJSProperty('autoplay', true);
+    await expect(convoPhoneVideo).toHaveJSProperty('muted', true);
+    await expect(convoPhoneVideo).toHaveJSProperty('loop', true);
+    await expect(convoPhoneVideo).toHaveJSProperty('playsInline', true);
+    await expect(convoPhoneVideo).toHaveJSProperty('controls', false);
+    await expect(callBrowserBar).toHaveCSS('height', '38px');
+    await expect(convoBrowserBar).toHaveCSS('height', '38px');
+    await expect(convoViewport).toHaveCSS('aspect-ratio', '1440 / 800');
+    await expect(convoPhone).toHaveCSS('aspect-ratio', '592 / 1280');
 
     const mediaBox = await convoMedia.boundingBox();
     const { mediaRect, backgroundBox } = await convoMedia.evaluate((element) => {
@@ -561,12 +584,12 @@ test.describe('portfolio homepage framework', () => {
     expect((phoneBox?.y ?? 0) + (phoneBox?.height ?? 0)).toBeLessThanOrEqual(
       (mediaBox?.y ?? 0) + (mediaBox?.height ?? 0),
     );
-    const [phoneRadius, phoneImageRadius] = await Promise.all([
+    const [phoneRadius, phoneVideoRadius] = await Promise.all([
       convoPhone.evaluate((element) => getComputedStyle(element).borderRadius),
-      convoPhoneImage.evaluate((element) => getComputedStyle(element).borderRadius),
+      convoPhoneVideo.evaluate((element) => getComputedStyle(element).borderRadius),
     ]);
-    expect(phoneRadius).not.toBe('0px');
-    expect(phoneImageRadius).toBe(phoneRadius);
+    expect(phoneRadius).toBe('14px');
+    expect(phoneVideoRadius).toBe('10px');
 
     const callProjectBox = await callProject.boundingBox();
     const convoProjectBox = await convoProject.boundingBox();
@@ -641,7 +664,10 @@ test.describe('portfolio homepage framework', () => {
     const convoAssetRequests: string[] = [];
     page.on('request', (request) => {
       const pathname = new URL(request.url()).pathname;
-      if (pathname.startsWith('/images/convo-ai/')) convoAssetRequests.push(pathname);
+      if (
+        pathname.startsWith('/images/convo-ai/')
+        || pathname.startsWith('/videos/convo-ai/')
+      ) convoAssetRequests.push(pathname);
     });
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
@@ -649,7 +675,10 @@ test.describe('portfolio homepage framework', () => {
     expect(convoAssetRequests).toContain('/images/convo-ai/home-card-background.png');
     expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop-poster.webp');
     expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/web-ready.png');
-    expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/avatar-video.png');
+    expect(convoAssetRequests).not.toContain(
+      '/images/convo-ai/posters/app-conversation-start.webp',
+    );
+    expect(convoAssetRequests).not.toContain('/videos/convo-ai/app-conversation-start.mp4');
 
     const call = page.locator('[data-project-id="call-agent"]');
     const convo = page.locator('[data-project-id="convo-ai"]');
@@ -723,7 +752,10 @@ test.describe('portfolio homepage framework', () => {
     const convoAssetRequests: string[] = [];
     page.on('request', (request) => {
       const pathname = new URL(request.url()).pathname;
-      if (pathname.startsWith('/images/convo-ai/')) convoAssetRequests.push(pathname);
+      if (
+        pathname.startsWith('/images/convo-ai/')
+        || pathname.startsWith('/videos/convo-ai/')
+      ) convoAssetRequests.push(pathname);
     });
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
@@ -731,7 +763,10 @@ test.describe('portfolio homepage framework', () => {
     expect(convoAssetRequests).toContain('/images/convo-ai/home-card-background.png');
     expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop.gif');
     expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/web-ready.png');
-    expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/avatar-video.png');
+    expect(convoAssetRequests).not.toContain(
+      '/images/convo-ai/posters/app-conversation-start.webp',
+    );
+    expect(convoAssetRequests).not.toContain('/videos/convo-ai/app-conversation-start.mp4');
 
     const convoMedia = page.locator('[data-project-id="convo-ai"] [data-convo-home-media]');
     await convoMedia.scrollIntoViewIfNeeded();

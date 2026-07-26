@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import LocaleHomePage from '@/app/(localized)/[locale]/page';
@@ -699,7 +699,7 @@ describe('FeaturedWork', () => {
     expect.soft(sttScope.queryByText(status)).toBeVisible();
   });
 
-  it('publishes the responsive ConvoAI homepage media sources', () => {
+  it('publishes the responsive ConvoAI homepage media sources', async () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const convoAi = container.querySelector<HTMLElement>('[data-project-id="convo-ai"]');
     const media = convoAi?.querySelector<HTMLElement>('[data-convo-home-media]');
@@ -727,12 +727,29 @@ describe('FeaturedWork', () => {
     expect(webImage?.getAttribute('src')).toMatch(/^data:image\/gif;base64,/);
     expect(webImage).toHaveAttribute('alt', 'ConvoAI web conversation ready state');
     const phone = media?.querySelector('[data-convo-phone]');
-    expect(phone?.querySelector('source')).toHaveAttribute(
-      'srcset',
-      '/images/convo-ai/figma/avatar-video.png',
+    await waitFor(() => {
+      expect(phone?.querySelector('video')).toHaveAttribute(
+        'poster',
+        '/images/convo-ai/posters/app-conversation-start.webp',
+      );
+    });
+    const phoneVideo = phone?.querySelector('video');
+    const phoneSource = phoneVideo?.querySelector('source');
+    expect(phoneVideo).toHaveProperty('autoplay', true);
+    expect(phoneVideo).toHaveProperty('muted', true);
+    expect(phoneVideo).toHaveProperty('loop', true);
+    expect(phoneVideo).toHaveProperty('playsInline', true);
+    expect(phoneVideo).toHaveProperty('controls', false);
+    expect(phoneVideo).toHaveAttribute('tabindex', '-1');
+    expect(phoneSource).toHaveAttribute(
+      'src',
+      '/videos/convo-ai/app-conversation-start.mp4',
     );
-    expect(phone?.querySelector('source')).toHaveAttribute('media', '(min-width: 768px)');
-    expect(phone?.querySelector('img')?.getAttribute('src')).toMatch(/^data:image\/gif;base64,/);
+    expect(phoneSource).toHaveAttribute(
+      'media',
+      '(min-width: 768px) and (prefers-reduced-motion: no-preference)',
+    );
+    expect(phoneSource).toHaveAttribute('type', 'video/mp4');
     const loop = media?.querySelector('[data-convo-mobile-loop]');
     expect(loop?.querySelector('source')).toHaveAttribute(
       'srcset',
@@ -753,6 +770,58 @@ describe('FeaturedWork', () => {
       '(max-width: 767px) and (prefers-reduced-motion: reduce)',
     );
     expect(poster?.querySelector('img')?.getAttribute('src')).toMatch(/^data:image\/gif;base64,/);
+  });
+
+  it('defers the desktop ConvoAI video source until the card approaches the viewport', async () => {
+    const observers: Array<{
+      callback: IntersectionObserverCallback;
+      target?: Element;
+    }> = [];
+
+    vi.stubGlobal('IntersectionObserver', class {
+      readonly record: { callback: IntersectionObserverCallback; target?: Element };
+
+      constructor(callback: IntersectionObserverCallback) {
+        this.record = { callback };
+        observers.push(this.record);
+      }
+
+      observe = (target: Element) => {
+        this.record.target = target;
+      };
+
+      disconnect = vi.fn();
+    });
+
+    try {
+      const { container } = render(<FeaturedWork locale="en" />);
+      const media = container.querySelector<HTMLElement>('[data-convo-home-media]');
+      const video = media?.querySelector('video');
+      const mediaObserver = observers.find(({ target }) => target === media);
+
+      expect(video).not.toHaveAttribute('poster');
+      expect(video?.querySelector('source')).not.toBeInTheDocument();
+      expect(mediaObserver).toBeDefined();
+
+      await act(async () => {
+        mediaObserver?.callback(
+          [{ target: media, isIntersecting: true } as IntersectionObserverEntry],
+          {} as IntersectionObserver,
+        );
+      });
+
+      const loadedVideo = media?.querySelector('video');
+      expect(loadedVideo).toHaveAttribute(
+        'poster',
+        '/images/convo-ai/posters/app-conversation-start.webp',
+      );
+      expect(loadedVideo?.querySelector('source')).toHaveAttribute(
+        'src',
+        '/videos/convo-ai/app-conversation-start.mp4',
+      );
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it.each(['en', 'zh'] as const)(
