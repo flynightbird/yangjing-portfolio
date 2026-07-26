@@ -9,7 +9,10 @@ import { IntroStory } from '@/components/home/intro-story';
 import { VisualArchive } from '@/components/home/visual-archive';
 import { XuelangHomeComparison } from '@/components/home/xuelang-home-comparison';
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
 
 describe('DualIdentityHero', () => {
   it('gives both identities equal semantic weight in the interactive portrait scene', () => {
@@ -592,6 +595,77 @@ describe('FeaturedWork', () => {
     expect(scope.queryByText(/会议事件改变内容优先级/)).not.toBeInTheDocument();
     expect(scope.queryByText('Before the meeting')).not.toBeInTheDocument();
     expect(scope.queryByText('After the meeting')).not.toBeInTheDocument();
+  });
+
+  it('loads both Meeting recordings near the viewport in normal motion', () => {
+    const intersectionCallbacks: IntersectionObserverCallback[] = [];
+    vi.stubGlobal('matchMedia', vi.fn().mockImplementation((query: string) => ({
+      matches: query === '(prefers-reduced-motion: reduce)' ? false : true,
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })));
+    vi.stubGlobal('IntersectionObserver', class {
+      constructor(callback: IntersectionObserverCallback) {
+        intersectionCallbacks.push(callback);
+      }
+      disconnect = vi.fn();
+      observe = vi.fn();
+      unobserve = vi.fn();
+      takeRecords = vi.fn(() => []);
+      root = null;
+      rootMargin = '600px 0px';
+      thresholds = [0];
+    });
+
+    const { container } = render(<FeaturedWork locale="en" />);
+    const meeting = container.querySelector<HTMLElement>('[data-project-id="meeting"]');
+    expect(meeting?.querySelectorAll('video')).toHaveLength(2);
+    expect(meeting?.querySelector('source[src$="meeting-hero-web.mp4"]')).toBeNull();
+
+    act(() => {
+      for (const callback of intersectionCallbacks) {
+        callback(
+          [{ isIntersecting: true } as IntersectionObserverEntry],
+          {} as IntersectionObserver,
+        );
+      }
+    });
+
+    const videos = meeting?.querySelectorAll('video');
+    expect(videos?.[0]).toHaveAttribute(
+      'poster',
+      expect.stringContaining('/images/meeting/meeting-hero-web-poster.webp'),
+    );
+    expect(videos?.[1]).toHaveAttribute(
+      'poster',
+      expect.stringContaining('/images/meeting/meeting-hero-app-poster.webp'),
+    );
+    expect(meeting?.querySelector('source[src$="meeting-hero-web.mp4"]')).toBeInTheDocument();
+    expect(meeting?.querySelector('source[src$="meeting-hero-app.mp4"]')).toBeInTheDocument();
+    for (const video of videos ?? []) {
+      expect(video).toHaveAttribute('autoplay');
+      expect(video).toHaveAttribute('loop');
+      expect(video).toHaveAttribute('playsinline');
+      expect(video).not.toHaveAttribute('controls');
+      expect(video).toHaveAttribute('tabindex', '-1');
+    }
+  });
+
+  it('renders poster-only Meeting media without MP4 sources in reduced motion', () => {
+    vi.stubGlobal('matchMedia', vi.fn().mockImplementation((query: string) => ({
+      matches: query === '(prefers-reduced-motion: reduce)',
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })));
+
+    const { container } = render(<FeaturedWork locale="en" />);
+    const meeting = container.querySelector<HTMLElement>('[data-project-id="meeting"]');
+
+    expect(meeting?.querySelectorAll('[data-meeting-poster]')).toHaveLength(2);
+    expect(meeting?.querySelector('video')).not.toBeInTheDocument();
+    expect(meeting?.querySelector('source[src$=".mp4"]')).not.toBeInTheDocument();
   });
 
   it.each([

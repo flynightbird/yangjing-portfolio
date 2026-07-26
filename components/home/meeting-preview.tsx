@@ -1,5 +1,6 @@
 import { ActionLink } from '@/components/ui/action-link';
 
+import { MeetingHomeMedia } from './meeting-home-media';
 import { ProjectMeta } from './project-meta';
 
 import styles from './home.module.css';
@@ -46,7 +47,7 @@ export function MeetingPreview({ copy, href }: MeetingPreviewProps) {
           data-page-transition-tone="dark"
           data-scroll-reveal-group="media"
         >
-          <div aria-hidden="true" data-meeting-media-placeholder />
+          <MeetingHomeMedia />
           <ol>
             {copy.states.map((state, index) => (
               <li key={state}>
