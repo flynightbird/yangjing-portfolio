@@ -505,7 +505,8 @@ await expect(footer.getByText('flydesigner_yangj')).toBeVisible();
 Run:
 
 ```bash
-PW_PORT=4196 npx playwright test tests/e2e/not-found.spec.ts --project=desktop
+npm run build:framework
+npx playwright test --config=playwright.export.config.mjs tests/e2e/not-found.spec.ts --project=desktop
 ```
 
 Expected: all not-found E2E tests PASS.
@@ -533,7 +534,8 @@ Expected: both files PASS.
 - [ ] **Step 2: Run desktop and mobile Footer browser coverage**
 
 ```bash
-PW_PORT=4197 npx playwright test tests/e2e/footer-reveal.spec.ts tests/e2e/homepage.spec.ts tests/e2e/not-found.spec.ts --project=desktop --project=mobile
+PW_PORT=4197 npx playwright test tests/e2e/footer-reveal.spec.ts tests/e2e/homepage.spec.ts --project=desktop --project=mobile
+npx playwright test --config=playwright.export.config.mjs tests/e2e/not-found.spec.ts --project=desktop --project=mobile
 ```
 
 Expected: all applicable tests PASS; viewport-specific tests may report their existing intentional skips.
