@@ -1,4 +1,5 @@
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 
 export type ConvoAiMediaId =
   | 'app-login' | 'app-structure' | 'app-conversation-start' | 'app-caption-camera'
@@ -33,8 +34,8 @@ type ItemInput = Omit<ConvoAiMediaItem, 'src' | 'poster'>;
 function item(input: ItemInput): ConvoAiMediaItem {
   return {
     ...input,
-    src: `/videos/convo-ai/${input.id}.mp4`,
-    poster: `/images/convo-ai/posters/${input.id}.webp`,
+    src: withBasePath(`/videos/convo-ai/${input.id}.mp4`),
+    poster: withBasePath(`/images/convo-ai/posters/${input.id}.webp`),
   };
 }
 
