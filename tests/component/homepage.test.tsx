@@ -45,7 +45,7 @@ describe('DualIdentityHero', () => {
     expect(designerPortrait).toHaveAttribute('alt', 'Yang Jing portrait frame');
     expect(builderPortrait).toHaveAttribute(
       'src',
-      expect.stringContaining('yang-jing-builder.png'),
+      expect.stringContaining('yang-jing-builder-illustration.png'),
     );
     expect(builderPortrait).toHaveAttribute('alt', '');
     const builderEchoes = portraitScene?.querySelectorAll<HTMLImageElement>(
@@ -54,7 +54,7 @@ describe('DualIdentityHero', () => {
     expect(builderEchoes).toHaveLength(1);
     expect(builderEchoes?.[0]).toHaveAttribute(
       'src',
-      expect.stringContaining('yang-jing-builder.png'),
+      expect.stringContaining('yang-jing-builder-illustration.png'),
     );
     expect(builderEchoes?.[0]).toHaveAttribute('alt', '');
     expect(builderEchoes?.[0]).toHaveAttribute('data-echo-runs', '0');
