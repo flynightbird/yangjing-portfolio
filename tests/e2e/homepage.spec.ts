@@ -1564,6 +1564,16 @@ test.describe('portfolio homepage framework', () => {
     const web = meeting.locator('[data-meeting-web-surface]');
     const phone = meeting.locator('[data-meeting-phone]');
 
+    await expect.poll(() => meeting.locator('[data-meeting-state]').evaluateAll((states) => (
+      states.map((state) => ({
+        color: getComputedStyle(state).color,
+        opacity: getComputedStyle(state).opacity,
+      }))
+    ))).toEqual(Array.from({ length: 3 }, () => ({
+      color: 'rgba(242, 244, 240, 0.48)',
+      opacity: '0.44',
+    })));
+
     await meeting.scrollIntoViewIfNeeded();
     await meeting.evaluate((element) => {
       const target = element.offsetTop + element.offsetHeight - window.innerHeight * 0.4;

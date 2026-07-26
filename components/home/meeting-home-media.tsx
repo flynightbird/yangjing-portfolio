@@ -63,6 +63,10 @@ export function MeetingHomeMedia() {
         const states = mediaColumn?.querySelectorAll<HTMLElement>('[data-meeting-state]');
         if (!web || !phone || !states?.length) return;
         const isCompact = window.innerWidth < 768;
+        gsap.set(states, {
+          color: 'rgba(242, 244, 240, 0.48)',
+          opacity: 0.44,
+        });
 
         const timeline = gsap.timeline({
           defaults: { ease: 'none' },
@@ -89,9 +93,8 @@ export function MeetingHomeMedia() {
             0.18,
           )
           .to(web, { scale: 0.965, y: -8, duration: 0.24 }, 0.58)
-          .fromTo(
+          .to(
             states,
-            { color: 'rgba(242, 244, 240, 0.48)', opacity: 0.44 },
             { color: '#ff654d', opacity: 1, stagger: 0.08, duration: 0.16 },
             0.55,
           );
