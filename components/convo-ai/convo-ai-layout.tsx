@@ -1,6 +1,7 @@
 import { ChapterNav } from '@/components/case-study/chapter-nav';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
 
+import { ConvoAiLaunchBanner } from './convo-ai-launch-banner';
 import { ConvoAiStage } from './convo-ai-media';
 import { ConvoAiMotion } from './convo-ai-motion';
 import { ConvoAiToneController } from './convo-ai-tone-controller';
@@ -25,6 +26,7 @@ export function ConvoAiLayout({ meta, locale, children }: ContentLayoutProps) {
             <div><dt>{text.product}</dt><dd>{locale === 'zh' ? '1 对 1 实时 AI 对话' : '1:1 real-time AI conversation'}</dd></div>
             <div><dt>{text.status}</dt><dd>{meta.status}</dd></div>
           </dl>
+          <ConvoAiLaunchBanner locale={locale} />
           <div className={styles.nextHint} data-convo-next-section-hint>{text.hint}</div>
         </header>
         <div className={styles.content}>{children}</div>

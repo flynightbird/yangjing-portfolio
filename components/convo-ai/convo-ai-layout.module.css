@@ -37,6 +37,96 @@
 .facts div:last-child { border: 0; }
 .facts dt { color: rgba(242, 247, 246, 0.46); font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; }
 .facts dd { margin: 0.55rem 0 0; font-size: 0.9rem; line-height: 1.45; }
+
+.launchBanner {
+  position: relative;
+  min-height: 18.75rem;
+  overflow: hidden;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #5954f7 44%, #9eb8f3 78%, #d6dbfc 100%);
+  isolation: isolate;
+}
+
+.launchCopy {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: 64%;
+  min-height: 18.75rem;
+  align-content: center;
+  gap: 0.75rem;
+  padding-inline: 50px;
+}
+
+.launchTitle,
+.launchSubtitle {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.launchTitle {
+  color: #fff;
+  font-size: 1.75rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.launchSubtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.launchArtwork {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  width: 67%;
+  aspect-ratio: 861 / 300;
+  pointer-events: none;
+}
+
+.launchBase {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.launchFloatOne,
+.launchFloatTwo {
+  position: absolute;
+  height: auto;
+}
+
+.launchFloatOne {
+  --convo-launch-travel: 26px;
+  top: 7%;
+  left: 46.5%;
+  width: 17.2%;
+  animation: convo-launch-float-one 3.6s ease-in-out infinite;
+}
+
+.launchFloatTwo {
+  --convo-launch-travel: 10px;
+  top: 47%;
+  left: 41%;
+  width: 11.16%;
+  animation: convo-launch-float-two 5.2s ease-in-out 450ms infinite;
+}
+
+@keyframes convo-launch-float-one {
+  0%,
+  100% { transform: translateY(-13px) rotate(1.5deg); }
+  50% { transform: translateY(13px) rotate(-1.5deg); }
+}
+
+@keyframes convo-launch-float-two {
+  0%,
+  100% { transform: translateY(-5px); }
+  50% { transform: translateY(5px); }
+}
+
 .nextHint { min-height: 4rem; padding: 1.3rem clamp(1.25rem, 5vw, 5rem); border-block-start: 1px solid var(--convo-border); background: var(--convo-canvas); color: var(--convo-ink); font-size: 1rem; font-weight: 600; }
 
 .content { background: var(--convo-canvas); color: var(--convo-ink); }
@@ -162,10 +252,25 @@
 @media (max-width: 480px) {
   .facts { grid-template-columns: 1fr; }
   .facts div { padding: 0.7rem 0; border-inline-end: 0; border-block-end: 1px solid var(--convo-border); }
+  .launchBanner { min-height: 25rem; }
+  .launchCopy {
+    width: 100%;
+    min-height: 0;
+    align-content: start;
+    gap: 0.625rem;
+    padding: 2rem 20px 0;
+  }
+  .launchTitle,
+  .launchSubtitle { white-space: normal; }
+  .launchTitle { font-size: 1.625rem; }
+  .launchSubtitle { max-width: 34ch; font-size: 0.875rem; }
+  .launchArtwork { right: -34%; width: 152%; }
   .content :global(.section-index::before) { font-size: 9rem; }
   .content :global(.realtime-map) { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .root * { scroll-behavior: auto !important; }
+  .launchFloatOne,
+  .launchFloatTwo { animation: none; transform: none; }
 }
