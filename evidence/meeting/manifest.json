@@ -35,6 +35,25 @@
       }
     },
     {
+      "id": "meeting-logo-motion-dark-poster",
+      "kind": "image",
+      "source": "evidence/meeting/source/imported/meeting-logo-motion-dark-poster.png",
+      "output": "public/images/meeting/meeting-logo-motion-dark-poster.webp",
+      "purpose": "Provide the poster frame for the dark Meeting logo motion used in the hero facts area.",
+      "alt": {
+        "en": "Agora Meeting dark animated logo poster",
+        "zh": "Agora Meeting 深色动效标识封面"
+      }
+    },
+    {
+      "id": "meeting-logo-motion-dark",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-logo-motion-dark.mp4",
+      "output": "public/videos/meeting/meeting-logo-motion-dark.mp4",
+      "poster": "/images/meeting/meeting-logo-motion-dark-poster.webp",
+      "purpose": "Show the dark Meeting brand animation in the hero facts area."
+    },
+    {
       "id": "meeting-hero-web-poster",
       "kind": "image",
       "source": "evidence/meeting/source/imported/meeting-hero-web-poster.png",

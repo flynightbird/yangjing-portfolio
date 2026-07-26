@@ -43,6 +43,13 @@ interface MediaDefinition {
   readonly description: { readonly en: string; readonly zh: string };
 }
 
+const popupExpressionCards = [
+  { id: 'groups', src: '/images/meeting/meeting-popup-groups.png' },
+  { id: 'host', src: '/images/meeting/meeting-popup-host.png' },
+  { id: 'camera', src: '/images/meeting/meeting-popup-camera.png' },
+  { id: 'microphone', src: '/images/meeting/meeting-popup-microphone.png' },
+] as const;
+
 const mediaCatalog: Record<MeetingMediaId, MediaDefinition> = {
   'hero-web': {
     id: 'hero-web',
@@ -337,12 +344,14 @@ function MeetingViewportVideo({
   loop = true,
   videoRef,
   className,
+  describedBy,
 }: {
   readonly media: MediaDefinition;
   readonly locale: Locale;
   readonly loop?: boolean;
   readonly videoRef?: React.RefObject<HTMLVideoElement | null>;
   readonly className?: string;
+  readonly describedBy?: string;
 }) {
   const reduceMotion = useReducedMotionPreference();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -375,6 +384,8 @@ function MeetingViewportVideo({
         className={className}
         data-meeting-video
         aria-hidden="true"
+        aria-label={media.title[locale]}
+        aria-describedby={describedBy}
         src={media.src}
         poster={media.poster}
         autoPlay
@@ -405,6 +416,8 @@ function BrowserShell({
 }) {
   const media = mediaCatalog[mediaId];
   const text = copy[locale];
+  const titleId = `${media.id}-${locale}-title`;
+  const descriptionId = `${media.id}-${locale}-description`;
 
   return (
     <figure className={`${styles.surface} ${styles.browserFigure} ${className ?? ''}`}>
@@ -424,13 +437,20 @@ function BrowserShell({
           </span>
         </div>
         <div className={styles.browserViewport} style={{ aspectRatio: `${media.width} / ${media.height}` }}>
-          <MeetingViewportVideo media={media} locale={locale} loop={loop} videoRef={videoRef} className={styles.media} />
+          <MeetingViewportVideo
+            media={media}
+            locale={locale}
+            loop={loop}
+            videoRef={videoRef}
+            className={styles.media}
+            describedBy={`${titleId} ${descriptionId}`}
+          />
         </div>
       </div>
       <figcaption>
         <span>{media.label[locale]}</span>
-        <strong>{media.title[locale]}</strong>
-        <p>{media.description[locale]}</p>
+        <strong id={titleId}>{media.title[locale]}</strong>
+        <p id={descriptionId}>{media.description[locale]}</p>
       </figcaption>
     </figure>
   );
@@ -450,18 +470,27 @@ function PhoneShell({
   readonly videoRef?: React.RefObject<HTMLVideoElement | null>;
 }) {
   const media = mediaCatalog[mediaId];
+  const titleId = `${media.id}-${locale}-title`;
+  const descriptionId = `${media.id}-${locale}-description`;
 
   return (
     <figure className={`${styles.surface} ${styles.phoneFigure} ${className ?? ''}`}>
       <div className={styles.phoneShell}>
         <div className={styles.phoneViewport} style={{ aspectRatio: `${media.width} / ${media.height}` }}>
-          <MeetingViewportVideo media={media} locale={locale} loop={loop} videoRef={videoRef} className={styles.media} />
+          <MeetingViewportVideo
+            media={media}
+            locale={locale}
+            loop={loop}
+            videoRef={videoRef}
+            className={styles.media}
+            describedBy={`${titleId} ${descriptionId}`}
+          />
         </div>
       </div>
       <figcaption>
         <span>{media.label[locale]}</span>
-        <strong>{media.title[locale]}</strong>
-        <p>{media.description[locale]}</p>
+        <strong id={titleId}>{media.title[locale]}</strong>
+        <p id={descriptionId}>{media.description[locale]}</p>
       </figcaption>
     </figure>
   );
@@ -475,18 +504,25 @@ function LandscapeShell({
   readonly locale: Locale;
 }) {
   const media = mediaCatalog[mediaId];
+  const titleId = `${media.id}-${locale}-title`;
+  const descriptionId = `${media.id}-${locale}-description`;
 
   return (
     <figure className={`${styles.surface} ${styles.landscapeFigure}`}>
       <div className={styles.landscapeShell}>
         <div className={styles.landscapeViewport} style={{ aspectRatio: `${media.width} / ${media.height}` }}>
-          <MeetingViewportVideo media={media} locale={locale} className={styles.media} />
+          <MeetingViewportVideo
+            media={media}
+            locale={locale}
+            className={styles.media}
+            describedBy={`${titleId} ${descriptionId}`}
+          />
         </div>
       </div>
       <figcaption>
         <span>{media.label[locale]}</span>
-        <strong>{media.title[locale]}</strong>
-        <p>{media.description[locale]}</p>
+        <strong id={titleId}>{media.title[locale]}</strong>
+        <p id={descriptionId}>{media.description[locale]}</p>
       </figcaption>
     </figure>
   );
@@ -629,6 +665,27 @@ export function MeetingPolishShowcase({ locale }: { readonly locale: Locale }) {
         <div className={`${styles.phoneGrid} ${styles.polishDeck}`} data-columns="2">
           <PhoneShell mediaId="beauty-app" locale={locale} />
           <PhoneShell mediaId="safety-app" locale={locale} />
+        </div>
+      </div>
+
+      <div className={styles.popupExpressionCard} data-meeting-popup-expression aria-hidden="true">
+        <div className={styles.popupExpressionBackdrop}>
+          <span className={`${styles.popupGhost} ${styles.popupGhostA}`} />
+          <span className={`${styles.popupGhost} ${styles.popupGhostB}`} />
+          <span className={`${styles.popupGhost} ${styles.popupGhostC}`} />
+          <span className={`${styles.popupGhost} ${styles.popupGhostD}`} />
+        </div>
+        <div className={styles.popupExpressionGrid}>
+          {popupExpressionCards.map((card) => (
+            <div
+              key={card.id}
+              className={styles.popupExpressionItem}
+              data-meeting-popup-card
+              data-card={card.id}
+            >
+              <img src={card.src} alt="" loading="lazy" decoding="async" />
+            </div>
+          ))}
         </div>
       </div>
     </div>

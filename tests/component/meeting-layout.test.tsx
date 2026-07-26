@@ -33,7 +33,10 @@ it('presents product proof, approved facts, and chapter navigation', () => {
   expect(screen.getByRole('heading', { level: 1, name: meta.title })).toBeVisible();
   expect(screen.getByRole('heading', { level: 1 }).querySelector('br')).toBeNull();
   expect(screen.getByText('Sole Product Designer')).toBeVisible();
-  expect(screen.getByText('2024-2026 · 1.5 years')).toBeVisible();
+  expect(screen.queryByText('2024-2026 · 1.5 years')).toBeNull();
+  expect(container.querySelector('[data-meeting-logo-motion]')).not.toBeNull();
+  expect(container.querySelector('[data-meeting-logo-row]')).not.toBeNull();
+  expect(container.querySelectorAll('[data-meeting-meta-row]')).toHaveLength(2);
   expect(screen.getByRole('button', { name: 'Replay' })).toBeVisible();
   expect(screen.getByText('Agora Meeting')).toBeVisible();
   expect(screen.getByRole('navigation', { name: 'Case study chapters' })).toBeVisible();
@@ -62,6 +65,7 @@ it('prevents forced word breaks and uses the shared chapter treatment', () => {
   expect(layoutStyles).toMatch(/overflow-wrap:\s*break-word/);
   expect(layoutStyles).toMatch(/text-wrap:\s*balance/);
   expect(layoutStyles).toMatch(/\.heroMedia\s*\{\s*order:\s*1;/);
+  expect(layoutStyles).not.toMatch(/\.content > section\s*\{[^}]*border-top:/s);
   expect(chapterStyles).toMatch(
     /--chapter-accent:\s*var\(--color-iris-deep\)/,
   );

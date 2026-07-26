@@ -37,8 +37,8 @@
 
 .heroTop {
   display: grid;
-  grid-template-columns: minmax(0, 1.06fr) minmax(20rem, 0.94fr);
-  gap: clamp(1.5rem, 3vw, 3.25rem);
+  grid-template-columns: minmax(0, 1fr) minmax(22rem, 1fr);
+  gap: clamp(1.5rem, 2.8vw, 3rem);
   align-items: end;
 }
 
@@ -85,11 +85,48 @@
 
 .heroMeta {
   display: grid;
-  gap: 0;
+  gap: 0.42rem;
   min-width: 0;
-  max-width: 30rem;
+  max-width: 31.5rem;
   justify-self: end;
   padding-bottom: 0.1rem;
+}
+
+.logoMotionRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.3rem;
+}
+
+.logoMotionCard {
+  display: grid;
+  place-items: center;
+  width: clamp(5.9rem, 8vw, 7rem);
+  padding: 0;
+  overflow: hidden;
+  border-radius: 1.24rem;
+  background: rgba(13, 17, 27, 0.88);
+}
+
+.logoMotionVideo,
+.logoMotionFallback {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.logoMotionVideo {
+  border-radius: 1.15rem;
+  background: transparent;
+  transform: scale(1.018);
+  transform-origin: center;
+}
+
+.logoMotionFallback {
+  display: none;
+  border-radius: 1.15rem;
+  transform: scale(1.018);
+  transform-origin: center;
 }
 
 .heroMedia {
@@ -97,35 +134,23 @@
   margin-top: 0;
 }
 
-.facts {
+.metaRow {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 0.95rem;
-  max-width: 30rem;
+  grid-template-columns: minmax(7.5rem, 0.8fr) minmax(0, 1.2fr);
+  gap: 0 1.55rem;
+  max-width: 31.5rem;
   margin: 0;
-  border-block: 1px solid var(--meeting-line);
-}
-
-.facts div {
-  min-width: 0;
-  min-height: auto;
-  padding: 0.95rem 0 1rem;
+  padding: 0.92rem 0 1.05rem;
   border-bottom: 1px solid var(--meeting-line);
 }
 
-.facts div:nth-child(n + 3) {
-  border-top: 0;
+.metaRow div {
+  min-width: 0;
+  display: grid;
+  align-content: start;
 }
 
-.facts div:nth-last-child(-n + 2) {
-  border-bottom: 0;
-}
-
-.facts div:last-child {
-  grid-column: 1 / -1;
-}
-
-.facts dt {
+.metaRow dt {
   color: var(--meeting-muted);
   font-family: var(--font-mono), monospace;
   font-size: 0.6875rem;
@@ -134,17 +159,18 @@
   text-transform: uppercase;
 }
 
-.facts dd {
-  margin: 0.35rem 0 0;
-  font-size: 0.98rem;
+.metaRow dd {
+  margin: 0.44rem 0 0;
+  font-size: 0.985rem;
   font-weight: 650;
-  line-height: 1.5;
+  line-height: 1.62;
+  max-width: none;
+  text-wrap: pretty;
 }
 
 .content > section {
   padding-top: clamp(5.5rem, 10vw, 9.5rem);
   scroll-margin-top: 5rem;
-  border-top: 1px solid var(--meeting-line);
 }
 
 .content > section > :where(h2, p, ul, ol):not(figure, div) {
@@ -250,22 +276,28 @@
     font-size: 1.05rem;
   }
 
-  .facts {
+  .metaRow {
     grid-template-columns: 1fr;
     max-width: none;
-    gap: 0;
+    gap: 0.9rem;
+    padding: 0.95rem 0 1rem;
   }
 
-  .facts div {
-    padding: 1rem 0;
+  .logoMotionRow {
+    justify-content: flex-start;
   }
 
-  .facts div:last-child {
-    grid-column: auto;
+  .logoMotionCard {
+    width: 6.2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logoMotionVideo {
+    display: none;
   }
 
-  .facts div:not(:last-child) {
-    border-bottom: 1px solid var(--meeting-line);
+  .logoMotionFallback {
+    display: block;
   }
-
 }

@@ -27,4 +27,12 @@
     position: static !important;
     opacity: 1 !important;
   }
+
+  [data-meeting-case] .logoMotionVideo {
+    display: none !important;
+  }
+
+  [data-meeting-case] .logoMotionFallback {
+    display: block !important;
+  }
 }

@@ -108,4 +108,21 @@ describe('Meeting showcase media', () => {
       '/videos/meeting/meeting-safety-app.mp4',
     ]);
   });
+
+  it('adds a visual-only popup expression card beneath the consistency controls', () => {
+    const { container } = render(<MeetingPolishShowcase locale="en" />);
+    const popupCard = container.querySelector('[data-meeting-popup-expression]');
+    const popupImages = Array.from(container.querySelectorAll('[data-meeting-popup-card] img')).map((image) =>
+      image.getAttribute('src'),
+    );
+
+    expect(popupCard).not.toBeNull();
+    expect(container.querySelectorAll('[data-meeting-popup-card]')).toHaveLength(4);
+    expect(popupImages).toEqual([
+      '/images/meeting/meeting-popup-groups.png',
+      '/images/meeting/meeting-popup-host.png',
+      '/images/meeting/meeting-popup-camera.png',
+      '/images/meeting/meeting-popup-microphone.png',
+    ]);
+  });
 });
