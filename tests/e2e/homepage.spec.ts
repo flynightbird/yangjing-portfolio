@@ -534,16 +534,23 @@ test.describe('portfolio homepage framework', () => {
     await expect(convoPhone).toBeVisible();
 
     const mediaBox = await convoMedia.boundingBox();
-    const backgroundBox = await convoBackground.boundingBox();
+    const { mediaRect, backgroundBox } = await convoMedia.evaluate((element) => {
+      const background = element.querySelector<HTMLElement>('[data-convo-card-background]');
+      if (!background) throw new Error('Missing ConvoAI card background');
+      return {
+        mediaRect: element.getBoundingClientRect().toJSON(),
+        backgroundBox: background.getBoundingClientRect().toJSON(),
+      };
+    });
     const viewportBox = await convoViewport.boundingBox();
     const webImageBox = await convoWebImage.boundingBox();
     const phoneBox = await convoPhone.boundingBox();
     expect(mediaBox).not.toBeNull();
     expect(backgroundBox).not.toBeNull();
-    expect(backgroundBox?.x).toBeCloseTo(mediaBox?.x ?? 0, 0);
-    expect(backgroundBox?.y).toBeCloseTo(mediaBox?.y ?? 0, 0);
-    expect(backgroundBox?.width).toBeCloseTo(mediaBox?.width ?? 0, 0);
-    expect(backgroundBox?.height).toBeCloseTo(mediaBox?.height ?? 0, 0);
+    expect(backgroundBox?.x).toBeCloseTo(mediaRect.x, 0);
+    expect(backgroundBox?.y).toBeCloseTo(mediaRect.y, 0);
+    expect(backgroundBox?.width).toBeCloseTo(mediaRect.width, 0);
+    expect(backgroundBox?.height).toBeCloseTo(mediaRect.height, 0);
     expect(viewportBox).not.toBeNull();
     expect(webImageBox).not.toBeNull();
     expect(phoneBox).not.toBeNull();
@@ -657,7 +664,14 @@ test.describe('portfolio homepage framework', () => {
     const convoBox = await convo.boundingBox();
     const callMediaBox = await callMedia.boundingBox();
     const convoMediaBox = await convoMedia.boundingBox();
-    const convoBackgroundBox = await convoBackground.boundingBox();
+    const { convoMediaRect, convoBackgroundBox } = await convoMedia.evaluate((element) => {
+      const background = element.querySelector<HTMLElement>('[data-convo-card-background]');
+      if (!background) throw new Error('Missing ConvoAI card background');
+      return {
+        convoMediaRect: element.getBoundingClientRect().toJSON(),
+        convoBackgroundBox: background.getBoundingClientRect().toJSON(),
+      };
+    });
     const callRevealBox = await callMediaReveal.boundingBox();
     const convoRevealBox = await convoMediaReveal.boundingBox();
 
@@ -671,10 +685,10 @@ test.describe('portfolio homepage framework', () => {
     await expect(convoBackground).toBeVisible();
     await expect(convoBackground).toHaveCSS('object-fit', 'cover');
     expect(convoBackgroundBox).not.toBeNull();
-    expect(convoBackgroundBox?.x).toBeCloseTo(convoMediaBox?.x ?? 0, 0);
-    expect(convoBackgroundBox?.y).toBeCloseTo(convoMediaBox?.y ?? 0, 0);
-    expect(convoBackgroundBox?.width).toBeCloseTo(convoMediaBox?.width ?? 0, 0);
-    expect(convoBackgroundBox?.height).toBeCloseTo(convoMediaBox?.height ?? 0, 0);
+    expect(convoBackgroundBox?.x).toBeCloseTo(convoMediaRect.x, 0);
+    expect(convoBackgroundBox?.y).toBeCloseTo(convoMediaRect.y, 0);
+    expect(convoBackgroundBox?.width).toBeCloseTo(convoMediaRect.width, 0);
+    expect(convoBackgroundBox?.height).toBeCloseTo(convoMediaRect.height, 0);
     await expect(convoMedia.locator('[data-convo-web-browser]')).toBeHidden();
     await expect(convoMedia.locator('[data-convo-phone]')).toBeHidden();
     await expect(convoLoop).toBeVisible();
