@@ -160,6 +160,7 @@ const archiveCoverVariantSchema = z.enum([
   'open-language',
   'doudou-fox',
   'mr-chong',
+  'tongcheng-travel',
 ]);
 
 const realArchiveEntryBaseSchema = z.object({
@@ -489,6 +490,71 @@ export const archiveProjects = [
         alt: {
           en: 'Mr Chong final 3D render in a yellow scene',
           zh: '黄色场景中的 Mr Chong 最终三维渲染',
+        },
+      },
+    ],
+  },
+  {
+    key: 'tongcheng-finance-ui',
+    kind: 'real-entry',
+    destination: 'lightbox-only',
+    company: { en: 'Tongcheng Travel', zh: '同程旅游' },
+    period: {
+      start: { dateTime: '2019', label: { en: '2019', zh: '2019' } },
+    },
+    title: {
+      primary: { en: 'Tongcheng Travel', zh: '同程旅游' },
+    },
+    description: {
+      en: "Product and interface design across multiple offerings for distinct user groups within Tongcheng Travel's Financial Business Unit.",
+      zh: '在同程旅游金融事业部，面向不同用户群体，参与多类产品的体验与界面设计。',
+    },
+    skills: ['UI设计'],
+    coverVariant: 'tongcheng-travel',
+    image: {
+      src: '/images/archive/details/tongcheng-travel/cover.png',
+      width: 1920,
+      height: 1080,
+      alt: {
+        en: 'Tongcheng Travel finance visual collection cover with a purple and yellow fish',
+        zh: '紫黄色鱼形视觉的同程旅游金融作品合集封面',
+      },
+    },
+    gallery: [
+      {
+        src: '/images/archive/details/tongcheng-travel/01-crowdfunding-2.png',
+        width: 1440,
+        height: 810,
+        alt: {
+          en: 'Crowdfunding 2.0 travel finance product screens and performance metrics',
+          zh: '众筹 2.0 旅游金融产品界面与转让数据',
+        },
+      },
+      {
+        src: '/images/archive/details/tongcheng-travel/02-mashangyou-japan.jpg',
+        width: 1440,
+        height: 810,
+        alt: {
+          en: 'Mashangyou Japan travel product design',
+          zh: '码上游日本旅游产品设计',
+        },
+      },
+      {
+        src: '/images/archive/details/tongcheng-travel/03-tongcheng-partner.jpg',
+        width: 1440,
+        height: 810,
+        alt: {
+          en: 'Tongcheng Partner product design',
+          zh: '同程合伙人产品设计',
+        },
+      },
+      {
+        src: '/images/archive/details/tongcheng-travel/04-outbound-travel-mini-program.jpg',
+        width: 1440,
+        height: 810,
+        alt: {
+          en: 'Outbound travel mini program design',
+          zh: '出境游小程序界面设计',
         },
       },
     ],

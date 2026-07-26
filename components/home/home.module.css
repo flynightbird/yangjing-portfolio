@@ -1991,6 +1991,19 @@ a.whiteCta:focus-visible {
   max-width: 22ch;
 }
 
+.archiveItem[data-cover-variant='tongcheng-travel'] .archiveCoverIndex {
+  inset-block-start: 5%;
+  inset-inline-start: 4.5%;
+  color: #fff;
+}
+
+.archiveItem[data-cover-variant='tongcheng-travel'] .archiveCoverTitle {
+  inset-block-start: 67%;
+  inset-inline-start: 12%;
+  width: 34%;
+  color: #fff;
+}
+
 .archiveFacts {
   display: grid;
   gap: 1.15rem;

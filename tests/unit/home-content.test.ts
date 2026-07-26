@@ -126,21 +126,48 @@ describe('Visual Archive contract', () => {
     }
   });
 
-  it('publishes the four approved archive projects in order', () => {
+  it('publishes the Tongcheng Travel gallery with crowdfunding first', () => {
+    const tongcheng = archiveProjects.find(
+      (project) => project.key === 'tongcheng-finance-ui',
+    );
+
+    expect(tongcheng).toMatchObject({
+      company: { en: 'Tongcheng Travel', zh: '同程旅游' },
+      period: {
+        start: { dateTime: '2019', label: { en: '2019', zh: '2019' } },
+      },
+      title: { primary: { en: 'Tongcheng Travel', zh: '同程旅游' } },
+      skills: ['UI设计'],
+      coverVariant: 'tongcheng-travel',
+    });
+    expect(tongcheng?.gallery?.map((image) => image.src)).toEqual([
+      '/images/archive/details/tongcheng-travel/01-crowdfunding-2.png',
+      '/images/archive/details/tongcheng-travel/02-mashangyou-japan.jpg',
+      '/images/archive/details/tongcheng-travel/03-tongcheng-partner.jpg',
+      '/images/archive/details/tongcheng-travel/04-outbound-travel-mini-program.jpg',
+    ]);
+    expect(tongcheng?.gallery?.every((image) => image.alt.en && image.alt.zh)).toBe(
+      true,
+    );
+  });
+
+  it('publishes the five approved archive projects in order', () => {
     expect(archiveProjects.map((project) => project.key)).toEqual([
       'alibaba-meipingmeiwu',
       'bytedance-open-language',
       'bytedance-doudou-fox',
       'tongcheng-mr-chong',
+      'tongcheng-finance-ui',
     ]);
     expect(archiveProjects.map((project) => project.coverVariant)).toEqual([
       'alibaba',
       'open-language',
       'doudou-fox',
       'mr-chong',
+      'tongcheng-travel',
     ]);
 
-    expect(archiveProjects).toHaveLength(4);
+    expect(archiveProjects).toHaveLength(5);
     expect(archiveProjects.every(({ destination }) => destination === 'lightbox-only')).toBe(
       true,
     );
