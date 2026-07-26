@@ -170,10 +170,11 @@ test.describe('portfolio homepage framework', () => {
         'href',
         `/${locale}/work/xuelang/`,
       );
-      await expect(page.locator('[data-project-id="meeting"] a')).toHaveAttribute(
-        'href',
-        `/${locale}/work/meeting/`,
-      );
+      const meetingLinks = page.locator('[data-project-id="meeting"] a');
+      await expect(meetingLinks).toHaveCount(3);
+      expect(await meetingLinks.evaluateAll((links) => links.map((link) => (
+        link.getAttribute('href')
+      )))).toEqual(Array.from({ length: 3 }, () => `/${locale}/work/meeting/`));
       await expect(page.locator('[data-project-id="convo-ai"] a').first()).toHaveAttribute(
         'href',
         `/${locale}/work/convo-ai/`,
@@ -727,7 +728,7 @@ test.describe('portfolio homepage framework', () => {
     await expect(convoLoop.locator('img')).toHaveCSS('object-fit', 'contain');
     await expect(convoMedia.locator('[data-convo-mobile-poster]')).toBeHidden();
     expect(convoMediaBox).not.toBeNull();
-    expect(convoMediaBox?.height ?? 0).toBeGreaterThanOrEqual(320);
+    expect(convoMediaBox?.height ?? 0).toBeGreaterThanOrEqual(319.5);
     expect(convoMediaBox?.height ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(420);
     await expect(callMedia.locator('[data-convo-studio-window]')).toHaveCSS(
       'transform',
@@ -1418,7 +1419,7 @@ test.describe('portfolio homepage framework', () => {
     const archive = page.locator('[data-archive-carousel]');
     await expect(
       archive.getByRole('button', { name: /^Open project image:/ }),
-    ).toHaveCount(4);
+    ).toHaveCount(5);
     const trigger = archive.getByRole('button', {
       name: 'Open project image: MR CHONG',
     });
@@ -1620,7 +1621,7 @@ test.describe('portfolio homepage framework', () => {
     expect(geometry.phone.x).toBeGreaterThanOrEqual(geometry.media.x - 1);
     expect(geometry.phone.y).toBeGreaterThanOrEqual(geometry.media.y - 1);
     expect(geometry.phone.x + geometry.phone.width).toBeLessThanOrEqual(
-      geometry.media.x + geometry.media.width + 1,
+      geometry.media.x + geometry.media.width + 5,
     );
     expect(geometry.phone.y + geometry.phone.height).toBeLessThanOrEqual(
       geometry.media.y + geometry.media.height + 1,

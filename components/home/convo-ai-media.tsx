@@ -87,7 +87,8 @@ export function ConvoAiMedia() {
           className={styles.convoPhoneVideo}
           poster={shouldLoadPhoneVideo
             ? withBasePath('/images/convo-ai/posters/app-conversation-start.webp')
-            : undefined}
+            : INERT_IMAGE}
+          aria-describedby="convo-ai-phone-video-description"
           autoPlay
           muted
           loop
@@ -104,6 +105,9 @@ export function ConvoAiMedia() {
           ) : null}
         </video>
       </div>
+      <span id="convo-ai-phone-video-description" className={styles.srOnly}>
+        ConvoAI conversation interaction with orb feedback on mobile
+      </span>
 
       <picture className={styles.convoMobileLoop} data-convo-mobile-loop>
         <source

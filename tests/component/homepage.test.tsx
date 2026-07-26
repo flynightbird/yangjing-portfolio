@@ -929,7 +929,11 @@ describe('FeaturedWork', () => {
       const video = media?.querySelector('video');
       const mediaObserver = observers.find(({ target }) => target === media);
 
-      expect(video).not.toHaveAttribute('poster');
+      expect(video?.getAttribute('poster')).toMatch(/^data:image\/gif;base64,/);
+      expect(video).toHaveAttribute('aria-describedby', 'convo-ai-phone-video-description');
+      expect(container.querySelector('#convo-ai-phone-video-description')).toHaveTextContent(
+        'ConvoAI conversation interaction with orb feedback on mobile',
+      );
       expect(video?.querySelector('source')).not.toBeInTheDocument();
       expect(mediaObserver).toBeDefined();
 
