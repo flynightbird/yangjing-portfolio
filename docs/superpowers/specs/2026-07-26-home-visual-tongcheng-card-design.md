@@ -25,11 +25,12 @@ Copy the supplied source files into a dedicated public archive directory with st
 | Role | Source file | Public filename |
 | --- | --- | --- |
 | Cover | `封面.png` | `cover.png` |
-| Gallery 1 | `码上游日本.jpg` | `01-mashangyou-japan.jpg` |
-| Gallery 2 | `同程合伙人.jpg` | `02-tongcheng-partner.jpg` |
-| Gallery 3 | `出境游小程序.jpg` | `03-outbound-travel-mini-program.jpg` |
+| Gallery 1 | `众筹20.png` | `01-crowdfunding-2.png` |
+| Gallery 2 | `码上游日本.jpg` | `02-mashangyou-japan.jpg` |
+| Gallery 3 | `同程合伙人.jpg` | `03-tongcheng-partner.jpg` |
+| Gallery 4 | `出境游小程序.jpg` | `04-outbound-travel-mini-program.jpg` |
 
-All four supplied images are 16:9. Preserve their original dimensions and visual content; do not crop, redraw, recolor, or bake the title into the bitmap.
+All five supplied images are 16:9. Preserve their original dimensions and visual content; do not crop, redraw, recolor, or bake the title into the bitmap.
 
 ## Cover Composition
 
@@ -45,7 +46,7 @@ All four supplied images are 16:9. Preserve their original dimensions and visual
 
 - Append the card after the existing Mr Chong card; do not reorder existing entries.
 - The cover opens the existing archive Lightbox.
-- The gallery starts with `码上游日本`, followed by `同程合伙人` and `出境游小程序`.
+- The gallery starts with `众筹20`, followed by `码上游日本`, `同程合伙人`, and `出境游小程序`.
 - Preserve existing keyboard, previous/next, close, focus, error, and reduced-motion behavior.
 - Update archive count and position output to use the actual total of five cards. The last card must report `05 / 05`.
 
@@ -67,6 +68,6 @@ All four supplied images are 16:9. Preserve their original dimensions and visual
 
 - Component tests assert five cards, five Lightbox triggers, five skill blocks, and `01 / 05` initial position.
 - Interaction coverage verifies navigation can reach `05 / 05` and return to the previous card.
-- Lightbox coverage verifies the Tongcheng card opens and that the first gallery image is `码上游日本`.
+- Lightbox coverage verifies the Tongcheng card opens and that the first gallery image is `众筹20`, with `码上游日本` second.
 - Desktop and mobile visual checks confirm title scale, spacing below the fish, lack of overlap, and correct gallery order.
 - Confirm no unrelated homepage module changed.
