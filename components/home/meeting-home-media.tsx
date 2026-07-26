@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
 import { withBasePath } from '@/lib/i18n/locales';
+import { useReducedMotionPreference } from '@/lib/use-reduced-motion';
 
 import styles from './home.module.css';
 
@@ -11,30 +12,10 @@ const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 const WEB_POSTER = '/images/meeting/meeting-hero-web-poster.webp';
 const APP_POSTER = '/images/meeting/meeting-hero-app-poster.webp';
 
-function prefersReducedMotion() {
-  return typeof window !== 'undefined'
-    && typeof window.matchMedia === 'function'
-    && window.matchMedia(REDUCED_MOTION_QUERY).matches;
-}
-
 export function MeetingHomeMedia() {
   const rootRef = useRef<HTMLDivElement>(null);
-  const [isReducedMotion, setIsReducedMotion] = useState(prefersReducedMotion);
+  const isReducedMotion = useReducedMotionPreference();
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
-
-  useEffect(() => {
-    if (typeof window.matchMedia !== 'function') return;
-
-    const query = window.matchMedia(REDUCED_MOTION_QUERY);
-    const updatePreference = () => {
-      setIsReducedMotion(query.matches);
-      if (query.matches) setShouldLoadVideo(false);
-    };
-
-    updatePreference();
-    query.addEventListener?.('change', updatePreference);
-    return () => query.removeEventListener?.('change', updatePreference);
-  }, []);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -81,6 +62,7 @@ export function MeetingHomeMedia() {
         const mediaColumn = root.closest<HTMLElement>('[data-scroll-reveal-group="media"]');
         const states = mediaColumn?.querySelectorAll<HTMLElement>('[data-meeting-state]');
         if (!web || !phone || !states?.length) return;
+        const isCompact = window.innerWidth < 768;
 
         const timeline = gsap.timeline({
           defaults: { ease: 'none' },
@@ -97,7 +79,12 @@ export function MeetingHomeMedia() {
           .fromTo(web, { autoAlpha: 0.58, scale: 0.88 }, { autoAlpha: 1, scale: 1, duration: 0.42 })
           .fromTo(
             phone,
-            { autoAlpha: 0, x: 72, y: 92, rotation: 8 },
+            {
+              autoAlpha: 0,
+              x: isCompact ? 28 : 60,
+              y: isCompact ? 32 : 48,
+              rotation: isCompact ? 5 : 8,
+            },
             { autoAlpha: 1, x: 0, y: 0, rotation: 2, duration: 0.34 },
             0.18,
           )

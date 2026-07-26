@@ -1547,6 +1547,117 @@ test.describe('portfolio homepage framework', () => {
     expect(hydrationErrors).toEqual([]);
   });
 
+  test('Meeting home entry layers shipped Web and mobile media without overflow', async ({
+    page,
+  }) => {
+    const meetingRequests: string[] = [];
+    page.on('request', (request) => {
+      const pathname = new URL(request.url()).pathname;
+      if (pathname.startsWith('/videos/meeting/meeting-hero-')) {
+        meetingRequests.push(pathname);
+      }
+    });
+
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+    const meeting = page.locator('[data-project-id="meeting"]');
+    const media = meeting.locator('[data-meeting-home-media]');
+    const web = meeting.locator('[data-meeting-web-surface]');
+    const phone = meeting.locator('[data-meeting-phone]');
+
+    await meeting.scrollIntoViewIfNeeded();
+    await meeting.evaluate((element) => {
+      const target = element.offsetTop + element.offsetHeight - window.innerHeight * 0.4;
+      window.scrollTo({ top: target, behavior: 'auto' });
+    });
+    await page.evaluate(() => new Promise<void>((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+    }));
+    await expect(web).toBeVisible();
+    await expect(phone).toBeVisible();
+    await expect.poll(() => meetingRequests).toEqual(expect.arrayContaining([
+      '/videos/meeting/meeting-hero-web.mp4',
+      '/videos/meeting/meeting-hero-app.mp4',
+    ]));
+
+    const links = meeting.getByRole('link');
+    await expect(links).toHaveCount(3);
+    for (let index = 0; index < 3; index += 1) {
+      await expect(links.nth(index)).toHaveAttribute('href', '/en/work/meeting/');
+    }
+
+    const geometry = await meeting.evaluate((element) => {
+      const mediaRoot = element.querySelector<HTMLElement>('[data-meeting-home-media]');
+      const phoneRoot = element.querySelector<HTMLElement>('[data-meeting-phone]');
+      const phoneMedia = phoneRoot?.querySelector<HTMLElement>('video');
+      if (!mediaRoot || !phoneRoot || !phoneMedia) throw new Error('Missing Meeting media');
+      return {
+        media: mediaRoot.getBoundingClientRect().toJSON(),
+        phone: phoneRoot.getBoundingClientRect().toJSON(),
+        phoneStyle: {
+          aspectRatio: getComputedStyle(phoneRoot).aspectRatio,
+          borderWidth: getComputedStyle(phoneRoot).borderWidth,
+          borderRadius: getComputedStyle(phoneRoot).borderRadius,
+        },
+        phoneMediaRadius: getComputedStyle(phoneMedia).borderRadius,
+        page: {
+          scrollWidth: document.documentElement.scrollWidth,
+          clientWidth: document.documentElement.clientWidth,
+        },
+      };
+    });
+
+    expect(geometry.page.scrollWidth).toBeLessThanOrEqual(geometry.page.clientWidth);
+    expect(geometry.phone.x).toBeGreaterThanOrEqual(geometry.media.x - 1);
+    expect(geometry.phone.y).toBeGreaterThanOrEqual(geometry.media.y - 1);
+    expect(geometry.phone.x + geometry.phone.width).toBeLessThanOrEqual(
+      geometry.media.x + geometry.media.width + 1,
+    );
+    expect(geometry.phone.y + geometry.phone.height).toBeLessThanOrEqual(
+      geometry.media.y + geometry.media.height + 1,
+    );
+    expect(geometry.phoneStyle).toEqual({
+      aspectRatio: '590 / 1280',
+      borderWidth: '4px',
+      borderRadius: '14px',
+    });
+    expect(geometry.phoneMediaRadius).toBe('10px');
+    await expect(media).toHaveAttribute('data-meeting-motion', 'scrub');
+    await expect(media).not.toHaveAttribute('data-meeting-pin');
+  });
+
+  test('Meeting home entry requests posters but no MP4 in reduced motion', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'One viewport proves the media request contract.');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const meetingRequests: string[] = [];
+    const hydrationErrors: string[] = [];
+    page.on('request', (request) => {
+      const pathname = new URL(request.url()).pathname;
+      if (pathname.includes('/meeting/meeting-hero-')) meetingRequests.push(pathname);
+    });
+    page.on('console', (message) => {
+      if (/hydration failed/i.test(message.text())) hydrationErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => {
+      if (/hydration failed/i.test(error.message)) hydrationErrors.push(error.message);
+    });
+
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+    const meeting = page.locator('[data-project-id="meeting"]');
+    await meeting.scrollIntoViewIfNeeded();
+    await expect(meeting.locator('[data-meeting-poster]')).toHaveCount(2);
+    await expect(meeting.locator('video')).toHaveCount(0);
+    await page.waitForTimeout(300);
+
+    expect(meetingRequests).toEqual(expect.arrayContaining([
+      '/images/meeting/meeting-hero-web-poster.webp',
+      '/images/meeting/meeting-hero-app-poster.webp',
+    ]));
+    expect(meetingRequests.filter((pathname) => pathname.endsWith('.mp4'))).toEqual([]);
+    expect(hydrationErrors).toEqual([]);
+  });
+
   test('supports keyboard and pointer control with a scan after drag release', async ({
     page,
   }, testInfo) => {
