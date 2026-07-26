@@ -16,7 +16,9 @@ const DEFAULT_SPLIT = 48;
 const MIN_SPLIT = 8;
 const MAX_SPLIT = 92;
 const DESIGNER_PORTRAIT_SRC = withBasePath('/images/profile/yang-jing-designer.png');
-const BUILDER_PORTRAIT_SRC = withBasePath('/images/profile/yang-jing-builder.png');
+const BUILDER_PORTRAIT_SRC = withBasePath(
+  '/images/profile/yang-jing-builder-illustration.png',
+);
 
 interface HeroMotionProps {
   readonly name: string;

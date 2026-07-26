@@ -77,25 +77,13 @@ export const zhDictionary = {
         company: 'Agora / 声网',
         kind: '企业会议 aPaaS',
         title: 'Agora Meeting',
-        proposition: '在参会者、内容、角色与设备持续变化的会议场景中，构建覆盖桌面端、Web、App 与 Pad 的实时协作体验。',
+        proposition: '一套会议规则，适配四类终端与持续变化的会中状态。',
         role: '唯一产品设计师',
         status: '已在四类终端上线',
-        mediaLabel: '三项会议系统决策',
+        mediaLabel: '查看 Agora Meeting Web 与移动端产品界面',
         action: '查看案例',
-        stages: [
-          {
-            title: '自适应会议舞台',
-            description: '会议事件改变内容优先级与布局状态。',
-          },
-          {
-            title: '协作工作区',
-            description: '白板以创作为主，同时保留参会者感知。',
-          },
-          {
-            title: '实时信息层',
-            description: '字幕与转写区分个人控制和主持人治理。',
-          },
-        ],
+        states: ['自适应舞台', '协作工作区', '实时信息层'],
+        platforms: ['桌面端', 'Web', '平板端', '移动端'],
       },
       aidx: {
         company: '新加坡 AI 公司',
