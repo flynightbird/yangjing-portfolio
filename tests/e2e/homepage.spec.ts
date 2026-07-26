@@ -1256,7 +1256,7 @@ test.describe('portfolio homepage framework', () => {
       testInfo.project.name !== 'desktop',
       'One desktop Lightbox viewport is sufficient.',
     );
-    await page.goto('/zh/', { waitUntil: 'networkidle' });
+    await page.goto('/zh/', { waitUntil: 'domcontentloaded' });
 
     const trigger = page.getByRole('button', {
       name: '打开项目图片: 同程旅游',
