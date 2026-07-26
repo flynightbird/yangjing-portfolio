@@ -67,14 +67,46 @@ test.describe('homepage liquid Footer', () => {
         const ribbons = Array.from(
           element.querySelectorAll<HTMLElement>('[data-footer-liquid^="ribbon-"]'),
         );
-        if (!capsule || ribbons.length !== 2) return null;
+        const copyButton = capsule?.querySelector<HTMLElement>(
+          '[data-contact-copy="email"]',
+        );
+        const mailAction = capsule?.querySelector<HTMLElement>(
+          '[class*="contactActions"] a[href^="mailto:"]',
+        );
+        const copyIcon = copyButton?.querySelector<SVGElement>('svg');
+        const arrowIcon = mailAction?.querySelector<SVGElement>('svg');
+        if (
+          !capsule
+          || ribbons.length !== 2
+          || !copyButton
+          || !mailAction
+          || !copyIcon
+          || !arrowIcon
+        ) return null;
+
         const style = getComputedStyle(capsule);
+        const capsuleBox = capsule.getBoundingClientRect();
+        const copyBox = copyButton.getBoundingClientRect();
+        const mailBox = mailAction.getBoundingClientRect();
+        const copyIconBox = copyIcon.getBoundingClientRect();
+        const arrowIconBox = arrowIcon.getBoundingClientRect();
+
         return {
           borderTopWidth: style.borderTopWidth,
           borderRadius: style.borderRadius,
           backgroundColor: style.backgroundColor,
           ribbonAnimations: ribbons.map((ribbon) => getComputedStyle(ribbon).animationName),
           footerCanvasCount: element.querySelectorAll('canvas').length,
+          controls: {
+            copy: { width: copyBox.width, height: copyBox.height },
+            mail: { width: mailBox.width, height: mailBox.height },
+            copyIcon: { width: copyIconBox.width, height: copyIconBox.height },
+            arrowIcon: { width: arrowIconBox.width, height: arrowIconBox.height },
+            copyCenterOffset: copyBox.y + copyBox.height / 2
+              - (capsuleBox.y + capsuleBox.height / 2),
+            mailCenterOffset: mailBox.y + mailBox.height / 2
+              - (capsuleBox.y + capsuleBox.height / 2),
+          },
         };
       });
 
@@ -85,6 +117,16 @@ test.describe('homepage liquid Footer', () => {
       expect(visualContract?.ribbonAnimations).toHaveLength(2);
       expect(visualContract?.ribbonAnimations).not.toContain('none');
       expect(visualContract?.footerCanvasCount).toBe(0);
+      expect(visualContract?.controls.copy).toEqual({ width: 40, height: 40 });
+      expect(visualContract?.controls.mail).toEqual({ width: 40, height: 40 });
+      expect(visualContract?.controls.copyIcon).toEqual({ width: 18, height: 18 });
+      expect(visualContract?.controls.arrowIcon).toEqual({ width: 19, height: 19 });
+      expect(
+        Math.abs(visualContract?.controls.copyCenterOffset ?? Number.POSITIVE_INFINITY),
+      ).toBeLessThanOrEqual(1);
+      expect(
+        Math.abs(visualContract?.controls.mailCenterOffset ?? Number.POSITIVE_INFINITY),
+      ).toBeLessThanOrEqual(1);
     });
   }
 

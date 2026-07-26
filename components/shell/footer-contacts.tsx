@@ -68,7 +68,7 @@ export function FooterContacts({ locale }: { readonly locale: Locale }) {
             href={`mailto:${EMAIL}`}
             aria-label={text.send}
           >
-            <ArrowUpRight aria-hidden="true" size={16} strokeWidth={1.7} />
+            <ArrowUpRight aria-hidden="true" size={19} strokeWidth={1.7} />
           </a>
         </div>
       </div>

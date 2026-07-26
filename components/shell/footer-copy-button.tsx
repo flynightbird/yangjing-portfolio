@@ -63,14 +63,14 @@ export function FooterCopyButton({
       {state === 'copied' ? (
         <Check
           aria-hidden="true"
-          size={16}
+          size={18}
           strokeWidth={1.7}
           data-copy-icon="check"
         />
       ) : (
         <Copy
           aria-hidden="true"
-          size={16}
+          size={18}
           strokeWidth={1.7}
           data-copy-icon="copy"
         />
