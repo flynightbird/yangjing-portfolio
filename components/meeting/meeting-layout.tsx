@@ -1,5 +1,6 @@
 import { ChapterNav } from '@/components/case-study/chapter-nav';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import { MeetingHeroStage } from './meeting-showcase';
 import styles from './meeting-layout.module.css';
@@ -56,8 +57,8 @@ export function MeetingLayout({
                   <div className={styles.logoMotionCard} data-meeting-logo-motion>
                     <video
                       className={styles.logoMotionVideo}
-                      src="/videos/meeting/meeting-logo-motion-dark.mp4"
-                      poster="/images/meeting/meeting-logo-motion-dark-poster.webp"
+                      src={withBasePath('/videos/meeting/meeting-logo-motion-dark.mp4')}
+                      poster={withBasePath('/images/meeting/meeting-logo-motion-dark-poster.webp')}
                       autoPlay
                       muted
                       loop
@@ -67,7 +68,7 @@ export function MeetingLayout({
                       />
                     <img
                       className={styles.logoMotionFallback}
-                      src="/images/meeting/meeting-logo-dark.webp"
+                      src={withBasePath('/images/meeting/meeting-logo-dark.webp')}
                       alt=""
                       aria-hidden="true"
                       loading="lazy"

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 
-import { render, screen } from '@testing-library/react';
-import { expect, it } from 'vitest';
+import { cleanup, render, screen } from '@testing-library/react';
+import { afterEach, expect, it, vi } from 'vitest';
 
 import { MeetingLayout } from '@/components/meeting/meeting-layout';
 import type { ContentMeta } from '@/content/schema';
@@ -22,6 +22,31 @@ const meta: ContentMeta = {
   featuredOrder: 3,
   chapters: [{ id: 'business-context', label: 'Business context' }],
 };
+
+afterEach(() => {
+  cleanup();
+  vi.unstubAllEnvs();
+});
+
+it('prefixes every Meeting asset with the configured deployment base path', () => {
+  vi.stubEnv('NEXT_PUBLIC_BASE_PATH', '/yangjing-portfolio');
+
+  const { container } = render(
+    <MeetingLayout meta={meta} locale="en">
+      <section id="business-context">Context</section>
+    </MeetingLayout>,
+  );
+
+  const assetUrls = Array.from(container.querySelectorAll('img, video')).flatMap((element) => [
+    element.getAttribute('src'),
+    element.getAttribute('poster'),
+  ]).filter((value): value is string => value !== null);
+
+  expect(assetUrls.length).toBeGreaterThan(0);
+  for (const url of assetUrls) {
+    expect(url).toMatch(/^\/yangjing-portfolio\/(?:images|videos)\/meeting\//);
+  }
+});
 
 it('presents product proof, approved facts, and chapter navigation', () => {
   const { container } = render(

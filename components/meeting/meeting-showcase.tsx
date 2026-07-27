@@ -6,6 +6,7 @@ import { RotateCcw } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 import { useReducedMotionPreference } from '@/lib/use-reduced-motion';
 
 import styles from './meeting-showcase.module.css';
@@ -360,7 +361,7 @@ function MeetingViewportVideo({
     return (
       <img
         className={className}
-        src={media.poster}
+        src={withBasePath(media.poster)}
         alt={media.title[locale]}
         loading="lazy"
         decoding="async"
@@ -373,7 +374,7 @@ function MeetingViewportVideo({
       <img
         className={styles.videoPoster}
         data-meeting-video-poster
-        src={media.poster}
+        src={withBasePath(media.poster)}
         alt=""
         aria-hidden="true"
         loading="lazy"
@@ -386,8 +387,8 @@ function MeetingViewportVideo({
         aria-hidden="true"
         aria-label={media.title[locale]}
         aria-describedby={describedBy}
-        src={media.src}
-        poster={media.poster}
+        src={withBasePath(media.src)}
+        poster={withBasePath(media.poster)}
         autoPlay
         muted
         playsInline
@@ -429,7 +430,7 @@ function BrowserShell({
             <i />
           </span>
           <span className={styles.browserAddress}>
-            <img src="/images/meeting/meeting-logo-light.webp" alt="" aria-hidden="true" />
+            <img src={withBasePath('/images/meeting/meeting-logo-light.webp')} alt="" aria-hidden="true" />
             {text.browserAddress}
           </span>
           <span className={styles.browserMeta}>
@@ -546,7 +547,7 @@ export function MeetingHeroStage({ locale }: { readonly locale: Locale }) {
     <div className={styles.heroStage}>
       <div className={styles.heroStageTop}>
         <div className={styles.heroBrand}>
-          <img src="/images/meeting/meeting-logo-light.webp" alt="" aria-hidden="true" />
+          <img src={withBasePath('/images/meeting/meeting-logo-light.webp')} alt="" aria-hidden="true" />
           <div>
             <strong>{text.brand}</strong>
             <span>{text.stageLabel}</span>
@@ -683,7 +684,7 @@ export function MeetingPolishShowcase({ locale }: { readonly locale: Locale }) {
               data-meeting-popup-card
               data-card={card.id}
             >
-              <img src={card.src} alt="" loading="lazy" decoding="async" />
+              <img src={withBasePath(card.src)} alt="" loading="lazy" decoding="async" />
             </div>
           ))}
         </div>
