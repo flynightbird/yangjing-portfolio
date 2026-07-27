@@ -275,6 +275,31 @@ for (const locale of ['en', 'zh'] as const) {
       expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
     });
 
+    test('uses a compact voiceprint phone without shrinking Web recordings', async ({ page }, testInfo) => {
+      test.skip(locale !== 'zh', 'The compact voiceprint presentation is used on the Chinese case page.');
+      if (testInfo.project.name === 'mobile') {
+        await page.setViewportSize({ width: 375, height: 812 });
+        await page.reload({ waitUntil: 'domcontentloaded' });
+      }
+
+      const playlist = page.locator('#conversation-control [data-convo-ai-playlist]');
+      await playlist.scrollIntoViewIfNeeded();
+      await playlist.getByRole('button', { name: /声纹锁定/ }).click();
+      const phone = playlist.locator('[data-media-card="app-voiceprint-lock"] [data-convo-media-frame]');
+      const phoneBox = await phone.boundingBox();
+
+      expect(phoneBox).not.toBeNull();
+      expect(phoneBox!.width).toBeLessThanOrEqual(289);
+      await expectRenderedRatio(phone, 592 / 1280);
+
+      await playlist.getByRole('button', { name: /Web 连续对话/ }).click();
+      const web = playlist.locator('[data-media-card="web-conversation"] [data-convo-media-frame]');
+      if (testInfo.project.name === 'desktop') {
+        expect((await web.boundingBox())!.width).toBeGreaterThan(288);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+    });
+
     test('exposes every complete recording with accessible media metadata', async ({ page }, testInfo) => {
       test.setTimeout(90_000);
       const expectedIds = locale === 'en'

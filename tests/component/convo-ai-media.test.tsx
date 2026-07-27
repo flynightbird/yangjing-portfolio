@@ -214,6 +214,30 @@ describe('ConvoAiViewportVideo', () => {
 });
 
 describe('ConvoAiPlaylist', () => {
+  it('exposes compact App sizing only when explicitly requested', () => {
+    const { container, rerender } = render(
+      <ConvoAiPlaylist ids={['app-voiceprint-lock']} locale="zh" />,
+    );
+
+    expect(container.querySelector('[data-convo-ai-playlist]')).toHaveAttribute(
+      'data-app-size',
+      'standard',
+    );
+
+    rerender(
+      <ConvoAiPlaylist
+        ids={['app-voiceprint-lock']}
+        locale="zh"
+        appSize="compact"
+      />,
+    );
+
+    expect(container.querySelector('[data-convo-ai-playlist]')).toHaveAttribute(
+      'data-app-size',
+      'compact',
+    );
+  });
+
   it('renders one stable complete player and switches evidence by explicit command', () => {
     render(<ConvoAiPlaylist ids={['app-login', 'app-structure']} locale="en" />);
     const video = screen.getByLabelText('App entry and sign in');
