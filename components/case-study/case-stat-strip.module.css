@@ -1,7 +1,100 @@
-.container,
-.list,
-.item,
-.label,
+.container {
+  min-width: 0;
+  container: case-stat-strip / inline-size;
+  --case-stat-label-color: currentcolor;
+  --case-stat-value-color: currentcolor;
+  --case-stat-line-color: rgb(17 21 18 / 18%);
+  --case-stat-item-padding: 1.5rem;
+  --case-stat-label-font: inherit;
+  --case-stat-value-font: inherit;
+}
+
+.list {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 0;
+  margin: 0;
+  border-block: 1px solid var(--case-stat-line-color);
+}
+
+.item {
+  min-width: 0;
+  padding: var(--case-stat-item-padding);
+  border-inline-start: 1px solid var(--case-stat-line-color);
+}
+
+.item:first-child {
+  border-inline-start: 0;
+}
+
+.label {
+  color: var(--case-stat-label-color);
+  font-family: var(--case-stat-label-font);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
 .value {
   min-width: 0;
+  margin: 1rem 0 0;
+  color: var(--case-stat-value-color);
+  font-family: var(--case-stat-value-font);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.item[data-stat-density='short'] .value {
+  font-size: clamp(1.75rem, 2.5cqi, 2.5rem);
+}
+
+.item[data-stat-density='medium'] .value {
+  font-size: clamp(1.625rem, 2.125cqi, 2.125rem);
+}
+
+.item[data-stat-density='long'] .value {
+  font-size: clamp(1.5rem, 1.875cqi, 1.875rem);
+}
+
+@container case-stat-strip (max-width: 69.999rem) {
+  .list {
+    grid-template-columns: 1fr;
+  }
+
+  .item,
+  .item:first-child {
+    display: grid;
+    grid-template-columns: minmax(8rem, 0.32fr) minmax(0, 1fr);
+    align-items: baseline;
+    gap: 1.5rem;
+    border-inline-start: 0;
+  }
+
+  .item + .item {
+    border-block-start: 1px solid var(--case-stat-line-color);
+  }
+
+  .value {
+    margin: 0;
+  }
+}
+
+@container case-stat-strip (max-width: 26rem) {
+  .item,
+  .item:first-child {
+    display: block;
+  }
+
+  .value,
+  .item[data-stat-density='short'] .value,
+  .item[data-stat-density='medium'] .value,
+  .item[data-stat-density='long'] .value {
+    margin-block-start: 0.5rem;
+    font-size: clamp(1.375rem, 7cqi, 1.625rem);
+    white-space: normal;
+    text-wrap: balance;
+  }
 }
