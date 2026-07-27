@@ -51,4 +51,49 @@ describe('ConvoAiLayout', () => {
       );
     });
   });
+
+  it.each([
+    {
+      locale: 'en' as const,
+      title: 'Agora AI Studio is officially live',
+      subtitle: 'Mix and match ASR, LLM, TTS, digital humans, and more to rapidly build AI agents.',
+      factsLabel: 'Project facts',
+    },
+    {
+      locale: 'zh' as const,
+      title: '声网 AI Studio 正式上线',
+      subtitle: '自由搭配 ASR、LLM、TTS、数字人等，快速搭建 AI 智能体。',
+      factsLabel: '项目概况',
+    },
+  ])('renders the $locale launch banner after facts and before the next-section hint', ({
+    locale,
+    title,
+    subtitle,
+    factsLabel,
+  }) => {
+    const { container } = render(
+      <ConvoAiLayout meta={meta} locale={locale}>
+        <section id="context-thesis">Story</section>
+      </ConvoAiLayout>,
+    );
+
+    const banner = container.querySelector('[data-convo-launch-banner]');
+    const facts = container.querySelector(`dl[aria-label="${factsLabel}"]`);
+    const hint = container.querySelector('[data-convo-next-section-hint]');
+
+    expect(banner).toBeVisible();
+    expect(banner).toHaveAttribute('role', 'region');
+    expect(banner).toHaveAccessibleName(title);
+    expect(banner).toHaveTextContent(title);
+    expect(banner).toHaveTextContent(subtitle);
+    expect(facts).not.toBeNull();
+    expect(hint).not.toBeNull();
+    expect(facts!.compareDocumentPosition(banner!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(banner!.compareDocumentPosition(hint!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+
+    const artwork = banner!.querySelector('[data-convo-launch-artwork]');
+    expect(artwork).toHaveAttribute('aria-hidden', 'true');
+    expect(artwork?.querySelectorAll('img')).toHaveLength(3);
+    expect(banner!.querySelector('a, button')).toBeNull();
+  });
 });

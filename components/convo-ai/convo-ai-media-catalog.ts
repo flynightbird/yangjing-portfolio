@@ -29,6 +29,24 @@ export interface ConvoAiMediaItem {
   readonly copy: Record<Locale, LocalizedCopy>;
 }
 
+export type ConvoAiMediaOrientation = 'portrait' | 'landscape';
+
+export interface ConvoAiMediaSizing {
+  readonly aspectRatio: string;
+  readonly orientation: ConvoAiMediaOrientation;
+  readonly ratio: number;
+}
+
+export function getConvoAiMediaSizing(
+  media: Pick<ConvoAiMediaItem, 'width' | 'height'>,
+): ConvoAiMediaSizing {
+  return {
+    aspectRatio: `${media.width} / ${media.height}`,
+    orientation: media.width > media.height ? 'landscape' : 'portrait',
+    ratio: media.width / media.height,
+  };
+}
+
 type ItemInput = Omit<ConvoAiMediaItem, 'src' | 'poster'>;
 
 function item(input: ItemInput): ConvoAiMediaItem {
