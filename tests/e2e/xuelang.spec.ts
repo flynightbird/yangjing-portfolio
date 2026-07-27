@@ -165,7 +165,7 @@ test.describe('Xuelang case study', () => {
     )).toBeLessThanOrEqual(1);
   });
 
-  test('business facts preserve readable single lines before changing layout', async ({
+  test('business facts prioritize three columns at a 960px viewport without overflow', async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop');
@@ -182,19 +182,33 @@ test.describe('Xuelang case study', () => {
         }),
       );
 
-    await page.setViewportSize({ width: 1600, height: 1000 });
+    await page.setViewportSize({ width: 960, height: 900 });
+
+    for (const locale of ['zh', 'en'] as const) {
+      await page.goto(`/${locale}/work/xuelang/`, { waitUntil: 'networkidle' });
+      await page.evaluate(() => document.fonts.ready);
+
+      const strip = page.locator('[data-case-stat-strip]');
+      const list = strip.locator('dl');
+      await strip.scrollIntoViewIfNeeded();
+      await expect(strip).toBeVisible();
+      expect((await list.evaluate((node) => getComputedStyle(node).gridTemplateColumns)).split(' '))
+        .toHaveLength(3);
+      expect(await strip.locator('dd').evaluateAll((nodes) => nodes.map(
+        (node) => node.scrollWidth - node.clientWidth,
+      ))).toEqual([0, 0, 0]);
+      expect(await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      )).toBeLessThanOrEqual(1);
+    }
+
     await page.goto('/zh/work/xuelang/', { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
-
     const strip = page.locator('[data-case-stat-strip]');
     const list = strip.locator('dl');
-    await strip.scrollIntoViewIfNeeded();
-    await expect(strip).toBeVisible();
-    expect((await list.evaluate((node) => getComputedStyle(node).gridTemplateColumns)).split(' '))
-      .toHaveLength(3);
     expect(await renderedLineCount('[data-case-stat-strip] dd')).toEqual([1, 1, 1]);
 
-    await page.setViewportSize({ width: 1024, height: 900 });
+    await page.setViewportSize({ width: 720, height: 900 });
     await expect
       .poll(() => list.evaluate((node) => getComputedStyle(node).gridTemplateColumns))
       .not.toContain(' ');
@@ -214,7 +228,6 @@ test.describe('Xuelang case study', () => {
     )).toBeLessThanOrEqual(1);
 
     // A 720px CSS viewport is the layout width of a 1440px window at 200% zoom.
-    await page.setViewportSize({ width: 720, height: 900 });
     expect(await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     )).toBeLessThanOrEqual(1);

@@ -57,9 +57,29 @@
 
 .item[data-stat-density='long'] .value {
   font-size: clamp(1.5rem, 1.875cqi, 1.875rem);
+  white-space: normal;
+  text-wrap: balance;
 }
 
-@container case-stat-strip (max-width: 69.999rem) {
+@container case-stat-strip (min-width: 56rem) and (max-width: 69.999rem) {
+  .item {
+    padding: 1rem;
+  }
+
+  .item[data-stat-density='short'] .value {
+    font-size: clamp(1.5rem, 2.5cqi, 1.75rem);
+  }
+
+  .item[data-stat-density='medium'] .value {
+    font-size: clamp(1.375rem, 2.5cqi, 1.625rem);
+  }
+
+  .item[data-stat-density='long'] .value {
+    font-size: clamp(1.375rem, 2.25cqi, 1.5rem);
+  }
+}
+
+@container case-stat-strip (max-width: 55.999rem) {
   .list {
     grid-template-columns: 1fr;
   }
