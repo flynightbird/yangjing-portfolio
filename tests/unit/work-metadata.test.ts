@@ -4,7 +4,7 @@ import { generateMetadata } from '@/app/(localized)/[locale]/work/[slug]/page';
 
 describe('localized work metadata', () => {
   it.each([
-    ['zh', '学浪商业化体验升级 | Yang Jing', '从卖课工具，到高品质学习平台'],
+    ['zh', '学浪商业化产品设计 | Yang Jing', '从卖课工具，到高品质学习平台'],
     ['en', 'Xuelang Commercial Experience Upgrade | Yang Jing', 'From a course-selling tool to a high-quality learning platform'],
   ] as const)('identifies the Xuelang case in the %s browser tab', async (
     locale,
@@ -32,7 +32,7 @@ describe('localized work metadata', () => {
 
   it.each([
     ['en', 'Tangping Designer | Yang Jing', 'From user research to a product opportunity map for empowering designers'],
-    ['zh', '躺平设计家 | Yang Jing', '从用户研究到设计师赋能的产品机会画布'],
+    ['zh', '躺平设计家 | Yang Jing', '从用户研究到产品机会地图'],
   ] as const)('identifies the Tangping case in %s metadata', async (
     locale,
     title,

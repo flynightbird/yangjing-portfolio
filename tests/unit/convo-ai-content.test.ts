@@ -45,7 +45,7 @@ describe('ConvoAI publication contract', () => {
     expect(source).toContain('<ConvoAiConversationStart locale="zh"');
     expect(source).not.toContain("ids={['app-conversation-start', 'web-login', 'web-preflight', 'web-preflight-layout', 'web-join-exit']}");
     expect(source).toContain('对话中的控制权');
-    expect(source).toContain('一次回答背后的实时链路');
+    expect(source).toContain('实时回答的系统链路');
     expect(source).toContain('让用户始终知道对话正在哪个阶段');
     expect(source).toContain('把产品能力组织成连续的用户路径');
     expect(source.match(/声纹如何定义“听谁说话”/g)).toHaveLength(1);

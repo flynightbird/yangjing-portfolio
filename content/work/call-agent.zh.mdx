@@ -6,8 +6,7 @@ export const metadata = {
   type: 'work', slug: 'call-agent', locale: 'zh', translationKey: 'work.call-agent',
   title: 'Call Agent：把对话式 AI 能力变成企业可自主运营的产品',
   proposition: '从没有完整配置入口，到创建、编排、验证、发布与呼叫运营的一体化工作台。',
-  role: '独立负责从 0 到 1 的产品设计', duration: '9 个月', status: '正式上线',
-  disclosure: '公开案例仅使用已脱敏产品界面，不包含客户身份、号码或敏感配置。',
+  role: '独立负责产品设计', duration: '9 个月', status: '正式上线',
   heroMedia: '/images/call-agent/agent-preview-poster.webp', evidenceLevel: 'observed', featuredOrder: 2,
   caseLabel: 'CALL AGENT / 0→1 AI PRODUCT',
   chapters: [
@@ -19,7 +18,7 @@ export const metadata = {
 }
 
 <section id="product-boundary">
-  <h2>不是另一个 AI Demo，而是客户可自主配置的产品</h2>
+  <h2>客户可自主配置的 AI 对话产品</h2>
   <div className="call-reading call-reading--lead"><p>Convo AI 是用户端的对话体验；Call Agent 解决的是另一个问题：企业客户如何配置、验证、发布并运营这些对话能力。</p></div>
   <div className="call-reading"><p>项目之前，能力已经存在，但客户没有一个完整的配置入口。我独立负责从 0 到 1 的产品设计，将模型、声音、Prompt、号码、发布状态和运营规则组织为一条工作流。</p></div>
   <ProductBoundaryDiagram locale="zh" />
@@ -27,27 +26,27 @@ export const metadata = {
 </section>
 
 <section id="product-system">
-  <h2>用六个阶段定义产品，而不是用技术资源分类</h2>
+  <h2>六个阶段的配置模型</h2>
   <div className="call-reading"><p>呼叫运营人员不需要先理解底层能力树。产品围绕 Create → Orchestrate → Preview → Publish → Connect → Operate 展开，每一步都为下一步建立可确认的状态。</p></div>
   <CallAgentSystemStage locale="zh" />
 </section>
 
 <section id="start">
-  <h2>先给出一个可继续的起点</h2>
+  <h2>可继续配置的默认起点</h2>
   <div className="call-reading call-reading--lead"><p>空白创建保留自由度，客服模板则预填名称和描述，帮助运营人员先看到一个具体对象。</p></div>
   <div className="call-reading"><p><strong>取舍：</strong>默认值不代替专业配置。模板只负责让用户开始，后续每一项仍可编辑。</p></div>
   <CallAgentBrowserVideo src="/videos/call-agent/agent-create.mp4" poster="/images/call-agent/agent-create-poster.webp" playbackRate={1.45} title="从模板创建智能体" description="选中客服模板后，系统填入可继续编辑的默认项。" />
 </section>
 
 <section id="orchestrate">
-  <h2>复杂度应该逐层出现，而不是被删掉</h2>
+  <h2>逐层展开的智能体配置</h2>
   <div className="call-reading call-reading--lead"><p>基础设置、模型与声音、呼叫调优和高级设置形成四个层级。高频决策在前，超时、兜底提示和自定义参数仍可达。</p></div>
   <div className="call-reading"><p><strong>取舍：</strong>过度简化会让专业用户失去控制；一次展开全部字段又会让新用户失去主线。分层保留了两者。</p></div>
   <CallAgentBrowserVideo src="/videos/call-agent/agent-orchestrate.mp4" poster="/images/call-agent/agent-orchestrate-poster.webp" playbackRate={1.25} title="智能体编排层级" description="基础、模型与声音、呼叫调优与高级配置按任务分组。" />
 </section>
 
 <section id="validate-release" className="call-dark-band">
-  <h2>让 AI 行为可观测，让发布状态可控制</h2>
+  <h2>配置与发布之间的产品链路</h2>
   <div className="call-reading call-reading--lead"><p>Preview 始终位于配置旁，展示连接、通话控制和智能体输出。未发布草稿、已发布版本和恢复入口则把验证延伸到发布管理。</p></div>
   <div className="call-reading"><p><strong>关键判断：</strong>Preview 不是一个 Demo 入口，而是配置与运行结果之间的反馈回路；版本管理则使修改可追溯、可恢复。</p></div>
   <CallAgentBrowserVideo src="/videos/call-agent/agent-preview.mp4" poster="/images/call-agent/agent-preview-poster.webp" playbackRate={1.25} title="配置与实时 Preview" description="Preview 从待开始进入连接状态，并显示智能体输出。" />
@@ -55,7 +54,7 @@ export const metadata = {
 </section>
 
 <section id="operationalize">
-  <h2>发布后，智能体才开始成为真实呼叫工作流</h2>
+  <h2>发布后的呼叫运营工作流</h2>
   <div className="call-reading call-reading--lead"><p>号码绑定把智能体与录音、转写、信息提取、挂断和人工转接策略连接；外呼任务再组装号码、客户文件、时间与执行规则。</p></div>
   <div className="call-reading"><p>这两个界面不是功能附录，而是证明产品边界从“配好一个 AI”延伸到“执行一次企业呼叫”。</p></div>
   <CallAgentBrowserVideo src="/videos/call-agent/agent-connect.mp4" poster="/images/call-agent/agent-connect-poster.webp" playbackRate={1.35} title="内呼连接" description="从号码列表进入绑定弹窗，启用入呼智能体与通话策略。" />
@@ -63,7 +62,7 @@ export const metadata = {
 </section>
 
 <section id="scope-reflection">
-  <h2>我负责的是把复杂能力变成可理解的产品系统</h2>
+  <h2>把复杂能力组织成可理解的产品系统</h2>
   <div className="call-reading call-reading--lead"><p>我独立负责产品架构、智能体创建与编排、Preview、号码与外呼运营体验；与产品、前后端、AI/算法、音视频工程和 QA 协作。</p></div>
   <div className="call-reading"><p>Design System 和 AI 辅助原型交付用于统一规则、补齐状态并缩短对齐路径；生产代码、AI/算法实现和通信基础设施不在我的设计职责中。</p><p><strong>反思：</strong>企业 AI 的产品化，不是把所有参数放进后台，而是让复杂度渐进出现、让行为可观测、让发布状态可控制。</p></div>
 </section>

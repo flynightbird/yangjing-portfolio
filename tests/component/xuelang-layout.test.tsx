@@ -10,9 +10,9 @@ describe('XuelangLayout', () => {
   it.each([
     {
       locale: 'zh' as const,
-      title: '学浪商业化体验升级',
+      title: '学浪商业化产品设计',
       proposition: '从卖课工具，到高品质学习平台',
-      role: '项目主负责设计师',
+      role: '独立负责产品设计',
       duration: '2022.03–04 · 2 个月',
       coverAlt: '学浪体验升级项目封面',
       proof: '14 天实验 · 人均 GMV +11.75%',

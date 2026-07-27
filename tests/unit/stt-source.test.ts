@@ -870,7 +870,7 @@ describe('STT demo source provenance', () => {
       );
       const normalized = story.toLowerCase();
 
-      const requiredBoundaries =
+      const requiredContent =
         locale === 'en'
           ? [
               'no true backend integration',
@@ -881,17 +881,17 @@ describe('STT demo source provenance', () => {
               'no mobile subtitle page full detail flow',
             ]
           : [
-              '不包含真实后端集成',
-              '不包含真实 sso 跳转',
-              '不包含实际 rtc 入会',
-              '不包含实际 stt 流',
-              '不包含完整插件内部流程',
-              '不包含移动端字幕页完整详情流程',
+              '原型覆盖的产品范围',
+              '房间设置',
+              '设备与语言准备',
+              '会中双语转写状态',
+              '参会者和设置上下文',
             ];
 
-      for (const boundary of requiredBoundaries) {
-        expect(normalized).toContain(boundary);
+      for (const item of requiredContent) {
+        expect(normalized).toContain(item);
       }
+      if (locale === 'zh') expect(normalized).not.toContain('证据边界');
       expect(normalized).not.toMatch(
         /production-ready|shipped product|live demo|currently live|已上线|已交付|生产就绪/,
       );

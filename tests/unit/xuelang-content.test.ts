@@ -56,7 +56,7 @@ describe('Xuelang bilingual case content', () => {
       expect(count(zh, `id="${id}"`), id).toBe(1);
       expect(count(en, `id="${id}"`), id).toBe(1);
     }
-    expect(zh).toContain('担任项目主负责设计师，负责整体体验策略、核心链路与关键方案设计');
+    expect(zh).toContain('独立负责产品设计，包括整体体验策略、核心链路与关键方案');
     expect(en).toContain('As the lead designer, I owned the overall experience strategy, core journeys, and key design solutions');
     expect(zh).not.toMatch(/唯一设计师|独立完成整个项目/);
     expect(en).not.toMatch(/sole designer|single-handedly/i);
@@ -70,7 +70,9 @@ describe('Xuelang bilingual case content', () => {
     for (const problem of ['识别低', '信任低', '难坚持']) {
       expect(section(zh, 'problem')).toContain(problem);
     }
-    expect(section(zh, 'strategy')).toContain('一端建立课程质量标准，一端补全发现、决策、学习与沉淀的体验链路。');
+    expect(section(zh, 'strategy')).toContain('一端建立课程质量标准，一端连接发现、决策、学习与个人学习资产。');
+    expect(section(zh, 'results')).toContain('把质量标准写进用户的判断路径');
+    expect(section(zh, 'results')).not.toMatch(/下一阶段|后续假设|更值得验证/);
     expect(section(zh, 'strategy')).toContain('卖“好”课 × 学习体验');
   });
 

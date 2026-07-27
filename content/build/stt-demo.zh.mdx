@@ -1,5 +1,4 @@
 import { DemoFrame } from '@/components/build-lab/demo-frame'
-import { EvidenceLedger } from '@/components/build-lab/evidence-ledger'
 
 export const metadata = {
   type: 'build',
@@ -11,7 +10,6 @@ export const metadata = {
   role: '产品设计与 AI 辅助原型构建',
   duration: '探索性构建',
   status: '固定版本静态原型',
-  disclosure: '本案例记录仓库版本 e5e840a 的交互有效静态原型，不代表已接入服务、已有客户使用或产生可量化结果。',
   heroMedia: '/demos/stt-demo/poster.png',
   evidenceLevel: 'prototype',
   featuredOrder: 6,
@@ -25,7 +23,7 @@ export const metadata = {
     { id: 'setup', label: '会前设置' },
     { id: 'session', label: '会中体验' },
     { id: 'build-system', label: '构建系统' },
-    { id: 'evidence-boundary', label: '证据与边界' },
+    { id: 'prototype-scope', label: '原型范围' },
   ],
 }
 
@@ -78,7 +76,7 @@ export const metadata = {
 <section id="build-system">
   <header className="section-heading">
     <p className="section-index">04 / 构建系统</p>
-    <h2>把 AI 辅助放入可审计的设计与工程闭环</h2>
+    <h2>用 AI 辅助构建提前验证产品判断</h2>
   </header>
   <div className="reading">
     <p className="lead">这项工作组合了结构化产品需求、交互状态规格、实现与复核，而不是把生成结果直接当作最终产物。</p>
@@ -92,14 +90,13 @@ export const metadata = {
   </div>
 </section>
 
-<section id="evidence-boundary">
+<section id="prototype-scope">
   <header className="section-heading">
-    <p className="section-index">05 / 证据与边界</p>
-    <h2>把可检查的证据与尚未实现的能力明确分开</h2>
+    <p className="section-index">05 / 原型范围</p>
+    <h2>原型覆盖的产品范围</h2>
   </header>
   <div className="reading">
-    <p className="lead">仓库、精确版本、本地产物、组件样式、审计报告与视觉基线均为可检查证据；原型规格定义了功能边界。</p>
-    <p>不包含真实后端集成。不包含真实 SSO 跳转。不包含实际 RTC 入会。不包含实际 STT 流。不包含完整插件内部流程。不包含移动端字幕页完整详情流程。</p>
+    <p className="lead">固定版本原型覆盖房间设置、设备与语言准备、会中双语转写状态，以及参会者和设置上下文。</p>
+    <p>插件与二维码浮层表达了字幕离开主浏览器视图后的访问概念，让会前准备、会中阅读与分享路径可以在同一个原型中被连续检查。</p>
   </div>
-  <EvidenceLedger locale="zh" />
 </section>

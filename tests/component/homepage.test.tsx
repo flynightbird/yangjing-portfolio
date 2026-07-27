@@ -73,11 +73,11 @@ describe('DualIdentityHero', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Product Designer' })).toBeVisible();
     expect(screen.getByRole('heading', { level: 2, name: 'AI-native Builder' })).toBeVisible();
     expect(
-      screen.getByText('专注于 C 端产品，以及复杂的 B2B 与 AI 系统设计。'),
+      screen.getByText('把复杂产品理清，再把关键判断做成可体验、可验证的产品。'),
     ).toBeVisible();
     expect(
       screen.getByText(
-        '通过 Vibe Coding 探索、验证并构建可运行的产品体验，借助 AIGC 拓展视觉表达、提升设计效率。',
+        '用 Vibe Coding 快速搭建可运行原型，让产品思路更早进入体验和讨论。',
       ),
     ).toBeVisible();
   });
@@ -442,32 +442,32 @@ describe('FeaturedWork', () => {
       ),
     ).toBeVisible();
     expect.soft(
-      project('call-agent').queryByText('唯一产品设计师 · 前端原型构建（Vibe Coding）'),
+      project('call-agent').queryByText('独立负责产品设计 · 前端原型构建（Vibe Coding）'),
     ).toBeVisible();
     expect.soft(
-      project('convo-ai').queryByText('为 AI 对话打造自然、清晰的跨端体验。'),
+      project('convo-ai').queryByText('统一 App 与 Web 的实时 AI 对话状态、反馈与控制。'),
     ).toBeVisible();
-    expect.soft(project('convo-ai').queryByText('唯一产品设计师')).toBeVisible();
+    expect.soft(project('convo-ai').queryByText('独立负责产品设计')).toBeVisible();
     expect.soft(
       project('meeting').queryByText(
         '一套会议规则，适配四类终端与持续变化的会中状态。',
       ),
     ).toBeVisible();
     expect.soft(
-      project('meeting').queryByText('唯一产品设计师 · 已在四类终端上线'),
+      project('meeting').queryByText('独立负责产品设计 · 已在四类终端上线'),
     ).toBeVisible();
     expect.soft(project('aidx').queryByText('网站已上线')).toBeVisible();
     expect.soft(
       project('stt-demo').queryByText('让双语对话的实时转写与翻译更清晰。'),
     ).toBeVisible();
     expect.soft(
-      project('stt-demo').queryByText('唯一产品设计师 · AI 辅助高保真原型'),
+      project('stt-demo').queryByText('独立负责产品设计 · AI 辅助原型构建'),
     ).toBeVisible();
     expect.soft(project('stt-demo').queryByText('Agora RTE 2026 大会发布')).toBeVisible();
     expect.soft(
       project('xuelang').queryByText('从卖课工具，走向高品质学习平台'),
     ).toBeVisible();
-    expect.soft(project('xuelang').queryByText('项目主设计师')).toBeVisible();
+    expect.soft(project('xuelang').queryByText('独立负责产品设计')).toBeVisible();
   });
 
   it('defaults to Call Agent focus and publishes owned ConvoAI media', () => {
@@ -556,7 +556,7 @@ describe('FeaturedWork', () => {
     {
       locale: 'zh' as const,
       proposition: '一套会议规则，适配四类终端与持续变化的会中状态。',
-      evidence: '唯一产品设计师 · 已在四类终端上线',
+      evidence: '独立负责产品设计 · 已在四类终端上线',
       states: ['自适应舞台', '协作工作区', '实时信息层'],
       platforms: ['桌面端', 'Web', '平板端', '移动端'],
       mediaLink: '查看 Agora Meeting Web 与移动端产品界面',
@@ -1170,7 +1170,7 @@ describe('VisualArchive', () => {
       '字节跳动旗下的儿童语言学习 App。设计英语闯关体验，让学习任务更直观，也更具游戏感。',
     )).toBeVisible();
     expect(archiveCard('mr-chong').getByText(
-      '为同程旅游某业务线打造可延展的品牌 IP，并完成三维角色、动作与视觉表达。',
+      '为同程旅游某业务线设计可延展的品牌 IP，并完成三维角色、动作与视觉表达。',
     )).toBeVisible();
     expect(screen.queryByRole('heading', { name: '同程旅游' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', {
@@ -1266,7 +1266,7 @@ describe('AboutPreview', () => {
 
     expect(
       screen.getByText(
-        '从大规模 C 端产品设计，进入复杂 B2B 与 AI 系统，再走向 AI 辅助的产品构建。',
+        '经历横跨消费产品、复杂工作流与 AI 产品，也通过可运行原型让产品判断更早被验证。',
       ),
     ).toBeVisible();
     expect(
