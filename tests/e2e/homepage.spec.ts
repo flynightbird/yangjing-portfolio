@@ -758,10 +758,14 @@ test.describe('portfolio homepage framework', () => {
         || pathname.startsWith('/videos/convo-ai/')
       ) convoAssetRequests.push(pathname);
     });
-    await page.goto('/en/', { waitUntil: 'networkidle' });
+    await page.goto('/en/', { waitUntil: 'domcontentloaded' });
 
-    expect(convoAssetRequests).toContain('/images/convo-ai/home-mobile-loop-poster.webp');
-    expect(convoAssetRequests).toContain('/images/convo-ai/home-card-background.png');
+    await expect
+      .poll(() => convoAssetRequests, { timeout: 15_000 })
+      .toEqual(expect.arrayContaining([
+        '/images/convo-ai/home-mobile-loop-poster.webp',
+        '/images/convo-ai/home-card-background.png',
+      ]));
     expect(convoAssetRequests).not.toContain('/images/convo-ai/home-mobile-loop.gif');
     expect(convoAssetRequests).not.toContain('/images/convo-ai/figma/web-ready.png');
     expect(convoAssetRequests).not.toContain(

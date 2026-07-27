@@ -100,9 +100,15 @@ for (const locale of ['en', 'zh'] as const) {
         'href',
         'https://github.com/flynightbird/stt-demo/tree/e5e840a',
       );
-      await expect(page.locator('#evidence-boundary')).toContainText(
-        locale === 'zh' ? '不包含实际 STT 流' : 'No actual STT stream',
-      );
+      if (locale === 'zh') {
+        await expect(page.locator('#prototype-scope')).toContainText(
+          '固定版本原型覆盖房间设置、设备与语言准备',
+        );
+      } else {
+        await expect(page.locator('#evidence-boundary')).toContainText(
+          'No actual STT stream',
+        );
+      }
 
       const overflow = await page.evaluate(
         () =>
