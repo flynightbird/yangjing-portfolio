@@ -428,71 +428,24 @@
   isolation: isolate;
   overflow: hidden;
   min-height: clamp(23rem, 40vw, 27rem);
-  padding: clamp(1rem, 2vw, 1.45rem);
-  border: 1px solid rgba(210, 220, 255, 0.08);
+  padding: clamp(1.1rem, 2vw, 1.5rem);
+  border: 0;
   border-radius: 1.25rem;
   background:
-    radial-gradient(circle at 48% 50%, rgba(121, 132, 255, 0.3), rgba(76, 89, 198, 0.18) 20%, rgba(33, 40, 92, 0.08) 38%, transparent 54%),
-    radial-gradient(circle at 50% 88%, rgba(11, 15, 29, 0.44), transparent 44%),
-    radial-gradient(circle at 18% 18%, rgba(113, 128, 255, 0.08), transparent 28%),
-    radial-gradient(circle at 82% 20%, rgba(90, 111, 255, 0.08), transparent 26%),
-    linear-gradient(145deg, #121620 0%, #171c2d 28%, #212851 52%, #171c31 73%, #0c1018 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    radial-gradient(circle at 50% 62%, rgba(98, 92, 255, 0.28), transparent 18%),
+    radial-gradient(circle at 50% 34%, rgba(118, 96, 255, 0.14), transparent 32%),
+    linear-gradient(180deg, #05070b 0%, #0a0d13 44%, #0e1219 100%);
 }
 
-.popupExpressionBackdrop {
+.popupExpressionGlow {
   position: absolute;
-  inset: 0;
+  inset: 8% 15% 2%;
   pointer-events: none;
-}
-
-.popupGhost {
-  position: absolute;
-  border: 1px solid rgba(214, 225, 255, 0.06);
-  border-radius: 1.05rem;
-  background: linear-gradient(180deg, rgba(219, 228, 255, 0.014), rgba(219, 228, 255, 0));
-}
-
-.popupGhost::before {
-  content: '';
-  position: absolute;
-  left: 0.8rem;
-  right: 0.8rem;
-  top: 0.78rem;
-  height: 0.06rem;
-  background: rgba(219, 228, 255, 0.06);
-}
-
-.popupGhostA {
-  width: 11rem;
-  height: 7.5rem;
-  top: 0.15rem;
-  left: -0.45rem;
-  transform: rotate(-9deg);
-}
-
-.popupGhostB {
-  width: 10.6rem;
-  height: 7rem;
-  top: 0.9rem;
-  right: 1.2rem;
-  transform: rotate(10deg);
-}
-
-.popupGhostC {
-  width: 9.75rem;
-  height: 6.65rem;
-  bottom: 1.25rem;
-  left: 4.6rem;
-  transform: rotate(-10deg);
-}
-
-.popupGhostD {
-  width: 9.25rem;
-  height: 6.2rem;
-  right: 0.15rem;
-  bottom: 0.55rem;
-  transform: rotate(8deg);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(118, 94, 255, 0.36) 0%, rgba(118, 94, 255, 0.18) 24%, rgba(118, 94, 255, 0.04) 52%, transparent 72%);
+  filter: blur(42px);
+  opacity: 0.9;
 }
 
 .popupExpressionGrid {
@@ -507,14 +460,13 @@
   --popup-y: 0rem;
   --popup-rotate: 0deg;
   --popup-scale: 1;
-  --popup-hover-lift: -0.55rem;
+  --popup-hover-lift: -0.42rem;
   transform: translate3d(var(--popup-x), var(--popup-y), 0)
     rotate(var(--popup-rotate))
     scale(var(--popup-scale));
   transform-origin: center center;
   transition:
     transform 220ms ease,
-    opacity 220ms ease,
     filter 220ms ease;
 }
 
@@ -522,105 +474,95 @@
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 0.9rem;
-  filter: drop-shadow(0 1.5rem 2.8rem rgba(8, 10, 22, 0.34));
+  border-radius: 1rem;
+  filter: drop-shadow(0 1rem 1.8rem rgba(5, 7, 15, 0.3));
   transition: filter 220ms ease;
 }
 
 .popupExpressionItem[data-card='groups'] {
   z-index: 1;
-  width: clamp(9.35rem, 17vw, 11.6rem);
-  top: 1.95rem;
-  left: 1.35rem;
+  width: clamp(9.4rem, 16vw, 10.9rem);
+  top: 1.1rem;
+  left: 1rem;
   --popup-x: 0rem;
   --popup-y: 0rem;
-  --popup-rotate: -4.25deg;
-  opacity: 0.78;
+  --popup-rotate: -5deg;
+  opacity: 0.76;
 }
 
 .popupExpressionItem[data-card='host'] {
   z-index: 1;
-  width: clamp(9.15rem, 16.5vw, 11.2rem);
-  top: 1.35rem;
-  right: 1.35rem;
+  width: clamp(9.2rem, 15.8vw, 10.7rem);
+  top: 0.8rem;
+  right: 1.05rem;
   --popup-x: 0rem;
   --popup-y: 0rem;
-  --popup-rotate: 3.15deg;
-  opacity: 0.8;
+  --popup-rotate: 4.1deg;
+  opacity: 0.78;
 }
 
 .popupExpressionItem[data-card='camera'] {
   z-index: 3;
-  width: clamp(12rem, 21vw, 14rem);
-  left: 21%;
-  bottom: 0.5rem;
+  width: clamp(12.6rem, 22vw, 14.8rem);
+  left: 18%;
+  bottom: 0.2rem;
   --popup-x: 0rem;
   --popup-y: 0rem;
-  --popup-rotate: -1.35deg;
+  --popup-rotate: -2deg;
 }
 
 .popupExpressionItem[data-card='microphone'] {
   z-index: 2;
-  width: clamp(10.6rem, 18vw, 12.5rem);
-  right: 16.25%;
-  bottom: 1.3rem;
+  width: clamp(11.7rem, 20vw, 13.8rem);
+  right: 14%;
+  bottom: 0.9rem;
   --popup-x: 0rem;
   --popup-y: 0rem;
-  --popup-rotate: 1.85deg;
+  --popup-rotate: 2.65deg;
 }
 
 .popupExpressionItem[data-card='groups'] img,
 .popupExpressionItem[data-card='host'] img {
   filter:
-    saturate(0.86)
-    brightness(0.94)
+    saturate(0.88)
+    brightness(0.92)
     contrast(0.98)
-    drop-shadow(0 1.15rem 2.35rem rgba(8, 10, 22, 0.24));
+    drop-shadow(0 0.9rem 1.55rem rgba(6, 8, 16, 0.2));
 }
 
-.popupExpressionItem[data-card='camera'] img {
+.popupExpressionItem[data-card='camera'] img,
+.popupExpressionItem[data-card='microphone'] img {
   filter:
-    saturate(0.99)
+    saturate(1)
     contrast(1.01)
-    drop-shadow(0 1.95rem 3.4rem rgba(7, 9, 19, 0.4));
+    drop-shadow(0 1.35rem 2.2rem rgba(6, 8, 18, 0.34));
 }
 
 .popupExpressionItem[data-preview-active='true'] {
   z-index: 6;
-  opacity: 1;
   --popup-y: var(--popup-hover-lift);
-  --popup-scale: 1.075;
+  --popup-scale: 1.035;
 }
 
 .popupExpressionItem[data-preview-active='true'] img {
   filter:
     saturate(1.02)
     contrast(1.02)
-    drop-shadow(0 2.35rem 3.8rem rgba(6, 8, 18, 0.44));
+    drop-shadow(0 1.75rem 2.7rem rgba(6, 8, 18, 0.42));
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .popupExpressionCard:hover .popupExpressionItem {
-    opacity: 0.72;
-  }
-
-  .popupExpressionCard:hover .popupExpressionItem[data-card='camera'],
-  .popupExpressionCard:hover .popupExpressionItem[data-card='microphone'] {
-    opacity: 0.86;
-  }
-
   .popupExpressionCard:hover .popupExpressionItem:hover {
     z-index: 6;
-    opacity: 1;
     --popup-y: var(--popup-hover-lift);
-    --popup-scale: 1.075;
+    --popup-scale: 1.035;
   }
 
   .popupExpressionCard:hover .popupExpressionItem:hover img {
     filter:
       saturate(1.02)
       contrast(1.02)
-      drop-shadow(0 2.35rem 3.8rem rgba(6, 8, 18, 0.44));
+      drop-shadow(0 1.75rem 2.7rem rgba(6, 8, 18, 0.42));
   }
 }
 
@@ -649,16 +591,12 @@
     width: min(100%, 15.75rem);
   }
 
-  .popupGhostB {
-    right: 1.4rem;
-  }
-
   .popupExpressionItem[data-card='camera'] {
-    left: 16%;
+    left: 14%;
   }
 
   .popupExpressionItem[data-card='microphone'] {
-    right: 10%;
+    right: 10.5%;
   }
 }
 
@@ -700,6 +638,11 @@
     padding: 1rem;
   }
 
+  .popupExpressionGlow {
+    inset: 12% 8% 10%;
+    filter: blur(34px);
+  }
+
   .popupExpressionGrid {
     display: grid;
     min-height: auto;
@@ -718,31 +661,6 @@
     width: 100%;
     inset: auto;
     transform: none;
-  }
-
-  .popupGhostA {
-    width: 10rem;
-    height: 6.8rem;
-    left: -1.4rem;
-  }
-
-  .popupGhostB {
-    width: 9rem;
-    height: 6.2rem;
-    right: 0.8rem;
-  }
-
-  .popupGhostC {
-    width: 8.5rem;
-    height: 5.9rem;
-    left: 3.7rem;
-    bottom: 2rem;
-  }
-
-  .popupGhostD {
-    width: 8.1rem;
-    height: 5.5rem;
-    right: -0.9rem;
   }
 
   .orientationCompare {

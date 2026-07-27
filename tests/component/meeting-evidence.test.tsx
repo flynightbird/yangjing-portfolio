@@ -112,11 +112,15 @@ describe('Meeting showcase media', () => {
   it('adds a visual-only popup expression card beneath the consistency controls', () => {
     const { container } = render(<MeetingPolishShowcase locale="en" />);
     const popupCard = container.querySelector('[data-meeting-popup-expression]');
+    const supportCards = container.querySelectorAll('[data-meeting-popup-layer="support"]');
+    const leadCards = container.querySelectorAll('[data-meeting-popup-layer="lead"]');
     const popupImages = Array.from(container.querySelectorAll('[data-meeting-popup-card] img')).map((image) =>
       image.getAttribute('src'),
     );
 
     expect(popupCard).not.toBeNull();
+    expect(supportCards).toHaveLength(2);
+    expect(leadCards).toHaveLength(2);
     expect(container.querySelectorAll('[data-meeting-popup-card]')).toHaveLength(4);
     expect(popupImages).toEqual([
       '/images/meeting/meeting-popup-groups.png',

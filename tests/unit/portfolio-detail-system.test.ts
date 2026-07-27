@@ -566,6 +566,22 @@ describe('portfolio detail visual system', () => {
     );
   });
 
+  it('styles the Meeting popup expression as a dark poster composition', () => {
+    const css = read('components/meeting/meeting-showcase.module.css');
+    const popupCard = ruleBlock(css, '.popupExpressionCard');
+    const popupGlow = ruleBlock(css, '.popupExpressionGlow');
+    const popupLead = ruleBlock(
+      css,
+      ".popupExpressionItem[data-card='camera']",
+    );
+
+    expect(popupCard).toContain('border: 0;');
+    expect(popupCard).toContain('linear-gradient(180deg, #05070b 0%, #0a0d13 44%, #0e1219 100%);');
+    expect(popupGlow).toContain('filter: blur(42px);');
+    expect(popupLead).toContain('width: clamp(12.6rem, 22vw, 14.8rem);');
+    expect(css).not.toContain('.popupGhost');
+  });
+
   it('maps Xuelang headings to the shared semantic roles', () => {
     const layoutCss = read('components/xuelang/xuelang-layout.module.css');
     const evidenceCss = read('components/xuelang/xuelang-evidence.module.css');

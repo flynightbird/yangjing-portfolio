@@ -45,10 +45,10 @@ interface MediaDefinition {
 }
 
 const popupExpressionCards = [
-  { id: 'groups', src: '/images/meeting/meeting-popup-groups.png' },
-  { id: 'host', src: '/images/meeting/meeting-popup-host.png' },
-  { id: 'camera', src: '/images/meeting/meeting-popup-camera.png' },
-  { id: 'microphone', src: '/images/meeting/meeting-popup-microphone.png' },
+  { id: 'groups', src: '/images/meeting/meeting-popup-groups.png', layer: 'support' },
+  { id: 'host', src: '/images/meeting/meeting-popup-host.png', layer: 'support' },
+  { id: 'camera', src: '/images/meeting/meeting-popup-camera.png', layer: 'lead' },
+  { id: 'microphone', src: '/images/meeting/meeting-popup-microphone.png', layer: 'lead' },
 ] as const;
 
 const mediaCatalog: Record<MeetingMediaId, MediaDefinition> = {
@@ -670,18 +670,14 @@ export function MeetingPolishShowcase({ locale }: { readonly locale: Locale }) {
       </div>
 
       <div className={styles.popupExpressionCard} data-meeting-popup-expression aria-hidden="true">
-        <div className={styles.popupExpressionBackdrop}>
-          <span className={`${styles.popupGhost} ${styles.popupGhostA}`} />
-          <span className={`${styles.popupGhost} ${styles.popupGhostB}`} />
-          <span className={`${styles.popupGhost} ${styles.popupGhostC}`} />
-          <span className={`${styles.popupGhost} ${styles.popupGhostD}`} />
-        </div>
+        <div className={styles.popupExpressionGlow} data-meeting-popup-glow />
         <div className={styles.popupExpressionGrid}>
           {popupExpressionCards.map((card) => (
             <div
               key={card.id}
               className={styles.popupExpressionItem}
               data-meeting-popup-card
+              data-meeting-popup-layer={card.layer}
               data-card={card.id}
             >
               <img src={withBasePath(card.src)} alt="" loading="lazy" decoding="async" />
