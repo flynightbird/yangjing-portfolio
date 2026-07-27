@@ -37,8 +37,7 @@ describe('Agora Meeting content', () => {
     expect(source).not.toMatch(/increased by\s*\d+%|提升了?\s*\d+%/i);
     expect(source.match(/No quantitative adoption, satisfaction, or efficiency metrics are claimed/g))
       .toHaveLength(1);
-    expect(source.match(/因缺少验证数据，不作采用率、满意度或效率提升声明/g))
-      .toHaveLength(1);
+    expect(source).not.toMatch(/因缺少验证数据|不作采用率/);
     expect(source).toMatch(/Customer API/);
     expect(source).toMatch(/客户 API/);
   });
@@ -64,8 +63,8 @@ describe('Agora Meeting content', () => {
   it('uses concise strategy-led Chinese copy without internal writing language', () => {
     const chinese = readFileSync('content/work/meeting.zh.mdx', 'utf8');
 
-    expect(chinese).toContain('先确定信息优先级，再生成对应的界面状态');
-    expect(chinese).toContain('跨端规则应该早于组件分化');
+    expect(chinese).toContain('信息优先级与界面状态');
+    expect(chinese).toContain('跨端规则与组件分化');
     expect(chinese).not.toMatch(/招聘者需要看到|推到主位|活着的参会者通道|空间节奏|API 暴露/);
   });
 
