@@ -14,6 +14,28 @@ async function waitForIntroPinLayout(page: import('@playwright/test').Page) {
 }
 
 test.describe('portfolio homepage framework', () => {
+  test('shows the localized UI UX role with the hero summary at supported widths', async ({
+    page,
+  }) => {
+    await page.goto('/zh/', { waitUntil: 'domcontentloaded' });
+
+    const summary = page.getByText('专注于 C 端产品，以及复杂的 B2B 与 AI 系统设计。');
+    const credit = page.locator('[data-designer-credit]');
+    const viewport = page.viewportSize();
+
+    await expect(summary).toBeAttached();
+    await expect(credit).toBeAttached();
+    await expect(credit).toHaveText('UI / UX 设计师');
+
+    if (viewport && viewport.width < 768) {
+      await expect(summary).toBeHidden();
+      await expect(credit).toBeHidden();
+    } else {
+      await expect(summary).toBeVisible();
+      await expect(credit).toBeVisible();
+    }
+  });
+
   test('does not show field labels in the hero corners', async ({ page }) => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
 
