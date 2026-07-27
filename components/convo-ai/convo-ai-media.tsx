@@ -2,10 +2,9 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { AlertCircle, ArrowLeft, ArrowRight, Monitor, RotateCcw, Smartphone } from 'lucide-react';
-import { type CSSProperties, type ReactNode, useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
+import { type CSSProperties, useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 
 import type { Locale } from '@/content/types';
-import { withBasePath } from '@/lib/i18n/locales';
 import { getConvoAiMedia, getConvoAiMediaSizing, type ConvoAiMediaId } from './convo-ai-media-catalog';
 import styles from './convo-ai-media.module.css';
 import { ConvoAiViewportVideo } from './convo-ai-video';
@@ -191,18 +190,6 @@ export function ConvoAiVoiceprintModes({ locale }: { readonly locale: Locale }) 
       </article>;
     })}
   </div>;
-}
-
-const inlineMedia = {
-  orb: { src: '/images/convo-ai/posters/app-conversation-start.webp', alt: 'ConvoAI animated conversation orb' },
-  avatar: { src: '/images/convo-ai/posters/app-avatar-interaction.webp', alt: 'ConvoAI digital human interaction' },
-} as const;
-
-export function ConvoAiInlineHeading({ kind, children }: { readonly kind: keyof typeof inlineMedia; readonly children: ReactNode }) {
-  const media = inlineMedia[kind];
-  return <h2 className={styles.inlineHeading} data-inline-product-heading={kind}>
-    <span>{children}</span><span className={styles.inlineImage}><img src={withBasePath(media.src)} alt={media.alt} /></span>
-  </h2>;
 }
 
 type ConvoAiStageProps = {

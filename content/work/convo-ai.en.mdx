@@ -1,5 +1,5 @@
 import { EvidenceFigure } from '@/components/case-study/evidence-figure'
-import { ConvoAiInlineHeading, ConvoAiPlaylist, ConvoAiStage, ConvoAiVoiceprintModes } from '@/components/convo-ai/convo-ai-media'
+import { ConvoAiPlaylist, ConvoAiStage, ConvoAiVoiceprintModes } from '@/components/convo-ai/convo-ai-media'
 
 export const metadata = {
   type: 'work', slug: 'convo-ai', locale: 'en', translationKey: 'work.convo-ai',
@@ -23,7 +23,7 @@ export const metadata = {
 </section>
 
 <section id="ready" data-convo-nav-tone="dark">
-  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="02">02</p><ConvoAiInlineHeading kind="orb">First answer: “Can I speak now?”</ConvoAiInlineHeading></header>
+  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="02">02</p><h2>First answer: “Can I speak now?”</h2></header>
   <div className="reading"><p className="lead">App creates a short path to the first turn. Web expands agents, phone number, layout, and session boundaries. They are not duplicate pages, but different expressions of one real-time model.</p></div>
   <div className="state-flow" aria-label="Conversation state chain"><div><span>01</span><strong>Connecting</strong></div><div><span>02</span><strong>Ready</strong></div><div><span>03</span><strong>Listening</strong></div><div><span>04</span><strong>Thinking</strong></div><div><span>05</span><strong>Speaking</strong></div><div><span>06</span><strong>Interrupted</strong></div><div><span>07</span><strong>Recovery</strong></div></div>
   <ConvoAiStage locale="en" eyebrow="CROSS-PLATFORM / READINESS" title="Ready" description="Web carries configuration density; App carries the immediate speaking path. Both expose the same state truth." webId="web-preflight-layout" appId="app-conversation-start" />
@@ -46,7 +46,7 @@ export const metadata = {
 </section>
 
 <section id="avatar" data-convo-nav-tone="dark">
-  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="05">05</p><ConvoAiInlineHeading kind="avatar">Move from selecting an expectation to stronger social presence</ConvoAiInlineHeading></header>
+  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="05">05</p><h2>Move from selecting an expectation to stronger social presence</h2></header>
   <div className="reading"><p className="lead">Avatar choice is not a visual skin. In live interaction, audiovisual sync, latency, camera, and picture-in-picture become more visible, so the stable turn and control model must remain.</p></div>
   <EvidenceFigure className="convo-phone-evidence" eager src="/images/convo-ai/figma/avatar-video.png" width={375} height={812} alt="ConvoAI App with avatar, live video, and picture-in-picture" label="AVATAR / LIVE VIDEO" caption="The main view carries avatar interaction while the floating view preserves a secondary perspective." locale="en" />
   <ConvoAiPlaylist locale="en" ids={['app-avatar-select', 'app-avatar-interaction']} />

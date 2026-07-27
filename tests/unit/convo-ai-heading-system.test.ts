@@ -98,6 +98,18 @@ describe('Convo AI semantic heading system', () => {
     ).toHaveLength(14);
   });
 
+  it('keeps bilingual chapter headings text-only', () => {
+    const content = `${read('content/work/convo-ai.zh.mdx')}\n${read(
+      'content/work/convo-ai.en.mdx',
+    )}`;
+    const css = read('components/convo-ai/convo-ai-media.module.css');
+
+    expect(content).not.toContain('ConvoAiInlineHeading');
+    expect(content).not.toContain('data-inline-product-heading');
+    expect(css).not.toContain('.inlineHeading');
+    expect(css).not.toContain('.inlineImage');
+  });
+
   it('maps readable stage and media titles while isolating display type', () => {
     const css = read('components/convo-ai/convo-ai-media.module.css');
     const project = ruleBlock(
@@ -110,7 +122,6 @@ describe('Convo AI semantic heading system', () => {
     );
     const avatar = ruleBlock(css, '.avatarFigure figcaption strong');
     const display = ruleBlock(css, '.stageDisplayTitle');
-    const inlineChapter = ruleBlock(css, '.inlineHeading');
 
     for (const declaration of [
       'max-width: var(--case-project-title-max);',
@@ -134,7 +145,6 @@ describe('Convo AI semantic heading system', () => {
 
     expect(display).toContain('position: absolute;');
     expect(display).toContain('pointer-events: none;');
-    expect(inlineChapter).not.toContain('max-width:');
   });
 
   it('maps Convo AI print headings to fixed shared roles', () => {

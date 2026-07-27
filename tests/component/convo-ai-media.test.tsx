@@ -2,7 +2,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { StrictMode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ConvoAiAppShowcase, ConvoAiAvatarPair, ConvoAiConversationStart, ConvoAiInlineHeading, ConvoAiPlaylist, ConvoAiStage, ConvoAiVoiceprintModes } from '@/components/convo-ai/convo-ai-media';
+import { ConvoAiAppShowcase, ConvoAiAvatarPair, ConvoAiConversationStart, ConvoAiPlaylist, ConvoAiStage, ConvoAiVoiceprintModes } from '@/components/convo-ai/convo-ai-media';
 import { getConvoAiMedia, getConvoAiMediaSizing } from '@/components/convo-ai/convo-ai-media-catalog';
 import { ConvoAiViewportVideo } from '@/components/convo-ai/convo-ai-video';
 
@@ -114,25 +114,6 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 beforeEach(() => {
   vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => undefined);
   vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
-});
-
-describe('ConvoAiInlineHeading', () => {
-  it('prefixes its image URL for a subpath deployment', () => {
-    vi.stubEnv('NEXT_PUBLIC_BASE_PATH', '/yangjing-portfolio');
-
-    try {
-      render(<ConvoAiInlineHeading kind="orb">Conversation start</ConvoAiInlineHeading>);
-
-      expect(screen.getByRole('img', {
-        name: 'ConvoAI animated conversation orb',
-      })).toHaveAttribute(
-        'src',
-        '/yangjing-portfolio/images/convo-ai/posters/app-conversation-start.webp',
-      );
-    } finally {
-      vi.unstubAllEnvs();
-    }
-  });
 });
 
 describe('getConvoAiMediaSizing', () => {
