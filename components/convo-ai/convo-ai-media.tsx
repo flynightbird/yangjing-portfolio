@@ -2,10 +2,10 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { AlertCircle, ArrowLeft, ArrowRight, Monitor, RotateCcw, Smartphone } from 'lucide-react';
-import { type ReactNode, useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
+import { type CSSProperties, type ReactNode, useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 
 import type { Locale } from '@/content/types';
-import { getConvoAiMedia, type ConvoAiMediaId } from './convo-ai-media-catalog';
+import { getConvoAiMedia, getConvoAiMediaSizing, type ConvoAiMediaId } from './convo-ai-media-catalog';
 import styles from './convo-ai-media.module.css';
 import { ConvoAiViewportVideo } from './convo-ai-video';
 
@@ -17,6 +17,24 @@ const appShowcaseSteps = [
 ] as const satisfies readonly { readonly id: ConvoAiMediaId; readonly index: string; readonly label: string; readonly summary: string; readonly enLabel: string; readonly enSummary: string }[];
 
 type AppShowcaseId = (typeof appShowcaseSteps)[number]['id'];
+
+type MediaSizingStyle = CSSProperties & {
+  '--convo-media-ratio': number;
+};
+
+function mediaSizingProps(media: ReturnType<typeof getConvoAiMedia>) {
+  const sizing = getConvoAiMediaSizing(media);
+
+  return {
+    'data-convo-media-frame': '',
+    'data-media-platform': media.platform,
+    'data-media-orientation': sizing.orientation,
+    style: {
+      aspectRatio: sizing.aspectRatio,
+      '--convo-media-ratio': sizing.ratio,
+    } as MediaSizingStyle,
+  } as const;
+}
 
 function subscribeToMediaQuery(query: string, onChange: () => void) {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return () => undefined;
@@ -74,7 +92,7 @@ export function ConvoAiPlaylist({ ids, locale }: { readonly ids: readonly ConvoA
         </div>
       </div> : null}
       <figure className={styles.evidence} data-platform={active.platform} data-media-card={active.id}>
-        <div className={styles.videoFrame} style={{ aspectRatio: `${active.width} / ${active.height}` }}>
+        <div className={styles.videoFrame} {...mediaSizingProps(active)}>
           <ConvoAiViewportVideo key={active.id} id={active.id} locale={locale} describedBy={descriptionId} videoRef={videoRef} onError={() => setFailed(true)} onLoadedData={() => setFailed(false)} />
           {failed ? <MediaError locale={locale} onReload={() => { setFailed(false); videoRef.current?.load(); }} /> : null}
         </div>
@@ -109,7 +127,7 @@ export function ConvoAiConversationStart({ locale }: { readonly locale: Locale }
     <div className={styles.conversationStage} data-convo-start-stage>
       <figure className={styles.conversationWeb} data-convo-start-web data-media-card={activeWebId}>
         <div className={styles.conversationPlatformLabel}><span>WEB</span><strong>{locale === 'zh' ? '完整准备' : 'Complete setup'}</strong></div>
-        <div className={styles.conversationWebMedia}>
+        <div className={styles.conversationWebMedia} {...mediaSizingProps(web)}>
           <ConvoAiViewportVideo key={activeWebId} id={activeWebId} locale={locale} describedBy={webDescriptionId} videoRef={webVideoRef} onError={() => setFailed((current) => ({ ...current, web: true }))} onLoadedData={() => setFailed((current) => ({ ...current, web: false }))} />
           {failed.web ? <MediaError locale={locale} onReload={() => { setFailed((current) => ({ ...current, web: false })); webVideoRef.current?.load(); }} /> : null}
         </div>
@@ -118,7 +136,7 @@ export function ConvoAiConversationStart({ locale }: { readonly locale: Locale }
 
       <figure className={styles.conversationApp} data-convo-start-app data-media-card={startConversationAppId}>
         <div className={styles.conversationPlatformLabel}><span>APP</span><strong>{locale === 'zh' ? '快速开始' : 'Quick start'}</strong></div>
-        <div className={styles.conversationPhone}>
+        <div className={styles.conversationPhone} {...mediaSizingProps(app)}>
           <ConvoAiViewportVideo id={startConversationAppId} locale={locale} describedBy={appDescriptionId} videoRef={appVideoRef} onError={() => setFailed((current) => ({ ...current, app: true }))} onLoadedData={() => setFailed((current) => ({ ...current, app: false }))} />
           {failed.app ? <MediaError locale={locale} onReload={() => { setFailed((current) => ({ ...current, app: false })); appVideoRef.current?.load(); }} /> : null}
         </div>
@@ -190,6 +208,8 @@ export function ConvoAiStage({ locale, eyebrow, title, description, webId, appId
   const [activePlatform, setActivePlatform] = useState<'web' | 'app' | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const descriptionId = useId();
+  const webMedia = getConvoAiMedia(webId);
+  const appMedia = getConvoAiMedia(appId);
   const SemanticHeading = hero ? 'h1' : 'h3';
   const updateTilt = (event: React.PointerEvent<HTMLDivElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -208,8 +228,8 @@ export function ConvoAiStage({ locale, eyebrow, title, description, webId, appId
       <div id={descriptionId}>{description}</div>
     </div>
     <div className={styles.terrain} aria-hidden="true"><i /><i /><i /></div>
-    <div className={styles.webPlane} data-convo-web-plane><ConvoAiViewportVideo id={webId} locale={locale} describedBy={descriptionId} /></div>
-    <div className={styles.appDevice} data-convo-app-device><div><ConvoAiViewportVideo id={appId} locale={locale} describedBy={descriptionId} /></div></div>
+    <div className={styles.webPlane} data-convo-web-plane {...mediaSizingProps(webMedia)}><ConvoAiViewportVideo id={webId} locale={locale} describedBy={descriptionId} /></div>
+    <div className={styles.appDevice} data-convo-app-device {...mediaSizingProps(appMedia)}><div><ConvoAiViewportVideo id={appId} locale={locale} describedBy={descriptionId} /></div></div>
     <div className={styles.stageControls}><button type="button" onClick={() => setActivePlatform('web')}><Monitor aria-hidden="true" size={17} />{locale === 'zh' ? '聚焦 Web 录屏' : 'Focus Web recording'}</button><button type="button" onClick={() => setActivePlatform('app')}><Smartphone aria-hidden="true" size={17} />{locale === 'zh' ? '聚焦 App 录屏' : 'Focus App recording'}</button></div>
   </div>;
 }
@@ -226,7 +246,7 @@ export function ConvoAiAvatarPair({ locale }: { readonly locale: Locale }) {
       const copy = media.copy[locale];
       const captionId = `convo-ai-avatar-${id}`;
       return <figure key={id} className={styles.avatarFigure} data-convo-ai-avatar={id}>
-        <div className={styles.avatarPhone}>
+        <div className={styles.avatarPhone} {...mediaSizingProps(media)}>
           <ConvoAiViewportVideo id={id} locale={locale} describedBy={captionId} />
         </div>
         <figcaption id={captionId}><span>{index}</span><strong>{copy.title}</strong><p>{copy.description}</p></figcaption>
@@ -317,7 +337,7 @@ export function ConvoAiAppShowcase({ locale }: { readonly locale: Locale }) {
   }, [activate, isDesktop, reducedMotion]);
 
   const renderMediaCard = (placement: 'desktop' | 'mobile', includeVideo: boolean) => <figure className={styles.appShowcaseMedia} data-app-showcase-placement={placement} data-media-card={activeId}>
-    <div className={styles.appShowcaseVideo}>
+    <div className={styles.appShowcaseVideo} {...mediaSizingProps(activeMedia)}>
       {includeVideo
         ? <ConvoAiViewportVideo key={activeId} id={activeId} locale={locale} describedBy={`${descriptionId}-${placement}`} videoRef={videoRef} />
         : <img src={activeMedia.poster} alt={activeMedia.copy[locale].title} />}

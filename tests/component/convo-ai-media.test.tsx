@@ -65,6 +65,18 @@ function videoObservers() {
   ));
 }
 
+function expectMediaSizing(
+  element: Element | null,
+  platform: 'app' | 'web',
+  orientation: 'portrait' | 'landscape',
+  aspectRatio: string,
+) {
+  expect(element).toHaveAttribute('data-convo-media-frame');
+  expect(element).toHaveAttribute('data-media-platform', platform);
+  expect(element).toHaveAttribute('data-media-orientation', orientation);
+  expect(element).toHaveStyle({ aspectRatio });
+}
+
 function installMediaEnvironment({ desktop: initialDesktop = true, reducedMotion: initialReducedMotion = false, intersectionObserver = true } = {}) {
   let desktop = initialDesktop;
   let reducedMotion = initialReducedMotion;
@@ -228,6 +240,23 @@ describe('ConvoAiPlaylist', () => {
     expect(container.querySelector('[aria-label="Scene list"]')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Previous recording' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Next recording' })).not.toBeInTheDocument();
+    expectMediaSizing(
+      container.querySelector('[data-media-card="web-realtime-data"] [data-convo-media-frame]'),
+      'web',
+      'landscape',
+      '2486 / 1598',
+    );
+  });
+
+  it('exposes portrait App source sizing on the active frame', () => {
+    const { container } = render(<ConvoAiPlaylist ids={['app-login']} locale="en" />);
+
+    expectMediaSizing(
+      container.querySelector('[data-media-card="app-login"] [data-convo-media-frame]'),
+      'app',
+      'portrait',
+      '592 / 1280',
+    );
   });
 
   it('does not pause other ConvoAI media and restores a forced playback rate', () => {
@@ -301,6 +330,18 @@ describe('ConvoAiConversationStart', () => {
     expect(screen.getByLabelText('启动对话')).toHaveAttribute('src', '/videos/convo-ai/app-conversation-start.mp4');
     expect(screen.getByLabelText('Web 登录与进入')).toHaveAttribute('src', '/videos/convo-ai/web-login.mp4');
     expect(screen.getByRole('navigation', { name: 'Web 启动路径' })).toBeVisible();
+    expectMediaSizing(
+      container.querySelector('[data-convo-start-web] [data-convo-media-frame]'),
+      'web',
+      'landscape',
+      '1291 / 816',
+    );
+    expectMediaSizing(
+      container.querySelector('[data-convo-start-app] [data-convo-media-frame]'),
+      'app',
+      'portrait',
+      '592 / 1280',
+    );
 
     fireEvent.click(screen.getByRole('button', { name: /启动前 Agent 布局/ }));
     expect(screen.getByLabelText('启动对话')).toBeInTheDocument();
@@ -348,6 +389,18 @@ describe('ConvoAiStage', () => {
     expect(container.querySelector('[data-convo-app-device]')).toBeVisible();
     expect(container.querySelector('[data-convo-web-plane] video')).toBeInTheDocument();
     expect(container.querySelector('[data-convo-app-device] video')).toBeInTheDocument();
+    expectMediaSizing(
+      container.querySelector('[data-convo-web-plane]'),
+      'web',
+      'landscape',
+      '2486 / 1598',
+    );
+    expectMediaSizing(
+      container.querySelector('[data-convo-app-device]'),
+      'app',
+      'portrait',
+      '592 / 1280',
+    );
     expect(screen.queryByRole('heading', { level: 1 })).toBeNull();
     expect(
       screen.getByRole('heading', { level: 3, name: 'ConvoAI' }),
@@ -406,6 +459,11 @@ describe('ConvoAiAvatarPair', () => {
     expect(screen.getByText('数字人互动')).toBeVisible();
     expect(screen.getByText('完整呈现数字人选择过程。')).toBeVisible();
     expect(screen.getByText('完整呈现数字人连接、对话与摄像头过程。')).toBeVisible();
+    const frames = container.querySelectorAll('[data-convo-ai-avatar] [data-convo-media-frame]');
+    expect(frames).toHaveLength(2);
+    frames.forEach((frame) => {
+      expectMediaSizing(frame, 'app', 'portrait', '592 / 1280');
+    });
   });
 
   it('allows either avatar recording to play without pausing the other', () => {
@@ -517,7 +575,7 @@ describe('ConvoAiAppShowcase', () => {
     const cardClass = initialCard.className;
     const phoneShellClass = initialCard.firstElementChild?.className;
 
-    expect(initialCard.firstElementChild).not.toHaveAttribute('style');
+    expectMediaSizing(initialCard.firstElementChild, 'app', 'portrait', '592 / 1280');
 
     sceneIds.forEach((id) => {
       act(() => { observer.trigger(id); });
@@ -525,7 +583,8 @@ describe('ConvoAiAppShowcase', () => {
 
       expect(card).toHaveClass(cardClass);
       expect(card.firstElementChild).toHaveClass(phoneShellClass ?? '');
-      expect(card.firstElementChild).not.toHaveAttribute('style');
+      const media = getConvoAiMedia(id);
+      expectMediaSizing(card.firstElementChild, 'app', 'portrait', `${media.width} / ${media.height}`);
       expect(card.firstElementChild?.querySelector('video')).toBeInTheDocument();
     });
   });
