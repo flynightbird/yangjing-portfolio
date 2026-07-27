@@ -327,6 +327,35 @@ export const archiveProjects = [
         zh: '开言设计原则抽象封面视觉',
       },
     },
+    gallery: [
+      {
+        src: '/images/archive/details/open-language/01-design-principles.png',
+        width: 4695,
+        height: 2641,
+        alt: {
+          en: 'Open Language design principles overview',
+          zh: '开言英语设计原则总览',
+        },
+      },
+      {
+        src: '/images/archive/details/open-language/02-lightweight-brand.png',
+        width: 2880,
+        height: 1620,
+        alt: {
+          en: 'Open Language lightweight brand expression examples',
+          zh: '开言英语轻松自由的品牌视觉案例',
+        },
+      },
+      {
+        src: '/images/archive/details/open-language/03-warm-friend.png',
+        width: 2880,
+        height: 1620,
+        alt: {
+          en: 'Open Language warm and encouraging learning experience examples',
+          zh: '开言英语温暖鼓励的学习体验案例',
+        },
+      },
+    ],
   },
   {
     key: 'bytedance-doudou-fox',

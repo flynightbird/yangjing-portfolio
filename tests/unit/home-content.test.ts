@@ -80,6 +80,18 @@ describe('homepage project contract', () => {
 });
 
 describe('Visual Archive contract', () => {
+  it('publishes the approved Open Language lightbox gallery order', () => {
+    const openLanguage = archiveProjects.find(
+      (project) => project.key === 'bytedance-open-language',
+    );
+
+    expect(openLanguage?.gallery?.map((image) => image.src)).toEqual([
+      '/images/archive/details/open-language/01-design-principles.png',
+      '/images/archive/details/open-language/02-lightweight-brand.png',
+      '/images/archive/details/open-language/03-warm-friend.png',
+    ]);
+  });
+
   it('publishes the Tangping lightbox gallery in numeric filename order', () => {
     const tangping = archiveProjects.find(
       (project) => project.key === 'alibaba-meipingmeiwu',
