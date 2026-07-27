@@ -1410,8 +1410,9 @@ a.whiteCta:focus-visible {
 }
 
 .meetingBand {
+  --meeting-accent: #c7ff38;
   overflow: clip;
-  border-top: 6px solid var(--color-coral);
+  border-top: 6px solid var(--meeting-accent);
   background: #0d0e10;
   color: var(--projects-ink);
 }
@@ -1590,7 +1591,7 @@ a.whiteCta:focus-visible {
   gap: 0.45rem;
   padding: 1rem 0.5rem 1.1rem 0;
   border-top: 1px solid rgba(242, 244, 240, 0.22);
-  color: var(--color-coral);
+  color: var(--meeting-accent);
   font-size: 0.7rem;
   line-height: 1.3;
 }

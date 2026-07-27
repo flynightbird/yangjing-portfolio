@@ -95,7 +95,7 @@ export function MeetingHomeMedia() {
           .to(web, { scale: 0.965, y: -8, duration: 0.24 }, 0.58)
           .to(
             states,
-            { color: '#ff654d', opacity: 1, stagger: 0.08, duration: 0.16 },
+            { color: 'var(--meeting-accent)', opacity: 1, stagger: 0.08, duration: 0.16 },
             0.55,
           );
 
