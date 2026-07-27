@@ -11,6 +11,11 @@ const chapterIds = {
   ],
 } as const;
 
+const projectTitles = {
+  en: 'ConvoAI',
+  zh: 'ConvoAI：让实时 AI 对话可感知、可介入、可恢复',
+} as const;
+
 const showcaseIds = ['app-login', 'app-structure', 'app-profile-settings', 'app-hardware-device'] as const;
 const startConversationIds = ['app-conversation-start', 'web-login', 'web-preflight', 'web-preflight-layout', 'web-join-exit'] as const;
 
@@ -181,10 +186,12 @@ for (const locale of ['en', 'zh'] as const) {
       const article = page.locator('article[data-case-study]');
       await expect(article).toBeVisible();
       expect(await article.locator('section[id]').evaluateAll((sections) => sections.map(({ id }) => id))).toEqual(chapterIds[locale]);
-      await expect(article.getByRole('heading', { level: 1, name: 'ConvoAI' })).toBeVisible();
-      await expect(article.getByRole('heading', { level: 1, name: 'ConvoAI' })).toHaveCount(1);
-      await expect(page.locator('[data-stage-display-title]')).toHaveCount(locale === 'en' ? 3 : 1);
-      await expect(page.locator('[data-stage-display-title]').first()).toHaveAttribute('aria-hidden', 'true');
+      await expect(article.getByRole('heading', { level: 1, name: projectTitles[locale], exact: true })).toBeVisible();
+      await expect(article.getByRole('heading', { level: 1 })).toHaveCount(1);
+      await expect(page.locator('[data-stage-display-title]')).toHaveCount(locale === 'en' ? 2 : 0);
+      if (locale === 'en') {
+        await expect(page.locator('[data-stage-display-title]').first()).toHaveAttribute('aria-hidden', 'true');
+      }
       await expect(page.locator('body > .section-index')).toHaveCount(0);
       await expect(page.locator('[data-convo-ai-case] .section-index')).toHaveCount(7);
       await expect(page.locator('[data-convo-ai-stage]').first()).toBeVisible();
@@ -220,6 +227,52 @@ for (const locale of ['en', 'zh'] as const) {
         await expect(avatarInteraction).toBeVisible();
       }
       await expect(page.locator('video[controls]')).toHaveCount(0);
+    });
+
+    test('keeps the approved opening hierarchy and responsive detail gutter', async ({ page }, testInfo) => {
+      if (testInfo.project.name === 'mobile') {
+        await page.setViewportSize({ width: 375, height: 812 });
+        await page.reload({ waitUntil: 'domcontentloaded' });
+      }
+
+      const heroTop = page.locator('[data-convo-hero-top]');
+      const heroCopy = page.locator('[data-convo-hero-copy]');
+      const heroMeta = page.locator('[data-convo-hero-meta]');
+      const banner = page.locator('[data-convo-launch-banner]');
+      const heroMedia = page.locator('[data-convo-hero-media]');
+      const hint = page.locator('[data-convo-next-section-hint]');
+      const [topBox, copyBox, metaBox, bannerBox, mediaBox, hintBox, viewportWidth] = await Promise.all([
+        heroTop.boundingBox(),
+        heroCopy.boundingBox(),
+        heroMeta.boundingBox(),
+        banner.boundingBox(),
+        heroMedia.boundingBox(),
+        hint.boundingBox(),
+        page.evaluate(() => window.innerWidth),
+      ]);
+
+      expect(topBox).not.toBeNull();
+      expect(copyBox).not.toBeNull();
+      expect(metaBox).not.toBeNull();
+      expect(bannerBox).not.toBeNull();
+      expect(mediaBox).not.toBeNull();
+      expect(hintBox).not.toBeNull();
+      expect(topBox!.y + topBox!.height).toBeLessThanOrEqual(bannerBox!.y + 1);
+      expect(bannerBox!.y + bannerBox!.height).toBeLessThanOrEqual(mediaBox!.y + 1);
+      expect(mediaBox!.y + mediaBox!.height).toBeLessThanOrEqual(hintBox!.y + 1);
+
+      const expectedRightGutter = testInfo.project.name === 'desktop' ? 60 : testInfo.project.name === 'tablet' ? 32 : 16;
+      const actualRightGutter = viewportWidth - (bannerBox!.x + bannerBox!.width);
+      expect(Math.abs(actualRightGutter - expectedRightGutter)).toBeLessThanOrEqual(1);
+
+      if (testInfo.project.name === 'desktop') {
+        expect(copyBox!.x + copyBox!.width).toBeLessThanOrEqual(metaBox!.x + 1);
+        expect(Math.abs((copyBox!.y + copyBox!.height) - (metaBox!.y + metaBox!.height))).toBeLessThanOrEqual(1);
+      } else {
+        expect(copyBox!.y + copyBox!.height).toBeLessThanOrEqual(metaBox!.y + 1);
+      }
+
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
     });
 
     test('exposes every complete recording with accessible media metadata', async ({ page }, testInfo) => {
