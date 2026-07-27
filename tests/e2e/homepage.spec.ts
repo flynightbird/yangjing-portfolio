@@ -158,9 +158,9 @@ test.describe('portfolio homepage framework', () => {
       ).toHaveCount(2);
 
       await expect(page.locator('[data-project-kind="build-lab"]')).toHaveCount(1);
-      await expect(page.locator('[data-archive-card]')).toHaveCount(5);
+      await expect(page.locator('[data-archive-card]')).toHaveCount(4);
       await expect(page.locator('[data-archive-slot]')).toHaveCount(0);
-      await expect(page.locator('[data-cover-variant]')).toHaveCount(5);
+      await expect(page.locator('[data-cover-variant]')).toHaveCount(4);
       await expect(
         page.locator('[data-archive-card]').first().getByRole('button', {
           name: locale === 'zh' ? /打开项目图片: 躺平/ : /Open project image: Tangping/,
@@ -1011,7 +1011,7 @@ test.describe('portfolio homepage framework', () => {
     const scroller = archive.locator('[data-archive-scroller]');
     await archive.scrollIntoViewIfNeeded();
 
-    await expect(cards).toHaveCount(5);
+    await expect(cards).toHaveCount(4);
     const [archiveBox, firstBox, secondBox] = await Promise.all([
       archive.boundingBox(),
       cards.nth(0).boundingBox(),
@@ -1168,18 +1168,18 @@ test.describe('portfolio homepage framework', () => {
 
     await expect(previous).toBeDisabled();
     await expect(next).toBeEnabled();
-    await expect(archive.locator('[data-archive-position]')).toContainText('01 / 05');
+    await expect(archive.locator('[data-archive-position]')).toContainText('01 / 04');
     const before = await scroller.evaluate((element) => element.scrollLeft);
 
     await next.click();
     await expect
       .poll(() => scroller.evaluate((element) => element.scrollLeft))
       .toBeGreaterThan(before + 20);
-    await expect(archive.locator('[data-archive-position]')).toContainText('02 / 05');
+    await expect(archive.locator('[data-archive-position]')).toContainText('02 / 04');
 
     await previous.click();
     await expect(previous).toBeDisabled();
-    await expect(archive.locator('[data-archive-position]')).toContainText('01 / 05');
+    await expect(archive.locator('[data-archive-position]')).toContainText('01 / 04');
   });
 
   test('keeps the final Visual Archive card active at the end of the track', async ({
@@ -1198,76 +1198,13 @@ test.describe('portfolio homepage framework', () => {
     await next.click();
     await next.click();
     await next.click();
-    await next.click();
 
-    await expect(archive.locator('[data-archive-position]')).toContainText('05 / 05');
+    await expect(archive.locator('[data-archive-position]')).toContainText('04 / 04');
     await expect(archive.locator('[data-archive-card]').last()).toHaveAttribute(
       'data-active',
       'true',
     );
     await expect(next).toBeDisabled();
-  });
-
-  test('positions the Tongcheng title below its fish artwork', async ({
-    page,
-  }, testInfo) => {
-    test.skip(
-      testInfo.project.name !== 'desktop',
-      'Desktop establishes the approved cover composition geometry.',
-    );
-    await page.goto('/zh/', { waitUntil: 'networkidle' });
-
-    const archive = page.locator('[data-archive-carousel]');
-    const tongchengCard = archive.locator(
-      '[data-cover-variant="tongcheng-travel"]',
-    );
-    const stage = tongchengCard.locator('[class*="archiveStage"]');
-    const title = tongchengCard.getByRole('heading', { name: '同程旅游' });
-    await title.scrollIntoViewIfNeeded();
-
-    const [stageBox, titleBox, referenceFont, titleStyle] = await Promise.all([
-      stage.boundingBox(),
-      title.boundingBox(),
-      archive
-        .locator('[data-cover-variant="mr-chong"]')
-        .getByRole('heading', { name: 'MR CHONG' })
-        .evaluate((element) => getComputedStyle(element).fontSize),
-      title.evaluate((element) => {
-        const style = getComputedStyle(element);
-        return { color: style.color, fontSize: style.fontSize };
-      }),
-    ]);
-    expect(stageBox).not.toBeNull();
-    expect(titleBox).not.toBeNull();
-
-    const topRatio = ((titleBox?.y ?? 0) - (stageBox?.y ?? 0)) / (stageBox?.height ?? 1);
-    const leftRatio = ((titleBox?.x ?? 0) - (stageBox?.x ?? 0)) / (stageBox?.width ?? 1);
-    expect(topRatio).toBeGreaterThanOrEqual(0.64);
-    expect(topRatio).toBeLessThanOrEqual(0.76);
-    expect(leftRatio).toBeGreaterThanOrEqual(0.08);
-    expect(leftRatio).toBeLessThanOrEqual(0.18);
-    expect(titleStyle).toEqual({ color: 'rgb(255, 255, 255)', fontSize: referenceFont });
-  });
-
-  test('opens the Tongcheng gallery with crowdfunding first', async ({
-    page,
-  }, testInfo) => {
-    test.skip(
-      testInfo.project.name !== 'desktop',
-      'One desktop Lightbox viewport is sufficient.',
-    );
-    await page.goto('/zh/', { waitUntil: 'domcontentloaded' });
-
-    const trigger = page.getByRole('button', {
-      name: '打开项目图片: 同程旅游',
-    });
-    await trigger.scrollIntoViewIfNeeded();
-    await trigger.click();
-
-    await expect(page.getByRole('status', { name: '画廊位置: 01 / 04' })).toBeVisible();
-    await expect(page.getByRole('img', {
-      name: '众筹 2.0 旅游金融产品界面与转让数据',
-    }).first()).toBeVisible();
   });
 
   test('archive gallery restores desktop position and focus after keyboard navigation', async ({
@@ -1419,7 +1356,7 @@ test.describe('portfolio homepage framework', () => {
     const archive = page.locator('[data-archive-carousel]');
     await expect(
       archive.getByRole('button', { name: /^Open project image:/ }),
-    ).toHaveCount(5);
+    ).toHaveCount(4);
     const trigger = archive.getByRole('button', {
       name: 'Open project image: MR CHONG',
     });
