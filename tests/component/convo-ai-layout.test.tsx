@@ -6,7 +6,7 @@ import type { ContentMeta } from '@/content/schema';
 
 const meta = {
   type: 'work', slug: 'convo-ai', locale: 'en', translationKey: 'work.convo-ai',
-  title: 'ConvoAI', proposition: 'Make invisible real-time states legible.',
+  title: 'ConvoAI: Make real-time AI conversation legible', proposition: 'Make invisible real-time states legible.',
   role: 'Sole product design ownership', duration: 'Not disclosed',
   status: 'Formally launched', disclosure: 'Evidence boundary.',
   heroMedia: '/images/convo-ai/figma/web-ready.png', evidenceLevel: 'delivered',
@@ -18,12 +18,11 @@ describe('ConvoAiLayout', () => {
   it('renders the product theatre and shared chapter navigation without project neighbors', () => {
     const { container } = render(<ConvoAiLayout meta={meta} locale="en"><section id="context-thesis">Story</section></ConvoAiLayout>);
     expect(container.querySelector('[data-convo-ai-stage]')).toBeVisible();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/^ConvoAI$/);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/^ConvoAI: Make real-time AI conversation legible$/);
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
-    expect(container.querySelector('[data-stage-display-title]')).toHaveAttribute(
-      'aria-hidden',
-      'true',
-    );
+    expect(screen.getByRole('heading', { level: 1 })).toHaveAttribute('id', 'convo-ai-title-en');
+    expect(screen.getByRole('heading', { level: 1 }).closest('[data-convo-hero-copy]')).not.toBeNull();
+    expect(container.querySelector('[data-stage-display-title]')).not.toBeInTheDocument();
     expect(container.querySelector('[data-convo-next-section-hint]')).toBeVisible();
     expect(screen.getAllByRole('navigation', { name: 'Case study chapters' })).toHaveLength(1);
     expect(screen.getByRole('navigation', { name: 'Case study chapters' })).toBeVisible();
@@ -42,11 +41,14 @@ describe('ConvoAiLayout', () => {
     );
 
     const videos = Array.from(container.querySelectorAll('video'));
+    const stage = container.querySelector('[data-convo-ai-stage]');
     expect(videos).toHaveLength(2);
+    expect(stage).toHaveAttribute('aria-labelledby', 'convo-ai-title-en');
+    expect(stage).toHaveAttribute('aria-describedby', 'convo-ai-proposition-en');
     videos.forEach((video) => {
       const descriptionId = video.getAttribute('aria-describedby');
-      expect(descriptionId).toBeTruthy();
-      expect(container.querySelector(`#${descriptionId}`)).toHaveTextContent(
+      expect(descriptionId).toBe('convo-ai-proposition-en');
+      expect(container.querySelector(`[id="${descriptionId}"]`)).toHaveTextContent(
         'Make invisible real-time states legible.',
       );
     });
@@ -65,7 +67,7 @@ describe('ConvoAiLayout', () => {
       subtitle: '自由搭配 ASR、LLM、TTS、数字人等，快速搭建 AI 智能体。',
       factsLabel: '项目概况',
     },
-  ])('renders the $locale launch banner after facts and before the next-section hint', ({
+  ])('renders the $locale opening in the approved information and media order', ({
     locale,
     title,
     subtitle,
@@ -78,6 +80,9 @@ describe('ConvoAiLayout', () => {
     );
 
     const banner = container.querySelector('[data-convo-launch-banner]');
+    const heroTop = container.querySelector('[data-convo-hero-top]');
+    const heroMeta = container.querySelector('[data-convo-hero-meta]');
+    const heroMedia = container.querySelector('[data-convo-hero-media]');
     const facts = container.querySelector(`dl[aria-label="${factsLabel}"]`);
     const hint = container.querySelector('[data-convo-next-section-hint]');
 
@@ -86,10 +91,15 @@ describe('ConvoAiLayout', () => {
     expect(banner).toHaveAccessibleName(title);
     expect(banner).toHaveTextContent(title);
     expect(banner).toHaveTextContent(subtitle);
+    expect(heroTop).not.toBeNull();
+    expect(heroMeta).not.toBeNull();
+    expect(heroMedia).not.toBeNull();
     expect(facts).not.toBeNull();
+    expect(heroMeta).toContainElement(facts);
     expect(hint).not.toBeNull();
-    expect(facts!.compareDocumentPosition(banner!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
-    expect(banner!.compareDocumentPosition(hint!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(heroTop!.compareDocumentPosition(banner!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(banner!.compareDocumentPosition(heroMedia!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(heroMedia!.compareDocumentPosition(hint!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
 
     const artwork = banner!.querySelector('[data-convo-launch-artwork]');
     expect(artwork).toHaveAttribute('aria-hidden', 'true');
