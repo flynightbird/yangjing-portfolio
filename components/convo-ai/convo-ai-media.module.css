@@ -84,6 +84,10 @@
   border-radius: 28px;
 }
 
+.playlist[data-app-size='compact'] .evidence[data-platform='app'] .videoFrame {
+  --convo-app-short-edge: min(100cqi, 18rem);
+}
+
 :is(.videoFrame, .conversationWebMedia, .webPlane)[data-convo-media-frame][data-media-platform='web'] {
   max-width: 100%;
   height: auto;

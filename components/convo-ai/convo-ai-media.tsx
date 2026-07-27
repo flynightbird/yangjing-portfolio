@@ -69,7 +69,7 @@ function MediaError({ locale, onReload }: { readonly locale: Locale; readonly on
   return <div className={styles.mediaError} role="status" aria-live="polite"><AlertCircle aria-hidden="true" size={18} /><span>{locale === 'zh' ? '媒体暂时无法加载' : 'Media unavailable'}</span><button type="button" onClick={onReload}><RotateCcw aria-hidden="true" size={16} />{locale === 'zh' ? '重新加载' : 'Reload'}</button></div>;
 }
 
-export function ConvoAiPlaylist({ ids, locale }: { readonly ids: readonly ConvoAiMediaId[]; readonly locale: Locale }) {
+export function ConvoAiPlaylist({ ids, locale, appSize = 'standard' }: { readonly ids: readonly ConvoAiMediaId[]; readonly locale: Locale; readonly appSize?: 'standard' | 'compact' }) {
   const [activeId, setActiveId] = useState(ids[0]);
   const [failed, setFailed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -83,7 +83,7 @@ export function ConvoAiPlaylist({ ids, locale }: { readonly ids: readonly ConvoA
     setActiveId(ids[(activeIndex + offset + ids.length) % ids.length]);
   };
 
-  return <div className={styles.playlist} data-convo-ai-playlist>
+  return <div className={styles.playlist} data-convo-ai-playlist data-app-size={appSize}>
     <div className={styles.playlistSurface} data-playlist-surface data-tone={activeIndex % 4}>
       {hasMultipleItems ? <div className={styles.carouselHeader}>
         <div aria-live="polite" data-carousel-position><strong>{String(activeIndex + 1).padStart(2, '0')}</strong><span> / {String(ids.length).padStart(2, '0')}</span></div>
