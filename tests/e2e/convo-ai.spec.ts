@@ -41,6 +41,25 @@ async function expectCompleteVideo(video: Locator) {
   await expect(video).toHaveAttribute('aria-describedby', /.+/);
 }
 
+async function expectRenderedRatio(frame: Locator, expectedRatio: number) {
+  const size = await frame.evaluate((element) => ({
+    height: (element as HTMLElement).offsetHeight,
+    width: (element as HTMLElement).offsetWidth,
+  }));
+  expect(size.height).toBeGreaterThan(0);
+  expect(Math.abs(size.width / size.height - expectedRatio)).toBeLessThan(0.02);
+}
+
+async function expectInsideDocument(frame: Locator, page: Page) {
+  const [box, documentWidth] = await Promise.all([
+    frame.boundingBox(),
+    page.evaluate(() => document.documentElement.clientWidth),
+  ]);
+  expect(box).not.toBeNull();
+  expect(box!.x).toBeGreaterThanOrEqual(-1);
+  expect(box!.x + box!.width).toBeLessThanOrEqual(documentWidth + 1);
+}
+
 async function expectSourcesReachable(page: Page, sources: ReadonlySet<string>) {
   expect(sources.size).toBe(16);
   for (const source of sources) {
@@ -292,6 +311,35 @@ for (const locale of ['en', 'zh'] as const) {
       expect(phoneBox!.y).toBeGreaterThanOrEqual(cardBox!.y);
       expect(phoneBox!.y + phoneBox!.height).toBeLessThanOrEqual(cardBox!.y + cardBox!.height + 1);
       await page.screenshot({ path: `test-results/convo-ai-zh-${testInfo.project.name}.png`, fullPage: true });
+    });
+
+    test('sizes Web media by source ratio and keeps every media frame inside the viewport', async ({ page }, testInfo) => {
+      test.skip(locale !== 'zh', 'The Chinese page contains every responsive media composition.');
+      if (testInfo.project.name === 'mobile') {
+        await page.setViewportSize({ width: 375, height: 812 });
+      }
+
+      const heroWeb = page.locator('[data-convo-web-plane]').first();
+      const startWeb = page.locator('[data-convo-start-web] [data-convo-media-frame]');
+      const realtimeWeb = page.locator('[data-media-card="web-realtime-data"] [data-convo-media-frame]');
+
+      await expectRenderedRatio(heroWeb, 2486 / 1598);
+      await expectRenderedRatio(startWeb, 1291 / 816);
+      await expectRenderedRatio(realtimeWeb, 2486 / 1598);
+      await expect(realtimeWeb).toHaveCSS('max-height', 'none');
+      await expect(realtimeWeb.locator('xpath=..')).toHaveCSS('min-height', '0px');
+
+      if (testInfo.project.name === 'mobile') {
+        const frames = page.locator('[data-convo-media-frame]:visible');
+        const frameCount = await frames.count();
+        expect(frameCount).toBeGreaterThan(0);
+        for (let index = 0; index < frameCount; index += 1) {
+          await expectInsideDocument(frames.nth(index), page);
+        }
+        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
+          await page.evaluate(() => document.documentElement.clientWidth),
+        );
+      }
     });
 
     test('uses desktop scene commands to update the Chinese showcase forward and backward', async ({ page }, testInfo) => {
