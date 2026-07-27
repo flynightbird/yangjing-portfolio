@@ -3,6 +3,7 @@ import { StrictMode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ConvoAiAppShowcase, ConvoAiAvatarPair, ConvoAiConversationStart, ConvoAiPlaylist, ConvoAiStage, ConvoAiVoiceprintModes } from '@/components/convo-ai/convo-ai-media';
+import { getConvoAiMedia, getConvoAiMediaSizing } from '@/components/convo-ai/convo-ai-media-catalog';
 import { ConvoAiViewportVideo } from '@/components/convo-ai/convo-ai-video';
 
 class IntersectionObserverHarness {
@@ -101,6 +102,24 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 beforeEach(() => {
   vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => undefined);
   vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
+});
+
+describe('getConvoAiMediaSizing', () => {
+  it('describes source ratio and portrait orientation', () => {
+    expect(getConvoAiMediaSizing(getConvoAiMedia('app-login'))).toEqual({
+      aspectRatio: '592 / 1280',
+      orientation: 'portrait',
+      ratio: 592 / 1280,
+    });
+  });
+
+  it('describes landscape orientation without forcing a portrait ratio', () => {
+    expect(getConvoAiMediaSizing({ width: 1280, height: 592 })).toEqual({
+      aspectRatio: '1280 / 592',
+      orientation: 'landscape',
+      ratio: 1280 / 592,
+    });
+  });
 });
 
 describe('ConvoAiViewportVideo', () => {
