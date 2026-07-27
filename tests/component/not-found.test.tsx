@@ -27,6 +27,6 @@ describe('NotFound', () => {
 
     expect(footer).not.toBeNull();
     expect(footer?.querySelector('[data-footer-contacts]')).not.toBeNull();
-    expect(footer?.textContent).toContain('flydesigner_yangj');
+    expect(footer?.textContent).toContain('flydesigner-yj');
   });
 });

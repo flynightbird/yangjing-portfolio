@@ -86,7 +86,7 @@ test.describe('Xuelang case study', () => {
       })).toHaveAttribute('href', 'mailto:amanda.yangj@gmail.com');
       await expect(siteFooter.getByText('© 2026 Yang Jing')).toBeVisible();
       await expect(page.locator('main')).not.toContainText(
-        /yangux@qq\.com|amanda\.yangj@gmail\.com|flydesigner_yangj/,
+        /yangux@qq\.com|amanda\.yangj@gmail\.com|flydesigner-yj/,
       );
     });
   }

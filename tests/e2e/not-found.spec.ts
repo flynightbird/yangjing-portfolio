@@ -46,7 +46,7 @@ test('unknown routes show bilingual recovery navigation', async ({ page }) => {
   await expect(footer).toHaveCount(1);
   await expect(footer.locator('[data-footer-contacts]')).toBeVisible();
   await expect(footer.locator('[data-contact-capsule]')).toHaveCount(2);
-  await expect(footer.getByText('flydesigner_yangj')).toBeVisible();
+  await expect(footer.getByText('flydesigner-yj')).toBeVisible();
 });
 
 test('unregistered work routes return the real static 404 response', async ({

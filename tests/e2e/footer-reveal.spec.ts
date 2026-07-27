@@ -29,7 +29,7 @@ test.describe('homepage liquid Footer', () => {
       await expect(homepage).toHaveCSS('border-bottom-left-radius', '0px');
       await expect(contacts).toBeVisible();
       await expect(contacts.locator('[data-contact-capsule]')).toHaveCount(2);
-      await expect(contacts.getByText('flydesigner_yangj')).toBeVisible();
+      await expect(contacts.getByText('flydesigner-yj')).toBeVisible();
 
       await page.evaluate(() => {
         document.documentElement.style.scrollBehavior = 'auto';
@@ -155,7 +155,7 @@ test.describe('homepage liquid Footer', () => {
       await expect(footer).toHaveCount(1);
       await expect(contacts).toBeVisible();
       await expect(contacts.locator('[data-contact-capsule]')).toHaveCount(2);
-      await expect(contacts.getByText('flydesigner_yangj')).toBeVisible();
+      await expect(contacts.getByText('flydesigner-yj')).toBeVisible();
       await expect(footer.locator('[data-footer-liquid]')).toHaveCount(3);
     }
   });

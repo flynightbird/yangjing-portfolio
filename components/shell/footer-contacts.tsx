@@ -6,7 +6,7 @@ import { FooterCopyButton } from './footer-copy-button';
 import styles from './site-footer.module.css';
 
 const EMAIL = 'amanda.yangj@gmail.com';
-const WECHAT = 'flydesigner_yangj';
+const WECHAT = 'flydesigner-yj';
 
 const labels = {
   en: {

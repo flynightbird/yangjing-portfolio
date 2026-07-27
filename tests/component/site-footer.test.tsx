@@ -26,7 +26,7 @@ describe('SiteFooter', () => {
     expect(contacts).toBeInTheDocument();
     expect(container.querySelectorAll('[data-footer-contacts]')).toHaveLength(1);
     expect(contacts?.querySelectorAll('[data-contact-capsule]')).toHaveLength(2);
-    expect(within(contacts as HTMLElement).getByText('flydesigner_yangj')).toBeVisible();
+    expect(within(contacts as HTMLElement).getByText('flydesigner-yj')).toBeVisible();
     expect(
       within(contacts as HTMLElement).getByRole('link', {
         name: 'amanda.yangj@gmail.com',
@@ -63,7 +63,7 @@ describe('SiteFooter', () => {
 
     fireEvent.click(wechat);
     await act(async () => Promise.resolve());
-    expect(writeText).toHaveBeenLastCalledWith('flydesigner_yangj');
+    expect(writeText).toHaveBeenLastCalledWith('flydesigner-yj');
     expect(wechat.querySelector('[data-copy-icon="check"]')).toBeInTheDocument();
 
     act(() => vi.advanceTimersByTime(1800));
