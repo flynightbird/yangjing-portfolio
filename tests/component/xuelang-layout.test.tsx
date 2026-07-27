@@ -161,5 +161,13 @@ describe('XuelangLayout', () => {
       .toBeInTheDocument();
     expect(container.querySelector('img[src="/images/xuelang/learning-entry-ui.webp"]'))
       .not.toBeInTheDocument();
+    const contextStrip = container.querySelector('[data-case-stat-strip]');
+    expect(contextStrip).toBeInTheDocument();
+    expect(contextStrip).toHaveClass('xuelang-context-facts');
+    expect(contextStrip?.querySelectorAll('dl')).toHaveLength(1);
+    expect(contextStrip?.querySelectorAll('dd')).toHaveLength(3);
+    expect(contextStrip).toHaveTextContent('DAU 50w（约 50万）');
+    expect(contextStrip).toHaveTextContent('年度 GMV 300 亿');
+    expect(contextStrip).toHaveTextContent('交易完成 → 长期学习关系');
   });
 });

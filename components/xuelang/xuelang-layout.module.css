@@ -305,7 +305,6 @@
 }
 
 .content :global(.xuelang-journey),
-.content :global(.xuelang-context-facts),
 .content :global(.xuelang-problem-list) {
   grid-column: 1 / -1;
   display: grid;
@@ -343,30 +342,13 @@
 }
 
 .content :global(.xuelang-context-facts) {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  border-block: 1px solid var(--xuelang-line);
-}
-
-.content :global(.xuelang-context-facts div) {
-  padding: 1.5rem;
-  border-inline-start: 1px solid var(--xuelang-line);
-}
-
-.content :global(.xuelang-context-facts div:first-child) {
-  border-inline-start: 0;
-}
-
-.content :global(.xuelang-context-facts dt) {
-  color: var(--xuelang-portfolio-accent);
-  font-family: var(--xuelang-font-mono);
-  font-size: 0.6875rem;
-}
-
-.content :global(.xuelang-context-facts dd) {
-  margin: 1rem 0 0;
-  font-size: clamp(1.35rem, 2.4vw, 2.5rem);
-  font-weight: 600;
-  line-height: 1.15;
+  grid-column: 1 / -1;
+  margin-block-start: 3rem;
+  --case-stat-label-color: var(--xuelang-portfolio-accent);
+  --case-stat-value-color: var(--xuelang-ink);
+  --case-stat-line-color: var(--xuelang-line);
+  --case-stat-label-font: var(--xuelang-font-mono);
+  --case-stat-value-font: var(--xuelang-font-body);
 }
 
 .content :global(.xuelang-problem-list) {
@@ -579,13 +561,11 @@
   }
 
   .content :global(.xuelang-journey),
-  .content :global(.xuelang-context-facts),
   .content :global(.xuelang-problem-list) {
     display: block;
   }
 
-  .content :global(.xuelang-journey li),
-  .content :global(.xuelang-context-facts div) {
+  .content :global(.xuelang-journey li) {
     border-inline-start: 0;
     border-block-start: 1px solid var(--xuelang-line);
   }

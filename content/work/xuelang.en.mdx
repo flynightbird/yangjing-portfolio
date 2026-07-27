@@ -7,6 +7,7 @@ import {
   XuelangStandardMap,
 } from '@/components/xuelang/xuelang-evidence'
 import { XuelangContact } from '@/components/xuelang/xuelang-contact'
+import { CaseStatStrip } from '@/components/case-study/case-stat-strip'
 
 export const metadata = {
   type: 'work',
@@ -51,7 +52,15 @@ export const metadata = {
     <p className="lead">First purchases often happened on Douyin, while Xuelang mainly fulfilled courses. Sustainable growth required the platform to help people discover quality courses, judge value, and continue learning.</p>
     <p>The experience challenge shifted from selling efficiently to making quality recognizable, decisions easier, and learning more continuous. Return and repurchase remained future foundations, not claimed outcomes.</p>
   </div>
-  <dl className="xuelang-context-facts" aria-label="Business context"><div><dt>Platform scale</dt><dd>500K DAU</dd></div><div><dt>Business ambition</dt><dd>RMB 30B annual GMV</dd></div><div><dt>Experience shift</dt><dd>Transaction → Learning relationship</dd></div></dl>
+  <CaseStatStrip
+    label="Business context"
+    className="xuelang-context-facts"
+    items={[
+      { label: 'Platform scale', value: '500K DAU' },
+      { label: 'Business ambition', value: 'RMB 30B annual GMV' },
+      { label: 'Experience shift', value: 'Transaction → Learning relationship' },
+    ]}
+  />
 </section>
 
 <section id="problem">

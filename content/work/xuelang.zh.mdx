@@ -7,6 +7,7 @@ import {
   XuelangStandardMap,
 } from '@/components/xuelang/xuelang-evidence'
 import { XuelangContact } from '@/components/xuelang/xuelang-contact'
+import { CaseStatStrip } from '@/components/case-study/case-stat-strip'
 
 export const metadata = {
   type: 'work',
@@ -59,11 +60,15 @@ export const metadata = {
     <p className="lead">用户的首次购买常发生在抖音，学浪更多承担课程交付。平台要继续增长，不能只让交易完成，还要让用户在学浪发现好课、判断价值并持续学习。</p>
     <p>设计命题因此从“提高卖课效率”转向“让高品质课程可识别、可决策、可持续体验”，为复访与复购建立体验基础，但不把后续假设写成本阶段结果。</p>
   </div>
-  <dl className="xuelang-context-facts" aria-label="业务背景数据">
-    <div><dt>平台规模</dt><dd>DAU 50w（约 50万）</dd></div>
-    <div><dt>业务目标</dt><dd>年度 GMV 300 亿</dd></div>
-    <div><dt>体验转向</dt><dd>交易完成 → 长期学习关系</dd></div>
-  </dl>
+  <CaseStatStrip
+    label="业务背景数据"
+    className="xuelang-context-facts"
+    items={[
+      { label: '平台规模', value: 'DAU 50w（约 50万）' },
+      { label: '业务目标', value: '年度 GMV 300 亿' },
+      { label: '体验转向', value: '交易完成 → 长期学习关系' },
+    ]}
+  />
 </section>
 
 <section id="problem">
