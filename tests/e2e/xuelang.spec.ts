@@ -164,4 +164,59 @@ test.describe('Xuelang case study', () => {
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     )).toBeLessThanOrEqual(1);
   });
+
+  test('business facts preserve readable single lines before changing layout', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop');
+
+    const renderedLineCount = (selector: string) =>
+      page.locator(selector).evaluateAll((nodes) =>
+        nodes.map((node) => {
+          const range = document.createRange();
+          range.selectNodeContents(node);
+          const tops = Array.from(range.getClientRects())
+            .filter((rect) => rect.width > 0 && rect.height > 0)
+            .map((rect) => Math.round(rect.top));
+          return new Set(tops).size;
+        }),
+      );
+
+    await page.setViewportSize({ width: 1600, height: 1000 });
+    await page.goto('/zh/work/xuelang/', { waitUntil: 'networkidle' });
+    await page.evaluate(() => document.fonts.ready);
+
+    const strip = page.locator('[data-case-stat-strip]');
+    const list = strip.locator('dl');
+    await strip.scrollIntoViewIfNeeded();
+    await expect(strip).toBeVisible();
+    expect((await list.evaluate((node) => getComputedStyle(node).gridTemplateColumns)).split(' '))
+      .toHaveLength(3);
+    expect(await renderedLineCount('[data-case-stat-strip] dd')).toEqual([1, 1, 1]);
+
+    await page.setViewportSize({ width: 1024, height: 900 });
+    await expect
+      .poll(() => list.evaluate((node) => getComputedStyle(node).gridTemplateColumns))
+      .not.toContain(' ');
+    expect(await renderedLineCount('[data-case-stat-strip] dd')).toEqual([1, 1, 1]);
+    expect(await strip.locator('dd').first().evaluate(
+      (node) => parseFloat(getComputedStyle(node).fontSize),
+    )).toBeGreaterThanOrEqual(24);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect
+      .poll(() => strip.locator('dd').first().evaluate(
+        (node) => getComputedStyle(node).whiteSpace,
+      ))
+      .toBe('normal');
+    expect(await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    )).toBeLessThanOrEqual(1);
+
+    // A 720px CSS viewport is the layout width of a 1440px window at 200% zoom.
+    await page.setViewportSize({ width: 720, height: 900 });
+    expect(await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    )).toBeLessThanOrEqual(1);
+  });
 });
