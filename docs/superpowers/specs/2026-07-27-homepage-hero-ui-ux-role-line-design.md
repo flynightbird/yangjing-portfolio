@@ -21,7 +21,7 @@ Clarify the designer identity in the homepage hero without changing its layout l
 - Pass that field through `DualIdentityHero` into `HeroMotion`.
 - Render it as a separate paragraph after the designer summary.
 - Add a dedicated class for spacing while inheriting the existing summary typography and color.
-- Preserve responsive behavior at all existing breakpoints.
+- Preserve responsive behavior at all existing breakpoints. At the narrow breakpoint where hero body copy is intentionally hidden, hide both the summary and role line together.
 
 ## Out Of Scope
 
@@ -32,5 +32,5 @@ Clarify the designer identity in the homepage hero without changing its layout l
 ## Verification
 
 - Component tests confirm both localized summaries and role lines.
-- Browser checks confirm the role line is visible without overlap on desktop, tablet, and mobile.
+- Browser checks confirm the role line is visible without overlap on desktop and tablet, and remains hidden with the existing hero body copy on narrow mobile layouts.
 - Existing homepage tests continue to pass.
