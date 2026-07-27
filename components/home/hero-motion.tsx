@@ -27,6 +27,7 @@ interface HeroMotionProps {
   readonly designerRoleLabel: string;
   readonly builderRoleLabel: string;
   readonly designerSummary: string;
+  readonly designerCredit: string;
   readonly builderSummary: string;
   readonly portraitLabel: string;
 }
@@ -59,6 +60,7 @@ export function HeroMotion({
   designerRoleLabel,
   builderRoleLabel,
   designerSummary,
+  designerCredit,
   builderSummary,
   portraitLabel,
 }: HeroMotionProps) {
@@ -453,6 +455,9 @@ export function HeroMotion({
           {designerRole[1]}
         </h2>
         <p>{designerSummary}</p>
+        <p className={styles.designerCredit} data-designer-credit>
+          {designerCredit}
+        </p>
       </div>
 
       <div className={`${styles.heroRole} ${styles.builderRole}`}>

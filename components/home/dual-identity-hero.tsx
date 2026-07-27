@@ -20,6 +20,7 @@ export function DualIdentityHero({ locale }: DualIdentityHeroProps) {
       designerRoleLabel={copy.designerRole}
       builderRoleLabel={copy.builderRole}
       designerSummary={copy.designerSummary}
+      designerCredit={copy.designerCredit}
       builderSummary={copy.builderSummary}
       portraitLabel={copy.portraitLabel}
     />

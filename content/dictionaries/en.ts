@@ -35,6 +35,7 @@ export interface Dictionary {
       designerRole: string;
       builderRole: string;
       designerSummary: string;
+      designerCredit: string;
       builderSummary: string;
       portraitDraft: string;
       portraitLabel: string;
@@ -183,6 +184,7 @@ export const enDictionary = {
       builderRole: 'AI-native Builder',
       designerSummary:
         'Designing at consumer scale and across complex AI and B2B systems.',
+      designerCredit: 'UI / UX Designer',
       builderSummary:
         'Using Vibe Coding to prototype, test, and ship working experiences.',
       portraitDraft: 'Portrait awaiting approved photography',

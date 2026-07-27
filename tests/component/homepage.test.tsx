@@ -27,6 +27,12 @@ describe('DualIdentityHero', () => {
     expect(
       screen.getByRole('heading', { level: 2, name: 'AI-native Builder' }),
     ).toBeVisible();
+    expect(
+      screen.getByText('Designing at consumer scale and across complex AI and B2B systems.'),
+    ).toBeVisible();
+    expect(container.querySelector('[data-designer-credit]')).toHaveTextContent(
+      'UI / UX Designer',
+    );
 
     const portraitScene = container.querySelector('[data-media="portrait"]');
     expect(portraitScene).toBeInTheDocument();
@@ -67,14 +73,17 @@ describe('DualIdentityHero', () => {
     expect(container.querySelector('[data-designer-art="material-blueprint"]')).toBeInTheDocument();
   });
 
-  it('keeps the role titles in English in the Chinese locale', () => {
-    render(<DualIdentityHero locale="zh" />);
+  it('keeps the role titles in English and localizes the designer copy in Chinese', () => {
+    const { container } = render(<DualIdentityHero locale="zh" />);
 
     expect(screen.getByRole('heading', { level: 2, name: 'Product Designer' })).toBeVisible();
     expect(screen.getByRole('heading', { level: 2, name: 'AI-native Builder' })).toBeVisible();
     expect(
-      screen.getByText('把复杂产品理清，再把关键判断做成可体验、可验证的产品。'),
+      screen.getByText('专注于 C 端产品，以及复杂的 B2B 与 AI 系统设计。'),
     ).toBeVisible();
+    expect(container.querySelector('[data-designer-credit]')).toHaveTextContent(
+      'UI / UX 设计师',
+    );
     expect(
       screen.getByText(
         '用 Vibe Coding 快速搭建可运行原型，让产品思路更早进入体验和讨论。',

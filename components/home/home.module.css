@@ -223,6 +223,10 @@
   line-height: 1.5;
 }
 
+.heroRole .designerCredit {
+  margin-block-start: 1.5em;
+}
+
 .builderRole p {
   margin-inline-start: auto;
 }
