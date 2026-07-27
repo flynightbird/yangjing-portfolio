@@ -25,7 +25,7 @@ for (const locale of ['en', 'zh'] as const) {
 
       expect(ids).toEqual(chapterIds);
       await expect(page.getByText(
-        locale === 'zh' ? '唯一产品设计师' : 'Sole Product Designer',
+        locale === 'zh' ? '独立负责产品设计' : 'Sole Product Designer',
         { exact: true },
       )).toBeVisible();
       await expect(page.getByText(

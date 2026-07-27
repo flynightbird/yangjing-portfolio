@@ -11,7 +11,7 @@ for (const locale of ['en', 'zh'] as const) {
     test('renders the approved productization story', async ({ page }) => {
       await expect(page.locator('[data-call-agent-case] article[data-case-study]')).toBeVisible();
       expect(await page.locator('article[data-case-study] > section').evaluateAll((sections) => sections.map(({ id }) => id))).toEqual(chapterIds);
-      await expect(page.getByText(locale === 'zh' ? '独立负责从 0 到 1 的产品设计' : 'Independent 0-to-1 product design owner', { exact: true })).toBeVisible();
+      await expect(page.getByText(locale === 'zh' ? '独立负责产品设计' : 'Independent 0-to-1 product design owner', { exact: true })).toBeVisible();
       await expect(page.getByText(locale === 'zh' ? '正式上线' : 'Formally launched', { exact: true })).toBeVisible();
       await expect(page.locator('body')).not.toContainText(/有限灰度|尚未规模验证|约 8 次迭代|limited customer beta|not yet validated|approximately 8 iterations/i);
     });
