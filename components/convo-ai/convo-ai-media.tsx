@@ -205,10 +205,35 @@ export function ConvoAiInlineHeading({ kind, children }: { readonly kind: keyof 
   </h2>;
 }
 
-export function ConvoAiStage({ locale, eyebrow, title, description, webId, appId, hero = false }: { readonly locale: Locale; readonly eyebrow: string; readonly title: string; readonly description: string; readonly webId: ConvoAiMediaId; readonly appId: ConvoAiMediaId; readonly hero?: boolean }) {
+type ConvoAiStageProps = {
+  readonly locale: Locale;
+  readonly eyebrow: string;
+  readonly title: string;
+  readonly description: string;
+  readonly webId: ConvoAiMediaId;
+  readonly appId: ConvoAiMediaId;
+  readonly hero?: boolean;
+  readonly mediaOnly?: boolean;
+  readonly labelledBy?: string;
+  readonly describedBy?: string;
+};
+
+export function ConvoAiStage({
+  locale,
+  eyebrow,
+  title,
+  description,
+  webId,
+  appId,
+  hero = false,
+  mediaOnly = false,
+  labelledBy,
+  describedBy,
+}: ConvoAiStageProps) {
   const [activePlatform, setActivePlatform] = useState<'web' | 'app' | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const descriptionId = useId();
+  const activeDescriptionId = mediaOnly && describedBy ? describedBy : descriptionId;
   const webMedia = getConvoAiMedia(webId);
   const appMedia = getConvoAiMedia(appId);
   const SemanticHeading = hero ? 'h1' : 'h3';
@@ -221,16 +246,16 @@ export function ConvoAiStage({ locale, eyebrow, title, description, webId, appId
   };
   const resetTilt = () => { stageRef.current?.style.setProperty('--stage-x', '0deg'); stageRef.current?.style.setProperty('--stage-y', '0deg'); };
 
-  return <div ref={stageRef} className={styles.stage} data-convo-ai-stage data-active-platform={activePlatform ?? 'posters'} data-hero={hero ? 'true' : 'false'} onPointerMove={updateTilt} onPointerLeave={resetTilt}>
-    <div className={styles.stageCopy}>
+  return <div ref={stageRef} className={styles.stage} data-convo-ai-stage data-active-platform={activePlatform ?? 'posters'} data-hero={hero ? 'true' : 'false'} aria-labelledby={mediaOnly ? labelledBy : undefined} aria-describedby={mediaOnly ? describedBy : undefined} onPointerMove={updateTilt} onPointerLeave={resetTilt}>
+    {mediaOnly ? null : <div className={styles.stageCopy}>
       <p>{eyebrow}</p>
       <span className={styles.stageDisplayTitle} data-stage-display-title aria-hidden="true">{title}</span>
       <SemanticHeading className={styles.stageSemanticTitle} data-stage-semantic-title>{title}</SemanticHeading>
       <div id={descriptionId}>{description}</div>
-    </div>
+    </div>}
     <div className={styles.terrain} aria-hidden="true"><i /><i /><i /></div>
-    <div className={styles.webPlane} data-convo-web-plane {...mediaSizingProps(webMedia)}><ConvoAiViewportVideo id={webId} locale={locale} describedBy={descriptionId} /></div>
-    <div className={styles.appDevice} data-convo-app-device {...mediaSizingProps(appMedia)}><div><ConvoAiViewportVideo id={appId} locale={locale} describedBy={descriptionId} /></div></div>
+    <div className={styles.webPlane} data-convo-web-plane {...mediaSizingProps(webMedia)}><ConvoAiViewportVideo id={webId} locale={locale} describedBy={activeDescriptionId} /></div>
+    <div className={styles.appDevice} data-convo-app-device {...mediaSizingProps(appMedia)}><div><ConvoAiViewportVideo id={appId} locale={locale} describedBy={activeDescriptionId} /></div></div>
     <div className={styles.stageControls}><button type="button" onClick={() => setActivePlatform('web')}><Monitor aria-hidden="true" size={17} />{locale === 'zh' ? '聚焦 Web 录屏' : 'Focus Web recording'}</button><button type="button" onClick={() => setActivePlatform('app')}><Smartphone aria-hidden="true" size={17} />{locale === 'zh' ? '聚焦 App 录屏' : 'Focus App recording'}</button></div>
   </div>;
 }

@@ -434,26 +434,36 @@ describe('ConvoAiStage', () => {
     expect(container.querySelector('[data-convo-app-device] video')).toBeInTheDocument();
   });
 
-  it('uses the shared project heading role only for the hero stage', () => {
+  it('uses external project copy to label a media-only hero stage', () => {
     const { container } = render(
-      <ConvoAiStage
-        locale="en"
-        eyebrow="Agora / shipped product"
-        title="ConvoAI"
-        description="A live AI conversation system."
-        webId="web-join-exit"
-        appId="app-conversation-start"
-        hero
-      />,
+      <>
+        <h1 id="external-title">ConvoAI full project title</h1>
+        <p id="external-description">External proposition</p>
+        <ConvoAiStage
+          locale="en"
+          eyebrow="Agora / shipped product"
+          title="ConvoAI"
+          description="Internal description"
+          webId="web-join-exit"
+          appId="app-conversation-start"
+          hero
+          mediaOnly
+          labelledBy="external-title"
+          describedBy="external-description"
+        />
+      </>,
     );
 
-    expect(
-      screen.getByRole('heading', { level: 1, name: 'ConvoAI' }),
-    ).toHaveAttribute('data-stage-semantic-title');
-    expect(screen.queryByRole('heading', { level: 3 })).toBeNull();
-    expect(container.querySelectorAll('[data-stage-display-title]')).toHaveLength(
-      1,
-    );
+    const stage = container.querySelector('[data-convo-ai-stage]')!;
+    const videos = Array.from(stage.querySelectorAll('video'));
+    expect(stage).toHaveAttribute('aria-labelledby', 'external-title');
+    expect(stage).toHaveAttribute('aria-describedby', 'external-description');
+    expect(stage.querySelector('[data-stage-semantic-title]')).not.toBeInTheDocument();
+    expect(stage.querySelector('[data-stage-display-title]')).not.toBeInTheDocument();
+    expect(videos).toHaveLength(2);
+    videos.forEach((video) => {
+      expect(video).toHaveAttribute('aria-describedby', 'external-description');
+    });
   });
 });
 
