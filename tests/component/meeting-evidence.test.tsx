@@ -109,20 +109,23 @@ describe('Meeting showcase media', () => {
     ]);
   });
 
-  it('adds a visual-only popup expression card beneath the consistency controls', () => {
+  it('renders the popup details as four equal inline proofs without a framed board shell', () => {
     const { container } = render(<MeetingPolishShowcase locale="en" />);
-    const popupCard = container.querySelector('[data-meeting-popup-expression]');
-    const supportCards = container.querySelectorAll('[data-meeting-popup-layer="support"]');
-    const leadCards = container.querySelectorAll('[data-meeting-popup-layer="lead"]');
-    const popupImages = Array.from(container.querySelectorAll('[data-meeting-popup-card] img')).map((image) =>
+    const strip = container.querySelector('[data-meeting-popup-expression]');
+    const cards = container.querySelectorAll('[data-meeting-popup-card]');
+    const mainCard = container.querySelector('[data-meeting-popup-role="main"]');
+    const supportCards = container.querySelectorAll('[data-meeting-popup-role="support"]');
+    const guide = container.querySelector('[data-meeting-popup-guides]');
+    const images = Array.from(container.querySelectorAll('[data-meeting-popup-card] img')).map((image) =>
       image.getAttribute('src'),
     );
 
-    expect(popupCard).not.toBeNull();
-    expect(supportCards).toHaveLength(2);
-    expect(leadCards).toHaveLength(2);
-    expect(container.querySelectorAll('[data-meeting-popup-card]')).toHaveLength(4);
-    expect(popupImages).toEqual([
+    expect(strip).not.toBeNull();
+    expect(cards).toHaveLength(4);
+    expect(mainCard).toBeNull();
+    expect(supportCards).toHaveLength(0);
+    expect(guide).not.toBeNull();
+    expect(images).toEqual([
       '/images/meeting/meeting-popup-groups.png',
       '/images/meeting/meeting-popup-host.png',
       '/images/meeting/meeting-popup-camera.png',

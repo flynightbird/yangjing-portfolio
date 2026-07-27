@@ -398,7 +398,7 @@
 }
 
 .capabilityGroup:last-of-type {
-  margin-block-end: clamp(2.75rem, 5vw, 4.5rem);
+  margin-block-end: clamp(0.8rem, 1.5vw, 1.15rem);
 }
 
 .capabilityGroupHeader {
@@ -425,144 +425,99 @@
 
 .popupExpressionCard {
   position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  min-height: clamp(23rem, 40vw, 27rem);
-  padding: clamp(1.1rem, 2vw, 1.5rem);
+  width: min(100%, 61rem);
+  margin-top: clamp(0.1rem, 0.35vw, 0.25rem);
+  padding: 0.35rem 0.2rem 0;
   border: 0;
-  border-radius: 1.25rem;
-  background:
-    radial-gradient(circle at 50% 62%, rgba(98, 92, 255, 0.28), transparent 18%),
-    radial-gradient(circle at 50% 34%, rgba(118, 96, 255, 0.14), transparent 32%),
-    linear-gradient(180deg, #05070b 0%, #0a0d13 44%, #0e1219 100%);
+  background: transparent;
 }
 
-.popupExpressionGlow {
+.popupExpressionGuides {
   position: absolute;
-  inset: 8% 15% 2%;
+  inset: 0.1rem 0.2rem 0.2rem;
   pointer-events: none;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle, rgba(118, 94, 255, 0.36) 0%, rgba(118, 94, 255, 0.18) 24%, rgba(118, 94, 255, 0.04) 52%, transparent 72%);
-  filter: blur(42px);
-  opacity: 0.9;
+  background-image:
+    linear-gradient(rgba(17, 17, 17, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 17, 17, 0.05) 1px, transparent 1px);
+  background-size: 100% 5.4rem, 5.4rem 100%;
+  background-position: top left;
+  opacity: 0.18;
+}
+
+.popupGuideVertical,
+.popupGuideHorizontal {
+  position: absolute;
+  background: rgba(17, 17, 17, 0.02);
+  opacity: 0;
+}
+
+.popupGuideVertical {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+}
+
+.popupGuideHorizontal {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+}
+
+.popupExpressionLabel {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  margin-bottom: 0.72rem;
+}
+
+.popupExpressionLabel span {
+  color: #8f8d89;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .popupExpressionGrid {
   position: relative;
   z-index: 1;
-  min-height: clamp(21rem, 35vw, 24rem);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.62rem, 0.85vw, 0.82rem);
+  align-items: start;
 }
 
 .popupExpressionItem {
-  position: absolute;
-  --popup-x: 0rem;
-  --popup-y: 0rem;
-  --popup-rotate: 0deg;
-  --popup-scale: 1;
-  --popup-hover-lift: -0.42rem;
-  transform: translate3d(var(--popup-x), var(--popup-y), 0)
-    rotate(var(--popup-rotate))
-    scale(var(--popup-scale));
-  transform-origin: center center;
-  transition:
-    transform 220ms ease,
-    filter 220ms ease;
+  position: relative;
+  width: 100%;
+  transition: transform 220ms ease, box-shadow 220ms ease;
 }
 
 .popupExpressionItem img {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 1rem;
-  filter: drop-shadow(0 1rem 1.8rem rgba(5, 7, 15, 0.3));
-  transition: filter 220ms ease;
-}
-
-.popupExpressionItem[data-card='groups'] {
-  z-index: 1;
-  width: clamp(9.4rem, 16vw, 10.9rem);
-  top: 1.1rem;
-  left: 1rem;
-  --popup-x: 0rem;
-  --popup-y: 0rem;
-  --popup-rotate: -5deg;
-  opacity: 0.76;
-}
-
-.popupExpressionItem[data-card='host'] {
-  z-index: 1;
-  width: clamp(9.2rem, 15.8vw, 10.7rem);
-  top: 0.8rem;
-  right: 1.05rem;
-  --popup-x: 0rem;
-  --popup-y: 0rem;
-  --popup-rotate: 4.1deg;
-  opacity: 0.78;
-}
-
-.popupExpressionItem[data-card='camera'] {
-  z-index: 3;
-  width: clamp(12.6rem, 22vw, 14.8rem);
-  left: 18%;
-  bottom: 0.2rem;
-  --popup-x: 0rem;
-  --popup-y: 0rem;
-  --popup-rotate: -2deg;
-}
-
-.popupExpressionItem[data-card='microphone'] {
-  z-index: 2;
-  width: clamp(11.7rem, 20vw, 13.8rem);
-  right: 14%;
-  bottom: 0.9rem;
-  --popup-x: 0rem;
-  --popup-y: 0rem;
-  --popup-rotate: 2.65deg;
-}
-
-.popupExpressionItem[data-card='groups'] img,
-.popupExpressionItem[data-card='host'] img {
-  filter:
-    saturate(0.88)
-    brightness(0.92)
-    contrast(0.98)
-    drop-shadow(0 0.9rem 1.55rem rgba(6, 8, 16, 0.2));
-}
-
-.popupExpressionItem[data-card='camera'] img,
-.popupExpressionItem[data-card='microphone'] img {
-  filter:
-    saturate(1)
-    contrast(1.01)
-    drop-shadow(0 1.35rem 2.2rem rgba(6, 8, 18, 0.34));
-}
-
-.popupExpressionItem[data-preview-active='true'] {
-  z-index: 6;
-  --popup-y: var(--popup-hover-lift);
-  --popup-scale: 1.035;
-}
-
-.popupExpressionItem[data-preview-active='true'] img {
-  filter:
-    saturate(1.02)
-    contrast(1.02)
-    drop-shadow(0 1.75rem 2.7rem rgba(6, 8, 18, 0.42));
+  border: 1px solid rgba(17, 17, 17, 0.07);
+  border-radius: 0.6rem;
+  background: #fdfdfc;
+  box-shadow:
+    0 1px 2px rgba(17, 17, 17, 0.02),
+    0 6px 16px rgba(17, 17, 17, 0.02);
+  transition: box-shadow 220ms ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .popupExpressionCard:hover .popupExpressionItem:hover {
-    z-index: 6;
-    --popup-y: var(--popup-hover-lift);
-    --popup-scale: 1.035;
+  .popupExpressionItem:hover {
+    z-index: 2;
+    transform: translateY(-0.08rem);
   }
 
-  .popupExpressionCard:hover .popupExpressionItem:hover img {
-    filter:
-      saturate(1.02)
-      contrast(1.02)
-      drop-shadow(0 1.75rem 2.7rem rgba(6, 8, 18, 0.42));
+  .popupExpressionItem:hover img {
+    box-shadow:
+      0 2px 4px rgba(17, 17, 17, 0.026),
+      0 8px 18px rgba(17, 17, 17, 0.03);
   }
 }
 
@@ -589,14 +544,6 @@
 
   .phoneGrid[data-columns='4'] > * {
     width: min(100%, 15.75rem);
-  }
-
-  .popupExpressionItem[data-card='camera'] {
-    left: 14%;
-  }
-
-  .popupExpressionItem[data-card='microphone'] {
-    right: 10.5%;
   }
 }
 
@@ -634,33 +581,16 @@
   }
 
   .popupExpressionCard {
-    min-height: auto;
-    padding: 1rem;
+    padding-top: 0.15rem;
   }
 
-  .popupExpressionGlow {
-    inset: 12% 8% 10%;
-    filter: blur(34px);
+  .popupExpressionGuides {
+    background-size: 100% 4.6rem, 4.6rem 100%;
   }
 
   .popupExpressionGrid {
-    display: grid;
-    min-height: auto;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.8rem;
-  }
-
-  .popupExpressionItem {
-    position: relative;
-  }
-
-  .popupExpressionItem[data-card='groups'],
-  .popupExpressionItem[data-card='host'],
-  .popupExpressionItem[data-card='camera'],
-  .popupExpressionItem[data-card='microphone'] {
-    width: 100%;
-    inset: auto;
-    transform: none;
+    gap: 0.72rem;
   }
 
   .orientationCompare {
@@ -682,6 +612,12 @@
 
   .phoneViewport {
     border-radius: 1.16rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .popupExpressionGrid {
+    grid-template-columns: 1fr;
   }
 }
 

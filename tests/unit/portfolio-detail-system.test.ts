@@ -566,20 +566,23 @@ describe('portfolio detail visual system', () => {
     );
   });
 
-  it('styles the Meeting popup expression as a dark poster composition', () => {
+  it('styles the Meeting popup as an equal-width inline proof strip', () => {
     const css = read('components/meeting/meeting-showcase.module.css');
     const popupCard = ruleBlock(css, '.popupExpressionCard');
-    const popupGlow = ruleBlock(css, '.popupExpressionGlow');
-    const popupLead = ruleBlock(
+    const popupGuides = ruleBlock(css, '.popupExpressionGuides');
+    const popupGrid = ruleBlock(css, '.popupExpressionGrid');
+    const popupItem = ruleBlock(
       css,
-      ".popupExpressionItem[data-card='camera']",
+      '.popupExpressionItem',
     );
 
     expect(popupCard).toContain('border: 0;');
-    expect(popupCard).toContain('linear-gradient(180deg, #05070b 0%, #0a0d13 44%, #0e1219 100%);');
-    expect(popupGlow).toContain('filter: blur(42px);');
-    expect(popupLead).toContain('width: clamp(12.6rem, 22vw, 14.8rem);');
-    expect(css).not.toContain('.popupGhost');
+    expect(popupCard).toContain('background: transparent;');
+    expect(popupGuides).toContain('linear-gradient(rgba(17, 17, 17, 0.05) 1px, transparent 1px)');
+    expect(popupGrid).toContain("grid-template-columns: repeat(4, minmax(0, 1fr));");
+    expect(popupItem).toContain('position: relative;');
+    expect(popupItem).toContain('width: 100%;');
+    expect(css).not.toContain("[data-meeting-popup-role='main']");
   });
 
   it('maps Xuelang headings to the shared semantic roles', () => {
