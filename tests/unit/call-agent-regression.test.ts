@@ -33,7 +33,7 @@ describe('Call Agent native content registry', () => {
             : 'Call Agent: turn conversational AI into an enterprise-operated product',
         role:
           locale === 'zh'
-            ? '独立负责从 0 到 1 的产品设计'
+            ? '独立负责产品设计'
             : 'Independent 0-to-1 product design owner',
         status: locale === 'zh' ? '正式上线' : 'Formally launched',
         heroMedia: '/images/call-agent/agent-preview-poster.webp',
