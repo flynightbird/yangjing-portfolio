@@ -29,6 +29,10 @@ const projectRoot = process.cwd();
 const fullCommit = 'e5e840af62622123380bb0ef9d016b8da71cfb1c';
 const execFileAsync = promisify(execFile);
 const temporaryDirectories: string[] = [];
+const upstreamRemoteFontTags =
+  '  <link rel="preconnect" href="https://fonts.googleapis.com" />\n' +
+  '  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />\n' +
+  '  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />\n';
 const sourceMappings = [
   ['index.html', 'index.html'],
   ['styles.css', 'styles.css'],
@@ -92,6 +96,10 @@ async function createSourceFixture() {
     );
     if (published === 'index.html') {
       const upstreamHtml = (await readFile(publishedPath, 'utf8'))
+        .replace(
+          '  <title>STT · Realtime Demo</title>\n',
+          `  <title>STT · Realtime Demo</title>\n${upstreamRemoteFontTags}`,
+        )
         .replace(
           /^\s*<link rel="stylesheet" href="stage-embed\.css" \/>\n/m,
           '',
@@ -252,6 +260,8 @@ describe('STT demo source provenance', () => {
     expect(html).toBe(firstInstalledHtml);
     expect(html.match(/stage-embed\.css/g)).toHaveLength(1);
     expect(html.match(/stage-embed\.js/g)).toHaveLength(1);
+    expect(html).not.toContain('fonts.googleapis.com');
+    expect(html).not.toContain('fonts.gstatic.com');
     expect(await readFile(resolve(demoRoot, 'app.js'))).toEqual(originalApp);
     expect(await readFile(resolve(demoRoot, 'styles.css'))).toEqual(
       originalStyles,

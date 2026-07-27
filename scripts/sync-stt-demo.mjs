@@ -56,6 +56,8 @@ const adapterFiles = ['stage-embed.css', 'stage-embed.js'];
 const adapterTags =
   '  <link rel="stylesheet" href="stage-embed.css" />\n' +
   '  <script src="stage-embed.js"></script>\n';
+const remoteFontTagPattern =
+  /^[ \t]*<link\b[^>]*href="https:\/\/fonts\.(?:googleapis|gstatic)\.com[^"]*"[^>]*\/?>\r?\n/gm;
 
 function isInside(parent, candidate) {
   const relative = path.relative(parent, candidate);
@@ -157,10 +159,12 @@ export async function installLocalSttAdaptation({
     );
     const indexPath = path.join(stagedRoot, 'index.html');
     const html = await fileSystem.readFile(indexPath, 'utf8');
-    const clean = html.replace(
-      /^(?:[ \t]*\r?\n)?[ \t]*<link rel="stylesheet" href="stage-embed\.css" \/>\r?\n[ \t]*<script src="stage-embed\.js"><\/script>\r?\n/m,
-      '',
-    );
+    const clean = html
+      .replace(remoteFontTagPattern, '')
+      .replace(
+        /^(?:[ \t]*\r?\n)?[ \t]*<link rel="stylesheet" href="stage-embed\.css" \/>\r?\n[ \t]*<script src="stage-embed\.js"><\/script>\r?\n/m,
+        '',
+      );
     await fileSystem.writeFile(
       indexPath,
       clean.replace('</head>', `${adapterTags}</head>`),
