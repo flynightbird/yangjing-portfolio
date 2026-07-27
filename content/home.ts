@@ -471,7 +471,7 @@ export const archiveProjects = [
     },
     description: {
       en: 'Created an extensible brand IP for Tongcheng Travel, including the 3D character, motion, and visual expression.',
-      zh: '为同程旅游某业务线打造可延展的品牌 IP，并完成三维角色、动作与视觉表达。',
+      zh: '为同程旅游某业务线设计可延展的品牌 IP，并完成三维角色、动作与视觉表达。',
     },
     skills: ['IP Design', '3D', 'C4D'],
     coverVariant: 'mr-chong',

@@ -18,6 +18,11 @@ afterEach(() => {
 });
 
 describe('SiteFooter', () => {
+  it('uses the approved direct Chinese invitation', () => {
+    render(<SiteFooter locale="zh" />);
+
+    expect(screen.getByText('聊聊产品、AI，或一个还没被讲清的问题。')).toBeVisible();
+  });
   it.each(['en', 'zh'] as const)('renders one shared contact surface in %s', (locale) => {
     const { container } = render(<SiteFooter locale={locale} />);
     const contacts = container.querySelector('[data-footer-contacts]');

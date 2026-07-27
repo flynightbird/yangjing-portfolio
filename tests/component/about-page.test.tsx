@@ -119,15 +119,16 @@ describe('AboutPage', () => {
 
     expectAboutRevealStructure(container, [
       '我解决的设计问题',
-      '设计价值，不止于屏幕',
+      '让设计进入产品结果',
       '一步一步，走到现在',
     ]);
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: 'AI 原生产品设计师，让产品判断成为可体验的现实。',
+        name: '把复杂问题理清，再把判断做成真实体验。',
       }),
     ).toBeVisible();
+    expect(screen.getByText('产品设计师（UI/UX），专注 AI 与复杂系统')).toBeVisible();
     expect(screen.getByText('可独立完成体验验证')).toBeVisible();
     expect(
       screen.getByText('通过 Codex、Claude 快速搭建涵盖产品逻辑的交互式 HTML'),

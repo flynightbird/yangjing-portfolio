@@ -10,8 +10,8 @@ interface SiteFooterProps {
 export function SiteFooter({ locale }: SiteFooterProps) {
   const copy = locale === 'zh'
     ? {
-        eyebrow: '有一个值得实现的想法？',
-        title: '让我们一起把它变成真实体验。',
+        eyebrow: '保持联系',
+        title: '聊聊产品、AI，或一个还没被讲清的问题。',
       }
     : {
         eyebrow: 'Have an idea worth making real?',
