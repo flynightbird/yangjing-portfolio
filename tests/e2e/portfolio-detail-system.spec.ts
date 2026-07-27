@@ -52,7 +52,7 @@ const roleCases = [
 
 const convoRoleCases = {
   zh: [
-    ['[data-convo-ai-stage][data-hero="true"] [data-stage-semantic-title]', 58],
+    ['[data-convo-hero-copy] h1', 58],
     ['[data-convo-ai-case] .section-heading h2', 50],
     ['[data-convo-ai-case] .convo-subheading', 36],
     [
@@ -61,7 +61,7 @@ const convoRoleCases = {
     ],
   ],
   en: [
-    ['[data-convo-ai-stage][data-hero="true"] [data-stage-semantic-title]', 58],
+    ['[data-convo-hero-copy] h1', 58],
     ['[data-convo-ai-case] .section-heading h2', 50],
     [
       '[data-convo-ai-stage]:not([data-hero="true"]) [data-stage-semantic-title]',
@@ -173,15 +173,14 @@ test.describe('portfolio detail system', () => {
 
         const root = page.locator('[data-convo-ai-case]');
         const heroStage = root.locator('[data-convo-ai-stage]').first();
-        const displayTitle = root.locator('[data-stage-display-title]').first();
-        const projectTitle = root
-          .locator('[data-stage-semantic-title]')
-          .first();
+        const displayTitles = root.locator('[data-stage-display-title]');
+        const projectTitle = root.locator('[data-convo-hero-copy] h1');
         const chapterTitle = root.locator('.section-heading h2').first();
         const sectionIndex = root.locator('.section-index').first();
         const semanticHeadings = root.locator(
           [
-            '[data-stage-semantic-title]',
+            '[data-convo-hero-copy] h1',
+            '[data-convo-ai-stage]:not([data-hero="true"]) [data-stage-semantic-title]',
             '.section-heading h2',
             '.convo-subheading',
             '.convo-principles h3',
@@ -190,39 +189,66 @@ test.describe('portfolio detail system', () => {
         );
 
         await expect(projectTitle).toBeVisible();
+        const projectTitleId = await projectTitle.getAttribute('id');
+        expect(projectTitleId).toBeTruthy();
+        await expect(heroStage).toHaveAttribute(
+          'aria-labelledby',
+          projectTitleId!,
+        );
+        await expect(
+          heroStage.locator('[data-stage-semantic-title]'),
+        ).toHaveCount(0);
+        await expect(
+          heroStage.locator('[data-stage-display-title]'),
+        ).toHaveCount(0);
         for (let index = 0; index < await semanticHeadings.count(); index += 1) {
           const heading = semanticHeadings.nth(index);
           await expect(heading).toBeVisible();
         }
-        await expect(displayTitle).toHaveAttribute('aria-hidden', 'true');
-        await expect(displayTitle).toHaveCSS('pointer-events', 'none');
-        await expect(displayTitle).toHaveCSS('z-index', '-1');
-        await expect(displayTitle).toHaveCSS(
-          'color',
-          'rgba(242, 247, 246, 0.075)',
-        );
+        await expect(displayTitles).toHaveCount(locale === 'en' ? 2 : 0);
+        for (let index = 0; index < await displayTitles.count(); index += 1) {
+          const displayTitle = displayTitles.nth(index);
+          await expect(displayTitle).toHaveAttribute('aria-hidden', 'true');
+          await expect(displayTitle).toHaveCSS('pointer-events', 'none');
+          await expect(displayTitle).toHaveCSS('z-index', '-1');
+          await expect(displayTitle).toHaveCSS(
+            'color',
+            'rgba(242, 247, 246, 0.075)',
+          );
+        }
         await expect(heroStage).toHaveCSS('overflow-x', 'hidden');
         await expect(heroStage).toHaveCSS('overflow-y', 'hidden');
-        await expect(projectTitle).toHaveCSS('z-index', '1');
         await expect(chapterTitle).toHaveCSS('z-index', '1');
 
-        const heroLayersFit = await heroStage.evaluate((stage) => {
+        const heroGeometry = await heroStage.evaluate((stage, titleId) => {
+          const rootElement = stage.closest('[data-convo-ai-case]');
+          const title = document.getElementById(titleId);
+          const copy = title?.closest('[data-convo-hero-copy]');
+          if (!rootElement || !title || !copy) return null;
+
+          const rootRect = rootElement.getBoundingClientRect();
           const stageRect = stage.getBoundingClientRect();
-          const semantic = stage.querySelector('[data-stage-semantic-title]');
-          const display = stage.querySelector('[data-stage-display-title]');
-          if (!semantic || !display) return false;
-          const semanticRect = semantic.getBoundingClientRect();
-          const displayRect = display.getBoundingClientRect();
-          return (
-            semanticRect.left >= stageRect.left - 1 &&
-            semanticRect.right <= stageRect.right + 1 &&
-            displayRect.right > stageRect.left &&
-            displayRect.left < stageRect.right &&
-            displayRect.bottom > stageRect.top &&
-            displayRect.top < stageRect.bottom
-          );
+          const titleRect = title.getBoundingClientRect();
+          const copyRect = copy.getBoundingClientRect();
+          return {
+            stageVisible: stageRect.width > 0 && stageRect.height > 0,
+            stageFitsRoot:
+              stageRect.left >= rootRect.left - 1 &&
+              stageRect.right <= rootRect.right + 1,
+            titleVisible: titleRect.width > 0 && titleRect.height > 0,
+            titleFitsCopy:
+              titleRect.left >= copyRect.left - 1 &&
+              titleRect.right <= copyRect.right + 1 &&
+              titleRect.top >= copyRect.top - 1 &&
+              titleRect.bottom <= copyRect.bottom + 1,
+          };
+        }, projectTitleId!);
+        expect(heroGeometry).toEqual({
+          stageVisible: true,
+          stageFitsRoot: true,
+          titleVisible: true,
+          titleFitsCopy: true,
         });
-        expect(heroLayersFit).toBe(true);
 
         const indexLayer = await sectionIndex.evaluate((node) => {
           const style = getComputedStyle(node, '::before');
