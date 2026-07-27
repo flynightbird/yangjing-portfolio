@@ -1068,11 +1068,11 @@ describe('VisualArchive', () => {
     requestFrame.mockRestore();
   });
 
-  it('renders five real projects with distinct cover treatments', () => {
+  it('renders four real projects with distinct cover treatments', () => {
     const { container } = render(<VisualArchive locale="en" />);
 
     expect(container.querySelector('[data-archive-carousel]')).toBeInTheDocument();
-    expect(container.querySelectorAll('[data-archive-card]')).toHaveLength(5);
+    expect(container.querySelectorAll('[data-archive-card]')).toHaveLength(4);
     expect(container.querySelectorAll('[data-archive-slot]')).toHaveLength(0);
     expect(container.querySelectorAll('[data-placeholder-media]')).toHaveLength(0);
     expect(
@@ -1084,7 +1084,6 @@ describe('VisualArchive', () => {
       'open-language',
       'doudou-fox',
       'mr-chong',
-      'tongcheng-travel',
     ]);
     expect(
       screen.getByRole('button', { name: 'Previous archive project' }),
@@ -1093,7 +1092,7 @@ describe('VisualArchive', () => {
       screen.getByRole('button', { name: 'Next archive project' }),
     ).toBeEnabled();
     expect(container.querySelector('[data-archive-position]')).toHaveTextContent(
-      '01 / 05',
+      '01 / 04',
     );
   });
 
@@ -1110,7 +1109,7 @@ describe('VisualArchive', () => {
     ).toBeVisible();
     expect(screen.getByText('Alibaba')).toBeVisible();
     expect(screen.getAllByText('ByteDance')).toHaveLength(2);
-    expect(screen.getAllByText('Tongcheng Travel')).toHaveLength(3);
+    expect(screen.getAllByText('Tongcheng Travel')).toHaveLength(1);
     expect(container.querySelector('[data-cover-variant="alibaba"] [data-archive-period]')).toHaveTextContent('2019–2020.12');
     expect(container.querySelector('[data-cover-variant="doudou-fox"] [data-archive-period]')).toHaveTextContent('2021.09–10');
     expect(screen.getByText('Tangping')).toBeVisible();
@@ -1118,17 +1117,17 @@ describe('VisualArchive', () => {
     const archive = screen.getByRole('region', { name: 'Visual Archive projects' });
     expect(
       within(archive).getAllByRole('button', { name: /^Open project image:/ }),
-    ).toHaveLength(5);
+    ).toHaveLength(4);
     expect(within(archive).queryByRole('link', { name: /Tangping/ })).not.toBeInTheDocument();
     expect(screen.getByText('Design Principles')).toBeVisible();
     expect(screen.getByText('Doudou Fox')).toBeVisible();
     expect(screen.getByText('MR CHONG')).toBeVisible();
-    expect(screen.getByRole('heading', { name: 'Tongcheng Travel' })).toBeVisible();
+    expect(screen.queryByRole('heading', { name: 'Tongcheng Travel' })).not.toBeInTheDocument();
     expect(
       screen.getByText(/A home-design tool and platform from Alibaba/),
     ).toBeVisible();
-    expect(container.querySelectorAll('[data-archive-skills]')).toHaveLength(5);
-    expect(screen.getAllByText('Skills')).toHaveLength(5);
+    expect(container.querySelectorAll('[data-archive-skills]')).toHaveLength(4);
+    expect(screen.getAllByText('Skills')).toHaveLength(4);
     expect(screen.getByText('IP Design')).toBeVisible();
     expect(screen.getByText('C4D')).toBeVisible();
   });
@@ -1151,7 +1150,7 @@ describe('VisualArchive', () => {
     const archive = screen.getByRole('region', { name: '视觉作品集项目' });
     expect(
       within(archive).getAllByRole('button', { name: /^打开项目图片:/ }),
-    ).toHaveLength(5);
+    ).toHaveLength(4);
     expect(within(archive).queryByRole('link', { name: /躺平/ })).not.toBeInTheDocument();
     expect(screen.getByText('开言设计原则')).toBeVisible();
     expect(screen.getByText('豆豆狐')).toBeVisible();
@@ -1173,14 +1172,11 @@ describe('VisualArchive', () => {
     expect(archiveCard('mr-chong').getByText(
       '为同程旅游某业务线打造可延展的品牌 IP，并完成三维角色、动作与视觉表达。',
     )).toBeVisible();
-    expect(archiveCard('tongcheng-travel').getByRole('heading', {
-      name: '同程旅游',
-    })).toBeVisible();
-    expect(archiveCard('tongcheng-travel').getByText(
-      '在同程旅游金融事业部，面向不同用户群体，参与多类产品的体验与界面设计。',
-    )).toBeVisible();
-    expect(archiveCard('tongcheng-travel').getByText('UI设计')).toBeVisible();
-    expect(screen.getAllByText('技能')).toHaveLength(5);
+    expect(screen.queryByRole('heading', { name: '同程旅游' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', {
+      name: '打开项目图片: 同程旅游',
+    })).not.toBeInTheDocument();
+    expect(screen.getAllByText('技能')).toHaveLength(4);
   });
 
   it('opens the ordered Doudou Fox and MR CHONG galleries with English controls', () => {
@@ -1240,21 +1236,6 @@ describe('VisualArchive', () => {
     expect(baseElement.querySelectorAll('[data-gallery-mobile] img')).toHaveLength(7);
   });
 
-  it('opens the four-image Tongcheng gallery with crowdfunding first', () => {
-    const { baseElement } = render(<VisualArchive locale="zh" />);
-
-    fireEvent.click(screen.getByRole('button', {
-      name: '打开项目图片: 同程旅游',
-    }));
-
-    expect(screen.getByRole('status', { name: '画廊位置: 01 / 04' })).toHaveTextContent(
-      '01 / 04',
-    );
-    expect(baseElement.querySelectorAll('[data-gallery-mobile] img')).toHaveLength(4);
-    expect(screen.getAllByRole('img', {
-      name: '众筹 2.0 旅游金融产品界面与转让数据',
-    }).length).toBeGreaterThan(0);
-  });
 });
 
 describe('localized homepage composition', () => {
