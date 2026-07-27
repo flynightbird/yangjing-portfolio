@@ -16,7 +16,7 @@ describe('AIDX Singapore positioning', () => {
     {
       locale: 'zh' as const,
       descriptor: '新加坡 AI 公司',
-      proposition: '通过界面、信息架构与动效，为 AIDX 打造清晰、可信的品牌官网。',
+      proposition: '用界面、信息架构与动效，建立清晰、可信的 AI 安全品牌官网。',
     },
   ])('renders the approved $locale positioning', ({ locale, descriptor, proposition }) => {
     const { container } = render(<FeaturedWork locale={locale} />);
