@@ -1,4 +1,5 @@
 .superpowers/
+.worktrees/
 .asset-transactions/
 node_modules/
 dist/
