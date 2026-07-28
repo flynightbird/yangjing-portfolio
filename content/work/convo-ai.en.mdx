@@ -3,9 +3,9 @@ import { ConvoAiPlaylist, ConvoAiStage, ConvoAiVoiceprintModes } from '@/compone
 
 export const metadata = {
   type: 'work', slug: 'convo-ai', locale: 'en', translationKey: 'work.convo-ai',
-  title: 'ConvoAI', proposition: 'Make invisible real-time states perceptible, interruptible, and recoverable.',
-  role: 'Sole product design ownership', duration: 'Not disclosed',
-  status: 'Formally launched',
+  title: 'ConvoAI', proposition: 'Make real-time AI conversation states perceptible, interruptible, and recoverable.',
+  role: 'Independent Product Designer', duration: 'Not disclosed',
+  status: 'Launched',
   heroMedia: '/images/convo-ai/figma/web-ready.png', evidenceLevel: 'delivered', featuredOrder: 3,
   caseLabel: 'AGORA CONVOAI / APP + WEB',
   chapters: [
@@ -17,21 +17,21 @@ export const metadata = {
 }
 
 <section id="context-thesis" data-convo-nav-tone="dark">
-  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="01">01</p><h2>Not another chat page: a real-time system people can understand</h2></header>
-  <div className="reading"><p className="lead">ConvoAI is a one-to-one AI conversation product across App and Web. Its core design material is the continuous shift between connection, listening, generation, playback, interruption, captions, video, and digital humans.</p><p>I held sole product design ownership across product structure, core interaction, cross-platform experience, and the visible language of real-time states.</p></div>
+  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="01">01</p><h2>Design real-time conversation as a legible system</h2></header>
+  <div className="reading"><p className="lead">ConvoAI is a one-to-one AI conversation product for App and Web. Its experience is shaped by continuous shifts between connection, listening, generation, playback, interruption, captions, video, and digital humans.</p><p>I was responsible for the product structure, core interaction, cross-platform experience, and interface language for real-time states.</p></div>
   <div className="convo-principles"><article><span>01 / PERCEIVABLE</span><h3>Make state legible</h3><p>Distinguish connection, readiness, listening, and response.</p></article><article><span>02 / INTERRUPTIBLE</span><h3>Keep agency visible</h3><p>Turn interruption into a visible, recoverable turn transition.</p></article><article><span>03 / RECOVERABLE</span><h3>Preserve continuity</h3><p>Keep conversational context through mode changes.</p></article></div>
 </section>
 
 <section id="ready" data-convo-nav-tone="dark">
-  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="02">02</p><h2>First answer: “Can I speak now?”</h2></header>
-  <div className="reading"><p className="lead">App creates a short path to the first turn. Web expands agents, phone number, layout, and session boundaries. They are not duplicate pages, but different expressions of one real-time model.</p></div>
+  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="02">02</p><h2>Make readiness clear before the first turn</h2></header>
+  <div className="reading"><p className="lead">App creates a short path to speaking. Web supports denser agent, phone-number, layout, and session choices. Each surface expresses the same real-time model at a different level of complexity.</p></div>
   <div className="state-flow" aria-label="Conversation state chain"><div><span>01</span><strong>Connecting</strong></div><div><span>02</span><strong>Ready</strong></div><div><span>03</span><strong>Listening</strong></div><div><span>04</span><strong>Thinking</strong></div><div><span>05</span><strong>Speaking</strong></div><div><span>06</span><strong>Interrupted</strong></div><div><span>07</span><strong>Recovery</strong></div></div>
   <ConvoAiStage locale="en" eyebrow="CROSS-PLATFORM / READINESS" title="Ready" description="Web carries configuration density; App carries the immediate speaking path. Both expose the same state truth." webId="web-preflight-layout" appId="app-conversation-start" />
   <ConvoAiPlaylist locale="en" ids={['app-login', 'app-structure', 'app-conversation-start', 'web-login', 'web-preflight', 'web-preflight-layout', 'web-join-exit']} />
 </section>
 
 <section id="interrupt" data-convo-nav-tone="dark">
-  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="03">03</p><h2>Interruption is not stopping sound. It is returning the complete turn.</h2></header>
+  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="03">03</p><h2>Return control without breaking the conversation</h2></header>
   <div className="reading"><p className="lead">A new user intent must move audio, transcript, orb, captions, and state together. The complete recordings preserve each transition and show how the conversation recovers.</p></div>
   <ConvoAiStage locale="en" eyebrow="APP + WEB / INTERRUPTION" title="Interrupt" description="Preserve interrupted content, enter Thinking, and recover into a new response." webId="web-interrupt" appId="app-caption-camera" />
   <ConvoAiPlaylist locale="en" ids={['app-caption-camera', 'web-conversation', 'web-interrupt']} />
@@ -46,7 +46,7 @@ export const metadata = {
 </section>
 
 <section id="avatar" data-convo-nav-tone="dark">
-  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="05">05</p><h2>Move from selecting an expectation to stronger social presence</h2></header>
+  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="05">05</p><h2>Preserve control as social presence increases</h2></header>
   <div className="reading"><p className="lead">Avatar choice is not a visual skin. In live interaction, audiovisual sync, latency, camera, and picture-in-picture become more visible, so the stable turn and control model must remain.</p></div>
   <EvidenceFigure className="convo-phone-evidence" eager src="/images/convo-ai/figma/avatar-video.png" width={375} height={812} alt="ConvoAI App with avatar, live video, and picture-in-picture" label="AVATAR / LIVE VIDEO" caption="The main view carries avatar interaction while the floating view preserves a secondary perspective." locale="en" />
   <ConvoAiPlaylist locale="en" ids={['app-avatar-select', 'app-avatar-interaction']} />
@@ -59,7 +59,7 @@ export const metadata = {
 </section>
 
 <section id="delivery" data-convo-nav-tone="dark">
-  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="07">07</p><h2>A cross-platform, multimodal, interruptible real-time conversation experience</h2></header>
-  <div className="reading"><p className="lead">The product formally launched. I delivered the App and Web product structure, core interaction, cross-platform experience, and interface language for turn states, interruption, voiceprint, hardware, digital humans, and real-time data.</p></div>
+  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="07">07</p><h2>One state and control language across App and Web</h2></header>
+  <div className="reading"><p className="lead">The launched product applies one interaction language to turn states, interruption, voiceprint, hardware, digital humans, and real-time data across App and Web.</p></div>
   <p className="evidence-note">The work spans nine App scenarios and seven Web scenarios, connected by one consistent state and control language.</p>
 </section>

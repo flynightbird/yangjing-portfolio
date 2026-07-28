@@ -84,7 +84,7 @@ describe('shell dictionaries', () => {
       archive: 'Archive',
       about: 'About',
     });
-    expect(enDictionary.home.projects.callAgent.company).toBe('Agora / 声网');
+    expect(enDictionary.home.projects.callAgent.company).toBe('Agora');
     expect(zhDictionary.home.projects.xuelang.company).toBe('ByteDance / 字节跳动');
     expect(enDictionary.home.projects.aidx.company).toBe('Singapore AI company');
     expect(zhDictionary.home.projects.aidx.company).toBe('新加坡 AI 公司');

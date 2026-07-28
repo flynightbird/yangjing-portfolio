@@ -4,10 +4,9 @@ import { CallAgentSystemStage } from '@/components/call-agent/call-agent-system-
 
 export const metadata = {
   type: 'work', slug: 'call-agent', locale: 'en', translationKey: 'work.call-agent',
-  title: 'Call Agent: turn conversational AI into an enterprise-operated product',
-  proposition: 'From no complete configuration entry to one workspace for creating, orchestrating, validating, publishing, and operating AI calls.',
-  role: 'Independent 0-to-1 product design owner', duration: '9 months', status: 'Formally launched',
-  disclosure: 'This public case uses redacted product interfaces only. Customer identities, phone numbers, and sensitive configurations are excluded.',
+  title: 'Call Agent: productizing conversational AI for enterprise operations',
+  proposition: 'One workflow for configuring, testing, releasing, and operating AI calls.',
+  role: 'Independent Product Designer', duration: '9 months', status: 'Launched',
   heroMedia: '/images/call-agent/agent-preview-poster.webp', evidenceLevel: 'observed', featuredOrder: 2,
   caseLabel: 'CALL AGENT / 0→1 AI PRODUCT',
   chapters: [
@@ -19,23 +18,23 @@ export const metadata = {
 }
 
 <section id="product-boundary">
-  <h2>Not another AI demo, but a product customers can configure themselves</h2>
-  <div className="call-reading call-reading--lead"><p>Convo AI is the end-user conversation experience. Call Agent solves a different problem: how enterprise customers configure, validate, publish, and operate those conversational capabilities.</p></div>
-  <div className="call-reading"><p>The capabilities already existed, but customers had no complete configuration entry. I independently owned the 0-to-1 product design, organizing models, voice, prompts, numbers, release state, and operating rules into one workflow.</p></div>
+  <h2>Define the product boundary around enterprise operations</h2>
+  <div className="call-reading call-reading--lead"><p>ConvoAI is the end-user conversation experience. Call Agent addresses the operational side: how enterprise teams configure, test, release, and run those conversational capabilities.</p></div>
+  <div className="call-reading"><p>I was responsible for the 0-to-1 product design, organizing models, voices, prompts, phone numbers, release states, and operating rules into one workflow.</p></div>
   <ProductBoundaryDiagram locale="en" />
   <ProductizationGrid locale="en" />
 </section>
 
 <section id="product-system">
-  <h2>Define the product through six stages, not technical resource categories</h2>
-  <div className="call-reading"><p>Call operators should not have to learn the underlying capability tree first. The product follows Create → Orchestrate → Preview → Publish → Connect → Operate, with each stage establishing a legible state for the next.</p></div>
+  <h2>Organize the workflow into six product stages</h2>
+  <div className="call-reading"><p>Operators should not have to learn the underlying capability tree before they can act. The product follows Create → Orchestrate → Preview → Publish → Connect → Operate, with each stage preparing a clear state for the next.</p></div>
   <CallAgentSystemStage locale="en" />
 </section>
 
 <section id="start">
   <h2>Give operators a concrete place to begin</h2>
-  <div className="call-reading call-reading--lead"><p>Blank creation preserves freedom. The service template pre-fills a name and description so an operator first encounters a concrete object rather than an empty system.</p></div>
-  <div className="call-reading"><p><strong>Trade-off:</strong> defaults do not replace expert configuration. The template gets someone started while every field remains editable.</p></div>
+  <div className="call-reading call-reading--lead"><p>A service template pre-fills a name and description, giving operators a concrete object to edit instead of an empty system.</p></div>
+  <div className="call-reading"><p><strong>Trade-off:</strong> the defaults shorten the first step without limiting expert configuration; every field remains editable.</p></div>
   <CallAgentBrowserVideo src="/videos/call-agent/agent-create.mp4" poster="/images/call-agent/agent-create-poster.webp" playbackRate={1.45} title="Create from a template" description="Selecting the service template adds editable defaults and a clear continuation path." />
 </section>
 
@@ -49,7 +48,7 @@ export const metadata = {
 <section id="validate-release" className="call-dark-band">
   <h2>Make AI behavior observable and release state controllable</h2>
   <div className="call-reading call-reading--lead"><p>Preview stays beside configuration and exposes connection, call controls, and agent output. Unpublished drafts, released versions, and recovery extend validation into release management.</p></div>
-  <div className="call-reading"><p><strong>Key judgment:</strong> Preview is not a demo entry; it is the feedback loop between configuration and runtime behavior. Version control makes changes traceable and reversible.</p></div>
+  <div className="call-reading"><p><strong>Key judgment:</strong> Preview is the feedback loop between configuration and runtime behavior. Version control then makes changes traceable and reversible.</p></div>
   <CallAgentBrowserVideo src="/videos/call-agent/agent-preview.mp4" poster="/images/call-agent/agent-preview-poster.webp" playbackRate={1.25} title="Configuration with live Preview" description="Preview moves from idle to connected and exposes agent output beside configuration." />
   <CallAgentBrowserVideo src="/videos/call-agent/agent-publish.mp4" poster="/images/call-agent/agent-publish-poster.webp" playbackRate={1.35} title="Draft and released versions" description="The version rail separates an unpublished draft, released versions, and recovery actions." />
 </section>
@@ -57,13 +56,13 @@ export const metadata = {
 <section id="operationalize">
   <h2>After publication, an agent becomes part of a real calling workflow</h2>
   <div className="call-reading call-reading--lead"><p>Number binding connects an agent to recording, transcription, extraction, hang-up, and human-transfer rules. An outbound task then assembles number, agent, customer file, schedule, and execution rules.</p></div>
-  <div className="call-reading"><p>These screens are not a feature appendix. They prove that the product boundary extends from “configure an AI” to “execute an enterprise call.”</p></div>
+  <div className="call-reading"><p>Together, these workflows extend the product boundary from configuring an agent to executing an enterprise call.</p></div>
   <CallAgentBrowserVideo src="/videos/call-agent/agent-connect.mp4" poster="/images/call-agent/agent-connect-poster.webp" playbackRate={1.35} title="Inbound connection" description="Open number settings and bind the inbound agent with call controls." />
   <CallAgentBrowserVideo src="/videos/call-agent/agent-operate.mp4" poster="/images/call-agent/agent-operate-poster.webp" playbackRate={1.35} title="Outbound operations" description="Move from the task list into creation and enter the outbound task basics." />
 </section>
 
 <section id="scope-reflection">
-  <h2>My role was to turn complex capabilities into an understandable product system</h2>
-  <div className="call-reading call-reading--lead"><p>I independently owned product architecture, agent creation and orchestration, Preview, numbers, and outbound operations, partnering with product, frontend and backend, AI and algorithm, audio/video engineering, and QA.</p></div>
-  <div className="call-reading"><p>The design system and AI-assisted prototype delivery helped align rules, complete states, and shorten handoff loops. Production code, AI implementation, and telephony infrastructure remained outside my design ownership.</p><p><strong>Reflection:</strong> enterprise AI becomes usable when complexity is progressive, behavior is observable, and release state is controllable.</p></div>
+  <h2>Product design scope and method</h2>
+  <div className="call-reading call-reading--lead"><p>I designed the product architecture, agent creation and orchestration, Preview, phone-number setup, and outbound operations in partnership with product, engineering, AI, audio/video, and QA teams.</p></div>
+  <div className="call-reading"><p>The design system and AI-assisted prototypes aligned rules and edge states before implementation. Production code, AI models, and telephony infrastructure remained outside my scope.</p><p><strong>Reflection:</strong> enterprise AI becomes usable when complexity is introduced progressively, runtime behavior is observable, and release states remain controllable.</p></div>
 </section>

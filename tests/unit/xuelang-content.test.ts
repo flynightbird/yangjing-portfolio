@@ -51,13 +51,13 @@ describe('Xuelang bilingual case content', () => {
     expect(chapterMetadata(en)).not.toMatch(/label:\s*['"]\d{2}\s/);
   });
 
-  it('keeps all eight chapters aligned and states lead ownership accurately', () => {
+  it('keeps all eight chapters aligned and states individual responsibility accurately', () => {
     for (const id of chapterIds) {
       expect(count(zh, `id="${id}"`), id).toBe(1);
       expect(count(en, `id="${id}"`), id).toBe(1);
     }
     expect(zh).toContain('独立负责产品设计，包括整体体验策略、核心链路与关键方案');
-    expect(en).toContain('As the lead designer, I owned the overall experience strategy, core journeys, and key design solutions');
+    expect(en).toContain('I was responsible for the overall experience strategy, core journeys, and key design solutions');
     expect(zh).not.toMatch(/唯一设计师|独立完成整个项目/);
     expect(en).not.toMatch(/sole designer|single-handedly/i);
   });

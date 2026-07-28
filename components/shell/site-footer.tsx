@@ -14,8 +14,8 @@ export function SiteFooter({ locale }: SiteFooterProps) {
         title: '聊聊产品、AI，或一个还没被讲清的问题。',
       }
     : {
-        eyebrow: 'Have an idea worth making real?',
-        title: "Let's turn it into an experience.",
+        eyebrow: 'Stay in touch',
+        title: "Let's talk about products, AI, or a problem that still needs clarity.",
       };
 
   return (

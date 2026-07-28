@@ -12,24 +12,24 @@ const introCopy = {
     controlLabel: 'Go to introduction statement',
     scenes: [
       {
-        lead: "Hi, I'm Yang Jing, a ",
-        emphasis: 'UX/UI designer',
-        trail: ' with more than a decade of experience.',
+        lead: "I'm Yang Jing, a ",
+        emphasis: 'Product Designer focused on AI and complex systems',
+        trail: '.',
         support: [
-          { text: 'Welcome to a portfolio I designed and built through ' },
+          { text: 'I designed this portfolio and built it through ' },
           { text: 'Vibe Coding', emphasis: true },
           { text: '.' },
         ],
       },
       {
-        lead: 'I work across large-scale consumer products and complex B2B and AI systems, turning complexity into ',
-        emphasis: 'clear, controllable product experiences',
+        lead: 'My work spans user research, consumer products at scale, and complex B2B and AI systems. Across them, I turn complexity into ',
+        emphasis: 'clear, usable product experiences',
         trail: '.',
       },
       {
-        lead: 'Now I also use AI to turn design judgment into ',
-        emphasis: 'working products',
-        trail: ', moving from concept and prototype to real experience.',
+        lead: 'AI-assisted building helps me turn product judgment into ',
+        emphasis: 'working, testable prototypes',
+        trail: ' earlier in the design process.',
         support: [
           { text: 'I work fluently with ' },
           { text: 'Codex', emphasis: true },
@@ -38,13 +38,13 @@ const introCopy = {
           { text: ', and ' },
           { text: 'Figma Make', emphasis: true },
           {
-            text: ' to explore ideas and turn designs into working products. With AIGC tools such as ',
+            text: ' to explore product logic and build interactive prototypes. I use visual tools such as ',
           },
           { text: 'Midjourney', emphasis: true },
           { text: ' and ' },
           { text: 'Jimeng AI', emphasis: true },
           {
-            text: ', I expand the visual language and bring greater coherence and polish to the product.',
+            text: ' to extend visual direction when the product calls for it.',
           },
         ],
       },

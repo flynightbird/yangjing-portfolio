@@ -1,5 +1,4 @@
 import { DemoFrame } from '@/components/build-lab/demo-frame'
-import { EvidenceLedger } from '@/components/build-lab/evidence-ledger'
 
 export const metadata = {
   type: 'build',
@@ -11,7 +10,6 @@ export const metadata = {
   role: 'Product design and AI-assisted prototyping',
   duration: 'Exploratory build',
   status: 'Pinned static prototype',
-  disclosure: 'This case documents an interaction-valid static prototype at repository revision e5e840a. It does not claim a connected service, customer use, or measured outcomes.',
   heroMedia: '/demos/stt-demo/poster.png',
   evidenceLevel: 'prototype',
   featuredOrder: 6,
@@ -25,7 +23,7 @@ export const metadata = {
     { id: 'setup', label: 'Before start' },
     { id: 'session', label: 'In session' },
     { id: 'build-system', label: 'Build system' },
-    { id: 'evidence-boundary', label: 'Evidence & boundary' },
+    { id: 'evidence-boundary', label: 'Prototype scope' },
   ],
 }
 
@@ -36,7 +34,7 @@ export const metadata = {
   </header>
   <div className="reading">
     <p className="lead">The prototype is for hosts and participants who need transcription and translated subtitles while a multilingual conversation is unfolding.</p>
-    <p>It connects a focused homepage, a pre-start room setup, and an in-session subtitle stage. The artifact is preserved from one audited repository revision and served locally below, so the interactive prototype and its source can be inspected independently.</p>
+    <p>It connects a focused homepage, pre-start room setup, and in-session subtitle stage in one locally served, interactive artifact.</p>
   </div>
   <DemoFrame locale="en" />
 </section>
@@ -48,7 +46,7 @@ export const metadata = {
   </header>
   <div className="reading">
     <p className="lead">Before starting, a host can inspect the room ID, identity, microphone, camera, source language, target language, and recognition mode in one setup panel.</p>
-    <p>The recognition controls cover automatic language recognition and a specified single-language mode with a searchable selector. Device states include authorization guidance, microphone level feedback, camera preview, full settings, and quick device menus. The start action reflects whether the required setup is ready.</p>
+    <p>Automatic recognition and specified-language modes share one setup flow. Permission guidance, microphone feedback, camera preview, and device menus make readiness visible before the room begins.</p>
   </div>
   <div className="journey" aria-label="Pre-start setup sequence">
     <div className="journey-step"><span>01</span><b>Room &amp; identity</b><small>Review or regenerate the room ID and set a nickname.</small></div>
@@ -65,13 +63,13 @@ export const metadata = {
   </header>
   <div className="reading">
     <p className="lead">The in-session stage pairs original transcription with translation for the current speaker, while earlier utterances recede into a history track.</p>
-    <p>The prototype represents waiting, paired final text, original-only timeout, and speaker handoff states. Participant and settings panels retain room context without competing with the subtitle stage. Plugin and QR layers demonstrate two access paths for taking subtitles beyond the main browser view.</p>
+    <p>Waiting, paired text, original-only timeout, and speaker handoff states keep the subtitle lifecycle legible. Participant and settings panels preserve room context without competing with the active utterance.</p>
   </div>
   <div className="feedback-loop">
     <article><span>LISTEN</span><h3>Recognition state</h3><p>Waveform and waiting feedback make the current processing state visible.</p></article>
     <article><span>PAIR</span><h3>Transcription + translation</h3><p>Original and translated text commit as one readable unit when available.</p></article>
     <article><span>CONTEXT</span><h3>Participants + settings</h3><p>Side panels keep people, language, and device controls within reach.</p></article>
-    <article><span>ACCESS</span><h3>Plugin + QR layers</h3><p>Static overlays show intended subtitle access routes without claiming their full workflows.</p></article>
+    <article><span>ACCESS</span><h3>Plugin + QR layers</h3><p>Static overlays explore ways to carry subtitles beyond the main browser view.</p></article>
   </div>
 </section>
 
@@ -82,7 +80,7 @@ export const metadata = {
   </header>
   <div className="reading">
     <p className="lead">The work combined structured product requirements, interaction-state specification, implementation, and review rather than treating generation as the final artifact.</p>
-    <p>AI assistance supported iteration across the static interface and interaction states. A component library supplied shared tokens and component styles; a design-audit package recorded machine-readable checks; and visual regression baselines captured critical homepage, pre-start, session, access-layer, and subtitle-language states. The root demo remains the visual source of truth.</p>
+    <p>AI assistance supported iteration across the interface and interaction states. Shared tokens and components maintained consistency, while visual regression baselines covered critical homepage, pre-start, session, access-layer, and subtitle-language states.</p>
   </div>
   <div className="delivery-flow" aria-label="AI-assisted prototype workflow">
     <div><span>01</span><b>Structure</b><small>Translate the PRD into explicit pages, states, and exclusions.</small></div>
@@ -94,12 +92,11 @@ export const metadata = {
 
 <section id="evidence-boundary">
   <header className="section-heading">
-    <p className="section-index">05 / EVIDENCE &amp; BOUNDARY</p>
-    <h2>Separate what can be inspected from what has not been implemented</h2>
+    <p className="section-index">05 / PROTOTYPE SCOPE</p>
+    <h2>Use the prototype to test product logic, not production infrastructure</h2>
   </header>
   <div className="reading">
-    <p className="lead">The repository, exact revision, local artifact, component styles, audit report, and visual baselines are inspectable evidence. The prototype specification sets the functional boundary.</p>
-    <p>No true backend integration. No real SSO jump. No actual RTC join. No actual STT stream. No full plugin inner workflow. No mobile subtitle page full detail flow.</p>
+    <p className="lead">The build tests whether room setup, recognition choices, subtitle states, and access layers form one understandable experience.</p>
+    <p>It is a static interaction prototype rather than a connected RTC or STT service. The product judgment lies in the modeled states, hierarchy, and transitions.</p>
   </div>
-  <EvidenceLedger locale="en" />
 </section>

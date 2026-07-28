@@ -873,12 +873,12 @@ describe('STT demo source provenance', () => {
       const requiredContent =
         locale === 'en'
           ? [
-              'no true backend integration',
-              'no real sso jump',
-              'no actual rtc join',
-              'no actual stt stream',
-              'no full plugin inner workflow',
-              'no mobile subtitle page full detail flow',
+              'prototype scope',
+              'room setup',
+              'recognition choices',
+              'subtitle states',
+              'static interaction prototype',
+              'rather than a connected rtc or stt service',
             ]
           : [
               '原型覆盖的产品范围',

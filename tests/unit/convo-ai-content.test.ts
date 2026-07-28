@@ -29,8 +29,8 @@ describe('ConvoAI publication contract', () => {
         locale,
         translationKey: 'work.convo-ai',
         heroMedia: '/images/convo-ai/figma/web-ready.png',
-        role: locale === 'zh' ? '独立负责产品设计' : 'Sole product design ownership',
-        status: locale === 'zh' ? '已上线' : 'Formally launched',
+        role: locale === 'zh' ? '独立负责产品设计' : 'Independent Product Designer',
+        status: locale === 'zh' ? '已上线' : 'Launched',
       });
       expect(meta).not.toHaveProperty('disclosure');
       expect(meta.chapters?.map(({ id }) => id)).toEqual(chapterIds[locale]);

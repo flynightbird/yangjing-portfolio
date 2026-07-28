@@ -219,7 +219,7 @@ export const archiveProjects = [
       },
     },
     description: {
-      en: "A home-design tool and platform from Alibaba. We unified the app and main website experience while strengthening the product's brand expression.",
+      en: "Alibaba's home-design platform, with a unified App and website experience and a clearer product identity.",
       zh: '面向家居装修设计师的工具与平台。升级 App 与官网主站体验，并强化产品的品牌表达。',
     },
     skills: ['UX', 'UI'],
@@ -313,7 +313,7 @@ export const archiveProjects = [
       eyebrow: { en: 'OPEN LANGUAGE', zh: 'OPEN LANGUAGE' },
     },
     description: {
-      en: 'A language-learning app from ByteDance. We explored a new set of design principles to improve visual consistency and experience quality.',
+      en: 'A design-principles system for ByteDance’s language-learning App, aligning visual expression with a warmer learning experience.',
       zh: '字节跳动旗下的语言学习 App。探索新的设计原则，提升视觉一致性与体验品质。',
     },
     skills: ['UX', 'UI'],
@@ -374,7 +374,7 @@ export const archiveProjects = [
       secondary: { en: 'English Adventure', zh: '英语大闯关' },
     },
     description: {
-      en: "A children's language-learning app from ByteDance. We designed an English adventure experience that made learning tasks more intuitive and playful.",
+      en: "An English-learning adventure for children, translating lesson tasks and rewards into a clear, playful progression system.",
       zh: '字节跳动旗下的儿童语言学习 App。设计英语闯关体验，让学习任务更直观，也更具游戏感。',
     },
     skills: ['UX', 'UI'],
@@ -470,7 +470,7 @@ export const archiveProjects = [
       },
     },
     description: {
-      en: 'Created an extensible brand IP for Tongcheng Travel, including the 3D character, motion, and visual expression.',
+      en: 'An extensible brand character for Tongcheng Travel, developed through 3D form, motion, and visual expression.',
       zh: '为同程旅游某业务线设计可延展的品牌 IP，并完成三维角色、动作与视觉表达。',
     },
     skills: ['IP Design', '3D', 'C4D'],

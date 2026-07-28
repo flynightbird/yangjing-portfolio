@@ -13,10 +13,10 @@ const copy = {
   },
   en: {
     convo: ['CONVO AI', 'End-user conversation experience', 'People interact directly with AI'],
-    runtime: ['CONVERSATION RUNTIME', 'Conversational capability', 'Model · voice · realtime communication'],
+    runtime: ['CONVERSATION RUNTIME', 'Conversational capability', 'Model · voice · real-time communication'],
     call: ['CALL AGENT', 'Enterprise configuration and operations', 'Customers create, validate, publish, and operate'],
-    statement: 'Turn fragmented conversational-AI capabilities into a complete product enterprise customers can operate themselves.',
-    boundary: ['Product boundary', 'Not a settings page for Convo AI, but an independent workspace for enterprise customers.'],
+    statement: 'Organize conversational AI capabilities into a product enterprise teams can configure and operate.',
+    boundary: ['Product boundary', 'A dedicated workspace for enterprise configuration and operations.'],
     decisions: [['Meaningful defaults', 'Provide a concrete starting point'], ['Progressive control', 'Preserve expert control while layering complexity'], ['Observable and reversible', 'Preview behavior and control release state']],
   },
 } as const;

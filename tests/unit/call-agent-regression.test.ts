@@ -30,12 +30,12 @@ describe('Call Agent native content registry', () => {
         title:
           locale === 'zh'
             ? 'Call Agent：把对话式 AI 能力变成企业可自主运营的产品'
-            : 'Call Agent: turn conversational AI into an enterprise-operated product',
+            : 'Call Agent: productizing conversational AI for enterprise operations',
         role:
           locale === 'zh'
             ? '独立负责产品设计'
-            : 'Independent 0-to-1 product design owner',
-        status: locale === 'zh' ? '正式上线' : 'Formally launched',
+            : 'Independent Product Designer',
+        status: locale === 'zh' ? '正式上线' : 'Launched',
         heroMedia: '/images/call-agent/agent-preview-poster.webp',
         evidenceLevel: 'observed',
         featuredOrder: 2,

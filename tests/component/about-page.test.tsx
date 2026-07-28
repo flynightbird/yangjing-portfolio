@@ -41,8 +41,8 @@ describe('AboutPage', () => {
 
     expectAboutRevealStructure(container, [
       'The design problems I solve',
-      'Design value, beyond the screen',
-      'Step by step, to where I am now',
+      'Design that moves into product results',
+      'One practice, expanded through different kinds of complexity',
     ]);
     const capabilityOrbit = container.querySelector('[data-about-orbit-background]');
     expect(capabilityOrbit).toHaveAttribute(
@@ -54,7 +54,7 @@ describe('AboutPage', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: 'AI-native product designer. Product judgment, made tangible.',
+        name: 'Clarify the complexity. Make the judgment tangible.',
       }),
     ).toBeVisible();
 
@@ -72,10 +72,10 @@ describe('AboutPage', () => {
     expect(aiWorkflow?.querySelectorAll('[data-workflow-system]')).toHaveLength(2);
     expect(aiWorkflow?.querySelector('[data-workflow-path]')).not.toBeNull();
     expect(capabilitySection?.querySelector('[data-transform-spark]')).toBeNull();
-    expect(screen.getByText('Make complexity feel clear')).toBeVisible();
-    expect(screen.getByText('Expressive interfaces')).toBeVisible();
-    expect(screen.getByText('Design and build, as one workflow.')).toBeVisible();
-    expect(screen.getByText('Make design a team capability')).toBeVisible();
+    expect(screen.getByText('Clarify complex experiences')).toBeVisible();
+    expect(screen.getByText('Build expressive interface systems')).toBeVisible();
+    expect(screen.getByText('Make decisions testable earlier')).toBeVisible();
+    expect(screen.getByText('Create shared product clarity')).toBeVisible();
 
     const timeline = container.querySelector('[data-about-timeline]');
     expect(timeline).not.toBeNull();
@@ -84,8 +84,8 @@ describe('AboutPage', () => {
     expect(screen.getByText('2022.07–Present')).toBeVisible();
     expect(screen.getByText('Alibaba · TDesign')).toBeVisible();
     expect(screen.getByText('Experience Design')).toBeVisible();
-    expect(screen.getByText('Independent experience validation')).toBeVisible();
-    expect(screen.getByText('Research & Design')).toBeVisible();
+    expect(screen.getByText('Independent prototype validation')).toBeVisible();
+    expect(screen.getByText('Research and design')).toBeVisible();
     expect(screen.queryByText('Research & Interaction')).not.toBeInTheDocument();
     expect(screen.getByText('Product Designer (UI/UX)')).toBeVisible();
 
@@ -98,7 +98,7 @@ describe('AboutPage', () => {
     ).not.toBeInTheDocument();
     expect(
       screen.getByText(
-        'Rapidly build interactive HTML with product logic using Codex and Claude.',
+        'Build interactive prototypes with product logic using Codex and Claude.',
       ),
     ).toBeVisible();
     expect(
@@ -106,7 +106,7 @@ describe('AboutPage', () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByText('Not complex production backends')).not.toBeInTheDocument();
     const evidenceSection = screen
-      .getByRole('heading', { name: 'Design value, beyond the screen' })
+      .getByRole('heading', { name: 'Design that moves into product results' })
       .closest('section');
     expect(evidenceSection).not.toBeNull();
     expect(within(evidenceSection as HTMLElement).getAllByRole('article')).toHaveLength(3);

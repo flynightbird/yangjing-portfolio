@@ -22,9 +22,9 @@ describe('XuelangLayout', () => {
     },
     {
       locale: 'en' as const,
-      title: 'Xuelang Commercial Experience Upgrade',
-      proposition: 'From a course-selling tool to a high-quality learning platform',
-      role: 'Lead UX Designer',
+      title: 'Xuelang learning experience',
+      proposition: 'From course fulfillment to a learning platform where quality can be recognized and evaluated',
+      role: 'Independent Product Designer',
       duration: 'Mar–Apr 2022 · 2 months',
       coverAlt: 'Xuelang experience-upgrade cover',
       proof: '14-day experiment · GMV per user +11.75%',

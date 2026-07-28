@@ -148,7 +148,7 @@
   inset-block-start: auto;
   inset-block-end: 0;
   inset-inline-start: 50%;
-  width: min(49.5vw, 42.1875rem);
+  width: min(39.6vw, 33.75rem);
   max-width: none;
   height: auto;
   pointer-events: none;
@@ -332,7 +332,7 @@
   .heroPortrait {
     inset-block-start: auto;
     inset-block-end: 0;
-    width: min(130.5vw, 34.2rem);
+    width: min(104.4vw, 27.36rem);
   }
 
   .heroRole {

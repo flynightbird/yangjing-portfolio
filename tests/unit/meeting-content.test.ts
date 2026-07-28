@@ -35,8 +35,8 @@ describe('Agora Meeting content', () => {
 
     expect(source).not.toMatch(/Before the meeting|After the meeting|会议前|会议后/);
     expect(source).not.toMatch(/increased by\s*\d+%|提升了?\s*\d+%/i);
-    expect(source.match(/No quantitative adoption, satisfaction, or efficiency metrics are claimed/g))
-      .toHaveLength(1);
+    expect(source).not.toMatch(/No quantitative adoption, satisfaction, or efficiency metrics are claimed/);
+    expect(source).not.toMatch(/\bdisclosure\s*:/);
     expect(source).not.toMatch(/因缺少验证数据|不作采用率/);
     expect(source).toMatch(/Customer API/);
     expect(source).toMatch(/客户 API/);
@@ -56,7 +56,7 @@ describe('Agora Meeting content', () => {
     const english = readFileSync('content/work/meeting.en.mdx', 'utf8');
     const chinese = readFileSync('content/work/meeting.zh.mdx', 'utf8');
 
-    expect(english).toContain("title: 'Agora Meeting: A Real-time Collaboration System'");
+    expect(english).toContain("title: 'Agora Meeting: a real-time collaboration system'");
     expect(chinese).toContain("title: 'Agora Meeting：实时协作系统'");
   });
 

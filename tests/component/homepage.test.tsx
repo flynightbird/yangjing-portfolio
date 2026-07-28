@@ -28,10 +28,10 @@ describe('DualIdentityHero', () => {
       screen.getByRole('heading', { level: 2, name: 'AI-native Builder' }),
     ).toBeVisible();
     expect(
-      screen.getByText('Designing at consumer scale and across complex AI and B2B systems.'),
+      screen.getByText('Product Designer focused on AI and complex systems.'),
     ).toBeVisible();
     expect(container.querySelector('[data-designer-credit]')).toHaveTextContent(
-      'UI / UX Designer',
+      'UI/UX Designer',
     );
 
     const portraitScene = container.querySelector('[data-media="portrait"]');
@@ -101,13 +101,13 @@ describe('IntroStory', () => {
     expect(container.querySelectorAll('[data-intro-emphasis]')).toHaveLength(3);
     expect(container.querySelectorAll('[data-intro-line]')).toHaveLength(0);
     expect(scenes[0]).toHaveTextContent(
-      "Hi, I'm Yang Jing, a UX/UI designer with more than a decade of experience.",
+      "I'm Yang Jing, a Product Designer focused on AI and complex systems.",
     );
     expect(scenes[2]).toHaveTextContent(
-      /moving from concept and prototype to real experience/,
+      /earlier in the design process/,
     );
     expect(scenes[2]).toHaveTextContent(
-      'I work fluently with Codex, Claude Design, and Figma Make to explore ideas and turn designs into working products. With AIGC tools such as Midjourney and Jimeng AI, I expand the visual language and bring greater coherence and polish to the product.',
+      'I work fluently with Codex, Claude Design, and Figma Make to explore product logic and build interactive prototypes. I use visual tools such as Midjourney and Jimeng AI to extend visual direction when the product calls for it.',
     );
     expect(
       Array.from(scenes[2].querySelectorAll('[data-intro-support-emphasis]')).map(
@@ -497,7 +497,7 @@ describe('FeaturedWork', () => {
   it('uses complete Xuelang and Meeting case routes', () => {
     render(<FeaturedWork locale="en" />);
 
-    expect(screen.getByRole('link', { name: 'View case study Xuelang Commercial Experience Upgrade' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'View case study Xuelang learning experience' })).toHaveAttribute(
       'href',
       '/en/work/xuelang/',
     );
@@ -554,8 +554,8 @@ describe('FeaturedWork', () => {
     {
       locale: 'en' as const,
       proposition:
-        'One meeting system, adapting across four platforms and constantly changing live states.',
-      evidence: 'Sole Product Designer · Shipped across four platforms',
+        'Created one meeting system that adapts its stage, workspace, and information hierarchy across four platforms.',
+      evidence: 'Independent Product Designer · Shipped across four platforms',
       states: ['Adaptive stage', 'Collaborative workspace', 'Real-time information'],
       platforms: ['Desktop', 'Web', 'Tablet', 'Mobile'],
       mediaLink: 'Explore Agora Meeting across Web and mobile',
@@ -1109,11 +1109,11 @@ describe('VisualArchive', () => {
     const { container } = render(<VisualArchive locale="en" />);
 
     expect(
-      screen.getByRole('heading', { name: 'More Consumer Product Work' }),
+      screen.getByRole('heading', { name: 'Selected consumer product work' }),
     ).toBeVisible();
     expect(
       screen.getByText(
-        'More design work, presented through a lightweight, image-led selection of product, brand, and character projects.',
+        'An image-led selection spanning product experience, visual systems, and character design.',
       ),
     ).toBeVisible();
     expect(screen.getByText('Alibaba')).toBeVisible();
@@ -1133,7 +1133,7 @@ describe('VisualArchive', () => {
     expect(screen.getByText('MR CHONG')).toBeVisible();
     expect(screen.queryByRole('heading', { name: 'Tongcheng Travel' })).not.toBeInTheDocument();
     expect(
-      screen.getByText(/A home-design tool and platform from Alibaba/),
+      screen.getByText(/Alibaba's home-design platform/),
     ).toBeVisible();
     expect(container.querySelectorAll('[data-archive-skills]')).toHaveLength(4);
     expect(screen.getAllByText('Skills')).toHaveLength(4);

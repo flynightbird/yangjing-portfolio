@@ -13,12 +13,12 @@ describe('About framework', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: 'AI-native product designer. Product judgment, made tangible.',
+        name: 'Clarify the complexity. Make the judgment tangible.',
       }),
     ).toBeVisible();
     expect(
       screen.getByText(
-        'I use strong UI and UX craft to untangle complex product problems, then turn ideas into interactive, testable experiences.',
+        'My work connects user research, consumer products at scale, complex systems, and AI. I turn technical and business complexity into experiences people can understand and use.',
       ),
     ).toBeVisible();
     expect(container.querySelector('[data-publication-state="draft"]')).not.toBeInTheDocument();

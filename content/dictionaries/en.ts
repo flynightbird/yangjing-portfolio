@@ -177,62 +177,62 @@ export const enDictionary = {
   },
   home: {
     title: 'Yang Jing',
-    description: 'Product Designer and AI-native Builder.',
+    description: 'Product Designer focused on AI and complex systems.',
     hero: {
       name: 'Yang Jing',
       designerRole: 'Product Designer',
       builderRole: 'AI-native Builder',
       designerSummary:
-        'Designing at consumer scale and across complex AI and B2B systems.',
-      designerCredit: 'UI / UX Designer',
+        'Product Designer focused on AI and complex systems.',
+      designerCredit: 'UI/UX Designer',
       builderSummary:
-        'Using Vibe Coding to prototype, test, and ship working experiences.',
+        'Using Vibe Coding to turn product judgment into testable, working prototypes.',
       portraitDraft: 'Portrait awaiting approved photography',
       portraitLabel: 'Yang Jing portrait frame',
     },
     projects: {
       xuelang: {
-        company: 'ByteDance / 字节跳动',
+        company: 'ByteDance',
         kind: 'Deep case study',
-        title: 'Xuelang Commercial Experience Upgrade',
+        title: 'Xuelang learning experience',
         proposition:
-          'From a course-selling tool to a high-quality learning platform',
-        role: 'Lead UX Designer',
+          'Made course quality easier to recognize, evaluate, and experience across the learning journey.',
+        role: 'Independent Product Designer',
         status: 'Experiment validated',
         mediaLabel: 'Xuelang product panorama',
         action: 'View case study',
       },
       callAgent: {
-        company: 'Agora / 声网',
+        company: 'Agora',
         kind: 'Deep case study',
         title: 'Call Agent',
         proposition:
-          'Make AI visible, testable, and controllable before release.',
-        role: 'Lead Product Designer',
-        status: 'Limited beta',
-        mediaLabel: 'Real product evidence',
+          'Turned conversational AI capabilities into a configurable workflow for testing, release, and call operations.',
+        role: 'Independent Product Designer',
+        status: 'Launched',
+        mediaLabel: 'Call Agent product workflow',
         action: 'View case study',
       },
       convoAi: {
-        company: 'Agora / 声网',
+        company: 'Agora',
         kind: 'Consumer experience',
         title: 'ConvoAI',
         proposition:
-          'AI conversation designed for the people directly experiencing it.',
-        role: 'Product Designer',
-        status: 'Public product, media replacement pending',
-        mediaLabel: 'Temporary web and app media',
+          'Unified real-time AI conversation states, feedback, and controls across App and Web.',
+        role: 'Independent Product Designer',
+        status: 'Launched',
+        mediaLabel: 'ConvoAI App and Web product experience',
         action: 'View case study',
         temporaryNotice:
-          'Temporary third-party imagery. Replace with owned project assets before publishing.',
+          'ConvoAI App and Web product media.',
       },
       meeting: {
-        company: 'Agora / 声网',
+        company: 'Agora',
         kind: 'Enterprise meeting aPaaS',
         title: 'Agora Meeting',
         proposition:
-          'One meeting system, adapting across four platforms and constantly changing live states.',
-        role: 'Sole Product Designer',
+          'Created one meeting system that adapts its stage, workspace, and information hierarchy across four platforms.',
+        role: 'Independent Product Designer',
         status: 'Shipped across four platforms',
         mediaLabel: 'Explore Agora Meeting across Web and mobile',
         action: 'View case study',
@@ -253,7 +253,7 @@ export const enDictionary = {
         captureCaption: 'Public website captured in July 2026.',
       },
       sttDemo: {
-        company: 'Agora / 声网',
+        company: 'Agora',
         kind: 'Build Lab',
         title: 'STT Demo',
         proposition:
@@ -265,9 +265,9 @@ export const enDictionary = {
       },
     },
     archive: {
-      title: 'More Consumer Product Work',
+      title: 'Selected consumer product work',
       description:
-        'More design work, presented through a lightweight, image-led selection of product, brand, and character projects.',
+        'An image-led selection spanning product experience, visual systems, and character design.',
       draftSlot: 'Draft media slot',
       placeholderLabel: 'Visual placeholder',
       carouselLabel: 'Visual Archive projects',
@@ -286,11 +286,11 @@ export const enDictionary = {
       skillsLabel: 'Skills',
     },
     about: {
-      title: 'Across scale, systems, and working prototypes',
+      title: 'From product complexity to working experiences',
       career:
-        'From large-scale consumer product design, into complex B2B and AI systems, then into AI-assisted product building.',
+        'My path connects user research, consumer products at scale, complex systems, and AI product design.',
       opportunity:
-        'Product design + AI prototyping, from complex idea to working experience.',
+        'I use AI-assisted prototyping to make product decisions tangible earlier.',
       action: 'About and contact',
     },
   },
@@ -316,18 +316,18 @@ export const enDictionary = {
   aboutPage: {
     title: 'About Yang Jing',
     intro:
-      'Product Designer and AI-native Builder working across consumer scale, complex systems, and working prototypes.',
+      'Product Designer focused on AI and complex systems.',
     career:
-      'From large-scale consumer product design, into complex B2B and AI systems, then into AI-assisted product building.',
+      'From user research and consumer products at scale to complex systems and AI product design.',
     opportunityTitle: 'Selected opportunities',
     opportunity:
-      'Product design + AI prototyping, from complex idea to working experience.',
-    awaitingTitle: 'Publication inputs pending',
+      'Product design for AI, real-time interaction, and complex workflows.',
+    awaitingTitle: 'Portfolio materials',
     portrait: 'Approved portrait photography',
     resumes: 'English and Chinese resumes',
     contact: 'Email, LinkedIn, and WeChat',
     contactDescription:
-      'Verified direct contact details will appear here when the private contact file is supplied.',
+      'Direct contact details for product and design conversations.',
   },
   footer: {
     privacy:
