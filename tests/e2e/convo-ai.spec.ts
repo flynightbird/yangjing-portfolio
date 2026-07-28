@@ -198,7 +198,7 @@ for (const locale of ['en', 'zh'] as const) {
       await expect(page.locator('[data-convo-web-plane]').first()).toBeVisible();
       await expect(page.locator('[data-convo-app-device]').first()).toBeVisible();
       await expect(page.locator('[data-convo-next-section-hint]')).toBeVisible();
-      await expect(article).toContainText(locale === 'zh' ? '独立负责产品设计' : 'Sole product design ownership');
+      await expect(article).toContainText(locale === 'zh' ? '独立负责产品设计' : 'Independent Product Designer');
       await expect(article).not.toContainText(/designer-reported|现有证据|未经验证的业务指标/i);
       await expect(article).not.toContainText(/\d+(?:\.\d+)?%/);
       await expect(page.locator('[data-case-web-control]')).toHaveAttribute('data-surface', 'dark');

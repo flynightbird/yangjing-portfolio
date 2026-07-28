@@ -20,7 +20,7 @@ test.describe('Xuelang case study', () => {
       await expect(page).toHaveTitle(
         locale === 'zh'
           ? '学浪商业化产品设计 | Yang Jing'
-          : 'Xuelang Commercial Experience Upgrade | Yang Jing',
+          : 'Xuelang learning experience | Yang Jing',
       );
 
       const sections = await page
@@ -30,8 +30,8 @@ test.describe('Xuelang case study', () => {
 
       const title = locale === 'zh'
         ? '学浪商业化产品设计'
-        : 'Xuelang Commercial Experience Upgrade';
-      const role = locale === 'zh' ? '独立负责产品设计' : 'Lead UX Designer';
+        : 'Xuelang learning experience';
+      const role = locale === 'zh' ? '独立负责产品设计' : 'Independent Product Designer';
       const duration = locale === 'zh' ? '2022.03–04 · 2 个月' : 'Mar–Apr 2022 · 2 months';
       await expect(page.getByRole('heading', { level: 1, name: title })).toBeInViewport();
       await expect(page.getByText(role, { exact: true })).toBeInViewport();

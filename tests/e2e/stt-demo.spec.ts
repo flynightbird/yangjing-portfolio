@@ -106,7 +106,7 @@ for (const locale of ['en', 'zh'] as const) {
         );
       } else {
         await expect(page.locator('#evidence-boundary')).toContainText(
-          'No actual STT stream',
+          'a static interaction prototype rather than a connected RTC or STT service',
         );
       }
 

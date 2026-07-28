@@ -170,7 +170,7 @@ test.describe('portfolio homepage framework', () => {
       await expect(page.locator('[data-about-preview]')).toHaveCount(0);
       await expect(
         page.getByRole('heading', {
-          name: locale === 'zh' ? 'More C 端产品作品' : 'More Consumer Product Work',
+          name: locale === 'zh' ? 'More C 端产品作品' : 'Selected consumer product work',
         }),
       ).toBeVisible();
       await expect(
@@ -253,7 +253,7 @@ test.describe('portfolio homepage framework', () => {
 
     await page
       .getByRole('link', {
-        name: 'View case study Xuelang Commercial Experience Upgrade',
+        name: 'View case study Xuelang learning experience',
       })
       .click();
 
@@ -284,7 +284,7 @@ test.describe('portfolio homepage framework', () => {
 
     await page
       .getByRole('link', {
-        name: 'View case study Xuelang Commercial Experience Upgrade',
+        name: 'View case study Xuelang learning experience',
       })
       .click();
     await page.waitForURL('**/en/work/xuelang/');
@@ -413,7 +413,7 @@ test.describe('portfolio homepage framework', () => {
     await expect(page).toHaveURL(/#archive$/);
     const header = await page.getByRole('banner').boundingBox();
     const title = await page.getByRole('heading', {
-      name: 'More Consumer Product Work',
+      name: 'Selected consumer product work',
     }).boundingBox();
     expect(header).not.toBeNull();
     expect(title).not.toBeNull();
@@ -463,7 +463,7 @@ test.describe('portfolio homepage framework', () => {
     );
   });
 
-  test('keeps the 90 percent portraits aligned to the Hero baseline', async ({ page }) => {
+  test('keeps the 80 percent portraits aligned to the Hero baseline', async ({ page }) => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
     const viewport = page.viewportSize();
     if (!viewport) throw new Error('Missing viewport');
@@ -485,8 +485,8 @@ test.describe('portfolio homepage framework', () => {
       };
     });
     const expectedWidth = viewport.width < 768
-      ? Math.min(viewport.width * 1.305, geometry.rootFontSize * 34.2)
-      : Math.min(viewport.width * 0.495, geometry.rootFontSize * 42.1875);
+      ? Math.min(viewport.width * 1.044, geometry.rootFontSize * 27.36)
+      : Math.min(viewport.width * 0.396, geometry.rootFontSize * 33.75);
 
     expect(geometry.designer.width).toBeCloseTo(expectedWidth, 0);
     expect(geometry.builder.width).toBeCloseTo(expectedWidth, 0);

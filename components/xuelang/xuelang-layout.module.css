@@ -98,6 +98,10 @@
   letter-spacing: 0;
 }
 
+.heroTitlePhrase {
+  white-space: nowrap;
+}
+
 .proposition {
   max-width: 34rem;
   margin: 0;
@@ -673,6 +677,7 @@
   }
 
   .root:lang(en) .hero h1 {
+    max-width: none;
     font-size: 2.25rem;
   }
 

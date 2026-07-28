@@ -113,7 +113,14 @@ export function XuelangLayout({
             <div className={styles.heroCopy}>
               <p className={styles.eyebrow}>{text.eyebrow}</p>
               <div className={styles.heroThesis} data-hero-thesis>
-                <h1>{meta.title}</h1>
+                <h1>
+                  {locale === 'en' ? (
+                    <>
+                      Xuelang{' '}
+                      <span className={styles.heroTitlePhrase}>learning experience</span>
+                    </>
+                  ) : meta.title}
+                </h1>
               </div>
               <div className={styles.heroSupport} data-hero-support>
                 <p className={styles.proposition}>{meta.proposition}</p>
