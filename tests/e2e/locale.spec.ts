@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const zhHomepageIdentity = '把复杂产品理清，再把关键判断做成可体验、可验证的产品。';
+const zhHomepageIdentity = '专注于 C 端产品，以及复杂的 B2B 与 AI 系统设计。';
 
 test('renders the English and Simplified Chinese homepages directly', async ({
   page,
