@@ -33,38 +33,45 @@ test.describe('Call Agent responsive system story', () => {
     expect(Math.abs(nextMediaBox!.height - initialMediaBox!.height)).toBeLessThanOrEqual(1);
   });
 
-  test('keeps bilingual hero copy and titles strictly above hero media', async ({ page }) => {
+  test('keeps bilingual hero copy, launch banner, and titles strictly above hero media', async ({ page }) => {
     for (const locale of ['zh', 'en'] as const) {
       await page.goto(`/${locale}/work/call-agent/`, { waitUntil: 'networkidle' });
       await page.evaluate(() => document.fonts.ready);
 
       const heroTop = page.locator('[data-call-agent-hero-top]');
       const heroTitle = heroTop.locator('h1');
+      const launchBanner = page.locator('[data-convo-launch-banner]');
       const heroMedia = page.locator('[data-call-agent-hero-media]');
+      await expect(launchBanner).toBeVisible();
       await expect(heroMedia).toBeVisible();
       await expect.poll(async () => {
-        const [topBox, titleBox, mediaBox] = await Promise.all([
+        const [topBox, titleBox, bannerBox, mediaBox] = await Promise.all([
           heroTop.boundingBox(),
           heroTitle.boundingBox(),
+          launchBanner.boundingBox(),
           heroMedia.boundingBox(),
         ]);
-        if (!topBox || !titleBox || !mediaBox) throw new Error(`Expected ${locale} hero geometry`);
+        if (!topBox || !titleBox || !bannerBox || !mediaBox) throw new Error(`Expected ${locale} hero geometry`);
         return Math.max(
-          topBox.y + topBox.height - mediaBox.y,
-          titleBox.y + titleBox.height - mediaBox.y,
+          topBox.y + topBox.height - bannerBox.y,
+          titleBox.y + titleBox.height - bannerBox.y,
+          bannerBox.y + bannerBox.height - mediaBox.y,
         );
       }).toBeLessThanOrEqual(0);
 
-      const [topBox, titleBox, mediaBox] = await Promise.all([
+      const [topBox, titleBox, bannerBox, mediaBox] = await Promise.all([
         heroTop.boundingBox(),
         heroTitle.boundingBox(),
+        launchBanner.boundingBox(),
         heroMedia.boundingBox(),
       ]);
       expect(topBox).not.toBeNull();
       expect(titleBox).not.toBeNull();
+      expect(bannerBox).not.toBeNull();
       expect(mediaBox).not.toBeNull();
-      expect(topBox!.y + topBox!.height).toBeLessThanOrEqual(mediaBox!.y);
-      expect(titleBox!.y + titleBox!.height).toBeLessThanOrEqual(mediaBox!.y);
+      expect(topBox!.y + topBox!.height).toBeLessThanOrEqual(bannerBox!.y);
+      expect(titleBox!.y + titleBox!.height).toBeLessThanOrEqual(bannerBox!.y);
+      expect(bannerBox!.y + bannerBox!.height).toBeLessThanOrEqual(mediaBox!.y);
     }
   });
 

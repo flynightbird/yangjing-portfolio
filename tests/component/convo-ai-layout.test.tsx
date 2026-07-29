@@ -73,8 +73,6 @@ describe('ConvoAiLayout', () => {
     },
   ])('renders the $locale opening in the approved information and media order', ({
     locale,
-    title,
-    subtitle,
     factsLabel,
   }) => {
     const { container } = render(
@@ -83,56 +81,20 @@ describe('ConvoAiLayout', () => {
       </ConvoAiLayout>,
     );
 
-    const banner = container.querySelector('[data-convo-launch-banner]');
     const heroTop = container.querySelector('[data-convo-hero-top]');
     const heroMeta = container.querySelector('[data-convo-hero-meta]');
     const heroMedia = container.querySelector('[data-convo-hero-media]');
     const facts = container.querySelector(`dl[aria-label="${factsLabel}"]`);
     const hint = container.querySelector('[data-convo-next-section-hint]');
 
-    expect(banner).toBeVisible();
-    expect(banner).toHaveAttribute('role', 'region');
-    expect(banner).toHaveAccessibleName(title);
-    expect(banner).toHaveTextContent(title);
-    expect(banner).toHaveTextContent(subtitle);
+    expect(container.querySelector('[data-convo-launch-banner]')).toBeNull();
     expect(heroTop).not.toBeNull();
     expect(heroMeta).not.toBeNull();
     expect(heroMedia).not.toBeNull();
     expect(facts).not.toBeNull();
     expect(heroMeta).toContainElement(facts);
     expect(hint).not.toBeNull();
-    expect(heroTop!.compareDocumentPosition(banner!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
-    expect(banner!.compareDocumentPosition(heroMedia!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(heroTop!.compareDocumentPosition(heroMedia!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     expect(heroMedia!.compareDocumentPosition(hint!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
-
-    const artwork = banner!.querySelector('[data-convo-launch-artwork]');
-    expect(artwork).toHaveAttribute('aria-hidden', 'true');
-    expect(artwork?.querySelectorAll('img')).toHaveLength(3);
-    expect(banner!.querySelector('a, button')).toBeNull();
-  });
-
-  it('prefixes launch banner image assets with the configured GitHub Pages base path', () => {
-    vi.stubEnv('NEXT_PUBLIC_BASE_PATH', '/yangjing-portfolio');
-
-    const { container } = render(
-      <ConvoAiLayout meta={meta} locale="zh">
-        <section id="context-thesis">Story</section>
-      </ConvoAiLayout>,
-    );
-
-    const bannerImages = Array.from(
-      container.querySelectorAll<HTMLImageElement>('[data-convo-launch-artwork] img'),
-      (image) => {
-        const src = image.getAttribute('src') ?? '';
-        const optimizedUrl = new URL(src, 'https://example.com').searchParams.get('url');
-        return optimizedUrl ?? src;
-      },
-    );
-
-    expect(bannerImages).toEqual([
-      '/yangjing-portfolio/images/convo-ai/launch-banner/base.png',
-      '/yangjing-portfolio/images/convo-ai/launch-banner/float-robot.png',
-      '/yangjing-portfolio/images/convo-ai/launch-banner/float-cloud.png',
-    ]);
   });
 });

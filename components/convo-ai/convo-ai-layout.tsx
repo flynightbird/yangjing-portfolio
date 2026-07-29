@@ -1,7 +1,6 @@
 import { ChapterNav } from '@/components/case-study/chapter-nav';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
 
-import { ConvoAiLaunchBanner } from './convo-ai-launch-banner';
 import { ConvoAiStage } from './convo-ai-media';
 import { ConvoAiMotion } from './convo-ai-motion';
 import { ConvoAiToneController } from './convo-ai-tone-controller';
@@ -36,7 +35,6 @@ export function ConvoAiLayout({ meta, locale, children }: ContentLayoutProps) {
               </dl>
             </div>
           </div>
-          <ConvoAiLaunchBanner locale={locale} />
           <div className={styles.heroMedia} data-convo-hero-media>
             <ConvoAiStage locale={locale} eyebrow="AGORA / SHIPPED PRODUCT / APP + WEB" title="ConvoAI" description={meta.proposition} webId="web-join-exit" appId="app-conversation-start" hero mediaOnly labelledBy={titleId} describedBy={propositionId} />
           </div>

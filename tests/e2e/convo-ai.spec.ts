@@ -238,14 +238,13 @@ for (const locale of ['en', 'zh'] as const) {
       const heroTop = page.locator('[data-convo-hero-top]');
       const heroCopy = page.locator('[data-convo-hero-copy]');
       const heroMeta = page.locator('[data-convo-hero-meta]');
-      const banner = page.locator('[data-convo-launch-banner]');
       const heroMedia = page.locator('[data-convo-hero-media]');
       const hint = page.locator('[data-convo-next-section-hint]');
-      const [topBox, copyBox, metaBox, bannerBox, mediaBox, hintBox, viewportWidth] = await Promise.all([
+      await expect(page.locator('[data-convo-launch-banner]')).toHaveCount(0);
+      const [topBox, copyBox, metaBox, mediaBox, hintBox, viewportWidth] = await Promise.all([
         heroTop.boundingBox(),
         heroCopy.boundingBox(),
         heroMeta.boundingBox(),
-        banner.boundingBox(),
         heroMedia.boundingBox(),
         hint.boundingBox(),
         page.evaluate(() => window.innerWidth),
@@ -254,15 +253,13 @@ for (const locale of ['en', 'zh'] as const) {
       expect(topBox).not.toBeNull();
       expect(copyBox).not.toBeNull();
       expect(metaBox).not.toBeNull();
-      expect(bannerBox).not.toBeNull();
       expect(mediaBox).not.toBeNull();
       expect(hintBox).not.toBeNull();
-      expect(topBox!.y + topBox!.height).toBeLessThanOrEqual(bannerBox!.y + 1);
-      expect(bannerBox!.y + bannerBox!.height).toBeLessThanOrEqual(mediaBox!.y + 1);
+      expect(topBox!.y + topBox!.height).toBeLessThanOrEqual(mediaBox!.y + 1);
       expect(mediaBox!.y + mediaBox!.height).toBeLessThanOrEqual(hintBox!.y + 1);
 
       const expectedRightGutter = testInfo.project.name === 'desktop' ? 60 : testInfo.project.name === 'tablet' ? 32 : 16;
-      const actualRightGutter = viewportWidth - (bannerBox!.x + bannerBox!.width);
+      const actualRightGutter = viewportWidth - (mediaBox!.x + mediaBox!.width);
       expect(Math.abs(actualRightGutter - expectedRightGutter)).toBeLessThanOrEqual(1);
 
       if (testInfo.project.name === 'desktop') {

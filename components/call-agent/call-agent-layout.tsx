@@ -1,4 +1,5 @@
 import { ChapterNav } from '@/components/case-study/chapter-nav';
+import { ConvoAiLaunchBanner } from '@/components/convo-ai/convo-ai-launch-banner';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
 
 import { CallAgentHeroSequence } from './call-agent-hero-sequence';
@@ -36,6 +37,7 @@ export function CallAgentLayout({ meta, locale, children, actions }: ContentLayo
                   {actions}
                 </div>
               </div>
+              <ConvoAiLaunchBanner locale={locale} />
               <div className={styles.heroMedia} data-call-agent-hero-media>
                 <CallAgentHeroSequence locale={locale} />
               </div>

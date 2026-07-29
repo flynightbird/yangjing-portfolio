@@ -15,6 +15,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  vi.unstubAllEnvs();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
@@ -51,9 +52,14 @@ describe('Call Agent dedicated layout', () => {
     const heroTop = container.querySelector('[data-call-agent-hero-top]');
     const heroCopy = container.querySelector('[data-call-agent-hero-copy]');
     const heroMeta = container.querySelector('[data-call-agent-hero-meta]');
+    const launchBanner = container.querySelector('[data-convo-launch-banner]');
     const heroMedia = container.querySelector('[data-call-agent-hero-media]');
 
     expect(heroTop).toBeInTheDocument();
+    expect(launchBanner).toBeVisible();
+    expect(launchBanner).toHaveAccessibleName('声网 AI Studio 正式上线');
+    expect(launchBanner).toHaveTextContent('声网 AI Studio 正式上线');
+    expect(launchBanner).toHaveTextContent('自由搭配 ASR、LLM、TTS、数字人等，快速搭建 AI 智能体。');
     expect(heroCopy).toContainElement(screen.getByRole('heading', { level: 1 }));
     expect(heroTop).toContainElement(heroCopy as HTMLElement);
     expect(heroTop).toContainElement(heroMeta as HTMLElement);
@@ -63,6 +69,8 @@ describe('Call Agent dedicated layout', () => {
       container.querySelector('[data-call-agent-hero-sequence]') as HTMLElement,
     );
     expect(heroTop).not.toContainElement(heroMedia as HTMLElement);
+    expect(heroTop!.compareDocumentPosition(launchBanner!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(launchBanner!.compareDocumentPosition(heroMedia!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     expect(container.querySelector('[data-case-web-control]')).toHaveAttribute(
       'data-accent',
       'signal',
@@ -71,6 +79,31 @@ describe('Call Agent dedicated layout', () => {
     expect(screen.getByText(meta.status)).toBeVisible();
     expect(screen.getByRole('button', { name: '下载案例' })).toBeVisible();
     expect(container.querySelector('[data-project-previous], [data-project-next]')).toBeNull();
+  });
+
+  it('prefixes launch banner image assets with the configured GitHub Pages base path', () => {
+    vi.stubEnv('NEXT_PUBLIC_BASE_PATH', '/yangjing-portfolio');
+    const meta = getEntry('work', 'call-agent', 'zh').meta;
+    const { container } = render(
+      <CallAgentLayout meta={meta} locale="zh">
+        <section id="product-boundary"><h2>产品边界</h2></section>
+      </CallAgentLayout>,
+    );
+
+    const bannerImages = Array.from(
+      container.querySelectorAll<HTMLImageElement>('[data-convo-launch-artwork] img'),
+      (image) => {
+        const src = image.getAttribute('src') ?? '';
+        const optimizedUrl = new URL(src, 'https://example.com').searchParams.get('url');
+        return optimizedUrl ?? src;
+      },
+    );
+
+    expect(bannerImages).toEqual([
+      '/yangjing-portfolio/images/convo-ai/launch-banner/base.png',
+      '/yangjing-portfolio/images/convo-ai/launch-banner/float-robot.png',
+      '/yangjing-portfolio/images/convo-ai/launch-banner/float-cloud.png',
+    ]);
   });
 
   it('plays the detail Hero story in full, advancing only when each clip ends', () => {
