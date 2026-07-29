@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ConvoAiLayout } from '@/components/convo-ai/convo-ai-layout';
 import type { ContentMeta } from '@/content/schema';
@@ -13,6 +13,10 @@ const meta = {
   featuredOrder: 3,
   chapters: [{ id: 'context-thesis', label: 'Thesis' }],
 } as ContentMeta;
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
 
 describe('ConvoAiLayout', () => {
   it('renders the product theatre and shared chapter navigation without project neighbors', () => {
@@ -105,5 +109,30 @@ describe('ConvoAiLayout', () => {
     expect(artwork).toHaveAttribute('aria-hidden', 'true');
     expect(artwork?.querySelectorAll('img')).toHaveLength(3);
     expect(banner!.querySelector('a, button')).toBeNull();
+  });
+
+  it('prefixes launch banner image assets with the configured GitHub Pages base path', () => {
+    vi.stubEnv('NEXT_PUBLIC_BASE_PATH', '/yangjing-portfolio');
+
+    const { container } = render(
+      <ConvoAiLayout meta={meta} locale="zh">
+        <section id="context-thesis">Story</section>
+      </ConvoAiLayout>,
+    );
+
+    const bannerImages = Array.from(
+      container.querySelectorAll<HTMLImageElement>('[data-convo-launch-artwork] img'),
+      (image) => {
+        const src = image.getAttribute('src') ?? '';
+        const optimizedUrl = new URL(src, 'https://example.com').searchParams.get('url');
+        return optimizedUrl ?? src;
+      },
+    );
+
+    expect(bannerImages).toEqual([
+      '/yangjing-portfolio/images/convo-ai/launch-banner/base.png',
+      '/yangjing-portfolio/images/convo-ai/launch-banner/float-robot.png',
+      '/yangjing-portfolio/images/convo-ai/launch-banner/float-cloud.png',
+    ]);
   });
 });

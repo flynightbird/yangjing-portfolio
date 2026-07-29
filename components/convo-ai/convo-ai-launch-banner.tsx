@@ -1,6 +1,7 @@
 import Image from 'next/image';
 
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './convo-ai-layout.module.css';
 
@@ -36,21 +37,21 @@ export function ConvoAiLaunchBanner({ locale }: { locale: Locale }) {
       >
         <Image
           className={styles.launchBase}
-          src="/images/convo-ai/launch-banner/base.png"
+          src={withBasePath('/images/convo-ai/launch-banner/base.png')}
           alt=""
           width={861}
           height={300}
         />
         <Image
           className={styles.launchFloatOne}
-          src="/images/convo-ai/launch-banner/float-robot.png"
+          src={withBasePath('/images/convo-ai/launch-banner/float-robot.png')}
           alt=""
           width={148}
           height={142}
         />
         <Image
           className={styles.launchFloatTwo}
-          src="/images/convo-ai/launch-banner/float-cloud.png"
+          src={withBasePath('/images/convo-ai/launch-banner/float-cloud.png')}
           alt=""
           width={107}
           height={77}
