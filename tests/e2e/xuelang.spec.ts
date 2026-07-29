@@ -31,7 +31,7 @@ test.describe('Xuelang case study', () => {
       const title = locale === 'zh'
         ? '学浪商业化产品设计'
         : 'Xuelang learning experience';
-      const role = locale === 'zh' ? '独立负责产品设计' : 'Independent Product Designer';
+      const role = locale === 'zh' ? '主导团队负责产品设计' : 'Product Design Lead';
       const duration = locale === 'zh' ? '2022.03–04 · 2 个月' : 'Mar–Apr 2022 · 2 months';
       await expect(page.getByRole('heading', { level: 1, name: title })).toBeInViewport();
       await expect(page.getByText(role, { exact: true })).toBeInViewport();

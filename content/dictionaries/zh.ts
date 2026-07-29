@@ -48,7 +48,7 @@ export const zhDictionary = {
         kind: '深度案例',
         title: '学浪商业化产品设计',
         proposition: '从卖课工具，走向高品质学习平台',
-        role: '独立负责产品设计',
+        role: '主导团队负责产品设计',
         status: '已完成实验验证',
         mediaLabel: '学浪产品体验全景',
         action: '查看案例',

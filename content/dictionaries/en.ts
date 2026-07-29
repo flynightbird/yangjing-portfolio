@@ -197,7 +197,7 @@ export const enDictionary = {
         title: 'Xuelang learning experience',
         proposition:
           'Made course quality easier to recognize, evaluate, and experience across the learning journey.',
-        role: 'Independent Product Designer',
+        role: 'Product Design Lead',
         status: 'Experiment validated',
         mediaLabel: 'Xuelang product panorama',
         action: 'View case study',

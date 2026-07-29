@@ -56,8 +56,8 @@ describe('Xuelang bilingual case content', () => {
       expect(count(zh, `id="${id}"`), id).toBe(1);
       expect(count(en, `id="${id}"`), id).toBe(1);
     }
-    expect(zh).toContain('独立负责产品设计，包括整体体验策略、核心链路与关键方案');
-    expect(en).toContain('I was responsible for the overall experience strategy, core journeys, and key design solutions');
+    expect(zh).toContain('主导团队负责产品设计，覆盖整体体验策略、核心链路与关键方案');
+    expect(en).toContain('I led product design with the team, covering the overall experience strategy, core journeys, and key design solutions');
     expect(zh).not.toMatch(/唯一设计师|独立完成整个项目/);
     expect(en).not.toMatch(/sole designer|single-handedly/i);
   });

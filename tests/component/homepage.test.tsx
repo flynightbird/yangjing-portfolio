@@ -476,7 +476,7 @@ describe('FeaturedWork', () => {
     expect.soft(
       project('xuelang').queryByText('从卖课工具，走向高品质学习平台'),
     ).toBeVisible();
-    expect.soft(project('xuelang').queryByText('独立负责产品设计')).toBeVisible();
+    expect.soft(project('xuelang').queryByText('主导团队负责产品设计')).toBeVisible();
   });
 
   it('defaults to Call Agent focus and publishes owned ConvoAI media', () => {
