@@ -14,6 +14,15 @@ describe('GrowthBaseCase', () => {
 
     expect(sectionIds).toEqual(['showcase', 'experience-clips', 'disclosure']);
     expect(screen.getAllByTestId('growth-base-film')).toHaveLength(5);
+    expect(
+      screen.getByText('互动式、更立体、更亲近的陪伴，更贴近用户的心灵'),
+    ).toBeVisible();
+    expect(
+      screen.getByText(
+        '用‘互动式’的视频体验来替代扁平的 2D（左侧是原方案，右侧是设计师的改版方案）',
+      ),
+    ).toBeVisible();
+    expect(screen.getByText('营造场景氛围的体验片段')).toBeVisible();
     expect(screen.getByText('个人概念 · 可交互原型')).toBeVisible();
     expect(container.textContent).not.toMatch(/launched|shipped|上线|提升\s*\d|转化率|留存/iu);
   });

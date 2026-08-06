@@ -42,9 +42,9 @@ export function getGrowthBaseFilms(locale: Locale) {
 
 export const growthBaseCaseCopy = {
   zh: {
-    comparisonTitle: '同一任务，两个体验版本',
-    comparisonIntro: '左侧保留原方案，右侧运行当前可交互原型。切换 AI 教练或预约私教时，Before 会同步变化。',
-    clipsTitle: '体验片段',
+    comparisonTitle: '互动式、更立体、更亲近的陪伴，更贴近用户的心灵',
+    comparisonIntro: '用‘互动式’的视频体验来替代扁平的 2D（左侧是原方案，右侧是设计师的改版方案）',
+    clipsTitle: '营造场景氛围的体验片段',
     clipsIntro: '五段生成式 IP 视频覆盖欢迎、冥想、完成反馈与饮食行动。',
     disclosureTitle: '个人概念 · 可交互原型',
     disclosure: '产品结构、交互判断与视觉方向由设计师完成；生成式 AI 辅助视频制作与原型开发。当前展示设计目标与预期影响，不代表已验证的用户结果。',
