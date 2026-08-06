@@ -1,0 +1,87 @@
+.root {
+  color: #28231d;
+  background: #d7cbc0;
+}
+
+.case {
+  min-width: 0;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
+  gap: clamp(2rem, 6vw, 7rem);
+  width: min(calc(100% - 3rem), 78rem);
+  margin: 0 auto;
+  align-items: end;
+  padding: clamp(7rem, 10vw, 9rem) 0 clamp(3rem, 5vw, 4.5rem);
+}
+
+.heroCopy {
+  max-width: 48rem;
+}
+
+.eyebrow {
+  margin: 0 0 1rem;
+  color: rgba(40, 35, 29, 0.58);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.hero h1 {
+  margin: 0;
+  max-width: 12ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 5.4vw, 5.8rem);
+  font-weight: 400;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.proposition {
+  max-width: 39rem;
+  margin: 1.4rem 0 0;
+  color: rgba(40, 35, 29, 0.68);
+  font-size: clamp(1rem, 1.45vw, 1.22rem);
+  line-height: 1.65;
+}
+
+.facts {
+  margin: 0;
+  border-top: 1px solid rgba(40, 35, 29, 0.2);
+}
+
+.facts div {
+  padding: 0.9rem 0;
+  border-bottom: 1px solid rgba(40, 35, 29, 0.2);
+}
+
+.facts dt {
+  color: rgba(40, 35, 29, 0.5);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+}
+
+.facts dd {
+  margin: 0.35rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.content {
+  min-width: 0;
+}
+
+@media (max-width: 767px) {
+  .hero {
+    grid-template-columns: 1fr;
+    width: min(calc(100% - 2rem), 42rem);
+    gap: 2rem;
+    padding-top: 6rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.4rem, 12vw, 3.8rem);
+  }
+}
