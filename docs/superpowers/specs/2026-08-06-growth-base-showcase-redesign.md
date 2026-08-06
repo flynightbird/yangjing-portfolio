@@ -77,7 +77,7 @@ Title: `让陪伴进入一天中的不同场景`
 
 Intro: `生成式 IP 不只回应任务完成，也出现在欢迎、冥想、备餐与烹饪中，让健康行动自然融入连续的生活情境。`
 
-Use two warm-white horizontal editorial shells. Shell one contains `欢迎与进入` and `冥想过程`; shell two contains `饮食准备` and `烹饪行动`. Videos remain independently controllable. Keep only clear numbering and titles; do not add decorative microcopy. Retain the top-left watermark blur mask without covering captions.
+Use two warm-white horizontal editorial shells. Shell one contains `欢迎与进入` and `冥想过程`; shell two contains `饮食准备` and `烹饪行动`. Videos remain independently controllable. Keep only clear numbering and titles; do not add decorative microcopy. Retain the top-left watermark blur mask without covering captions. The third film, `饮食准备`, moves its watermark between corners during playback; give only this film a taller top-left mask so the watermark remains covered when it appears there. Keep the other films' mask dimensions unchanged, and let the existing bottom caption fade cover the lower-right watermark state.
 
 ## Visual System
 
