@@ -6,6 +6,18 @@ import { GrowthBaseComparison } from '@/components/growth-base/growth-base-compa
 afterEach(cleanup);
 
 describe('GrowthBaseComparison', () => {
+  it.each([
+    ['zh', 'zh-CN'],
+    ['en', 'en'],
+  ] as const)('passes the %s portfolio locale into the prototype', (locale, language) => {
+    const { container } = render(<GrowthBaseComparison locale={locale} />);
+
+    expect(container.querySelector('iframe')).toHaveAttribute(
+      'src',
+      `https://flynightbird.github.io/meditation-prototype/?embed=1&lang=${language}`,
+    );
+  });
+
   it('keeps a fixed mobile canvas inside a dominant After viewport', () => {
     const { container } = render(<GrowthBaseComparison locale="en" />);
 

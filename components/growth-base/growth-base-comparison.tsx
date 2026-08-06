@@ -27,6 +27,7 @@ export function GrowthBaseComparison({ locale }: { readonly locale: Locale }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [view, setView] = useState<GrowthBaseView>('coach');
   const before = beforeStates[view];
+  const prototypeLanguage = locale === 'zh' ? 'zh-CN' : 'en';
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -74,7 +75,7 @@ export function GrowthBaseComparison({ locale }: { readonly locale: Locale }) {
           <iframe
             ref={iframeRef}
             className={styles.prototype}
-            src="https://flynightbird.github.io/meditation-prototype/?embed=1"
+            src={`https://flynightbird.github.io/meditation-prototype/?embed=1&lang=${prototypeLanguage}`}
             title={locale === 'zh' ? '成长基地可交互原型' : 'Interactive Growth Base prototype'}
             width="390"
             height="844"
