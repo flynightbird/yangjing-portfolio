@@ -92,7 +92,7 @@ Use two warm-white horizontal editorial shells. Shell one contains `欢迎与进
 
 ## Responsive Behavior
 
-The portfolio chapters are desktop-only. At `max-width: 767px`, hide the desktop project header and all portfolio framing, including 02-05, and preserve the existing full-viewport interactive prototype. The prototype must not be compressed or placed inside another mobile mockup.
+The portfolio chapters are desktop-only. At `max-width: 767px`, hide the desktop project header, the portfolio-wide site navigation, and all portfolio framing, including 02-05, on the Growth Base route. Preserve the existing full-viewport interactive prototype without placing it under the portfolio navigation. The prototype must not be compressed or placed inside another mobile mockup. Keep the site navigation unchanged on desktop and on every other portfolio route.
 
 ## Localization
 
@@ -100,4 +100,4 @@ Author concise English copy for every new section. English should preserve the d
 
 ## Verification
 
-Automated tests must cover section order, bilingual copy, task count and centered focus, reward assets and manual tent interaction, language examples, two film shells with four videos, Lucide replay usage, and desktop-only portfolio sections. Browser verification must cover desktop layout, video shells, reward interaction, no horizontal overflow, and unchanged mobile prototype behavior.
+Automated tests must cover section order, bilingual copy, task count and centered focus, reward assets and manual tent interaction, the fully opaque ready-state tent, language examples, two film shells with four videos, the third film's taller watermark mask, Lucide replay usage, desktop-only portfolio sections, and route-specific mobile site-navigation visibility. Browser verification must cover desktop layout, video shells and watermark coverage, reward interaction, no horizontal overflow, a hidden mobile site header, and unchanged mobile prototype behavior.
