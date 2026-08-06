@@ -30,6 +30,16 @@ describe('Growth Base showcase CSS contract', () => {
     expect(css).toMatch(/\.filmShell\s*\{[\s\S]*background:\s*#f7f4ed/);
   });
 
+  it('keeps the ready tent opaque and enlarges only the meal-prep watermark mask', async () => {
+    const css = await readFile(stylesheetPath, 'utf8');
+
+    expect(css).toMatch(/\.tentAsset\s*\{[^}]*opacity:\s*1/);
+    expect(css).toMatch(/\.watermarkMask\s*\{[^}]*height:\s*2\.2rem/);
+    expect(css).toMatch(
+      /\.film\[data-film-id='meal-prep'\]\s+\.watermarkMask\s*\{[^}]*height:\s*3\.2rem/,
+    );
+  });
+
   it('keeps all portfolio storytelling desktop-only', async () => {
     const [css, layoutCss] = await Promise.all([
       readFile(stylesheetPath, 'utf8'),

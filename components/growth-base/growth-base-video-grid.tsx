@@ -16,7 +16,12 @@ export function GrowthBaseVideoGrid({ locale }: { readonly locale: Locale }) {
           {group.map((film) => {
             const descriptionId = `growth-base-film-${locale}-${film.id}-description`;
             return (
-              <figure className={styles.film} data-testid="growth-base-film" key={film.id}>
+              <figure
+                className={styles.film}
+                data-film-id={film.id}
+                data-testid="growth-base-film"
+                key={film.id}
+              >
                 <video
                   aria-describedby={descriptionId}
                   aria-label={film.label}

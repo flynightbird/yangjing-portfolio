@@ -96,6 +96,7 @@ describe('GrowthBaseCase', () => {
     expect(container.querySelectorAll('[data-film-shell] video')).toHaveLength(4);
     expect(container.querySelectorAll('[data-film-caption="bottom"]')).toHaveLength(4);
     expect(container.querySelectorAll('[data-watermark-mask="top-left"]')).toHaveLength(4);
+    expect(container.querySelector('[data-film-id="meal-prep"]')).toBeVisible();
     expect(screen.getByText('Bringing companionship into everyday moments')).toBeVisible();
   });
 

@@ -114,6 +114,20 @@ describe('SiteHeader', () => {
     render(<SiteHeader locale={pathname.startsWith('/zh/') ? 'zh' : 'en'} />);
 
     expect(screen.getByRole('banner')).toHaveAttribute('data-surface', 'dark');
+    expect(screen.getByRole('banner')).toHaveAttribute(
+      'data-mobile-visibility',
+      'visible',
+    );
+  });
+
+  it('marks only the Growth Base route as hidden on mobile', () => {
+    navigationMocks.pathname = '/zh/work/growth-base/';
+    render(<SiteHeader locale="zh" />);
+
+    expect(screen.getByRole('banner')).toHaveAttribute(
+      'data-mobile-visibility',
+      'hidden',
+    );
   });
 
   it('uses dark as the initial ConvoAI surface and follows shared tone events', () => {

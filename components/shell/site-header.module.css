@@ -178,6 +178,10 @@
 }
 
 @media (max-width: 767px) {
+  .root[data-mobile-visibility='hidden'] {
+    display: none;
+  }
+
   .root {
     height: 64px;
     padding-inline: 0.75rem;

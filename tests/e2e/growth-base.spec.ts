@@ -39,6 +39,7 @@ test.describe('Growth Base decision showcase', () => {
       await expect(decision).toBeHidden();
     }
     await expect(page.locator('[data-comparison-role="before"]')).toBeHidden();
+    await expect(page.getByRole('banner')).toBeHidden();
 
     const prototype = page.locator('[data-prototype-viewport]');
     await expect(prototype).toBeVisible();

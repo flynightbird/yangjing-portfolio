@@ -468,7 +468,7 @@
   z-index: 2;
   width: min(65%, 17rem);
   height: auto;
-  opacity: 0.22;
+  opacity: 1;
   transform: translateY(-2.5rem) scale(0.9);
 }
 
@@ -630,6 +630,10 @@
   background: rgba(18, 19, 24, 0.2);
   backdrop-filter: blur(12px);
   pointer-events: none;
+}
+
+.film[data-film-id='meal-prep'] .watermarkMask {
+  height: 3.2rem;
 }
 
 .film figcaption {

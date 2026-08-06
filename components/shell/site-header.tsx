@@ -22,6 +22,7 @@ export function SiteHeader({ locale }: { readonly locale: Locale }) {
   const dictionary = locale === 'zh' ? zhDictionary : enDictionary;
   const localeRoot = withBasePath(`/${locale}/`);
   const pathname = usePathname();
+  const hideOnMobile = /^\/(?:en|zh)\/work\/growth-base\/?$/.test(pathname);
   const [scrolled, setScrolled] = useState(false);
   const [sectionSurface, setSectionSurface] = useState<'light' | 'dark' | null>(null);
   const topSentinelRef = useRef<HTMLSpanElement>(null);
@@ -64,6 +65,7 @@ export function SiteHeader({ locale }: { readonly locale: Locale }) {
       />
       <header
         className={styles.root}
+        data-mobile-visibility={hideOnMobile ? 'hidden' : 'visible'}
         data-scrolled={scrolled ? 'true' : 'false'}
         data-surface={sectionSurface ?? resolveHeaderSurface(pathname)}
       >
