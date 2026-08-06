@@ -7,6 +7,10 @@ const stylesheetPath = path.join(
   process.cwd(),
   'components/growth-base/growth-base.module.css',
 );
+const layoutStylesheetPath = path.join(
+  process.cwd(),
+  'components/growth-base/growth-base-layout.module.css',
+);
 
 describe('Growth Base showcase CSS contract', () => {
   it('uses a fixed desktop prototype canvas and removes scaling on mobile', async () => {
@@ -30,6 +34,20 @@ describe('Growth Base showcase CSS contract', () => {
     );
     expect(css).toMatch(
       /\.film:nth-child\(5\)[\s\S]*grid-column:\s*4\s*\/\s*span\s*2/,
+    );
+  });
+
+  it('aligns the hero and section copy to the same desktop content width', async () => {
+    const [css, layoutCss] = await Promise.all([
+      readFile(stylesheetPath, 'utf8'),
+      readFile(layoutStylesheetPath, 'utf8'),
+    ]);
+
+    expect(layoutCss).toMatch(
+      /\.hero\s*\{[\s\S]*?width:\s*min\(calc\(100% - 3rem\),\s*78rem\)/,
+    );
+    expect(css).toMatch(
+      /\.sectionHeader\s*\{[\s\S]*?width:\s*min\(calc\(100% - 3rem\),\s*78rem\)/,
     );
   });
 });
