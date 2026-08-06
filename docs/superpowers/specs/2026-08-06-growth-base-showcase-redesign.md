@@ -2,121 +2,102 @@
 
 ## Status
 
-Approved design direction, pending written-spec review.
+Approved in conversation on 2026-08-06.
 
-## Problem
+## Positioning And Evidence
 
-The current desktop comparison gives the embedded prototype an iframe viewport of roughly `292 x 648px`. The Growth Base prototype is designed around a mobile canvas close to `390 x 844px`. Because the iframe receives the smaller viewport directly, the application triggers compact layout rules and compresses its text, overlays, navigation, and task content into the same visible area.
+- **Fact:** The supplied project is a personal WeChat mini-program concept with an interactive prototype.
+- **Fact:** The supplied prototype and media demonstrate AI Coach, Personal Trainer, task, reward, meditation, and meal scenes.
+- **Gap:** No launch, adoption, retention, conversion, or validated behavior-change evidence was supplied.
+- **Recommendation:** Present intended design effects as design decisions, not measured outcomes.
 
-The surrounding case-study treatment also competes with the product: dark gradients, decorative paper rotation, heavy shadows, a chapter rail, and four-column analysis make the page feel denser than the intended portfolio showcase.
+Position the work as an exploration of how an AI coach can replace dry check-ins with warmer, more interactive companionship. Label it `个人概念 · 可交互原型` / `Personal concept · Interactive prototype`.
 
-## Confirmed Direction
+## Narrative Structure
 
-Use direction C with the C1 film layout:
+The desktop case study uses one overview followed by four decisions:
 
-- The interactive After state is the primary visual.
-- The Before state is smaller and quieter, serving as comparison evidence.
-- The page uses a warm gray-brown editorial canvas inspired by the supplied reference.
-- Five generated films use a `3 + 2` editorial grid on desktop.
-- Mobile preserves the existing interactive application experience and removes portfolio framing.
+1. `01 / BEFORE + AFTER` is the redesign overview. Keep the current synchronized Before / After comparison unchanged.
+2. `02 / TASK FOCUS` explains the task-card reorganization.
+3. `03 / REWARD LOOP` explains emotional acknowledgment, manual collection, and perceptible rewards.
+4. `04 / EMOTIONAL LANGUAGE` explains the voice rules and contextual greeting system.
+5. `05 / SCENE FILMS` closes with scene-based generated films.
+
+After 01, add a short transition that frames 02-05 as four design decisions. This makes the first chapter an overview rather than a competing fifth decision.
+
+## 02 Task Focus
+
+Title: `聚焦当下最重要的任务`
+
+Intro: `将纵向堆叠的任务重组为横向卡片，减少页面占用，让当前主要场景成为行动焦点。`
+
+Use a large rounded outline to represent the phone viewport. Show five task cards inside it, with two more continuing outside the clipped viewport. Center and emphasize `15:30 冥想`; keep two visible cards on each side.
+
+The seven tasks are:
+
+1. 08:00 补充水分
+2. 12:00 营养午餐
+3. 15:30 冥想
+4. 17:30 健康晚餐
+5. 18:30 补充水分
+6. 19:00 力量训练
+7. 22:30 睡前拉伸
+
+## 03 Reward Loop
+
+Title: `让每次完成，都得到及时回应`
+
+Intro: `用 Hi Five 视频回应任务完成，再通过手动领取积分与道具动效，把抽象奖励转化为可参与、可感知的成长。`
+
+Show the sequence `完成任务 -> Hi Five -> 领取积分 / 获得道具`. The Hi Five film is the completion response. The three point assets play once in sequence: vitality, focus, stamina. Each asset rises, lands into a translucent green square, briefly brightens the base, reveals `+10`, then rests.
+
+The current prop example is only `静心帐篷`. A `领取` button starts the demonstration; confetti plays and the tent drops into a simple camp area. A Lucide replay icon resets the demonstration. Do not invent more props or draw a custom icon.
+
+## 04 Emotional Language
+
+Title: `先回应此刻，再给出一步建议`
+
+Intro: `结合时间、用户名称与日常节奏，先用一句问候建立亲近感，再给出低门槛、非命令式的健康建议。`
+
+Voice role: `懂你节奏的温柔教练`.
+
+Rules:
+
+- Use time, tasks, and known rhythm as context.
+- Respond to the present state before suggesting one small action.
+- Invite rather than command.
+- Never judge or create anxiety.
+- Stay warm without implying false intimacy.
+
+Render the four time-based examples as one large typographic field, not four cards. Rotate automatically with clear time labels and respect reduced motion.
+
+## 05 Scene Films
+
+Title: `让陪伴进入一天中的不同场景`
+
+Intro: `生成式 IP 不只回应任务完成，也出现在欢迎、冥想、备餐与烹饪中，让健康行动自然融入连续的生活情境。`
+
+Use two warm-white horizontal editorial shells. Shell one contains `欢迎与进入` and `冥想过程`; shell two contains `饮食准备` and `烹饪行动`. Videos remain independently controllable. Keep only clear numbering and titles; do not add decorative microcopy. Retain the top-left watermark blur mask without covering captions.
 
 ## Visual System
 
-### Page Structure
+- 01 warm gray: overview and comparison.
+- 02 warm white: structural clarity.
+- 03 pale green: reward and growth.
+- 04 deep ink green: a calm typographic pause.
+- 05 warm gray with warm-white shells: editorial film close.
+- Keep all section headings aligned to the same desktop content grid.
+- Use readable body type and restrained borders. Do not create nested cards.
+- Use Lucide or Remix icons only.
 
-1. A compact project introduction states the title, proposition, role, and prototype status.
-2. The comparison stage places a smaller Before image to the left and a larger interactive After prototype to the right.
-3. One concise design note replaces the four-column CPDI block.
-4. The five generated films appear in a three-card first row and centered two-card second row.
-5. A short disclosure retains the personal-concept and AI-assistance boundary.
+## Responsive Behavior
 
-The Growth Base detail page does not use the case-study chapter rail. Global portfolio navigation remains available.
+The portfolio chapters are desktop-only. At `max-width: 767px`, hide the desktop project header and all portfolio framing, including 02-05, and preserve the existing full-viewport interactive prototype. The prototype must not be compressed or placed inside another mobile mockup.
 
-### Color And Material
+## Localization
 
-- Use a restrained warm gray-brown base rather than black, purple glow, or a multicolor gradient.
-- Let the prototype's warm photography and yellow accents provide the dominant color.
-- Remove the rotated paper layer and heavy device shadows.
-- Use thin neutral borders and small labels outside the product viewport.
-
-### Hierarchy
-
-- After is larger, higher contrast, and visually foregrounded.
-- Before is smaller and lower contrast but remains legible.
-- Labels identify the comparison without overlapping either screen.
-- Explanatory copy is secondary to the product visuals.
-
-## Embedded Prototype Architecture
-
-### Desktop
-
-The iframe must always receive an internal layout viewport of `390 x 844px`. A wrapper controls its visible desktop size by applying a uniform scale. The browser therefore lays out the application at its intended mobile dimensions while the portfolio can still fit the complete device within a `1440 x 900` screen.
-
-The wrapper clips the scaled iframe and preserves pointer interaction. The visible frame and the iframe use the same aspect ratio so clicks map correctly without coordinate compensation.
-
-### Mobile
-
-At portfolio mobile breakpoints:
-
-- Hide Before, comparison labels, and the decorative device shell.
-- Remove iframe scaling.
-- Give the prototype the actual viewport width and a complete mobile-height canvas.
-- Do not expose the desktop comparison treatment inside the embedded application.
-
-### Synchronization
-
-Keep the existing `postMessage` contract. The portfolio listens only when origin, iframe window, source marker, message type, and view value are all trusted. Switching `AI 教练` or `预约私教` in the prototype updates the corresponding Before image after the prototype bridge is published.
-
-## Film Grid
-
-Desktop uses a six-column grid model:
-
-- Films 1-3 each span two columns.
-- Film 4 spans columns 2-3.
-- Film 5 spans columns 4-5.
-
-This creates a centered `3 + 2` composition without nested cards. Tablet may use two columns. Mobile uses one column. Captions remain attached to the bottom edge of each film, and the Doubao blur mask remains at the top-left without intersecting the caption.
-
-## Content Rules
-
-- Keep the project labeled `个人概念 · 可交互原型`.
-- Do not claim launch, retention, conversion, or validated behavior change.
-- Replace the four CPDI columns with one concise statement explaining the intended design change.
-- Preserve the disclosure separating human design judgment from AI-assisted video generation and prototype development.
-
-## Components
-
-- `GrowthBaseLayout`: switches this project to a full-width, compact editorial header without the chapter rail.
-- `GrowthBaseComparison`: owns Before/After hierarchy, fixed-canvas iframe scaling, and trusted synchronization.
-- `GrowthBaseVideoGrid`: owns the responsive `3 + 2`, two-column, and one-column film layouts.
-- `GrowthBaseCase`: reduces analysis density and preserves the disclosure.
-
-No changes are required to the independent prototype's application layout for this portfolio fix.
-
-## Failure Handling
-
-- If the remote iframe cannot load, retain its warm neutral background and accessible title rather than exposing a blank decorative shell.
-- If a synchronization message is invalid, ignore it and retain the current Before state.
-- If reduced motion is requested, do not introduce portfolio-level entrance motion around the live prototype.
+Author concise English copy for every new section. English should preserve the decision narrative without literal Chinese phrasing.
 
 ## Verification
 
-Automated tests must cover:
-
-- Fixed `390 x 844px` iframe canvas metadata on desktop.
-- Smaller Before and dominant After structure.
-- Trusted message synchronization and rejection of invalid messages.
-- Mobile Before removal and shell removal.
-- Desktop `3 + 2` film grid structure and five-film count.
-- Existing homepage video behavior and bilingual routes.
-
-Browser verification must cover:
-
-- `1440 x 900`: full devices fit the comparison stage, iframe internal viewport is `390 x 844px`, and the page has no horizontal overflow.
-- `390 x 844`: Before and shell are absent, the prototype is not scaled down, and the application content is not compressed.
-- Film captions remain at the bottom and watermark masks remain at the top-left.
-- The final page has no browser errors or new warnings.
-
-## Publication Order
-
-Publish the Growth Base prototype bridge before publishing the portfolio. The portfolio can render the prototype before that deployment, but live Before synchronization will begin only after the remote prototype emits the approved messages.
+Automated tests must cover section order, bilingual copy, task count and centered focus, reward assets and manual tent interaction, language examples, two film shells with four videos, Lucide replay usage, and desktop-only portfolio sections. Browser verification must cover desktop layout, video shells, reward interaction, no horizontal overflow, and unchanged mobile prototype behavior.
