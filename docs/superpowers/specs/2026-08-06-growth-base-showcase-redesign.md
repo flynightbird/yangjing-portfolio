@@ -51,7 +51,7 @@ Intro: `用 Hi Five 视频回应任务完成，再通过手动领取积分与道
 
 Show the sequence `完成任务 -> Hi Five -> 领取积分 / 获得道具`. The Hi Five film is the completion response. The three point assets play once in sequence: vitality, focus, stamina. Each asset rises, lands into a translucent green square, briefly brightens the base, reveals `+10`, then rests.
 
-The current prop example is only `静心帐篷`. A `领取` button starts the demonstration; confetti plays and the tent drops into a simple camp area. A Lucide replay icon resets the demonstration. Do not invent more props or draw a custom icon.
+The current prop example is only `静心帐篷`. Before collection, keep the tent artwork and its bubble fully opaque so the reward remains clearly legible; distinguish the unclaimed state through position and the active `领取` button rather than faded opacity. After collection, confetti plays and the tent drops into a simple camp area. A Lucide replay icon resets the demonstration. Do not invent more props or draw a custom icon.
 
 ## 04 Emotional Language
 
