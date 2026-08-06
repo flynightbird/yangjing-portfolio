@@ -16,6 +16,10 @@ describe('Growth Base case metadata', () => {
       evidenceLevel: 'prototype',
       status,
     });
+    expect(entry?.meta.chapters?.map((chapter) => chapter.id)).toEqual([
+      'showcase',
+      'experience-clips',
+    ]);
     expect(JSON.stringify(entry?.meta)).not.toMatch(
       /launched|shipped|conversion|retention|上线|转化率|留存|提升\s*\d/iu,
     );

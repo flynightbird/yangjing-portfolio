@@ -37,15 +37,6 @@ export function GrowthBaseCase({ locale }: { readonly locale: Locale }) {
         <GrowthBaseVideoGrid locale={locale} />
         <DesignNote>{copy.clipsNote}</DesignNote>
       </section>
-
-      <section id="disclosure" className={styles.disclosure}>
-        <p>03 / DISCLOSURE</p>
-        <h2>{copy.disclosureTitle}</h2>
-        <div>
-          <p>{copy.disclosure}</p>
-          <p>{copy.validation}</p>
-        </div>
-      </section>
     </>
   );
 }

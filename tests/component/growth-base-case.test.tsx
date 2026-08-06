@@ -6,13 +6,13 @@ import { GrowthBaseCase } from '@/components/growth-base/growth-base-case';
 afterEach(cleanup);
 
 describe('GrowthBaseCase', () => {
-  it('migrates the prior showcase as three focused sections', () => {
+  it('keeps the showcase focused on comparison and experience films', () => {
     const { container } = render(<GrowthBaseCase locale="zh" />);
     const sectionIds = Array.from(
       container.querySelectorAll<HTMLElement>(':scope > section'),
     ).map((section) => section.id);
 
-    expect(sectionIds).toEqual(['showcase', 'experience-clips', 'disclosure']);
+    expect(sectionIds).toEqual(['showcase', 'experience-clips']);
     expect(screen.getAllByTestId('growth-base-film')).toHaveLength(5);
     expect(
       screen.getByText('互动式、更立体、更亲近的陪伴，更贴近用户的心灵'),
@@ -23,7 +23,8 @@ describe('GrowthBaseCase', () => {
       ),
     ).toBeVisible();
     expect(screen.getByText('营造场景氛围的体验片段')).toBeVisible();
-    expect(screen.getByText('个人概念 · 可交互原型')).toBeVisible();
+    expect(screen.queryByText('03 / DISCLOSURE')).toBeNull();
+    expect(screen.queryByText('个人概念 · 可交互原型')).toBeNull();
     expect(container.textContent).not.toMatch(/launched|shipped|上线|提升\s*\d|转化率|留存/iu);
   });
 
