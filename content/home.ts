@@ -17,15 +17,17 @@ export type HomepageProjectId =
   | 'xuelang'
   | 'call-agent'
   | 'convo-ai'
+  | 'growth-base'
   | 'meeting'
   | 'aidx'
   | 'stt-demo';
 
-export type HomepageCompanyId = 'agora' | 'bytedance' | 'aidx';
+export type HomepageCompanyId = 'agora' | 'bytedance' | 'aidx' | 'personal';
 
 export const coreProjectOrder = [
   'call-agent',
   'convo-ai',
+  'growth-base',
   'meeting',
   'stt-demo',
   'aidx',
@@ -65,6 +67,14 @@ export const homepageProjects = [
     destination: 'internal-case',
     availability: 'complete',
     href: 'work/convo-ai/',
+  },
+  {
+    id: 'growth-base',
+    companyId: 'personal',
+    kind: 'deep-case',
+    destination: 'internal-case',
+    availability: 'complete',
+    href: 'work/growth-base/',
   },
   {
     id: 'meeting',

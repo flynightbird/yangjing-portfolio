@@ -32,3 +32,7 @@
   width: 2.75rem;
   mask-image: url('../../public/images/brands/aidx.svg');
 }
+
+.logo[data-company-logo='personal'] {
+  display: none;
+}

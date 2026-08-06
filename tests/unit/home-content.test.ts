@@ -10,11 +10,12 @@ import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
 
 describe('homepage project contract', () => {
-  it('keeps the approved six-project presentation order', () => {
+  it('keeps Growth Base directly after ConvoAI in the seven-project presentation order', () => {
     expect(homepageProjects.map((project) => project.id)).toEqual([
       'xuelang',
       'call-agent',
       'convo-ai',
+      'growth-base',
       'meeting',
       'aidx',
       'stt-demo',
@@ -26,6 +27,7 @@ describe('homepage project contract', () => {
       ['xuelang', 'bytedance'],
       ['call-agent', 'agora'],
       ['convo-ai', 'agora'],
+      ['growth-base', 'personal'],
       ['meeting', 'agora'],
       ['aidx', 'aidx'],
       ['stt-demo', 'agora'],
@@ -33,11 +35,21 @@ describe('homepage project contract', () => {
     expect(coreProjectOrder).toEqual([
       'call-agent',
       'convo-ai',
+      'growth-base',
       'meeting',
       'stt-demo',
       'aidx',
       'xuelang',
     ]);
+  });
+
+  it('publishes Growth Base as a complete internal personal concept', () => {
+    expect(homepageProjects.find((project) => project.id === 'growth-base')).toMatchObject({
+      companyId: 'personal',
+      destination: 'internal-case',
+      availability: 'complete',
+      href: 'work/growth-base/',
+    });
   });
 
   it('keeps ConvoAI internal, AIDX external, and STT as the sole Build Lab entry', () => {
@@ -275,6 +287,7 @@ describe('homepage localization', () => {
         'xuelang',
         'callAgent',
         'convoAi',
+        'growthBase',
         'meeting',
         'aidx',
         'sttDemo',

@@ -46,6 +46,7 @@ export interface Dictionary {
       convoAi: ProjectCopy & {
         temporaryNotice: string;
       };
+      growthBase: ProjectCopy;
       meeting: ProjectCopy & {
         states: readonly string[];
         platforms: readonly string[];
@@ -225,6 +226,17 @@ export const enDictionary = {
         action: 'View case study',
         temporaryNotice:
           'ConvoAI App and Web product media.',
+      },
+      growthBase: {
+        company: 'Personal concept',
+        kind: 'WeChat Mini Program · Interactive prototype',
+        title: 'AI Coach · Emotional IP Companionship',
+        proposition:
+          'Turn routine health check-ins into a warmer daily relationship through generative character films and restorative feedback.',
+        role: 'Independent product and visual design · AI-assisted prototyping',
+        status: 'Personal concept',
+        mediaLabel: 'Generative character film and interactive prototype',
+        action: 'View case study',
       },
       meeting: {
         company: 'Agora',

@@ -12,6 +12,12 @@ import ConvoAiEn, {
 import ConvoAiZh, {
   metadata as convoAiZhMetadata,
 } from '@/content/work/convo-ai.zh.mdx';
+import GrowthBaseEn, {
+  metadata as growthBaseEnMetadata,
+} from '@/content/work/growth-base.en.mdx';
+import GrowthBaseZh, {
+  metadata as growthBaseZhMetadata,
+} from '@/content/work/growth-base.zh.mdx';
 import XuelangEn, {
   metadata as xuelangEnMetadata,
 } from '@/content/work/xuelang.en.mdx';
@@ -32,6 +38,7 @@ import { CallAgentLayout } from '@/components/call-agent/call-agent-layout';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
 import { MeetingLayout } from '@/components/meeting/meeting-layout';
 import { ConvoAiLayout } from '@/components/convo-ai/convo-ai-layout';
+import { GrowthBaseLayout } from '@/components/growth-base/growth-base-layout';
 import { TangpingLayout } from '@/components/tangping/tangping-layout';
 import { XuelangLayout } from '@/components/xuelang/xuelang-layout';
 import { contentMetaSchema, type ContentMeta } from '@/content/schema';
@@ -126,6 +133,16 @@ export const contentEntries: readonly ContentEntry[] = [
     meta: contentMetaSchema.parse(convoAiZhMetadata),
     Component: ConvoAiZh,
     Layout: ConvoAiLayout,
+  },
+  {
+    meta: contentMetaSchema.parse(growthBaseEnMetadata),
+    Component: GrowthBaseEn,
+    Layout: GrowthBaseLayout,
+  },
+  {
+    meta: contentMetaSchema.parse(growthBaseZhMetadata),
+    Component: GrowthBaseZh,
+    Layout: GrowthBaseLayout,
   },
   {
     meta: contentMetaSchema.parse(meetingEnMetadata),

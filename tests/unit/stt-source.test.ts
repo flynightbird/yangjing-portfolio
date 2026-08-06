@@ -826,7 +826,7 @@ describe('STT demo source provenance', () => {
         translationKey: 'build.stt-demo',
         heroMedia: '/demos/stt-demo/poster.png',
         evidenceLevel: 'prototype',
-        featuredOrder: 6,
+        featuredOrder: 7,
         status: locale === 'en' ? 'Pinned static prototype' : '固定版本静态原型',
       });
     }

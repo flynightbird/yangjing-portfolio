@@ -74,6 +74,16 @@ export const zhDictionary = {
         action: '查看案例',
         temporaryNotice: '当前为临时第三方图片，正式发布前需替换为本人项目素材。',
       },
+      growthBase: {
+        company: '个人概念',
+        kind: '微信小程序 · 可交互原型',
+        title: 'AI 教练 · IP 情感化陪伴',
+        proposition: '用生成式视频与治愈系反馈，把干枯的健康打卡，转化为有温度的日常陪伴。',
+        role: '独立产品与视觉设计 · AI 辅助交互开发',
+        status: '个人概念',
+        mediaLabel: '生成式 IP 视频与可交互原型',
+        action: '查看案例',
+      },
       meeting: {
         company: 'Agora / 声网',
         kind: '企业会议 aPaaS',

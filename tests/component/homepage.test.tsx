@@ -148,6 +148,25 @@ describe('IntroStory', () => {
 });
 
 describe('FeaturedWork', () => {
+  it('places Growth Base directly below ConvoAI in the same AI products chapter', () => {
+    const { container } = render(<FeaturedWork locale="zh" />);
+    const aiProjects = Array.from(
+      container.querySelectorAll<HTMLElement>(
+        '[data-project-chapter="ai-products"] [data-project-id]',
+      ),
+    ).map((project) => project.dataset.projectId);
+    const growthBase = container.querySelector<HTMLElement>(
+      '[data-project-id="growth-base"]',
+    );
+
+    expect(aiProjects).toEqual(['call-agent', 'convo-ai', 'growth-base']);
+    expect(
+      within(growthBase as HTMLElement).getByRole('link', {
+        name: '查看案例 AI 教练 · IP 情感化陪伴',
+      }),
+    ).toHaveAttribute('href', '/zh/work/growth-base/');
+  });
+
   it('uses four chapter boundaries with exact project text and media groups', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const boundaries = Array.from(
@@ -286,7 +305,7 @@ describe('FeaturedWork', () => {
     expect(slider).toHaveValue('59');
   });
 
-  it('renders the six approved project treatments in order', () => {
+  it('renders the seven approved project treatments in order', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const projectIds = Array.from(
       container.querySelectorAll<HTMLElement>('[data-project-id]'),
@@ -295,17 +314,18 @@ describe('FeaturedWork', () => {
     expect(projectIds).toEqual([
       'call-agent',
       'convo-ai',
+      'growth-base',
       'meeting',
       'stt-demo',
       'aidx',
       'xuelang',
     ]);
     expect(container.querySelectorAll('[data-project-kind="build-lab"]')).toHaveLength(1);
-    expect(container.querySelectorAll('[data-company-mark]')).toHaveLength(6);
+    expect(container.querySelectorAll('[data-company-mark]')).toHaveLength(7);
     expect(container.querySelectorAll('[data-project-chapter]')).toHaveLength(4);
   });
 
-  it('uses one title treatment for all six core projects', () => {
+  it('uses one title treatment for all seven core projects', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const projects = Array.from(
       container.querySelectorAll<HTMLElement>('[data-project-id]'),
@@ -314,20 +334,20 @@ describe('FeaturedWork', () => {
       container.querySelectorAll<HTMLElement>('[data-core-project-title]'),
     );
 
-    expect(titles).toHaveLength(6);
-    expect(projects).toHaveLength(6);
+    expect(titles).toHaveLength(7);
+    expect(projects).toHaveLength(7);
     for (const project of projects) {
       expect(project.querySelectorAll('[data-core-project-title]')).toHaveLength(1);
     }
   });
 
-  it('aligns company and project type for all six projects and reserves white CTAs for the first three', () => {
+  it('aligns company and project type for all seven projects and reserves white CTAs for the first four', () => {
     const { container } = render(<FeaturedWork locale="en" />);
     const projects = Array.from(
       container.querySelectorAll<HTMLElement>('[data-project-id]'),
     );
 
-    expect(projects).toHaveLength(6);
+    expect(projects).toHaveLength(7);
     for (const project of projects) {
       expect(project.querySelectorAll('[data-project-meta]')).toHaveLength(1);
     }
@@ -336,7 +356,7 @@ describe('FeaturedWork', () => {
       Array.from(container.querySelectorAll<HTMLElement>('[data-cta-treatment="white"]')).map(
         (cta) => cta.closest<HTMLElement>('[data-project-id]')?.dataset.projectId,
       ),
-    ).toEqual(['call-agent', 'convo-ai', 'meeting']);
+    ).toEqual(['call-agent', 'convo-ai', 'growth-base', 'meeting']);
   });
 
   it.each([
@@ -356,7 +376,14 @@ describe('FeaturedWork', () => {
       expect(aidxMeta?.querySelector('[data-project-meta-separator]')).not.toBeInTheDocument();
       expect(aidxMeta?.querySelector('[data-project-kind-label]')).not.toBeInTheDocument();
 
-      for (const projectId of ['call-agent', 'convo-ai', 'meeting', 'stt-demo', 'xuelang']) {
+      for (const projectId of [
+        'call-agent',
+        'convo-ai',
+        'growth-base',
+        'meeting',
+        'stt-demo',
+        'xuelang',
+      ]) {
         const project = container.querySelector<HTMLElement>(
           `[data-project-id="${projectId}"]`,
         );
@@ -375,7 +402,7 @@ describe('FeaturedWork', () => {
       container.querySelectorAll<HTMLElement>('[data-home-project-cta]'),
     );
 
-    expect(ctas).toHaveLength(6);
+    expect(ctas).toHaveLength(7);
     expect(
       screen
         .getByRole('link', { name: 'View case study ConvoAI' })
@@ -514,6 +541,7 @@ describe('FeaturedWork', () => {
       xuelang: 'light',
       'call-agent': 'dark',
       'convo-ai': 'dark',
+      'growth-base': 'dark',
       meeting: 'dark',
     } as const;
     for (const [projectId, tone] of Object.entries(expectedInternalTones)) {

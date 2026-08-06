@@ -1,7 +1,14 @@
 export const locales = ['en', 'zh'] as const;
 export type Locale = (typeof locales)[number];
 
-export const workSlugs = ['xuelang', 'call-agent', 'convo-ai', 'meeting', 'tangping'] as const;
+export const workSlugs = [
+  'xuelang',
+  'call-agent',
+  'convo-ai',
+  'growth-base',
+  'meeting',
+  'tangping',
+] as const;
 export type WorkSlug = (typeof workSlugs)[number];
 
 export const buildSlugs = ['stt-demo'] as const;

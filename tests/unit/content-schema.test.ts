@@ -61,21 +61,27 @@ const launchDefinitions = [
   },
   {
     type: 'work',
+    slug: 'growth-base',
+    translationKey: 'work-growth-base',
+    featuredOrder: 4,
+  },
+  {
+    type: 'work',
     slug: 'meeting',
     translationKey: 'work-meeting',
-    featuredOrder: 4,
+    featuredOrder: 5,
   },
   {
     type: 'work',
     slug: 'tangping',
     translationKey: 'work-tangping',
-    featuredOrder: 5,
+    featuredOrder: 6,
   },
   {
     type: 'build',
     slug: 'stt-demo',
     translationKey: 'build-stt-demo',
-    featuredOrder: 6,
+    featuredOrder: 7,
   },
 ] as const;
 
@@ -185,6 +191,8 @@ describe('content registry', () => {
       'work/call-agent:zh',
       'work/convo-ai:en',
       'work/convo-ai:zh',
+      'work/growth-base:en',
+      'work/growth-base:zh',
       'work/meeting:en',
       'work/meeting:zh',
       'work/tangping:en',
