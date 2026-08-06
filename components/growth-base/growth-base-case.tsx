@@ -2,14 +2,29 @@ import type { Locale } from '@/content/types';
 import { growthBaseCaseCopy } from '@/content/growth-base';
 
 import { GrowthBaseComparison } from './growth-base-comparison';
+import { GrowthBaseLanguage } from './growth-base-language';
+import { GrowthBaseRewardLoop } from './growth-base-reward-loop';
+import { GrowthBaseTaskFocus } from './growth-base-task-focus';
 import { GrowthBaseVideoGrid } from './growth-base-video-grid';
 import styles from './growth-base.module.css';
 
-function DesignNote({ children }: { readonly children: string }) {
+function SectionHeader({
+  index,
+  label,
+  title,
+  intro,
+}: {
+  readonly index: string;
+  readonly label: string;
+  readonly title: string;
+  readonly intro: string;
+}) {
   return (
-    <p className={styles.designNote} data-growth-base-note>
-      {children}
-    </p>
+    <header className={styles.sectionHeader}>
+      <p>{index} / {label}</p>
+      <h2>{title}</h2>
+      <span>{intro}</span>
+    </header>
   );
 }
 
@@ -19,23 +34,37 @@ export function GrowthBaseCase({ locale }: { readonly locale: Locale }) {
   return (
     <>
       <section id="showcase" className={styles.showcase}>
-        <header className={styles.sectionHeader}>
-          <p>01 / BEFORE + AFTER</p>
-          <h2>{copy.comparisonTitle}</h2>
-          <span>{copy.comparisonIntro}</span>
-        </header>
+        <div className={styles.overviewCopy}>
+          <SectionHeader
+            index="01"
+            intro={copy.comparisonIntro}
+            label="BEFORE + AFTER"
+            title={copy.comparisonTitle}
+          />
+        </div>
         <GrowthBaseComparison locale={locale} />
-        <DesignNote>{copy.comparisonNote}</DesignNote>
+        <p className={styles.designNote}>{copy.comparisonNote}</p>
+        <p className={styles.decisionTransition}>{copy.transition}</p>
       </section>
 
-      <section id="experience-clips" className={styles.clips}>
-        <header className={styles.sectionHeader}>
-          <p>02 / GENERATIVE FILMS</p>
-          <h2>{copy.clipsTitle}</h2>
-          <span>{copy.clipsIntro}</span>
-        </header>
+      <section id="task-focus" className={`${styles.taskFocus} ${styles.desktopDecision}`}>
+        <SectionHeader index="02" intro={copy.taskIntro} label="TASK FOCUS" title={copy.taskTitle} />
+        <GrowthBaseTaskFocus locale={locale} />
+      </section>
+
+      <section id="reward-loop" className={`${styles.rewardLoop} ${styles.desktopDecision}`}>
+        <SectionHeader index="03" intro={copy.rewardIntro} label="REWARD LOOP" title={copy.rewardTitle} />
+        <GrowthBaseRewardLoop locale={locale} />
+      </section>
+
+      <section id="emotional-language" className={`${styles.emotionalLanguage} ${styles.desktopDecision}`}>
+        <SectionHeader index="04" intro={copy.languageIntro} label="EMOTIONAL LANGUAGE" title={copy.languageTitle} />
+        <GrowthBaseLanguage locale={locale} />
+      </section>
+
+      <section id="scene-films" className={`${styles.clips} ${styles.desktopDecision}`}>
+        <SectionHeader index="05" intro={copy.clipsIntro} label="SCENE FILMS" title={copy.clipsTitle} />
         <GrowthBaseVideoGrid locale={locale} />
-        <DesignNote>{copy.clipsNote}</DesignNote>
       </section>
     </>
   );

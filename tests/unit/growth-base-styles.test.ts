@@ -23,17 +23,24 @@ describe('Growth Base showcase CSS contract', () => {
     expect(css).toMatch(/\.beforePhone[\s\S]*opacity:\s*0\.72/);
   });
 
-  it('centers the final two films in a six-column desktop grid', async () => {
+  it('uses two paired editorial film shells', async () => {
     const css = await readFile(stylesheetPath, 'utf8');
 
+    expect(css).toMatch(/\.filmShell\s*\{[\s\S]*grid-template-columns:\s*repeat\(2,/);
+    expect(css).toMatch(/\.filmShell\s*\{[\s\S]*background:\s*#f7f4ed/);
+  });
+
+  it('keeps all portfolio storytelling desktop-only', async () => {
+    const [css, layoutCss] = await Promise.all([
+      readFile(stylesheetPath, 'utf8'),
+      readFile(layoutStylesheetPath, 'utf8'),
+    ]);
+
     expect(css).toMatch(
-      /grid-template-columns:\s*repeat\(6,\s*minmax\(0,\s*1fr\)\)/,
+      /@media \(max-width:\s*767px\)[\s\S]*\.desktopDecision[\s\S]*display:\s*none/,
     );
-    expect(css).toMatch(
-      /\.film:nth-child\(4\)[\s\S]*grid-column:\s*2\s*\/\s*span\s*2/,
-    );
-    expect(css).toMatch(
-      /\.film:nth-child\(5\)[\s\S]*grid-column:\s*4\s*\/\s*span\s*2/,
+    expect(layoutCss).toMatch(
+      /@media \(max-width:\s*767px\)[\s\S]*\.hero[\s\S]*display:\s*none/,
     );
   });
 
