@@ -1,12 +1,15 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { GrowthBaseCase } from '@/components/growth-base/growth-base-case';
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 
 describe('GrowthBaseCase', () => {
-  it('presents one overview followed by four design decisions', () => {
+  it('presents one overview, four design decisions, and a trainer extension', () => {
     const { container } = render(<GrowthBaseCase locale="zh" />);
     const sectionIds = Array.from(
       container.querySelectorAll<HTMLElement>(':scope > section'),
@@ -18,6 +21,7 @@ describe('GrowthBaseCase', () => {
       'reward-loop',
       'emotional-language',
       'scene-films',
+      'personal-trainer',
     ]);
     expect(
       screen.getByText('互动式、更立体、更亲近的陪伴，更贴近用户的心灵'),
@@ -26,6 +30,10 @@ describe('GrowthBaseCase', () => {
     expect(screen.getByText('让每次完成，都得到及时回应')).toBeVisible();
     expect(screen.getByText('先回应此刻，再给出一步建议')).toBeVisible();
     expect(screen.getByText('让陪伴进入一天中的不同场景')).toBeVisible();
+    expect(screen.getByText('把预约私教，变成清晰的选择与确认')).toBeVisible();
+    expect(
+      screen.queryByText('对照保留旧方案，但让当前可交互体验成为视觉主角。'),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByText(
         '围绕任务聚焦、激励反馈、情感语言与场景陪伴，我进一步拆解了四个关键设计决策。',
@@ -45,7 +53,8 @@ describe('GrowthBaseCase', () => {
     );
   });
 
-  it('turns completion into sequential points and a manually claimed prop', () => {
+  it('turns completion into sequential points and a manually claimed prop', async () => {
+    vi.useFakeTimers();
     const { container } = render(<GrowthBaseCase locale="zh" />);
     const pointRewards = container.querySelectorAll('[data-point-reward]');
 
@@ -62,11 +71,17 @@ describe('GrowthBaseCase', () => {
       'aria-describedby',
       'growth-base-hi-five-zh-description',
     );
+    expect(screen.getByText('道具获取')).toBeVisible();
+    expect(screen.getByRole('button', { name: '领取静心帐篷' })).toHaveTextContent('领取道具');
 
     fireEvent.click(screen.getByRole('button', { name: '领取静心帐篷' }));
 
+    expect(container.querySelector('[data-tent-demo]')).toHaveAttribute('data-state', 'claiming');
+    expect(screen.getByText('领取中')).toBeVisible();
+    await act(() => vi.advanceTimersByTimeAsync(650));
     expect(container.querySelector('[data-tent-demo]')).toHaveAttribute('data-state', 'claimed');
     expect(screen.getByText('静心帐篷已放入营地')).toBeVisible();
+    expect(screen.getByRole('status')).toHaveTextContent('已获得');
     expect(screen.getByRole('button', { name: '重新演示帐篷领取' })).toBeVisible();
     expect(container.querySelector('svg.lucide')).toBeVisible();
 
@@ -81,11 +96,25 @@ describe('GrowthBaseCase', () => {
     expect(field).toBeVisible();
     expect(field?.querySelectorAll('[data-language-moment]')).toHaveLength(4);
     expect(
-      screen.getByText('“早上好，Maggie。先喝杯水，让今天慢慢开始吧。”'),
+      screen.getByText('“早上好，Maggie。'),
     ).toBeVisible();
     expect(
-      screen.getByText('“夜深了，Maggie。今天先到这里，做一段轻柔拉伸，再安心休息吧。”'),
+      screen.getByText('今天先到这里，做一段轻柔拉伸，再安心休息吧。”'),
     ).toBeVisible();
+  });
+
+  it('shows a scrollable automatic trainer booking walkthrough', () => {
+    const { container } = render(<GrowthBaseCase locale="zh" />);
+    const demo = container.querySelector('[data-trainer-auto-demo]');
+
+    expect(demo).toBeVisible();
+    expect(demo?.querySelector('iframe')).toHaveAttribute(
+      'src',
+      expect.stringContaining('demo=trainer'),
+    );
+    expect(demo?.querySelector('iframe')).toHaveAttribute('tabindex', '-1');
+    expect(container.querySelector('[class*="demoInputShield"]')).not.toBeInTheDocument();
+    expect(demo?.querySelectorAll('button')).toHaveLength(0);
   });
 
   it('groups four independent films into two editorial shells', () => {

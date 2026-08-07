@@ -45,3 +45,12 @@ test('switches locale while preserving the homepage identity', async ({ page }) 
     .poll(() => page.evaluate(() => window.localStorage.getItem('yj-locale')))
     .toBe('zh');
 });
+
+test('switches Growth Base locale without returning to the homepage', async ({ page }) => {
+  await page.goto('/zh/work/growth-base/');
+
+  await page.getByRole('button', { name: '切换至英语' }).click();
+
+  await expect(page).toHaveURL(/\/en\/work\/growth-base\/$/);
+  await expect(page.getByRole('heading', { name: 'AI Coach · Emotional IP Companionship' })).toBeVisible();
+});

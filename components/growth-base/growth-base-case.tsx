@@ -5,6 +5,7 @@ import { GrowthBaseComparison } from './growth-base-comparison';
 import { GrowthBaseLanguage } from './growth-base-language';
 import { GrowthBaseRewardLoop } from './growth-base-reward-loop';
 import { GrowthBaseTaskFocus } from './growth-base-task-focus';
+import { GrowthBaseTrainerDemo } from './growth-base-trainer-demo';
 import { GrowthBaseVideoGrid } from './growth-base-video-grid';
 import styles from './growth-base.module.css';
 
@@ -43,7 +44,6 @@ export function GrowthBaseCase({ locale }: { readonly locale: Locale }) {
           />
         </div>
         <GrowthBaseComparison locale={locale} />
-        <p className={styles.designNote}>{copy.comparisonNote}</p>
         <p className={styles.decisionTransition}>{copy.transition}</p>
       </section>
 
@@ -65,6 +65,11 @@ export function GrowthBaseCase({ locale }: { readonly locale: Locale }) {
       <section id="scene-films" className={`${styles.clips} ${styles.desktopDecision}`}>
         <SectionHeader index="05" intro={copy.clipsIntro} label="SCENE FILMS" title={copy.clipsTitle} />
         <GrowthBaseVideoGrid locale={locale} />
+      </section>
+
+      <section id="personal-trainer" className={`${styles.personalTrainer} ${styles.desktopDecision}`}>
+        <SectionHeader index="06" intro={copy.trainerIntro} label="PERSONAL TRAINER" title={copy.trainerTitle} />
+        <GrowthBaseTrainerDemo locale={locale} />
       </section>
     </>
   );

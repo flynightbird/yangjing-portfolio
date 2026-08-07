@@ -1,8 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { ArrowRight, RotateCcw } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowRight, LoaderCircle, PackageCheck, RotateCcw } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import type { Locale } from '@/content/types';
 import { growthBaseCaseCopy, growthBasePointRewards } from '@/content/growth-base';
@@ -12,7 +12,14 @@ import styles from './growth-base.module.css';
 
 export function GrowthBaseRewardLoop({ locale }: { readonly locale: Locale }) {
   const copy = growthBaseCaseCopy[locale];
-  const [claimed, setClaimed] = useState(false);
+  const [claimState, setClaimState] = useState<'ready' | 'claiming' | 'claimed'>('ready');
+  const claimed = claimState === 'claimed';
+
+  useEffect(() => {
+    if (claimState !== 'claiming') return;
+    const timer = window.setTimeout(() => setClaimState('claimed'), 650);
+    return () => window.clearTimeout(timer);
+  }, [claimState]);
 
   return (
     <div className={styles.rewardComposition}>
@@ -69,27 +76,49 @@ export function GrowthBaseRewardLoop({ locale }: { readonly locale: Locale }) {
         </div>
       </div>
 
-      <div className={styles.tentDemo} data-state={claimed ? 'claimed' : 'ready'} data-tent-demo>
+      <div className={styles.tentDemo} data-state={claimState} data-tent-demo>
         <div className={styles.tentCopy}>
-          <span>{locale === 'zh' ? '当前道具示例' : 'CURRENT PROP EXAMPLE'}</span>
+          <span>{locale === 'zh' ? '道具获取' : 'PROP COLLECTION'}</span>
           <h3>{copy.tentReady}</h3>
-          <p>{claimed ? copy.tentClaimed : (locale === 'zh' ? '主动领取，让奖励和刚才的行动产生清晰联系。' : 'Manual collection creates a clear link to the action just completed.')}</p>
+          <p>{claimed
+            ? copy.tentClaimed
+            : claimState === 'claiming'
+              ? (locale === 'zh' ? '正在将静心帐篷放入你的营地…' : 'Adding the Mindfulness Tent to your camp...')
+              : (locale === 'zh' ? '完成任务后主动领取，让奖励和刚才的行动产生清晰联系。' : 'Claim after completing the task to connect the reward with the action.')}</p>
           {claimed ? (
-            <button aria-label={copy.replayTent} className={styles.replayButton} onClick={() => setClaimed(false)} type="button">
+            <button aria-label={copy.replayTent} className={styles.replayButton} onClick={() => setClaimState('ready')} type="button">
               <RotateCcw aria-hidden="true" size={18} />
             </button>
           ) : (
-            <button aria-label={copy.claimTent} className={styles.claimButton} onClick={() => setClaimed(true)} type="button">
-              {locale === 'zh' ? '领取' : 'Claim'}
+            <button
+              aria-label={copy.claimTent}
+              className={styles.claimButton}
+              disabled={claimState === 'claiming'}
+              onClick={() => setClaimState('claiming')}
+              type="button"
+            >
+              {claimState === 'claiming' ? <LoaderCircle aria-hidden="true" className={styles.claimSpinner} size={17} /> : null}
+              {claimState === 'claiming'
+                ? (locale === 'zh' ? '领取中' : 'Collecting')
+                : (locale === 'zh' ? '领取道具' : 'Claim prop')}
             </button>
           )}
         </div>
         <div className={styles.campStage}>
           <span className={styles.campGround} aria-hidden="true" />
-          <Image alt={copy.tentReady} className={styles.tentAsset} height={245} src={withBasePath('/images/growth-base/reward-bed.png')} width={255} />
+          <div className={styles.tentOrb}>
+            <span className={styles.orbHighlight} aria-hidden="true" />
+            <Image alt={copy.tentReady} className={styles.tentAsset} height={245} src={withBasePath('/images/growth-base/reward-bed.png')} width={255} />
+          </div>
           <div className={styles.confetti} aria-hidden="true">
             {Array.from({ length: 10 }, (_, index) => <i key={index} />)}
           </div>
+          {claimed ? (
+            <span className={styles.claimConfirmation} role="status">
+              <PackageCheck aria-hidden="true" size={18} />
+              {locale === 'zh' ? '已获得' : 'Collected'}
+            </span>
+          ) : null}
         </div>
       </div>
     </div>

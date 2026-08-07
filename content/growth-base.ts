@@ -76,16 +76,16 @@ export const growthBasePointRewards = {
 
 export const growthBaseLanguageMoments = {
   zh: [
-    { period: '清晨', quote: '“早上好，Maggie。先喝杯水，让今天慢慢开始吧。”' },
-    { period: '午后', quote: '“下午好，Maggie。你通常在 3 点后注意力下降，留 5 分钟放松一下吧。”' },
-    { period: '晚间', quote: '“晚上好，Maggie。晚餐时间快到了，今天吃得轻松一点，也是在照顾恢复。”' },
-    { period: '深夜', quote: '“夜深了，Maggie。今天先到这里，做一段轻柔拉伸，再安心休息吧。”' },
+    { period: '清晨', greeting: '“早上好，Maggie。', suggestion: '先喝杯水，让今天慢慢开始吧。”' },
+    { period: '午后', greeting: '“下午好，Maggie。', suggestion: '你通常在 3 点后注意力下降，留 5 分钟放松一下吧。”' },
+    { period: '晚间', greeting: '“晚上好，Maggie。', suggestion: '晚餐时间快到了，今天吃得轻松一点，也是在照顾恢复。”' },
+    { period: '深夜', greeting: '“夜深了，Maggie。', suggestion: '今天先到这里，做一段轻柔拉伸，再安心休息吧。”' },
   ],
   en: [
-    { period: 'Morning', quote: '“Good morning, Maggie. Start slowly with a glass of water.”' },
-    { period: 'Afternoon', quote: '“Good afternoon, Maggie. Your focus often dips after 3 PM. Take five minutes to reset.”' },
-    { period: 'Evening', quote: '“Good evening, Maggie. Dinner is coming up. Choosing something light can support your recovery.”' },
-    { period: 'Late night', quote: '“It is getting late, Maggie. Let today end here, with a gentle stretch before you rest.”' },
+    { period: 'Morning', greeting: '“Good morning, Maggie.', suggestion: 'Start slowly with a glass of water.”' },
+    { period: 'Afternoon', greeting: '“Good afternoon, Maggie.', suggestion: 'Your focus often dips after 3 PM. Take five minutes to reset.”' },
+    { period: 'Evening', greeting: '“Good evening, Maggie.', suggestion: 'Dinner is coming up. Choosing something light can support your recovery.”' },
+    { period: 'Late night', greeting: '“It is getting late, Maggie.', suggestion: 'Let today end here, with a gentle stretch before you rest.”' },
   ],
 } as const;
 
@@ -93,7 +93,6 @@ export const growthBaseCaseCopy = {
   zh: {
     comparisonTitle: '互动式、更立体、更亲近的陪伴，更贴近用户的心灵',
     comparisonIntro: '用‘互动式’的视频体验来替代扁平的 2D（左侧是原方案，右侧是设计师的改版方案）',
-    comparisonNote: '对照保留旧方案，但让当前可交互体验成为视觉主角。',
     transition: '围绕任务聚焦、激励反馈、情感语言与场景陪伴，我进一步拆解了四个关键设计决策。',
     taskTitle: '聚焦当下最重要的任务',
     taskIntro: '将纵向堆叠的任务重组为横向卡片，减少页面占用，让当前主要场景成为行动焦点。',
@@ -110,11 +109,12 @@ export const growthBaseCaseCopy = {
     languageRules: ['回应当下，再给建议', '一次只建议一个小行动', '邀请而非命令', '不评判，不制造焦虑'],
     clipsTitle: '让陪伴进入一天中的不同场景',
     clipsIntro: '生成式 IP 不只回应任务完成，也出现在欢迎、冥想、备餐与烹饪中，让健康行动自然融入连续的生活情境。',
+    trainerTitle: '把预约私教，变成清晰的选择与确认',
+    trainerIntro: '延续原方案与改版方案的对照，直接运行高保真原型，自动演示选择日期、选择时段与确认预约的真实流程。演示仅用于说明流程，不要求访客操作。',
   },
   en: {
     comparisonTitle: 'One task, two experience states',
     comparisonIntro: 'The original direction remains on the left while the current interactive prototype runs on the right. Switching AI Coach or Personal Trainer updates the Before view in sync.',
-    comparisonNote: 'The comparison retains the original direction while making the current interactive experience the visual focus.',
     transition: 'Four decisions shape the redesign: task focus, reward feedback, emotional language, and companionship across everyday scenes.',
     taskTitle: 'Focusing on the task that matters now',
     taskIntro: 'A horizontal task rail replaces the stacked list, reduces page occupation, and keeps the current moment at the center of attention.',
@@ -131,5 +131,7 @@ export const growthBaseCaseCopy = {
     languageRules: ['Acknowledge before advising', 'Suggest one small action', 'Invite rather than command', 'Never judge or create anxiety'],
     clipsTitle: 'Bringing companionship into everyday moments',
     clipsIntro: 'The generative IP moves beyond task completion into welcoming, meditation, meal preparation, and cooking, making healthy actions part of a continuous daily rhythm.',
+    trainerTitle: 'Make trainer booking clear from selection to confirmation',
+    trainerIntro: 'The same Before and After comparison runs the high-fidelity prototype directly, automatically demonstrating date selection, time selection, and confirmation without asking visitors to interact.',
   },
 } as const;

@@ -17,7 +17,10 @@ export function GrowthBaseLanguage({ locale }: { readonly locale: Locale }) {
             style={{ '--moment-index': index } as React.CSSProperties}
           >
             <span>{moment.period}</span>
-            <p>{moment.quote}</p>
+            <p>
+              <strong>{moment.greeting}</strong>
+              <span>{moment.suggestion}</span>
+            </p>
           </blockquote>
         ))}
       </div>

@@ -59,6 +59,21 @@ describe('LocaleSwitcherControl', () => {
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
+  it('keeps the Growth Base case when switching to English', async () => {
+    const replace = vi.fn();
+    render(
+      <LocaleSwitcherControl
+        locale="zh"
+        pathname="/zh/work/growth-base/"
+        replace={replace}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: '切换至英语' }));
+
+    expect(replace).toHaveBeenCalledWith('/en/work/growth-base/');
+  });
+
   it('is directly operable from the keyboard', async () => {
     const replace = vi.fn();
     const user = userEvent.setup();

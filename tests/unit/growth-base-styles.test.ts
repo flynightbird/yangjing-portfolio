@@ -34,6 +34,7 @@ describe('Growth Base showcase CSS contract', () => {
     const css = await readFile(stylesheetPath, 'utf8');
 
     expect(css).toMatch(/\.tentAsset\s*\{[^}]*opacity:\s*1/);
+    expect(css).toMatch(/\.tentOrb\s*\{[^}]*border:\s*2px solid/);
     expect(css).toMatch(/\.watermarkMask\s*\{[^}]*height:\s*2\.2rem/);
     expect(css).toMatch(
       /\.film\[data-film-id='meal-prep'\]\s+\.watermarkMask\s*\{[^}]*height:\s*3\.2rem/,

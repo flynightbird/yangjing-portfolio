@@ -86,6 +86,7 @@ const responsiveCases = [
 
 const routes = [
   { route: '/zh/work/call-agent/', surface: 'light' },
+  { route: '/zh/work/growth-base/', surface: 'light' },
   { route: '/zh/work/meeting/', surface: 'dark' },
   { route: '/zh/work/xuelang/', surface: 'light' },
 ] as const;
