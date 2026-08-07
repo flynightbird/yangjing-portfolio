@@ -7,6 +7,7 @@ import '@/app/globals.css';
 import { PageTransitionLayer } from '@/components/shell/page-transition-layer';
 import { SiteFooter } from '@/components/shell/site-footer';
 import { SiteHeader } from '@/components/shell/site-header';
+import { SecurityMeta } from '@/components/security/security-meta';
 import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
 import { getStaticLocaleParams, isLocale } from '@/lib/i18n/locales';
@@ -42,6 +43,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={documentLanguage} data-scroll-behavior="smooth">
+      <head><SecurityMeta /></head>
       <body>
         <PageTransitionLayer>
           <a className="skip-link" href="#main-content">
