@@ -774,12 +774,13 @@ test.describe('portfolio detail system', () => {
         await expect(chapters.nth(1)).toHaveCSS('opacity', '0.48');
       }
 
-      for (const [level, leading] of [
-        [1, 1.06],
-        [2, 1.16],
-      ] as const) {
+      const headingStyles = route === '/zh/work/growth-base/'
+        ? [[1, 0.98, '400'], [2, 1.08, '400']] as const
+        : [[1, 1.06, '600'], [2, 1.16, '600']] as const;
+
+      for (const [level, leading, weight] of headingStyles) {
         const heading = page.locator(`[data-case-study] h${level}`).first();
-        await expect(heading).toHaveCSS('font-weight', '600');
+        await expect(heading).toHaveCSS('font-weight', weight);
         const ratio = await heading.evaluate((node) => {
           const style = getComputedStyle(node);
           return (

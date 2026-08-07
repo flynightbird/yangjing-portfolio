@@ -42,7 +42,8 @@ test.describe('Growth Base decision showcase', () => {
     await expect(page.locator('[data-comparison-role="before"]')).toBeHidden();
     await expect(page.getByRole('banner')).toBeHidden();
 
-    const prototype = page.locator('[data-prototype-viewport]');
+    await expect(page.locator('[data-prototype-viewport]')).toHaveCount(2);
+    const prototype = page.locator('[data-prototype-viewport]').first();
     await expect(prototype).toBeVisible();
     expect(await prototype.evaluate((node) => node.getBoundingClientRect().width)).toBe(390);
     await expect(page.locator('iframe[title*="成长基地"]')).toHaveCSS('transform', 'none');
