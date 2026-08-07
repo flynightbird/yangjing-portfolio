@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Growth Base decision showcase', () => {
-  test('keeps the five-part desktop narrative interactive and overflow-free', async ({ page }, testInfo) => {
+  test('keeps the six-part desktop narrative interactive and overflow-free', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop');
     await page.goto('/zh/work/growth-base/', { waitUntil: 'domcontentloaded' });
 
@@ -14,6 +14,7 @@ test.describe('Growth Base decision showcase', () => {
       'reward-loop',
       'emotional-language',
       'scene-films',
+      'personal-trainer',
     ]);
     await expect(page.locator('[data-task-viewport]')).toBeVisible();
     await expect(page.locator('[data-film-shell]')).toHaveCount(2);
@@ -34,7 +35,7 @@ test.describe('Growth Base decision showcase', () => {
     await page.goto('/zh/work/growth-base/', { waitUntil: 'domcontentloaded' });
 
     await expect(page.locator('[data-growth-base-case] header').first()).toBeHidden();
-    await expect(page.locator('[class*="desktopDecision"]')).toHaveCount(4);
+    await expect(page.locator('[class*="desktopDecision"]')).toHaveCount(5);
     for (const decision of await page.locator('[class*="desktopDecision"]').all()) {
       await expect(decision).toBeHidden();
     }

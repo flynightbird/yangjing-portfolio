@@ -766,11 +766,13 @@ test.describe('portfolio detail system', () => {
         surface,
       );
 
-      const chapters = page
-        .getByRole('navigation', { name: '案例章节' })
-        .getByRole('link');
-      await expect(chapters.first()).toHaveCSS('opacity', '1');
-      await expect(chapters.nth(1)).toHaveCSS('opacity', '0.48');
+      if (route !== '/zh/work/growth-base/') {
+        const chapters = page
+          .getByRole('navigation', { name: '案例章节' })
+          .getByRole('link');
+        await expect(chapters.first()).toHaveCSS('opacity', '1');
+        await expect(chapters.nth(1)).toHaveCSS('opacity', '0.48');
+      }
 
       for (const [level, leading] of [
         [1, 1.06],

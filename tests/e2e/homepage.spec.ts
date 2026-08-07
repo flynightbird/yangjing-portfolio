@@ -106,6 +106,7 @@ test.describe('portfolio homepage framework', () => {
       expect(projectIds).toEqual([
         'call-agent',
         'convo-ai',
+        'growth-base',
         'meeting',
         'stt-demo',
         'aidx',
@@ -130,11 +131,11 @@ test.describe('portfolio homepage framework', () => {
         locale === 'zh' ? 'Agora RTE 2026 大会发布' : 'Pinned static prototype',
       );
 
-      await expect(page.locator('[data-company-mark]')).toHaveCount(6);
-      await expect(page.locator('[data-project-meta]')).toHaveCount(6);
-      await expect(page.locator('[data-cta-treatment="white"]')).toHaveCount(3);
+      await expect(page.locator('[data-company-mark]')).toHaveCount(7);
+      await expect(page.locator('[data-project-meta]')).toHaveCount(7);
+      await expect(page.locator('[data-cta-treatment="white"]')).toHaveCount(4);
       const projectCtas = page.locator('[data-home-project-cta]');
-      await expect(projectCtas).toHaveCount(6);
+      await expect(projectCtas).toHaveCount(7);
       expect(await projectCtas.evaluateAll((ctas) => ctas.map((cta) => {
         const style = getComputedStyle(cta);
         return {
@@ -142,7 +143,7 @@ test.describe('portfolio homepage framework', () => {
           fontSize: style.fontSize,
           fontWeight: style.fontWeight,
         };
-      }))).toEqual(Array.from({ length: 6 }, () => ({
+      }))).toEqual(Array.from({ length: 7 }, () => ({
         height: '48px',
         fontSize: '14px',
         fontWeight: '500',

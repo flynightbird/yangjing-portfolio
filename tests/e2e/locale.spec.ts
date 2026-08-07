@@ -46,7 +46,8 @@ test('switches locale while preserving the homepage identity', async ({ page }) 
     .toBe('zh');
 });
 
-test('switches Growth Base locale without returning to the homepage', async ({ page }) => {
+test('switches Growth Base locale without returning to the homepage', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile', 'Growth Base intentionally hides the mobile header.');
   await page.goto('/zh/work/growth-base/');
 
   await page.getByRole('button', { name: '切换至英语' }).click();
