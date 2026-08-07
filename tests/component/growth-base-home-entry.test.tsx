@@ -36,6 +36,7 @@ describe('GrowthBaseHomeEntry', () => {
     const video = container.querySelector<HTMLVideoElement>('[data-growth-base-home-video]');
 
     expect(entry).toBeInTheDocument();
+    expect(video).toHaveAttribute('src', '/videos/growth-base/home-loop.mp4');
     expect(video).toHaveAttribute('poster', '/images/growth-base/home-video-poster.webp');
     expect(video?.muted).toBe(true);
     expect(container.querySelector('[data-media-radius]')).toHaveAttribute(
