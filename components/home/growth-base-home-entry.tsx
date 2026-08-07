@@ -65,12 +65,6 @@ export function GrowthBaseHomeEntry({
     if (finePointer) pause();
   };
 
-  const handleMediaClick = () => {
-    if (finePointer && !reducedMotion) return;
-    if (videoRef.current?.paused) play();
-    else pause();
-  };
-
   const toggleSound = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     const video = videoRef.current;
@@ -117,7 +111,6 @@ export function GrowthBaseHomeEntry({
           className={styles.media}
           data-growth-base-home-media
           data-media-radius="24"
-          onClick={handleMediaClick}
           onPointerEnter={handlePointerEnter}
           onPointerLeave={handlePointerLeave}
         >
@@ -134,6 +127,12 @@ export function GrowthBaseHomeEntry({
             aria-describedby="growth-base-home-video-description"
             onPlay={() => setPlaying(true)}
             onPause={() => setPlaying(false)}
+          />
+          <a
+            className={styles.mediaLink}
+            href={href}
+            aria-label={`Open ${copy.title} case study`}
+            data-page-transition-tone="dark"
           />
           <p className={styles.srOnly} id="growth-base-home-video-description">
             {copy.mediaLabel ?? 'Generative character film and interactive prototype'}

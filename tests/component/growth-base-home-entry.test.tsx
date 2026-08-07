@@ -39,6 +39,9 @@ describe('GrowthBaseHomeEntry', () => {
     expect(video).toHaveAttribute('src', '/videos/growth-base/home-loop.mp4');
     expect(video).toHaveAttribute('poster', '/images/growth-base/home-video-poster.webp');
     expect(video?.muted).toBe(true);
+    expect(
+      screen.getByRole('link', { name: 'Open AI Coach · Emotional IP Companionship case study' }),
+    ).toHaveAttribute('href', '/en/work/growth-base/');
     expect(container.querySelector('[data-media-radius]')).toHaveAttribute(
       'data-media-radius',
       '24',
