@@ -232,7 +232,7 @@ export const enDictionary = {
         kind: 'WeChat Mini Program · Interactive prototype',
         title: 'AI Coach · Emotional IP Companionship',
         proposition:
-          'Turn routine health check-ins into a warmer daily relationship through generative character films and restorative feedback.',
+          'Redesigned routine health check-ins as a responsive daily companion through generative character films, focused actions, and tangible feedback.',
         role: 'Independent product and visual design · AI-assisted prototyping',
         status: 'Personal concept',
         mediaLabel: 'Generative character film and interactive prototype',

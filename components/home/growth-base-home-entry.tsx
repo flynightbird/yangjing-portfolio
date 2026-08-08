@@ -4,6 +4,7 @@ import { Play, Volume2, VolumeX } from 'lucide-react';
 import { useEffect, useRef, useState, type MouseEvent } from 'react';
 
 import { ActionLink } from '@/components/ui/action-link';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import { ProjectMeta } from './project-meta';
 import styles from './growth-base-home-entry.module.css';
@@ -27,6 +28,8 @@ export function GrowthBaseHomeEntry({
   readonly href: string;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const mediaRef = useRef<HTMLDivElement>(null);
+  const inViewRef = useRef(false);
   const [muted, setMuted] = useState(true);
   const [playing, setPlaying] = useState(false);
   const [finePointer, setFinePointer] = useState(false);
@@ -50,6 +53,32 @@ export function GrowthBaseHomeEntry({
     };
   }, []);
 
+  useEffect(() => {
+    const media = mediaRef.current;
+    const video = videoRef.current;
+    if (!media || !video) return;
+    if (reducedMotion) {
+      inViewRef.current = false;
+      video.pause();
+      return;
+    }
+    if (typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      inViewRef.current = entry.isIntersecting;
+      if (entry.isIntersecting) {
+        video.muted = true;
+        setMuted(true);
+        video.play().catch(() => setPlaying(false));
+      } else {
+        video.pause();
+      }
+    }, { threshold: 0.4 });
+
+    observer.observe(media);
+    return () => observer.disconnect();
+  }, [reducedMotion]);
+
   const play = () => {
     const promise = videoRef.current?.play();
     promise?.catch(() => setPlaying(false));
@@ -62,7 +91,7 @@ export function GrowthBaseHomeEntry({
   };
 
   const handlePointerLeave = () => {
-    if (finePointer) pause();
+    if (finePointer && !inViewRef.current) pause();
   };
 
   const toggleSound = (event: MouseEvent<HTMLButtonElement>) => {
@@ -108,6 +137,7 @@ export function GrowthBaseHomeEntry({
 
       <div className={styles.mediaReveal} data-scroll-reveal-group="media">
         <div
+          ref={mediaRef}
           className={styles.media}
           data-growth-base-home-media
           data-media-radius="24"
@@ -118,12 +148,12 @@ export function GrowthBaseHomeEntry({
             ref={videoRef}
             className={styles.video}
             data-growth-base-home-video
-            src="/videos/growth-base/home-loop.mp4"
-            poster="/images/growth-base/home-video-poster.webp"
+            src={withBasePath('/videos/growth-base/home-loop.mp4')}
+            poster={withBasePath('/images/growth-base/home-video-poster.webp')}
             muted={muted}
             playsInline
             loop
-            preload="metadata"
+            preload="auto"
             aria-describedby="growth-base-home-video-description"
             onPlay={() => setPlaying(true)}
             onPause={() => setPlaying(false)}

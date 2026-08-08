@@ -78,7 +78,7 @@ export const zhDictionary = {
         company: '个人概念',
         kind: '微信小程序 · 可交互原型',
         title: 'AI 教练 · IP 情感化陪伴',
-        proposition: '用生成式视频与治愈系反馈，把干枯的健康打卡，转化为有温度的日常陪伴。',
+        proposition: '用生成式角色视频、聚焦的行动路径与可感知的反馈，把机械的健康打卡重新设计为有回应、有温度的日常陪伴。',
         role: '独立产品与视觉设计 · AI 辅助交互开发',
         status: '个人概念',
         mediaLabel: '生成式 IP 视频与可交互原型',

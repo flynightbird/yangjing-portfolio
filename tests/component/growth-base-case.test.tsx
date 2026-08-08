@@ -24,19 +24,19 @@ describe('GrowthBaseCase', () => {
       'personal-trainer',
     ]);
     expect(
-      screen.getByText('互动式、更立体、更亲近的陪伴，更贴近用户的心灵'),
+      screen.getByText('把健康打卡，从信息展示变成有回应的陪伴体验'),
     ).toBeVisible();
-    expect(screen.getByText('聚焦当下最重要的任务')).toBeVisible();
-    expect(screen.getByText('让每次完成，都得到及时回应')).toBeVisible();
-    expect(screen.getByText('先回应此刻，再给出一步建议')).toBeVisible();
-    expect(screen.getByText('让陪伴进入一天中的不同场景')).toBeVisible();
-    expect(screen.getByText('把预约私教，变成清晰的选择与确认')).toBeVisible();
+    expect(screen.getByText('让下一步行动一眼可见')).toBeVisible();
+    expect(screen.getByText('让完成不再只是状态变化')).toBeVisible();
+    expect(screen.getByText('先理解此刻，再提出一个小行动')).toBeVisible();
+    expect(screen.getByText('用连续场景建立陪伴感')).toBeVisible();
+    expect(screen.getByText('把私教预约收束成清晰的决策路径')).toBeVisible();
     expect(
       screen.queryByText('对照保留旧方案，但让当前可交互体验成为视觉主角。'),
     ).not.toBeInTheDocument();
     expect(
       screen.getByText(
-        '围绕任务聚焦、激励反馈、情感语言与场景陪伴，我进一步拆解了四个关键设计决策。',
+        '这次改版不只是替换视觉，而是围绕行动焦点、完成反馈、情感语言、场景连续性与私教预约，重构用户感知健康陪伴的方式。',
       ),
     ).toBeVisible();
     expect(container.textContent).not.toMatch(/launched|shipped|上线|提升\s*\d|转化率|留存/iu);
@@ -126,14 +126,14 @@ describe('GrowthBaseCase', () => {
     expect(container.querySelectorAll('[data-film-caption="bottom"]')).toHaveLength(4);
     expect(container.querySelectorAll('[data-watermark-mask="top-left"]')).toHaveLength(4);
     expect(container.querySelector('[data-film-id="meal-prep"]')).toBeVisible();
-    expect(screen.getByText('Bringing companionship into everyday moments')).toBeVisible();
+    expect(screen.getByText('Build companionship through continuity')).toBeVisible();
   });
 
   it('authors the decision narrative in English', () => {
     render(<GrowthBaseCase locale="en" />);
 
-    expect(screen.getByText('Focusing on the task that matters now')).toBeVisible();
-    expect(screen.getByText('Make every completion feel acknowledged')).toBeVisible();
-    expect(screen.getByText('Respond to the moment, then suggest one small step')).toBeVisible();
+    expect(screen.getByText('Make the next action unmistakable')).toBeVisible();
+    expect(screen.getByText('Turn completion into a felt response')).toBeVisible();
+    expect(screen.getByText('Acknowledge the moment before offering advice')).toBeVisible();
   });
 });

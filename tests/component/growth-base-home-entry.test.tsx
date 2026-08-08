@@ -48,6 +48,41 @@ describe('GrowthBaseHomeEntry', () => {
     );
   });
 
+  it('plays muted when the media enters the viewport and pauses after it leaves', () => {
+    const play = vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue();
+    const pause = vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {});
+    let onIntersection: IntersectionObserverCallback = () => {};
+    const disconnect = vi.fn();
+    const observe = vi.fn();
+
+    class MockIntersectionObserver {
+      readonly root = null;
+      readonly rootMargin = '';
+      readonly thresholds = [0.4];
+      constructor(callback: IntersectionObserverCallback) {
+        onIntersection = callback;
+      }
+      observe = observe;
+      disconnect = disconnect;
+      unobserve = vi.fn();
+      takeRecords = vi.fn(() => []);
+    }
+    vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
+
+    const { container } = renderEntry();
+    const media = container.querySelector<HTMLElement>('[data-growth-base-home-media]');
+    const video = container.querySelector<HTMLVideoElement>('[data-growth-base-home-video]');
+
+    expect(observe).toHaveBeenCalledWith(media);
+    onIntersection([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
+    expect(play).toHaveBeenCalledOnce();
+    expect(video?.muted).toBe(true);
+
+    onIntersection([{ isIntersecting: false } as IntersectionObserverEntry], {} as IntersectionObserver);
+    expect(pause).toHaveBeenCalledOnce();
+    expect(disconnect).not.toHaveBeenCalled();
+  });
+
   it('plays on fine-pointer enter and pauses without resetting progress on leave', () => {
     const play = vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue();
     const pause = vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {});
