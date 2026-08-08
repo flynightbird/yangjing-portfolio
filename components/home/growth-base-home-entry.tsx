@@ -69,7 +69,8 @@ export function GrowthBaseHomeEntry({
       if (entry.isIntersecting) {
         video.muted = true;
         setMuted(true);
-        video.play().catch(() => setPlaying(false));
+        const playPromise = video.play();
+        playPromise?.catch(() => setPlaying(false));
       } else {
         video.pause();
       }
