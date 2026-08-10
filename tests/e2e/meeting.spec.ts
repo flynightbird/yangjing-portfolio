@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const chapterIds = [
+const englishChapterIds = [
   'business-context',
   'design-challenge',
   'system-strategy',
@@ -9,6 +9,15 @@ const chapterIds = [
   'information-layer',
   'capability-impact',
   'reflection',
+];
+
+const chineseChapterIds = [
+  'business-context',
+  'design-challenge',
+  'adaptive-stage',
+  'whiteboard-workspace',
+  'information-layer',
+  'capability-impact',
 ];
 
 for (const locale of ['en', 'zh'] as const) {
@@ -23,7 +32,9 @@ for (const locale of ['en', 'zh'] as const) {
       const ids = await page.locator('article[data-case-study] > div > section')
         .evaluateAll((sections) => sections.map(({ id }) => id));
 
-      expect(ids).toEqual(chapterIds);
+      expect(ids).toEqual(
+        locale === 'zh' ? chineseChapterIds : englishChapterIds,
+      );
       await expect(page.getByText(
         locale === 'zh' ? '独立负责产品设计' : 'Independent Product Designer',
         { exact: true },
@@ -38,19 +49,38 @@ for (const locale of ['en', 'zh'] as const) {
     });
 
     test('loads committed static evidence without missing recordings', async ({ page }) => {
-      await expect(page.locator('video[src^="/videos/meeting/"]')).toHaveCount(18);
+      await expect(page.locator('video[src^="/videos/meeting/"]')).toHaveCount(
+        locale === 'zh' ? 14 : 18,
+      );
       await expect(page.getByRole('button', { name: locale === 'zh' ? '重播' : 'Replay' })).toBeVisible();
       await expect(page.getByText('Agora Meeting', { exact: true })).toBeVisible();
-      await expect(page.getByText(locale === 'zh' ? '横屏视窗' : 'Landscape viewport')).toBeVisible();
-      await expect(page.getByText(locale === 'zh' ? '竖屏视窗' : 'Portrait viewport')).toBeVisible();
-      await expect(page.locator('#adaptive-stage figure figcaption > span').filter({
-        hasText: locale === 'zh' ? '自适应舞台' : 'Adaptive stage',
-      }).first()).toBeVisible();
-      await expect(page.locator('#whiteboard-workspace figure figcaption > span').filter({
-        hasText: locale === 'zh' ? '屏幕共享标注' : 'Screen-share annotation',
-      }).first()).toBeVisible();
+      await expect(page.getByText(locale === 'zh' ? '手机横屏' : 'Landscape viewport')).toBeVisible();
+      await expect(
+        page.locator('#adaptive-stage').getByText(
+          locale === 'zh' ? '手机竖屏' : 'Portrait viewport',
+          { exact: true },
+        ),
+      ).toBeVisible();
+      await expect(
+        locale === 'zh'
+          ? page.locator('#adaptive-stage figure figcaption > strong').filter({
+            hasText: '对话、共享与协作状态',
+          }).first()
+          : page.locator('#adaptive-stage figure figcaption > span').filter({
+            hasText: 'Adaptive stage',
+          }).first(),
+      ).toBeVisible();
+      await expect(
+        locale === 'zh'
+          ? page.locator('#whiteboard-workspace figure figcaption > strong').filter({
+            hasText: '白板占据主舞台，会议控制仍然可用',
+          }).first()
+          : page.locator('#whiteboard-workspace figure figcaption > span').filter({
+            hasText: 'Screen-share annotation',
+          }).first(),
+      ).toBeVisible();
       await expect(page.locator('#information-layer figure figcaption > span').filter({
-        hasText: locale === 'zh' ? '实时字幕' : 'Live captions',
+        hasText: locale === 'zh' ? '字幕反馈' : 'Live captions',
       }).first()).toBeVisible();
       await expect(page.locator('#information-layer figure figcaption > span').filter({
         hasText: locale === 'zh' ? '实时转写' : 'Live transcript',
