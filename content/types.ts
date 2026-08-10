@@ -7,6 +7,7 @@ export const workSlugs = [
   'convo-ai',
   'growth-base',
   'meeting',
+  'meeting-system',
   'tangping',
 ] as const;
 export type WorkSlug = (typeof workSlugs)[number];

@@ -12,6 +12,7 @@ describe('featured project order', () => {
       'work/meeting',
       'work/tangping',
       'build/stt-demo',
+      'work/meeting-system',
     ]);
   });
 

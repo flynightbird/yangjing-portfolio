@@ -6,6 +6,7 @@ export const featuredOrder = [
   'work/meeting',
   'work/tangping',
   'build/stt-demo',
+  'work/meeting-system',
 ] as const;
 
 export type FeaturedRoute = (typeof featuredOrder)[number];

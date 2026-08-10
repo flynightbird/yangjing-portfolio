@@ -11,6 +11,10 @@
   border-block-end: 1px solid var(--meeting-line);
 }
 
+.systemRoot {
+  background: #0f141b;
+}
+
 .frame {
   display: grid;
   grid-template-columns: minmax(9rem, 2fr) minmax(0, 10fr);
@@ -264,12 +268,20 @@
     gap: 1.25rem;
   }
 
-  .heroMedia {
+  .systemHero .heroTop {
+    display: contents;
+  }
+
+  .systemHero .heroBody {
+    order: 0;
+  }
+
+  .systemHero .heroMedia {
     order: 1;
   }
 
-  .heroBody {
-    order: 0;
+  .systemHero .heroMeta {
+    order: 2;
   }
 
   .proposition {
@@ -290,6 +302,7 @@
   .logoMotionCard {
     width: 6.2rem;
   }
+
 }
 
 @media (prefers-reduced-motion: reduce) {

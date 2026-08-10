@@ -83,6 +83,12 @@ const launchDefinitions = [
     translationKey: 'build-stt-demo',
     featuredOrder: 7,
   },
+  {
+    type: 'work',
+    slug: 'meeting-system',
+    translationKey: 'work-meeting-system',
+    featuredOrder: 8,
+  },
 ] as const;
 
 function createCompleteLaunchEntries(): ContentEntry[] {
@@ -195,6 +201,8 @@ describe('content registry', () => {
       'work/growth-base:zh',
       'work/meeting:en',
       'work/meeting:zh',
+      'work/meeting-system:en',
+      'work/meeting-system:zh',
       'work/tangping:en',
       'work/tangping:zh',
       'build/stt-demo:en',

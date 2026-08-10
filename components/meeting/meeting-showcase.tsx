@@ -44,6 +44,11 @@ interface MediaDefinition {
   readonly description: { readonly en: string; readonly zh: string };
 }
 
+interface CompactCaption {
+  readonly label: string;
+  readonly text: string;
+}
+
 const popupExpressionCards = [
   { id: 'groups', src: '/images/meeting/meeting-popup-groups.png' },
   { id: 'host', src: '/images/meeting/meeting-popup-host.png' },
@@ -339,6 +344,35 @@ const copy = {
   },
 } as const;
 
+const systemShowcaseCopy = {
+  en: {
+    stageWeb: { label: 'Web', text: 'Conversation, sharing, and workspace states' },
+    stageLandscape: { label: 'Mobile landscape', text: 'Shared content expands across the stage' },
+    stagePortrait: { label: 'Mobile portrait', text: 'Stage, participants, and controls stack vertically' },
+    whiteboardWeb: { label: 'Web', text: 'The whiteboard fills the stage; meeting controls remain available' },
+    whiteboardPortrait: { label: 'Mobile portrait', text: 'One participant stays visible above the whiteboard' },
+    captions: { label: 'Live captions', text: 'Each participant turns captions on for themselves' },
+    transcript: { label: 'Live transcript', text: 'Transcript appears inside the active meeting' },
+    privateChat: { label: 'Private chat', text: 'Input limits appear while composing a message' },
+    chatActions: { label: 'Message actions', text: 'Secondary actions stay attached to each message' },
+    cameraSettings: { label: 'Personal settings', text: 'Camera adjustments open without leaving the meeting' },
+    roomSafety: { label: 'Room management', text: 'Member and safety actions open from the current room' },
+  },
+  zh: {
+    stageWeb: { label: 'Web', text: '对话、共享与协作状态' },
+    stageLandscape: { label: '手机横屏', text: '横屏时，左右布局共享内容在主舞台展开' },
+    stagePortrait: { label: '手机竖屏', text: '主舞台、参会者与控制区上下排列' },
+    whiteboardWeb: { label: 'Web', text: '白板占据主舞台，会议控制仍然可用' },
+    whiteboardPortrait: { label: '手机竖屏', text: '白板上方保留更多参会者画面，也支持隐藏画面给白板更多的视觉空间' },
+    captions: { label: '字幕反馈', text: '细化捕捉状态，点击字幕区即可快速设置' },
+    transcript: { label: '实时转写', text: '状态动效持续反馈，主视窗保留快捷入口' },
+    privateChat: { label: '私聊', text: '输入消息时直接提示字数限制' },
+    chatActions: { label: '消息操作', text: '二级操作跟随当前消息出现' },
+    cameraSettings: { label: '个人设置', text: '不离开会议即可调节相机效果' },
+    roomSafety: { label: '会议管理', text: '从当前房间查看成员和安全操作' },
+  },
+} as const;
+
 function MeetingViewportVideo({
   media,
   locale,
@@ -407,6 +441,7 @@ function BrowserShell({
   className,
   loop = true,
   videoRef,
+  compactCaption,
 }: {
   readonly mediaId: MeetingMediaId;
   readonly locale: Locale;
@@ -414,6 +449,7 @@ function BrowserShell({
   readonly className?: string;
   readonly loop?: boolean;
   readonly videoRef?: React.RefObject<HTMLVideoElement | null>;
+  readonly compactCaption?: CompactCaption;
 }) {
   const media = mediaCatalog[mediaId];
   const text = copy[locale];
@@ -444,14 +480,14 @@ function BrowserShell({
             loop={loop}
             videoRef={videoRef}
             className={styles.media}
-            describedBy={`${titleId} ${descriptionId}`}
+            describedBy={compactCaption ? titleId : `${titleId} ${descriptionId}`}
           />
         </div>
       </div>
       <figcaption>
-        <span>{media.label[locale]}</span>
-        <strong id={titleId}>{media.title[locale]}</strong>
-        <p id={descriptionId}>{media.description[locale]}</p>
+        <span>{compactCaption?.label ?? media.label[locale]}</span>
+        <strong id={titleId}>{compactCaption?.text ?? media.title[locale]}</strong>
+        {compactCaption ? null : <p id={descriptionId}>{media.description[locale]}</p>}
       </figcaption>
     </figure>
   );
@@ -463,12 +499,14 @@ function PhoneShell({
   className,
   loop = true,
   videoRef,
+  compactCaption,
 }: {
   readonly mediaId: MeetingMediaId;
   readonly locale: Locale;
   readonly className?: string;
   readonly loop?: boolean;
   readonly videoRef?: React.RefObject<HTMLVideoElement | null>;
+  readonly compactCaption?: CompactCaption;
 }) {
   const media = mediaCatalog[mediaId];
   const titleId = `${media.id}-${locale}-title`;
@@ -484,14 +522,14 @@ function PhoneShell({
             loop={loop}
             videoRef={videoRef}
             className={styles.media}
-            describedBy={`${titleId} ${descriptionId}`}
+            describedBy={compactCaption ? titleId : `${titleId} ${descriptionId}`}
           />
         </div>
       </div>
       <figcaption>
-        <span>{media.label[locale]}</span>
-        <strong id={titleId}>{media.title[locale]}</strong>
-        <p id={descriptionId}>{media.description[locale]}</p>
+        <span>{compactCaption?.label ?? media.label[locale]}</span>
+        <strong id={titleId}>{compactCaption?.text ?? media.title[locale]}</strong>
+        {compactCaption ? null : <p id={descriptionId}>{media.description[locale]}</p>}
       </figcaption>
     </figure>
   );
@@ -500,9 +538,11 @@ function PhoneShell({
 function LandscapeShell({
   mediaId,
   locale,
+  compactCaption,
 }: {
   readonly mediaId: MeetingMediaId;
   readonly locale: Locale;
+  readonly compactCaption?: CompactCaption;
 }) {
   const media = mediaCatalog[mediaId];
   const titleId = `${media.id}-${locale}-title`;
@@ -516,14 +556,14 @@ function LandscapeShell({
             media={media}
             locale={locale}
             className={styles.media}
-            describedBy={`${titleId} ${descriptionId}`}
+            describedBy={compactCaption ? titleId : `${titleId} ${descriptionId}`}
           />
         </div>
       </div>
       <figcaption>
-        <span>{media.label[locale]}</span>
-        <strong id={titleId}>{media.title[locale]}</strong>
-        <p id={descriptionId}>{media.description[locale]}</p>
+        <span>{compactCaption?.label ?? media.label[locale]}</span>
+        <strong id={titleId}>{compactCaption?.text ?? media.title[locale]}</strong>
+        {compactCaption ? null : <p id={descriptionId}>{media.description[locale]}</p>}
       </figcaption>
     </figure>
   );
@@ -599,6 +639,33 @@ export function MeetingAdaptiveStageShowcase({ locale }: { readonly locale: Loca
   );
 }
 
+export function MeetingSystemAdaptiveStageShowcase({ locale }: { readonly locale: Locale }) {
+  const text = systemShowcaseCopy[locale];
+
+  return (
+    <div className={styles.sectionStack}>
+      <BrowserShell
+        mediaId="stage-web"
+        locale={locale}
+        chromeLabel="Adaptive stage"
+        compactCaption={text.stageWeb}
+      />
+      <div className={styles.orientationCompare}>
+        <LandscapeShell
+          mediaId="stage-landscape-app"
+          locale={locale}
+          compactCaption={text.stageLandscape}
+        />
+        <PhoneShell
+          mediaId="stage-portrait-app"
+          locale={locale}
+          compactCaption={text.stagePortrait}
+        />
+      </div>
+    </div>
+  );
+}
+
 export function MeetingWhiteboardShowcase({ locale }: { readonly locale: Locale }) {
   const text = copy[locale];
 
@@ -613,6 +680,28 @@ export function MeetingWhiteboardShowcase({ locale }: { readonly locale: Locale 
         <PhoneShell mediaId="whiteboard-app-1" locale={locale} />
         <PhoneShell mediaId="whiteboard-app-2" locale={locale} />
         <PhoneShell mediaId="whiteboard-annotation-app" locale={locale} />
+      </div>
+    </div>
+  );
+}
+
+export function MeetingSystemWhiteboardShowcase({ locale }: { readonly locale: Locale }) {
+  const text = systemShowcaseCopy[locale];
+
+  return (
+    <div className={styles.sectionStack}>
+      <BrowserShell
+        mediaId="whiteboard-web"
+        locale={locale}
+        chromeLabel="Whiteboard workspace"
+        compactCaption={text.whiteboardWeb}
+      />
+      <div className={`${styles.phoneGrid} ${styles.whiteboardDeck}`} data-columns="1">
+        <PhoneShell
+          mediaId="whiteboard-app-1"
+          locale={locale}
+          compactCaption={text.whiteboardPortrait}
+        />
       </div>
     </div>
   );
@@ -633,6 +722,17 @@ export function MeetingLanguageShowcase({ locale }: { readonly locale: Locale })
         <PhoneShell mediaId="interpretation-on-app" locale={locale} />
         <PhoneShell mediaId="interpretation-live-app" locale={locale} />
       </div>
+    </div>
+  );
+}
+
+export function MeetingSystemLanguageShowcase({ locale }: { readonly locale: Locale }) {
+  const text = systemShowcaseCopy[locale];
+
+  return (
+    <div className={styles.phoneGrid} data-columns="2">
+      <PhoneShell mediaId="captions-app" locale={locale} compactCaption={text.captions} />
+      <PhoneShell mediaId="transcript-app" locale={locale} compactCaption={text.transcript} />
     </div>
   );
 }
@@ -688,6 +788,34 @@ export function MeetingPolishShowcase({ locale }: { readonly locale: Locale }) {
               <img src={withBasePath(card.src)} alt="" loading="lazy" decoding="async" />
             </div>
           ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function MeetingSystemPolishShowcase({ locale }: { readonly locale: Locale }) {
+  const text = systemShowcaseCopy[locale];
+
+  return (
+    <div className={styles.sectionStack}>
+      <div className={styles.capabilityGroup}>
+        <div className={styles.capabilityGroupHeader}>
+          <h4>{locale === 'zh' ? '聊天' : 'Chat'}</h4>
+        </div>
+        <div className={`${styles.phoneGrid} ${styles.polishDeck}`} data-columns="2">
+          <PhoneShell mediaId="chat-1-app" locale={locale} compactCaption={text.privateChat} />
+          <PhoneShell mediaId="chat-2-app" locale={locale} compactCaption={text.chatActions} />
+        </div>
+      </div>
+
+      <div className={styles.capabilityGroup}>
+        <div className={styles.capabilityGroupHeader}>
+          <h4>{locale === 'zh' ? '个人与会议控制' : 'Personal and room controls'}</h4>
+        </div>
+        <div className={`${styles.phoneGrid} ${styles.polishDeck}`} data-columns="2">
+          <PhoneShell mediaId="beauty-app" locale={locale} compactCaption={text.cameraSettings} />
+          <PhoneShell mediaId="safety-app" locale={locale} compactCaption={text.roomSafety} />
         </div>
       </div>
     </div>

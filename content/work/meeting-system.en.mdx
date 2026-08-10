@@ -1,0 +1,90 @@
+import { ParticipantPriorityStack } from '@/components/meeting/meeting-models'
+import { MeetingSystemAdaptiveStageShowcase, MeetingSystemWhiteboardShowcase } from '@/components/meeting/meeting-showcase'
+import { MeetingCapabilityAppendix } from '@/components/meeting/meeting-system-story'
+
+export const metadata = {
+  type: 'work',
+  slug: 'meeting-system',
+  locale: 'en',
+  translationKey: 'work.meeting-system',
+  title: 'Agora Meeting',
+  proposition: 'A meeting product built for customer businesses across Desktop, Web, Tablet, and Mobile. The interface changes its emphasis as participants, shared content, and the current task change.',
+  role: 'Independent Product Designer',
+  duration: '2024-2026 · 1.5 years',
+  status: 'Shipped across four platform categories',
+  heroMedia: '/images/meeting/meeting-hero.webp',
+  evidenceLevel: 'delivered',
+  featuredOrder: 8,
+  caseLabel: 'AGORA MEETING',
+  chapters: [
+    { id: 'context', label: 'Context' },
+    { id: 'system-rule', label: 'Layout rule' },
+    { id: 'adaptive-stage', label: 'Meeting stage' },
+    { id: 'whiteboard', label: 'Whiteboard' },
+    { id: 'language', label: 'Language' },
+    { id: 'more', label: 'More surfaces' },
+  ],
+}
+
+<section id="context">
+  <header className="section-heading">
+    <h2>The main subject keeps changing</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">A conversation starts with people. Screen sharing promotes content. Opening the whiteboard turns the stage into a workspace. Captions and transcript still need room beside it.</p>
+    <p>Customers embed Meeting in their own products and configure its brand, features, and permissions. The same product also has to work across Desktop, Web, Tablet, and Mobile.</p>
+  </div>
+</section>
+
+<section id="system-rule">
+  <header className="section-heading">
+    <h2>Four platforms, one set of rules</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">Shared content takes the main stage. An open whiteboard gets the largest working area. Participant changes move the stage between gallery and speaker views.</p>
+    <p>That order stays consistent across all four platforms. The arrangement then changes with screen space and input method.</p>
+  </div>
+</section>
+
+<section id="adaptive-stage">
+  <header className="section-heading">
+    <h2>The same action needs a different portrait layout</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">Landscape expands shared content. Portrait stacks the main stage, participants, and controls vertically.</p>
+    <p>The orientation changes, but the meeting state and most-used controls stay visible.</p>
+  </div>
+  <MeetingSystemAdaptiveStageShowcase locale="en" />
+</section>
+
+<section id="whiteboard">
+  <header className="section-heading">
+    <h2>A mobile whiteboard can keep only one person visible</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">Desktop can hold both the canvas and participants. Mobile portrait cannot. Once the whiteboard opens, one participant remains above it.</p>
+    <p>That spot goes to the active speaker first. If no one is speaking, self, camera, and microphone states determine who appears.</p>
+  </div>
+  <MeetingSystemWhiteboardShowcase locale="en" />
+  <ParticipantPriorityStack locale="en" />
+</section>
+
+<section id="language">
+  <header className="section-heading">
+    <h2>Captions are personal; transcript and interpretation belong to the meeting</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">A participant can enable captions for themselves. Transcript and interpretation affect the whole room, so the host starts and stops them.</p>
+    <p>Transcript results can flow through the customer API. The customer product decides how to store them after the meeting.</p>
+  </div>
+</section>
+
+<section id="more">
+  <header className="section-heading">
+    <h2>Beyond the main stage</h2>
+  </header>
+  <div className="reading">
+    <p>Chat, personal settings, and room management all happen during the meeting. They need to remain available without interrupting the conversation or shared content.</p>
+  </div>
+  <MeetingCapabilityAppendix locale="en" />
+</section>

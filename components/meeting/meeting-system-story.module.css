@@ -1,0 +1,53 @@
+.appendixGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin-block: clamp(2.5rem, 6vw, 5rem);
+  background: var(--meeting-line);
+  border-block: 1px solid var(--meeting-line);
+}
+
+.appendixGrid figure {
+  margin: 0;
+  background: #0f141b;
+}
+
+.appendixGrid figure > div {
+  display: grid;
+  height: clamp(19rem, 34vw, 31rem);
+  place-items: center;
+  overflow: hidden;
+  background: #111820;
+}
+
+.appendixGrid img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.appendixGrid figcaption {
+  min-height: 9rem;
+  padding: 1.25rem;
+}
+
+.appendixGrid h3,
+.appendixGrid p {
+  margin: 0;
+}
+
+.appendixGrid p {
+  margin-block-start: 0.75rem;
+  color: var(--meeting-muted);
+  line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+  .appendixGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .appendixGrid figure > div {
+    height: 24rem;
+  }
+}

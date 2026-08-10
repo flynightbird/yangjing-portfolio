@@ -32,11 +32,18 @@ import SttDemoZh, {
 } from '@/content/build/stt-demo.zh.mdx';
 import MeetingEn, { metadata as meetingEnMetadata } from '@/content/work/meeting.en.mdx';
 import MeetingZh, { metadata as meetingZhMetadata } from '@/content/work/meeting.zh.mdx';
+import MeetingSystemEn, {
+  metadata as meetingSystemEnMetadata,
+} from '@/content/work/meeting-system.en.mdx';
+import MeetingSystemZh, {
+  metadata as meetingSystemZhMetadata,
+} from '@/content/work/meeting-system.zh.mdx';
 import TangpingEn, { metadata as tangpingEnMetadata } from '@/content/work/tangping.en.mdx';
 import TangpingZh, { metadata as tangpingZhMetadata } from '@/content/work/tangping.zh.mdx';
 import { CallAgentLayout } from '@/components/call-agent/call-agent-layout';
 import type { ContentLayoutProps } from '@/components/case-study/case-layout';
 import { MeetingLayout } from '@/components/meeting/meeting-layout';
+import { MeetingSystemLayout } from '@/components/meeting/meeting-system-layout';
 import { ConvoAiLayout } from '@/components/convo-ai/convo-ai-layout';
 import { GrowthBaseLayout } from '@/components/growth-base/growth-base-layout';
 import { TangpingLayout } from '@/components/tangping/tangping-layout';
@@ -153,6 +160,16 @@ export const contentEntries: readonly ContentEntry[] = [
     meta: contentMetaSchema.parse(meetingZhMetadata),
     Component: MeetingZh,
     Layout: MeetingLayout,
+  },
+  {
+    meta: contentMetaSchema.parse(meetingSystemEnMetadata),
+    Component: MeetingSystemEn,
+    Layout: MeetingSystemLayout,
+  },
+  {
+    meta: contentMetaSchema.parse(meetingSystemZhMetadata),
+    Component: MeetingSystemZh,
+    Layout: MeetingSystemLayout,
   },
   {
     meta: contentMetaSchema.parse(tangpingEnMetadata),

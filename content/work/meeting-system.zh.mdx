@@ -1,0 +1,90 @@
+import { ParticipantPriorityStack } from '@/components/meeting/meeting-models'
+import { MeetingSystemAdaptiveStageShowcase, MeetingSystemWhiteboardShowcase } from '@/components/meeting/meeting-showcase'
+import { MeetingCapabilityAppendix } from '@/components/meeting/meeting-system-story'
+
+export const metadata = {
+  type: 'work',
+  slug: 'meeting-system',
+  locale: 'zh',
+  translationKey: 'work.meeting-system',
+  title: 'Agora Meeting',
+  proposition: '一套服务于客户业务的会议产品，覆盖桌面客户端、Web、平板和手机。界面会根据参会人数、共享内容和当前任务重新安排重点。',
+  role: '独立负责产品设计',
+  duration: '2024-2026 · 1.5 年',
+  status: '四类终端已上线',
+  heroMedia: '/images/meeting/meeting-hero.webp',
+  evidenceLevel: 'delivered',
+  featuredOrder: 8,
+  caseLabel: 'AGORA MEETING',
+  chapters: [
+    { id: 'context', label: '产品背景' },
+    { id: 'system-rule', label: '布局规则' },
+    { id: 'adaptive-stage', label: '会议舞台' },
+    { id: 'whiteboard', label: '白板协作' },
+    { id: 'language', label: '语言能力' },
+    { id: 'more', label: '更多能力' },
+  ],
+}
+
+<section id="context">
+  <header className="section-heading">
+    <h2>一场会议里，主角一直在变</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">对话时是人，屏幕共享后是内容，打开白板后又变成操作空间。字幕和转写还要同时出现在会议里。</p>
+    <p>客户会把 Meeting 嵌入自己的业务，并配置品牌、功能和权限。同一套产品要同时覆盖桌面客户端、Web、平板和手机。</p>
+  </div>
+</section>
+
+<section id="system-rule">
+  <header className="section-heading">
+    <h2>四个终端，不是四套逻辑</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">共享内容进入主舞台；白板开启后，画布拿到最大的操作空间；参会人数变化时，舞台在宫格和发言者视图之间切换。</p>
+    <p>这条顺序在四个终端上保持一致，具体排法再跟着屏幕空间和输入方式变化。</p>
+  </div>
+</section>
+
+<section id="adaptive-stage">
+  <header className="section-heading">
+    <h2>同一个动作，在横竖屏里换一种排法</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">横屏把共享内容展开，竖屏则把主舞台、参会者和控制区上下重排。</p>
+    <p>屏幕方向变了，当前会议状态和最常用的控制仍然留在视线内。</p>
+  </div>
+  <MeetingSystemAdaptiveStageShowcase locale="zh" />
+</section>
+
+<section id="whiteboard">
+  <header className="section-heading">
+    <h2>手机白板只能留下一个人</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">桌面端可以同时容纳画布和参会者，手机竖屏不行。白板展开后，只在上方保留一个参会者画面。</p>
+    <p>这个位置先给正在发言的人；没人发言时，再根据自己、摄像头和麦克风状态决定显示谁。</p>
+  </div>
+  <MeetingSystemWhiteboardShowcase locale="zh" />
+  <ParticipantPriorityStack locale="zh" />
+</section>
+
+<section id="language">
+  <header className="section-heading">
+    <h2>字幕归个人，转写和同传归会议</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">参会者可以只为自己打开字幕；转写和同传会影响整场会议，需要由主持人统一开启或关闭。</p>
+    <p>转写结果可以通过客户 API 使用，会后的保存方式则由客户自己的产品决定。</p>
+  </div>
+</section>
+
+<section id="more">
+  <header className="section-heading">
+    <h2>主舞台之外</h2>
+  </header>
+  <div className="reading">
+    <p>聊天、个人设置和会议管理都发生在会中。它们需要随时可用，但不能打断正在进行的对话或共享。</p>
+  </div>
+  <MeetingCapabilityAppendix locale="zh" />
+</section>

@@ -3,16 +3,26 @@ import { describe, expect, it } from 'vitest';
 
 import { contentEntries } from '@/content/registry';
 
-const chapterIds = [
-  'business-context',
-  'design-challenge',
-  'system-strategy',
-  'adaptive-stage',
-  'whiteboard-workspace',
-  'information-layer',
-  'capability-impact',
-  'reflection',
-];
+const chapterIds = {
+  en: [
+    'business-context',
+    'design-challenge',
+    'system-strategy',
+    'adaptive-stage',
+    'whiteboard-workspace',
+    'information-layer',
+    'capability-impact',
+    'reflection',
+  ],
+  zh: [
+    'business-context',
+    'design-challenge',
+    'adaptive-stage',
+    'whiteboard-workspace',
+    'information-layer',
+    'capability-impact',
+  ],
+} as const;
 
 describe('Agora Meeting content', () => {
   it.each(['en', 'zh'] as const)('registers complete %s shipped metadata', (locale) => {
@@ -24,7 +34,7 @@ describe('Agora Meeting content', () => {
     expect(entry?.meta.duration).toBe(
       locale === 'zh' ? '2024-2026 · 1.5 年' : '2024-2026 · 1.5 years',
     );
-    expect(entry?.meta.chapters?.map(({ id }) => id)).toEqual(chapterIds);
+    expect(entry?.meta.chapters?.map(({ id }) => id)).toEqual(chapterIds[locale]);
     expect(entry?.meta.evidenceLevel).toBe('delivered');
   });
 
@@ -39,7 +49,6 @@ describe('Agora Meeting content', () => {
     expect(source).not.toMatch(/\bdisclosure\s*:/);
     expect(source).not.toMatch(/因缺少验证数据|不作采用率/);
     expect(source).toMatch(/Customer API/);
-    expect(source).toMatch(/客户 API/);
   });
 
   it('removes host focus and personal pin from both published narratives', () => {
@@ -63,8 +72,8 @@ describe('Agora Meeting content', () => {
   it('uses concise strategy-led Chinese copy without internal writing language', () => {
     const chinese = readFileSync('content/work/meeting.zh.mdx', 'utf8');
 
-    expect(chinese).toContain('信息优先级与界面状态');
-    expect(chinese).toContain('跨端规则与组件分化');
+    expect(chinese).toContain('同一场会议，重点一直在变');
+    expect(chinese).toContain('让字幕的响应看得见，让转写随时找得回');
     expect(chinese).not.toMatch(/招聘者需要看到|推到主位|活着的参会者通道|空间节奏|API 暴露/);
   });
 
