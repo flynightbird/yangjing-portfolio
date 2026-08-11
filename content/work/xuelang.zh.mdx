@@ -2,10 +2,14 @@ import {
   XuelangDarkComparison,
   XuelangDecisionResult,
   XuelangEvidenceStory,
+  XuelangFigure,
   XuelangLearningSequence,
   XuelangResults,
   XuelangStandardMap,
 } from '@/components/xuelang/xuelang-evidence'
+import { XuelangBackgroundResearch } from '@/components/xuelang/xuelang-background-research'
+import { XuelangCourseExploration } from '@/components/xuelang/xuelang-course-exploration'
+import { XuelangPositioningBridge } from '@/components/xuelang/xuelang-positioning-bridge'
 
 export const metadata = {
   type: 'work',
@@ -24,7 +28,8 @@ export const metadata = {
   chapters: [
     { id: 'overview', label: '项目概览' },
     { id: 'business', label: '业务命题' },
-    { id: 'problem', label: '问题定义' },
+    { id: 'course-exploration', label: '课程·设计探索' },
+    { id: 'detail-structure', label: '详情页结构化' },
     { id: 'strategy', label: '设计策略' },
     { id: 'decision-standard', label: '好课识别标准' },
     { id: 'decision-purchase', label: '购买决策路径' },
@@ -61,22 +66,32 @@ export const metadata = {
     <div><dt>业务目标</dt><dd>年度 GMV 300 亿</dd></div>
     <div><dt>体验转向</dt><dd>交易完成 → 长期学习关系</dd></div>
   </dl>
+  <XuelangBackgroundResearch locale="zh" />
+  <XuelangPositioningBridge locale="zh" />
 </section>
 
-<section id="problem">
+<section id="course-exploration" className="xuelang-exploration-chapter">
+  <XuelangCourseExploration locale="zh" />
+</section>
+
+<section id="detail-structure">
   <header className="section-heading">
-    <p className="section-index">02 / 问题定义</p>
-    <h2>问题不是信息少，而是品质难以被判断</h2>
+    <p className="section-index">02 / 详情页结构化</p>
+    <h2>按照浏览路径、用户决策和相关性顺序把详情页结构化</h2>
   </header>
-  <div className="xuelang-problem-list">
-    <article><span>01</span><h3>识别低</h3><p>课程信息很多，但缺少稳定标准，用户难以快速区分普通内容与真正的好课。</p></article>
-    <article><span>02</span><h3>信任低</h3><p>讲师、课程结构与学习结果彼此割裂，购买前需要反复寻找可信证据。</p></article>
-    <article><span>03</span><h3>难坚持</h3><p>完成支付后，课程入口、观看、互动与学习资产不连续，投入感容易中断。</p></article>
+  <div className="xuelang-reading">
+    <p className="lead">从形成粗略印象到深入确认，课程信息按用户的浏览路径逐层展开；试听、老师与作品优先回应相关性，评价、课程体系和平台保障继续支撑决策。</p>
   </div>
-  <details className="xuelang-details">
-    <summary>补充：用户与课程差异</summary>
-    <p>技能、兴趣与职业课程的决策依据并不相同；同一信息模板无法同时回答“是否适合我”和“能否学会”。因此研究结论被压缩为三类可行动问题，而不是扩展成独立研究报告。</p>
-  </details>
+  <XuelangFigure
+    locale="zh"
+    emphasis="wide"
+    src="/images/xuelang/detail-structure-map.jpg"
+    width={1920}
+    height={1080}
+    alt="按浏览路径、用户决策和信息相关性重新组织的课程详情页结构图"
+    label="INFORMATION ARCHITECTURE / 详情页结构"
+    caption="从粗略印象、平台保障与课程定位，逐步进入老师风格、作品、评价和课程体系的深入确认。"
+  />
 </section>
 
 <section id="strategy">
@@ -110,9 +125,10 @@ export const metadata = {
   <XuelangEvidenceStory
     locale="zh"
     label="SYSTEM / QUALITY STANDARD"
-    title="把内部标准变成用户能看见的判断依据"
+    title="新增“学浪甄选”的品牌，把内部标准变成用户能看见的判断依据"
     description="课程详情不再堆叠卖点，而是让老师、课程与平台分别回答可信度、适配度和风险问题。"
     annotations={[
+      { title: '统一“学浪甄选”标志与标准', description: '把老师专业度、课程体系与平台服务保障收拢到统一品牌标志下，让用户先感知这是一门经过平台筛选的课程，再查看具体证据。' },
       { title: '先识别老师', description: '认证、专业背景与影响力被放在同一判断区，减少来回查找。' },
       { title: '再判断课程', description: '试听、课程表与作品共同解释内容质量和学习难度。' },
       { title: '最后降低风险', description: '退换、认证与评价使用一致语言，形成平台担保。' },
@@ -134,7 +150,7 @@ export const metadata = {
     locale="zh"
     label="CONTROLLED EXPERIMENT / A · B · C"
     title="先验证内容，再进入价格判断"
-    description="实验围绕同一课程控制变量，只调整试听位置与证据顺序。被选方案让内容质量在首屏直接可验证。"
+    description="A/B Test：实验围绕同一课程控制变量，只调整试听位置与证据顺序。被选方案让内容质量在首屏直接可验证。"
     variant="experiment"
     annotations={[
       { title: '对照态', description: '保留原有信息结构，作为购买行为的比较基线。' },
@@ -153,10 +169,11 @@ export const metadata = {
 <section id="decision-learning">
   <header className="section-heading">
     <p className="section-index">06 / 关键决策三</p>
-    <h2>连接持续学习体验</h2>
+    <h2>学习体验，聚焦让用户学得更爽</h2>
   </header>
   <div className="xuelang-reading">
-    <p className="lead">课程交付不是体验终点。改版把课程入口、沉浸观看、碎片学习、互动与笔记与学习资产连接起来，同时设计沉浸感与操作效率，而不是只做一次视觉翻新。</p>
+    <p className="lead">它是有品的，沉浸的，还要能高级。</p>
+    <p>课程交付不是体验终点。改版把课程入口、沉浸观看、碎片学习、互动、笔记与学习资产连接起来，同时兼顾沉浸感与操作效率。</p>
   </div>
   <XuelangDarkComparison
     locale="zh"
@@ -172,7 +189,7 @@ export const metadata = {
       { index: '02', title: '沉浸观看', description: '收拢干扰信息，让内容与必要控制保持清晰。' },
       { index: '03', title: '碎片学习', description: '在短时间返回时，保留进度与上下文，让学习可以继续。' },
       { index: '04', title: '互动', description: '把沉浸观看、高频控制与课时切换放在同一学习语境中。', interactionBoard: true },
-      { index: '05', title: '笔记与学习资产', description: '让笔记与成果持续积累，形成再次访问的个人价值。' },
+      { index: '05', title: '在首屏笔记功能，让用户沉淀他们的学习资产', description: '让笔记与成果持续积累，形成再次访问的个人价值。' },
     ]}
   />
   <XuelangEvidenceStory

@@ -2,10 +2,14 @@ import {
   XuelangDarkComparison,
   XuelangDecisionResult,
   XuelangEvidenceStory,
+  XuelangFigure,
   XuelangLearningSequence,
   XuelangResults,
   XuelangStandardMap,
 } from '@/components/xuelang/xuelang-evidence'
+import { XuelangBackgroundResearch } from '@/components/xuelang/xuelang-background-research'
+import { XuelangCourseExploration } from '@/components/xuelang/xuelang-course-exploration'
+import { XuelangPositioningBridge } from '@/components/xuelang/xuelang-positioning-bridge'
 
 export const metadata = {
   type: 'work',
@@ -24,7 +28,8 @@ export const metadata = {
   chapters: [
     { id: 'overview', label: 'Overview' },
     { id: 'business', label: 'Business challenge' },
-    { id: 'problem', label: 'Problem definition' },
+    { id: 'course-exploration', label: 'Course design exploration' },
+    { id: 'detail-structure', label: 'Course-detail structure' },
     { id: 'strategy', label: 'Design strategy' },
     { id: 'decision-standard', label: 'Recognizing quality courses' },
     { id: 'decision-purchase', label: 'Purchase decision path' },
@@ -49,16 +54,27 @@ export const metadata = {
     <p>The experience challenge shifted from efficient selling to recognizable quality, clearer decisions, and a more continuous learning journey.</p>
   </div>
   <dl className="xuelang-context-facts" aria-label="Business context"><div><dt>Platform scale</dt><dd>500K DAU</dd></div><div><dt>Business ambition</dt><dd>RMB 30B annual GMV</dd></div><div><dt>Experience shift</dt><dd>Transaction → Learning relationship</dd></div></dl>
+  <XuelangBackgroundResearch locale="en" />
+  <XuelangPositioningBridge locale="en" />
 </section>
 
-<section id="problem">
-  <header className="section-heading"><p className="section-index">02 / PROBLEM DEFINITION</p><h2>The issue was not missing information, but low interpretability</h2></header>
-  <div className="xuelang-problem-list">
-    <article><span>01</span><h3>Hard to recognize</h3><p>Course information was abundant, yet learners lacked a stable standard for identifying quality.</p></article>
-    <article><span>02</span><h3>Hard to trust</h3><p>Instructor, structure, and outcome evidence were fragmented across the decision path.</p></article>
-    <article><span>03</span><h3>Hard to persist</h3><p>Entry, viewing, interaction, and learning assets did not form a continuous experience.</p></article>
-  </div>
-  <details className="xuelang-details"><summary>Additional audience and category context</summary><p>Skills, interests, and professional courses require different decision evidence. Research was condensed into three actionable problems rather than expanded into a separate report.</p></details>
+<section id="course-exploration" className="xuelang-exploration-chapter">
+  <XuelangCourseExploration locale="en" />
+</section>
+
+<section id="detail-structure">
+  <header className="section-heading"><p className="section-index">02 / COURSE-DETAIL STRUCTURE</p><h2>Structure course details around browsing flow, user decisions, and relevance</h2></header>
+  <div className="xuelang-reading"><p className="lead">Information unfolds from a rough first impression to deeper confirmation. Trial content, instructors, and work samples establish relevance first; reviews, course structure, and platform guarantees continue the decision.</p></div>
+  <XuelangFigure
+    locale="en"
+    emphasis="wide"
+    src="/images/xuelang/detail-structure-map.jpg"
+    width={1920}
+    height={1080}
+    alt="Course-detail structure organized around browsing flow, learner decisions, and information relevance"
+    label="INFORMATION ARCHITECTURE / COURSE DETAIL"
+    caption="The path moves from first impression and platform reassurance into instructor style, work samples, reviews, and course structure."
+  />
 </section>
 
 <section id="strategy">
@@ -83,9 +99,10 @@ export const metadata = {
   <XuelangEvidenceStory
     locale="en"
     label="SYSTEM / QUALITY STANDARD"
-    title="Turn internal criteria into evidence learners can judge"
+    title="Introduce the Xuelang Select brand, then turn internal standards into evidence learners can see"
     description="The detail page stops stacking claims. Instructor, course, and platform evidence answer credibility, fit, and risk in a deliberate order."
     annotations={[
+      { title: 'Standardize the Xuelang Select mark', description: 'Instructor expertise, course structure, and platform guarantees sit under one recognizable brand, signaling that the course has passed platform selection before learners inspect the supporting evidence.' },
       { title: 'Recognize the instructor', description: 'Certification, background, and influence share one judgment zone.' },
       { title: 'Evaluate the course', description: 'Trial content, syllabus, and work samples explain quality and difficulty.' },
       { title: 'Reduce purchase risk', description: 'Refund, verification, and review signals use one platform language.' },
@@ -104,7 +121,7 @@ export const metadata = {
     locale="en"
     label="CONTROLLED EXPERIMENT / A · B · C"
     title="Verify the content before evaluating the price"
-    description="The experiment held the course constant and changed only trial placement and evidence order. The selected version made content quality verifiable in the first screen."
+    description="A/B Test: The experiment held the course constant and changed only trial placement and evidence order. The selected version made content quality verifiable in the first screen."
     variant="experiment"
     annotations={[
       { title: 'Control', description: 'Preserve the previous hierarchy as the behavioral baseline.' },
@@ -121,15 +138,15 @@ export const metadata = {
 </section>
 
 <section id="decision-learning">
-  <header className="section-heading"><p className="section-index">06 / KEY DECISION 03</p><h2>Connect a continuous learning experience</h2></header>
-  <div className="xuelang-reading"><p className="lead">Course delivery was not the end state. The redesign connected course entry, immersive viewing, fragmented learning, interaction, and note or learning-asset accumulation, balancing immersion with operating efficiency.</p></div>
+  <header className="section-heading"><p className="section-index">06 / KEY DECISION 03</p><h2>Learning experience, focused on making learning feel better</h2></header>
+  <div className="xuelang-reading"><p className="lead">It should feel considered, immersive, and distinctly premium.</p><p>Course delivery was not the end state. The redesign connected course entry, immersive viewing, fragmented learning, interaction, notes, and learning assets while balancing immersion with operating efficiency.</p></div>
   <XuelangDarkComparison locale="en" title="Content delivery → Continuous learning experience" before={{ src: '/images/xuelang/learning-before-board.webp', width: 1662, height: 1080, alt: 'Previous Xuelang interface collection centered on content delivery', label: 'Before · Content delivery', caption: 'Entry and content existed, but learning actions remained disconnected.' }} after={{ src: '/images/xuelang/learning-after-board.webp', width: 1662, height: 1080, alt: 'Redesigned Xuelang interface collection connecting a continuous learning experience', label: 'After · Continuous learning', caption: 'Viewing, interaction, and learning accumulation become one continuous experience.' }} />
   <XuelangLearningSequence locale="en" thesis="From entering a course to building personal learning assets, every state makes the current position and next action clear." states={[
     { index: '01', title: 'Course entry', description: 'Instead of showing one fixed destination, the entry adapts to no course, an unstarted purchase, recent progress, or a teacher going live, surfacing the most relevant next action.', courseEntry: true },
     { index: '02', title: 'Immersive focus', description: 'Reduce distraction while keeping necessary controls legible.' },
     { index: '03', title: 'Fragmented learning', description: 'Preserve progress and context for short return sessions.' },
     { index: '04', title: 'Interaction', description: 'Keep immersive viewing, frequent controls, and lesson switching in one learning context.', interactionBoard: true },
-    { index: '05', title: 'Notes and learning assets', description: 'Accumulate notes and outcomes into personal value worth revisiting.' },
+    { index: '05', title: 'Use notes to help learners build lasting learning assets', description: 'Accumulate notes and outcomes into personal value worth revisiting.' },
   ]} />
   <XuelangEvidenceStory
     locale="en"

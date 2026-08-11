@@ -1,0 +1,204 @@
+.root {
+  grid-column: 1 / -1 !important;
+  padding: clamp(3rem, 7vw, 7rem) clamp(1.5rem, 4vw, 4rem);
+  overflow: hidden;
+  background: #080a09;
+  color: #f5f7f5;
+}
+
+.vision {
+  max-width: 88rem;
+  margin-inline: auto;
+}
+
+.vision > p {
+  margin: 0;
+  color: #8d9490;
+  font-size: clamp(1rem, 1.8vw, 1.6rem);
+}
+
+.vision h3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.12em 0.2em;
+  align-items: flex-start;
+  max-width: 31ch;
+  margin: clamp(1.5rem, 3vw, 2.5rem) 0 0;
+  font-size: clamp(2rem, 3.6vw, 4.4rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0;
+  text-wrap: pretty;
+}
+
+.vision mark {
+  padding: 0;
+  background: transparent;
+  color: #00cf98;
+}
+
+.interestGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.valueLabel {
+  position: relative;
+  display: block;
+  margin-block-start: 0.85rem;
+  color: #a6ada9;
+  font-size: clamp(0.875rem, 1.2vw, 1.1rem);
+  line-height: 1.4;
+}
+
+.valueLabel::before {
+  position: absolute;
+  inset: -0.65rem auto auto 50%;
+  width: 100%;
+  min-width: 7rem;
+  height: 2px;
+  background: #f5f7f5;
+  content: '';
+  transform: translateX(-50%);
+}
+
+.pathway {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) clamp(3rem, 6vw, 6rem) minmax(18rem, 1fr);
+  gap: 0;
+  align-items: center;
+  max-width: 92rem;
+  margin: clamp(5rem, 10vw, 10rem) auto 0;
+}
+
+.pairedStages,
+.finalStage {
+  border: 1px solid #aab0ac;
+  border-radius: 8px;
+}
+
+.pairedStages {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+}
+
+.pairedStages .phase + .phase {
+  border-inline-start: 1px solid #aab0ac;
+}
+
+.phase {
+  display: flex;
+  min-width: 0;
+  min-height: clamp(21rem, 30vw, 27rem);
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(2rem, 4vw, 4rem);
+}
+
+.phaseIndex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.phaseIndex strong {
+  font-size: clamp(3.25rem, 5.5vw, 5.5rem);
+  font-weight: 650;
+  line-height: 0.8;
+}
+
+.phaseIndex span {
+  padding-block-end: 0.25rem;
+  font-size: clamp(1rem, 1.5vw, 1.35rem);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.phaseCopy h4 {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.3vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.phaseCopy p {
+  margin: 1.5rem 0 0;
+  color: #e0e4e1;
+  font-size: clamp(1rem, 1.45vw, 1.3rem);
+  line-height: 1.55;
+}
+
+.phaseCopy > span {
+  display: block;
+  margin: 0.65rem 0 0;
+  color: #737a76;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.arrow {
+  position: relative;
+  width: 3.5rem;
+  height: 1px;
+  justify-self: center;
+  background: #f5f7f5;
+}
+
+.arrow::after {
+  position: absolute;
+  inset: 50% 0 auto auto;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-block-start: 1px solid #f5f7f5;
+  border-inline-end: 1px solid #f5f7f5;
+  content: '';
+  transform: translateY(-50%) rotate(45deg);
+}
+
+@media (max-width: 1100px) {
+  .pathway {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    width: min(100%, 42rem);
+  }
+
+  .arrow {
+    transform: rotate(90deg);
+  }
+
+  .phase {
+    min-height: 20rem;
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .root {
+    padding-inline: 1rem;
+  }
+
+  .vision h3 {
+    font-size: 2rem;
+  }
+
+  .pairedStages {
+    grid-template-columns: 1fr;
+  }
+
+  .pairedStages .phase + .phase {
+    border-block-start: 1px solid #aab0ac;
+    border-inline-start: 0;
+  }
+
+  .phase {
+    min-height: 18rem;
+    padding: 2rem;
+  }
+
+  .phaseIndex strong {
+    font-size: 3.75rem;
+  }
+}
