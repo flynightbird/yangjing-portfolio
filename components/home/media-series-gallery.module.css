@@ -1,0 +1,245 @@
+.gallery {
+  width: 100%;
+  padding-block: clamp(4rem, 9vh, 7rem);
+}
+
+.heading {
+  width: min(100%, var(--content-max));
+  padding-inline: var(--content-gutter);
+  margin-inline: auto;
+  margin-block-end: clamp(2.5rem, 6vh, 4.5rem);
+}
+
+.heading h2 {
+  max-width: 15ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--font-size-title);
+  line-height: var(--line-height-title);
+}
+
+.seriesList {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.series {
+  --creative-gap: clamp(0.75rem, 1.2vw, 1rem);
+  --creative-row-height: 30rem;
+
+  width: 100%;
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  gap: var(--creative-gap);
+  animation: marquee-left 54s linear infinite;
+  animation-play-state: paused;
+  will-change: transform;
+}
+
+.series[data-in-view='true'] .track {
+  animation-play-state: running;
+}
+
+.series[data-direction='right'] .track {
+  animation-direction: reverse;
+}
+
+.sequence {
+  display: flex;
+  height: var(--creative-row-height);
+  flex: none;
+  gap: var(--creative-gap);
+}
+
+.item,
+.frame {
+  height: 100%;
+}
+
+.item {
+  width: auto;
+  flex: none;
+  margin: 0;
+}
+
+.frame {
+  position: relative;
+  width: auto;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #171815;
+}
+
+.frame > button,
+.frame > button img,
+.mediaTrigger,
+.mediaTrigger video {
+  display: block;
+  width: auto;
+  height: 100%;
+  max-width: none;
+}
+
+.frame > button,
+.mediaTrigger {
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.frame > button img,
+.mediaTrigger video {
+  object-fit: contain;
+  transform: none;
+  transition: none;
+}
+
+.frame > button:hover img,
+.mediaTrigger:hover video {
+  transform: none;
+}
+
+.frame > button:focus-visible,
+.mediaTrigger:focus-visible {
+  outline: 3px solid var(--color-cobalt);
+  outline-offset: -5px;
+}
+
+.mediaTrigger {
+  position: relative;
+}
+
+.watermarkBlur {
+  position: absolute;
+  z-index: 2;
+  width: 25%;
+  height: 11%;
+  pointer-events: none;
+  background: rgba(22, 23, 21, 0.035);
+  backdrop-filter: blur(9px);
+}
+
+.watermarkTopLeft {
+  width: 20%;
+  height: 6.6%;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  border-end-end-radius: 8px;
+}
+
+.watermarkBottomRight {
+  width: 21.25%;
+  height: 8.8%;
+  inset-inline-end: 0;
+  inset-block-end: 0;
+  border-start-start-radius: 8px;
+}
+
+.videoDialog {
+  width: auto;
+  max-width: 94vw;
+  max-height: 92dvh;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+}
+
+.videoDialog::backdrop {
+  background: rgba(16, 17, 15, 0.94);
+}
+
+.videoDialogSurface {
+  position: relative;
+  display: grid;
+  max-width: 94vw;
+  max-height: 92dvh;
+  place-items: center;
+}
+
+.videoStage {
+  position: relative;
+  max-width: 94vw;
+  max-height: 88dvh;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #0b0c0a;
+}
+
+.videoStage video {
+  display: block;
+  width: auto;
+  max-width: 94vw;
+  height: auto;
+  max-height: 88dvh;
+}
+
+.videoClose {
+  position: absolute;
+  z-index: 3;
+  inset-block-start: 0.75rem;
+  inset-inline-end: 0.75rem;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(16, 17, 15, 0.82);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.videoClose:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-50% - var(--creative-gap) / 2));
+  }
+}
+
+@media (max-width: 767px) {
+  .series {
+    --creative-row-height: 17rem;
+  }
+
+  .track {
+    animation-duration: 42s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .series {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .series::-webkit-scrollbar {
+    display: none;
+  }
+
+  .track {
+    animation: none;
+  }
+
+  .sequence[aria-hidden='true'] {
+    display: none;
+  }
+}

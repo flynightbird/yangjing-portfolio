@@ -2,6 +2,7 @@ import { ActionLink } from '@/components/ui/action-link';
 import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
 
 import styles from './home.module.css';
 
@@ -23,7 +24,7 @@ export function AboutPreview({ locale }: AboutPreviewProps) {
         <h2 id="about-preview-title">{copy.title}</h2>
         <p className={styles.aboutCareer}>{copy.career}</p>
         <p className={styles.aboutOpportunity}>{copy.opportunity}</p>
-        <ActionLink href={`/${locale}/about/`} variant="primary">
+        <ActionLink href={withBasePath(`/${locale}/about/`)} variant="primary">
           {copy.action}
         </ActionLink>
       </div>

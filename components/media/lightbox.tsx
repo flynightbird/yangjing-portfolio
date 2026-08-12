@@ -31,6 +31,7 @@ interface LightboxProps {
   readonly height: number;
   readonly alt: string;
   readonly gallery?: readonly LightboxMedia[];
+  readonly initialIndex?: number;
   readonly triggerLabel: string;
   readonly dialogLabel: string;
   readonly closeLabel: string;
@@ -40,6 +41,8 @@ interface LightboxProps {
   readonly errorLabel?: string;
   readonly expandLabel?: string;
   readonly triggerLoading?: 'eager' | 'lazy';
+  readonly triggerTabIndex?: number;
+  readonly triggerAriaHidden?: boolean;
 }
 
 const subscribeToHydration = () => () => {};
@@ -81,6 +84,7 @@ export function Lightbox({
   height,
   alt,
   gallery,
+  initialIndex = 0,
   triggerLabel,
   dialogLabel,
   closeLabel,
@@ -90,17 +94,20 @@ export function Lightbox({
   errorLabel,
   expandLabel,
   triggerLoading = 'lazy',
+  triggerTabIndex,
+  triggerAriaHidden = false,
 }: LightboxProps) {
   const resolvedExpandLabel = expandLabel
     ?? (/[㐀-鿿]/u.test(triggerLabel) ? '放大' : 'Expand');
   const media = gallery?.length ? gallery : [{ src, width, height, alt }];
+  const clampedInitialIndex = Math.max(0, Math.min(initialIndex, media.length - 1));
   const isGallery = media.length > 1;
   const resolvedPreviousLabel = previousLabel ?? 'Previous image';
   const resolvedNextLabel = nextLabel ?? 'Next image';
   const resolvedPositionLabel = positionLabel ?? 'Image position';
   const resolvedErrorLabel = errorLabel ?? 'Image unavailable';
   const [open, setOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(clampedInitialIndex);
   const [previousMediaLength, setPreviousMediaLength] = useState(media.length);
   const [failedSources, setFailedSources] = useState<ReadonlySet<string>>(
     () => new Set(),
@@ -139,10 +146,10 @@ export function Lightbox({
     openingTimelineRef.current = null;
     closingTimelineRef.current = null;
     closingRef.current = false;
-    activeIndexRef.current = 0;
-    setActiveIndex(0);
+    activeIndexRef.current = clampedInitialIndex;
+    setActiveIndex(clampedInitialIndex);
     setOpen(false);
-  }, []);
+  }, [clampedInitialIndex]);
 
   const closeDialog = useCallback(() => {
     const reduceMotion =
@@ -472,10 +479,12 @@ export function Lightbox({
         className={styles.trigger}
         type="button"
         aria-label={triggerLabel}
+        aria-hidden={triggerAriaHidden ? 'true' : undefined}
+        tabIndex={triggerTabIndex}
         data-hydrated={hydrated ? 'true' : 'false'}
         onClick={() => {
-          activeIndexRef.current = 0;
-          setActiveIndex(0);
+          activeIndexRef.current = clampedInitialIndex;
+          setActiveIndex(clampedInitialIndex);
           setOpen(true);
         }}
       >

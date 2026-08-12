@@ -65,10 +65,10 @@ const mediaCatalog: Record<MeetingMediaId, MediaDefinition> = {
     width: 1600,
     height: 808,
     label: { en: 'Web workspace', zh: 'Web 工作区' },
-    title: { en: 'Real-time transcript stays in the live workspace', zh: '转写与会议内容并行' },
+    title: { en: 'Real-time transcript stays in the live workspace', zh: '空间随会议场景重组' },
     description: {
       en: 'The browser surface keeps people, transcript, and content editing in one view.',
-      zh: '参会者、实时转写和内容处理集中在同一界面。',
+      zh: '对话、共享与协作切换时，主舞台和操作区随之调整，把空间留给当前最重要的任务。',
     },
   },
   'hero-app': {

@@ -6,6 +6,7 @@ import { AboutPreview } from '@/components/home/about-preview';
 import { DualIdentityHero } from '@/components/home/dual-identity-hero';
 import { FeaturedWork } from '@/components/home/featured-work';
 import { IntroStory } from '@/components/home/intro-story';
+import { MediaSeriesGallery } from '@/components/home/media-series-gallery';
 import { VisualArchive } from '@/components/home/visual-archive';
 import { XuelangHomeComparison } from '@/components/home/xuelang-home-comparison';
 
@@ -1041,68 +1042,18 @@ describe('VisualArchive', () => {
     expect(viewport).toHaveAttribute('data-scroll-reveal-group', 'media');
   });
 
-  it('forwards vertical wheel movement once per animation frame', () => {
-    const scrollBy = vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);
-    const frames: FrameRequestCallback[] = [];
-    const requestFrame = vi
-      .spyOn(window, 'requestAnimationFrame')
-      .mockImplementation((callback) => {
-        frames.push(callback);
-        return frames.length;
-      });
+  it('leaves touchpad wheel input to the native horizontal scroller', () => {
     const { container } = render(<VisualArchive locale="en" />);
     const scroller = container.querySelector('[data-archive-scroller]');
     if (!(scroller instanceof HTMLElement)) throw new Error('Missing archive scroller');
-
-    const wheels = [200, 180, 120].map((deltaY) => new WheelEvent('wheel', {
-        bubbles: true,
-        cancelable: true,
-        deltaY,
-      }));
-    wheels.forEach((wheel) => fireEvent(scroller, wheel));
-
-    expect(wheels.every((wheel) => wheel.defaultPrevented)).toBe(true);
-    expect(frames).toHaveLength(1);
-    expect(scrollBy).not.toHaveBeenCalled();
-    frames[0]?.(0);
-    expect(scrollBy).toHaveBeenCalledOnce();
-    expect(scrollBy).toHaveBeenCalledWith({ top: 500, behavior: 'auto' });
-
-    requestFrame.mockRestore();
-    scrollBy.mockRestore();
-  });
-
-  it('forwards horizontal-dominant wheel movement to the archive scroller', () => {
-    const frames: FrameRequestCallback[] = [];
-    const requestFrame = vi
-      .spyOn(window, 'requestAnimationFrame')
-      .mockImplementation((callback) => {
-        frames.push(callback);
-        return frames.length;
-      });
-    const { container } = render(<VisualArchive locale="en" />);
-    const scroller = container.querySelector('[data-archive-scroller]');
-    if (!(scroller instanceof HTMLElement)) throw new Error('Missing archive scroller');
-    const cards = Array.from(container.querySelectorAll<HTMLElement>('[data-archive-card]'));
-    cards.forEach((card, index) => {
-      Object.defineProperty(card, 'offsetLeft', { configurable: true, value: index * 400 });
-    });
-
-    const wheels = [250, 150].map((deltaX) => new WheelEvent('wheel', {
+    const wheel = new WheelEvent('wheel', {
       bubbles: true,
       cancelable: true,
-      deltaX,
+      deltaX: 250,
       deltaY: 20,
-    }));
-    wheels.forEach((wheel) => fireEvent(scroller, wheel));
-
-    expect(wheels.every((wheel) => wheel.defaultPrevented)).toBe(true);
-    expect(frames).toHaveLength(1);
-    expect(scroller.scrollLeft).toBe(0);
-    frames[0]?.(0);
-    expect(scroller.scrollLeft).toBe(400);
-
-    requestFrame.mockRestore();
+    });
+    fireEvent(scroller, wheel);
+    expect(wheel.defaultPrevented).toBe(false);
   });
 
   it('renders four real projects with distinct cover treatments', () => {
@@ -1190,7 +1141,6 @@ describe('VisualArchive', () => {
     ).toHaveLength(4);
     expect(within(archive).queryByRole('link', { name: /躺平/ })).not.toBeInTheDocument();
     expect(screen.getByText('开言设计原则')).toBeVisible();
-    expect(screen.getByText('豆豆狐')).toBeVisible();
     const archiveCard = (variant: string) =>
       within(
         container.querySelector<HTMLElement>(
@@ -1203,6 +1153,7 @@ describe('VisualArchive', () => {
     expect(archiveCard('open-language').getByText(
       '字节跳动旗下的语言学习 App。探索新的设计原则，提升视觉一致性与体验品质。',
     )).toBeVisible();
+    expect(screen.getByText('豆豆狐')).toBeVisible();
     expect(archiveCard('doudou-fox').getByText(
       '字节跳动旗下的儿童语言学习 App。设计英语闯关体验，让学习任务更直观，也更具游戏感。',
     )).toBeVisible();
@@ -1275,8 +1226,104 @@ describe('VisualArchive', () => {
 
 });
 
+describe('MediaSeriesGallery', () => {
+  it('renders the first creative row as fixed-height, slot-addressable media without labels', () => {
+    const { container } = render(<MediaSeriesGallery locale="zh" />);
+
+    expect(screen.getByRole('heading', { name: 'IP 与设计创意' })).toBeVisible();
+    expect(container.querySelectorAll('[data-media-series]')).toHaveLength(1);
+    expect(
+      container.querySelectorAll('[data-marquee-copy="primary"] [data-series-item]'),
+    ).toHaveLength(6);
+    expect(
+      Array.from(
+        container.querySelectorAll<HTMLElement>(
+          '[data-marquee-copy="primary"] [data-slot-id]',
+        ),
+        (item) => item.dataset.slotId,
+      ),
+    ).toEqual([
+      'row-1-slot-1',
+      'row-1-slot-2',
+      'row-1-slot-3',
+      'row-1-slot-4',
+      'row-1-slot-5',
+      'row-1-slot-6',
+    ]);
+    expect(container.querySelector('[data-row="1"]')).toHaveAttribute(
+      'data-direction',
+      'left',
+    );
+    expect(container.querySelectorAll('h3')).toHaveLength(0);
+    expect(container.querySelectorAll('a')).toHaveLength(0);
+  });
+
+  it('runs the marquee and thumbnail video only while the row is in view', () => {
+    let intersectionCallback: IntersectionObserverCallback | undefined;
+
+    class IntersectionObserverStub {
+      constructor(callback: IntersectionObserverCallback) {
+        intersectionCallback = callback;
+      }
+
+      observe = vi.fn();
+      unobserve = vi.fn();
+      disconnect = vi.fn();
+      takeRecords = vi.fn(() => []);
+      root = null;
+      rootMargin = '0px';
+      thresholds = [0.15];
+    }
+
+    vi.stubGlobal('IntersectionObserver', IntersectionObserverStub);
+
+    const { container } = render(<MediaSeriesGallery locale="en" />);
+
+    expect(screen.getByRole('heading', { name: 'IP & Creative' })).toBeVisible();
+    const row = container.querySelector<HTMLElement>('[data-media-series]');
+    const primaryVideo = container.querySelector<HTMLVideoElement>(
+      '[data-marquee-copy="primary"] video',
+    );
+    expect(row).toHaveAttribute('data-in-view', 'false');
+    expect(primaryVideo).not.toHaveAttribute('autoplay');
+
+    act(() => {
+      intersectionCallback?.(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+    });
+
+    expect(row).toHaveAttribute('data-in-view', 'true');
+    expect(primaryVideo).toHaveAttribute('autoplay');
+
+    act(() => {
+      intersectionCallback?.(
+        [{ isIntersecting: false } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+    });
+
+    expect(row).toHaveAttribute('data-in-view', 'false');
+    expect(primaryVideo).not.toHaveAttribute('autoplay');
+    expect(primaryVideo).toHaveAttribute('loop');
+    expect(primaryVideo).toHaveProperty('muted', true);
+    expect(
+      container.querySelectorAll('[data-marquee-copy="primary"] [class*="watermarkBlur"]'),
+    ).toHaveLength(2);
+
+    fireEvent.click(screen.getByRole('button', {
+      name: 'Open media: GUSO character design turnaround and outfit details',
+    }));
+    expect(screen.getByRole('dialog', {
+      name: 'Media preview: GUSO character design turnaround and outfit details',
+    })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Close media' })).toBeVisible();
+  });
+});
+
 describe('localized homepage composition', () => {
-  it('reveals four work chapters and one archive without wrapping Hero or Intro', async () => {
+  it('reveals four work chapters and the archive without wrapping Hero or Intro', async () => {
     const page = await LocaleHomePage({ params: Promise.resolve({ locale: 'en' }) });
     const { container } = render(page);
     const boundaries = Array.from(
@@ -1288,7 +1335,7 @@ describe('localized homepage composition', () => {
     const hero = container.querySelector('[data-media="portrait"]');
     const intro = container.querySelector('[data-intro-story]');
 
-    expect(boundaries).toHaveLength(5);
+    expect(boundaries).toHaveLength(6);
     expect(archiveBoundaries).toHaveLength(1);
     expect(hero).toBeInTheDocument();
     expect(hero?.closest('[data-scroll-reveal]')).toBeNull();

@@ -144,6 +144,42 @@ const archiveImageSchema = z.object({
   alt: localizedStringSchema,
 });
 
+const creativeMediaPathSchema = nonEmptyString.refine((value) => {
+  if (!value.startsWith('/images/creative/') || value.startsWith('//')) return false;
+
+  const segments = value.split('/');
+  return !value.includes('//')
+    && !/[\\?#]/.test(value)
+    && !segments.some((segment) => segment === '.' || segment === '..');
+}, {
+  message: 'Creative media must use a safe /images/creative/ public path',
+});
+
+const creativeMediaBaseSchema = z.object({
+  key: nonEmptyString,
+  slot: z.number().int().positive(),
+  src: creativeMediaPathSchema,
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+  alt: localizedStringSchema,
+});
+
+export const creativeMediaItemSchema = z.discriminatedUnion('kind', [
+  creativeMediaBaseSchema.extend({ kind: z.literal('image') }),
+  creativeMediaBaseSchema.extend({
+    kind: z.literal('video'),
+    blurWatermarks: z.boolean().optional(),
+  }),
+]);
+
+export const mediaSeriesSchema = z.object({
+  key: nonEmptyString,
+  row: z.number().int().positive(),
+  items: z.array(creativeMediaItemSchema).min(1),
+});
+
+export type MediaSeries = z.infer<typeof mediaSeriesSchema>;
+
 const archivePeriodValueSchema = z
   .string()
   .regex(/^\d{4}(?:-(?:0[1-9]|1[0-2]))?$/);
@@ -534,6 +570,89 @@ export const archiveProjects = [
     ],
   },
 ] as const satisfies readonly RealArchiveEntry[];
+
+export const mediaSeries = [
+  {
+    key: 'guso-ip',
+    row: 1,
+    // Stable row/slot keys are the replacement contract for future media updates.
+    items: [
+      {
+        key: 'row-1-slot-1',
+        slot: 1,
+        kind: 'image',
+        src: '/images/creative/guso/row-1-slot-1.jpg',
+        width: 2400,
+        height: 1098,
+        alt: {
+          en: 'GUSO character design turnaround and outfit details',
+          zh: 'GUSO 角色三视图与服装细节设计',
+        },
+      },
+      {
+        key: 'row-1-slot-2',
+        slot: 2,
+        kind: 'video',
+        src: '/images/creative/guso/row-1-slot-2.mp4',
+        width: 720,
+        height: 1280,
+        blurWatermarks: true,
+        alt: {
+          en: 'GUSO character motion study',
+          zh: 'GUSO 角色动态展示',
+        },
+      },
+      {
+        key: 'row-1-slot-3',
+        slot: 3,
+        kind: 'image',
+        src: '/images/creative/guso/row-1-slot-3.jpg',
+        width: 1236,
+        height: 2200,
+        alt: {
+          en: 'GUSO tennis character poster',
+          zh: 'GUSO 网球主题角色海报',
+        },
+      },
+      {
+        key: 'row-1-slot-4',
+        slot: 4,
+        kind: 'image',
+        src: '/images/creative/guso/row-1-slot-4.jpg',
+        width: 1236,
+        height: 2200,
+        alt: {
+          en: 'GUSO basketball character poster',
+          zh: 'GUSO 篮球主题角色海报',
+        },
+      },
+      {
+        key: 'row-1-slot-5',
+        slot: 5,
+        kind: 'image',
+        src: '/images/creative/guso/row-1-slot-5.jpg',
+        width: 1246,
+        height: 2200,
+        alt: {
+          en: 'GUSO skateboarding character poster',
+          zh: 'GUSO 滑板主题角色海报',
+        },
+      },
+      {
+        key: 'row-1-slot-6',
+        slot: 6,
+        kind: 'image',
+        src: '/images/creative/guso/row-1-slot-6.jpg',
+        width: 1294,
+        height: 2200,
+        alt: {
+          en: 'GUSO tennis action poster',
+          zh: 'GUSO 网球动作场景海报',
+        },
+      },
+    ],
+  },
+] as const satisfies readonly MediaSeries[];
 
 export const archiveLayoutSpans = [7, 5, 4, 8, 8, 4, 5, 7] as const;
 

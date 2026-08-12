@@ -18,6 +18,7 @@ export function CommunicationProjects({
 }) {
   return (
     <section
+      id="communication-systems"
       className={styles.communicationChapter}
       data-project-chapter="communication-systems"
       aria-label={locale === 'zh' ? '通信系统' : 'Communication systems'}

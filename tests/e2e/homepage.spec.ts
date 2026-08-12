@@ -184,6 +184,11 @@ test.describe('portfolio homepage framework', () => {
       await expect(page.locator('[data-archive-card]')).toHaveCount(4);
       await expect(page.locator('[data-archive-slot]')).toHaveCount(0);
       await expect(page.locator('[data-cover-variant]')).toHaveCount(4);
+      await expect(page.locator('[data-media-series]')).toHaveCount(1);
+      await expect(
+        page.locator('[data-marquee-copy="primary"] [data-series-item]'),
+      ).toHaveCount(6);
+      await expect(page.locator('[data-expand-cue]').first()).toBeHidden();
       await expect(
         page.locator('[data-archive-card]').first().getByRole('button', {
           name: locale === 'zh' ? /打开项目图片: 躺平/ : /Open project image: Tangping/,

@@ -81,6 +81,7 @@ export function FlagshipProjects({
 
   return (
     <div
+      id="ai-products"
       className={styles.flagshipStage}
       data-flagship-focus={focus}
       data-project-chapter="ai-products"

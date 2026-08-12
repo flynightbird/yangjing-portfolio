@@ -5,6 +5,7 @@ import {
   archiveProjects,
   coreProjectOrder,
   homepageProjects,
+  mediaSeries,
 } from '@/content/home';
 import { enDictionary } from '@/content/dictionaries/en';
 import { zhDictionary } from '@/content/dictionaries/zh';
@@ -92,6 +93,28 @@ describe('homepage project contract', () => {
 });
 
 describe('Visual Archive contract', () => {
+  it('adds IP and campaign series without changing the Visual Archive projects', () => {
+    expect(archiveProjects).toHaveLength(4);
+    expect(mediaSeries.map((series) => series.key)).toEqual(['guso-ip']);
+    expect(mediaSeries[0].row).toBe(1);
+    expect(mediaSeries[0].items.map((item) => item.key)).toEqual([
+      'row-1-slot-1',
+      'row-1-slot-2',
+      'row-1-slot-3',
+      'row-1-slot-4',
+      'row-1-slot-5',
+      'row-1-slot-6',
+    ]);
+    expect(mediaSeries[0].items.map((item) => item.kind)).toEqual([
+      'image',
+      'video',
+      'image',
+      'image',
+      'image',
+      'image',
+    ]);
+  });
+
   it('publishes the approved Open Language lightbox gallery order', () => {
     const openLanguage = archiveProjects.find(
       (project) => project.key === 'bytedance-open-language',

@@ -77,6 +77,14 @@ export interface Dictionary {
       visitProject: string;
       skillsLabel: string;
     };
+    mediaSeries: {
+      title: string;
+      regionLabel: string;
+      openMedia: string;
+      mediaDialog: string;
+      closeMedia: string;
+      imageUnavailable: string;
+    };
     about: {
       title: string;
       career: string;
@@ -296,6 +304,14 @@ export const enDictionary = {
       imageUnavailable: 'Image unavailable',
       visitProject: 'Visit public project',
       skillsLabel: 'Skills',
+    },
+    mediaSeries: {
+      title: 'IP & Creative',
+      regionLabel: 'IP and creative media',
+      openMedia: 'Open media',
+      mediaDialog: 'Media preview',
+      closeMedia: 'Close media',
+      imageUnavailable: 'Image is currently unavailable',
     },
     about: {
       title: 'From product complexity to working experiences',

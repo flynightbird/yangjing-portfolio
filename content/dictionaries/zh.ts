@@ -139,6 +139,14 @@ export const zhDictionary = {
       visitProject: '访问公开项目',
       skillsLabel: '技能',
     },
+    mediaSeries: {
+      title: 'IP 与设计创意',
+      regionLabel: 'IP 与设计创意素材',
+      openMedia: '打开素材',
+      mediaDialog: '素材预览',
+      closeMedia: '关闭素材',
+      imageUnavailable: '图片暂时无法加载',
+    },
     about: {
       title: '从用户研究，到 AI 与复杂系统',
       career: '经历横跨消费产品、复杂工作流与 AI 产品，也通过可运行原型让产品判断更早被验证。',

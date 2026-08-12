@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { DualIdentityHero } from '@/components/home/dual-identity-hero';
 import { FeaturedWork } from '@/components/home/featured-work';
 import { IntroStory } from '@/components/home/intro-story';
+import { MediaSeriesGallery } from '@/components/home/media-series-gallery';
 import { PointerField } from '@/components/home/pointer-field';
 import { VisualArchive } from '@/components/home/visual-archive';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
@@ -35,6 +36,9 @@ export default async function LocaleHomePage({ params }: LocaleHomePageProps) {
       >
         <ScrollReveal>
           <VisualArchive locale={locale} />
+        </ScrollReveal>
+        <ScrollReveal>
+          <MediaSeriesGallery locale={locale} />
         </ScrollReveal>
       </div>
     </div>
