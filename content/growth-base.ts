@@ -91,7 +91,7 @@ export const growthBaseLanguageMoments = {
 
 export const growthBaseCaseCopy = {
   zh: {
-    comparisonTitle: '把健康打卡，从信息展示变成有回应的陪伴体验',
+    comparisonTitle: '把健康打卡-信息展示的“运动工具”转向“生活方式和健康陪伴”。',
     comparisonIntro: '原方案以静态 2D 页面承载任务与功能。我保留核心健康场景，重新设计为可互动、会回应的连续体验；左侧呈现原方案，右侧运行改版后的高保真原型。',
     transition: '这次改版不只是替换视觉，而是围绕行动焦点、完成反馈、情感语言、场景连续性与私教预约，重构用户感知健康陪伴的方式。',
     taskTitle: '让下一步行动一眼可见',
