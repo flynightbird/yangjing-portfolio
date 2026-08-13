@@ -22,7 +22,7 @@ export interface LightboxMedia {
   readonly alt: string;
 }
 
-export type LightboxVariant = 'default' | 'archive';
+export type LightboxVariant = 'default' | 'archive' | 'creative';
 
 interface LightboxProps {
   readonly variant?: LightboxVariant;
@@ -502,6 +502,8 @@ export function Lightbox({
               ref={dialogRef}
               className={`${styles.backdrop} ${
                 variant === 'archive' ? styles.archiveBackdrop : ''
+              } ${
+                variant === 'creative' ? styles.creativeBackdrop : ''
               }`}
               role="dialog"
               aria-modal="true"
@@ -518,6 +520,8 @@ export function Lightbox({
                 ref={surfaceRef}
                 className={`${styles.surface} ${
                   variant === 'archive' ? styles.archiveSurface : ''
+                } ${
+                  variant === 'creative' ? styles.creativeSurface : ''
                 }`}
                 data-gallery-stage={variant === 'archive' ? 'true' : undefined}
               >
@@ -536,6 +540,11 @@ export function Lightbox({
                       </h2>
                       {galleryCounter}
                     </aside>
+                  </>
+                ) : variant === 'creative' ? (
+                  <>
+                    {closeButton}
+                    {galleryContent}
                   </>
                 ) : (
                   <>

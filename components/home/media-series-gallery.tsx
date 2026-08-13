@@ -29,6 +29,7 @@ interface VideoLightboxProps {
   readonly label: string;
   readonly closeLabel: string;
   readonly blurWatermarks?: boolean;
+  readonly cropBlockPercent?: number;
   readonly clone?: boolean;
   readonly active: boolean;
 }
@@ -49,6 +50,7 @@ function VideoLightbox({
   label,
   closeLabel,
   blurWatermarks = false,
+  cropBlockPercent = 0,
   clone = false,
   active,
 }: VideoLightboxProps) {
@@ -57,6 +59,13 @@ function VideoLightbox({
   const dialogVideoRef = useRef<HTMLVideoElement>(null);
   const previousOverflowRef = useRef('');
   const reduceMotion = useReducedMotionPreference();
+  const visibleHeight = height * (1 - cropBlockPercent / 50);
+  const videoStyle = cropBlockPercent
+    ? {
+        height: `${100 / (1 - cropBlockPercent / 50)}%`,
+        transform: `translateY(-${cropBlockPercent}%)`,
+      }
+    : undefined;
 
   useEffect(() => {
     const video = triggerVideoRef.current;
@@ -113,6 +122,7 @@ function VideoLightbox({
           playsInline
           preload="metadata"
           aria-hidden="true"
+          style={videoStyle}
           onLoadedData={(event) => {
             if (active && !reduceMotion) {
               void event.currentTarget.play().catch(() => undefined);
@@ -137,7 +147,10 @@ function VideoLightbox({
           >
             <X aria-hidden="true" size={22} />
           </button>
-          <div className={styles.videoStage}>
+          <div
+            className={styles.videoStage}
+            style={{ aspectRatio: `${width} / ${visibleHeight}` }}
+          >
             <video
               ref={dialogVideoRef}
               src={src}
@@ -149,6 +162,7 @@ function VideoLightbox({
               playsInline
               controls
               preload="metadata"
+              style={videoStyle}
             />
             {blurWatermarks ? <WatermarkBlur /> : null}
           </div>
@@ -212,11 +226,13 @@ function CreativeSeriesRow({
                   label={openLabel}
                   closeLabel={copy.closeMedia}
                   blurWatermarks={item.blurWatermarks}
+                  cropBlockPercent={item.cropBlockPercent}
                   clone={clone}
                   active={active}
                 />
               ) : (
                 <Lightbox
+                  variant="creative"
                   src={src}
                   width={item.width}
                   height={item.height}

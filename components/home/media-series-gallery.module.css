@@ -98,6 +98,7 @@
 .frame > button img,
 .mediaTrigger video {
   object-fit: contain;
+  object-position: center;
   transform: none;
   transition: none;
 }
@@ -144,64 +145,95 @@
 }
 
 .videoDialog {
-  width: auto;
+  width: min(94vw, 100rem);
   max-width: 94vw;
-  max-height: 92dvh;
+  max-height: calc(100dvh - 40px);
   padding: 0;
   overflow: visible;
   border: 0;
   background: transparent;
-  color: #ffffff;
+  color: #f4f4f1;
 }
 
 .videoDialog::backdrop {
-  background: rgba(16, 17, 15, 0.94);
+  background: rgba(8, 8, 10, 0.82);
+  backdrop-filter: blur(18px);
 }
 
 .videoDialogSurface {
   position: relative;
   display: grid;
+  box-sizing: border-box;
+  width: min(94vw, 100rem);
   max-width: 94vw;
-  max-height: 92dvh;
-  place-items: center;
+  max-height: calc(100dvh - 40px);
+  grid-template-columns: minmax(0, 1fr) clamp(6rem, 7vw, 7rem);
+  grid-template-rows: minmax(0, 1fr);
+  padding: 10px 0 10px 10px;
+  overflow: hidden;
+  border: 1px solid rgba(244, 244, 241, 0.14);
+  border-radius: 24px;
+  background: #171719;
 }
 
 .videoStage {
   position: relative;
-  max-width: 94vw;
-  max-height: 88dvh;
+  width: auto;
+  height: calc(100dvh - 60px);
+  min-width: 0;
+  min-height: 0;
+  max-height: calc(100dvh - 60px);
+  align-self: center;
+  justify-self: center;
   overflow: hidden;
-  border-radius: 8px;
-  background: #0b0c0a;
+  border-radius: 18px;
+  background: #0d0d0f;
 }
 
 .videoStage video {
   display: block;
-  width: auto;
-  max-width: 94vw;
-  height: auto;
-  max-height: 88dvh;
+  width: 100%;
+  height: 100%;
+  max-height: calc(100dvh - 60px);
+  object-fit: contain;
+  object-position: center;
 }
 
 .videoClose {
-  position: absolute;
+  position: relative;
   z-index: 3;
-  inset-block-start: 0.75rem;
-  inset-inline-end: 0.75rem;
+  grid-column: 2;
+  grid-row: 1;
   display: grid;
   width: 44px;
   height: 44px;
+  align-self: start;
+  justify-self: center;
   place-items: center;
+  margin-block-start: 0;
   padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(16, 17, 15, 0.82);
-  color: #ffffff;
+  border: 1px solid rgba(244, 244, 241, 0.24);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(244, 244, 241, 0.72);
   cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.videoClose:hover {
+  border-color: #f4f4f1;
+  background: #f4f4f1;
+  color: #0d0d0f;
 }
 
 .videoClose:focus-visible {
-  outline: 2px solid #ffffff;
+  border-color: #f4f4f1;
+  background: #f4f4f1;
+  color: #0d0d0f;
+  outline: 2px solid var(--color-signal);
   outline-offset: 3px;
 }
 
@@ -222,6 +254,43 @@
 
   .track {
     animation-duration: 42s;
+  }
+
+  .videoDialog {
+    width: 100%;
+    max-width: none;
+    max-height: none;
+  }
+
+  .videoDialogSurface {
+    width: 100%;
+    max-width: none;
+    min-height: 100dvh;
+    max-height: none;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 10px;
+    padding: 10px;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .videoClose {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .videoStage {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    height: auto;
+    max-height: calc(100dvh - 74px);
+  }
+
+  .videoStage video {
+    max-height: calc(100dvh - 74px);
   }
 }
 

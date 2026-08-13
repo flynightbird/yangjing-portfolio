@@ -1234,7 +1234,7 @@ describe('MediaSeriesGallery', () => {
     expect(container.querySelectorAll('[data-media-series]')).toHaveLength(1);
     expect(
       container.querySelectorAll('[data-marquee-copy="primary"] [data-series-item]'),
-    ).toHaveLength(6);
+    ).toHaveLength(7);
     expect(
       Array.from(
         container.querySelectorAll<HTMLElement>(
@@ -1249,6 +1249,7 @@ describe('MediaSeriesGallery', () => {
       'row-1-slot-4',
       'row-1-slot-5',
       'row-1-slot-6',
+      'row-1-slot-7',
     ]);
     expect(container.querySelector('[data-row="1"]')).toHaveAttribute(
       'data-direction',

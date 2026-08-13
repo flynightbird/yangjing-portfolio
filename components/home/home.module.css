@@ -2022,9 +2022,6 @@ a.whiteCta:focus-visible {
   width: 100%;
   overflow-x: auto;
   overscroll-behavior-inline: auto;
-  scroll-behavior: smooth;
-  scroll-padding-inline: var(--content-gutter);
-  scroll-snap-type: x proximity;
   scrollbar-width: none;
   touch-action: pan-x pan-y;
 }
@@ -2045,8 +2042,6 @@ a.whiteCta:focus-visible {
 .archiveItem {
   flex: 0 0 min(82vw, 22rem);
   min-width: 0;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   transition:
     opacity 420ms var(--ease-out),
     transform 420ms var(--ease-out);
@@ -2491,14 +2486,6 @@ a.whiteCta:focus-visible {
 
   .evidence .projectMedia[data-custom-media] {
     aspect-ratio: 1662 / 1080;
-  }
-
-  .archiveViewport {
-    scroll-snap-type: x proximity;
-  }
-
-  .archiveItem {
-    scroll-snap-stop: normal;
   }
 
   .meetingInner {

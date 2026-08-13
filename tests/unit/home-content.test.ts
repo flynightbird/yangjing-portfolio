@@ -104,11 +104,13 @@ describe('Visual Archive contract', () => {
       'row-1-slot-4',
       'row-1-slot-5',
       'row-1-slot-6',
+      'row-1-slot-7',
     ]);
     expect(mediaSeries[0].items.map((item) => item.kind)).toEqual([
       'image',
       'video',
       'image',
+      'video',
       'image',
       'image',
       'image',

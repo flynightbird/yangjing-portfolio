@@ -169,6 +169,7 @@ export const creativeMediaItemSchema = z.discriminatedUnion('kind', [
   creativeMediaBaseSchema.extend({
     kind: z.literal('video'),
     blurWatermarks: z.boolean().optional(),
+    cropBlockPercent: z.number().min(0).max(12).optional(),
   }),
 ]);
 
@@ -629,6 +630,19 @@ export const mediaSeries = [
       {
         key: 'row-1-slot-5',
         slot: 5,
+        kind: 'video',
+        src: '/images/creative/guso/row-1-slot-5.mp4',
+        width: 720,
+        height: 960,
+        cropBlockPercent: 4,
+        alt: {
+          en: 'GUSO pilot character city scene',
+          zh: 'GUSO 飞行员角色城市场景动态展示',
+        },
+      },
+      {
+        key: 'row-1-slot-6',
+        slot: 6,
         kind: 'image',
         src: '/images/creative/guso/row-1-slot-5.jpg',
         width: 1246,
@@ -639,8 +653,8 @@ export const mediaSeries = [
         },
       },
       {
-        key: 'row-1-slot-6',
-        slot: 6,
+        key: 'row-1-slot-7',
+        slot: 7,
         kind: 'image',
         src: '/images/creative/guso/row-1-slot-6.jpg',
         width: 1294,

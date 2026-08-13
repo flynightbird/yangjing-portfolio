@@ -187,7 +187,7 @@ test.describe('portfolio homepage framework', () => {
       await expect(page.locator('[data-media-series]')).toHaveCount(1);
       await expect(
         page.locator('[data-marquee-copy="primary"] [data-series-item]'),
-      ).toHaveCount(6);
+      ).toHaveCount(7);
       await expect(page.locator('[data-expand-cue]').first()).toBeHidden();
       await expect(
         page.locator('[data-archive-card]').first().getByRole('button', {
@@ -1058,7 +1058,7 @@ test.describe('portfolio homepage framework', () => {
     expect(secondBox?.x ?? viewport.width).toBeLessThan(viewport.width);
     expect(
       await scroller.evaluate((element) => getComputedStyle(element).scrollSnapType),
-    ).toContain('x');
+    ).toBe('none');
     await expect(archive).toHaveCSS('border-bottom-width', '0px');
   });
 
