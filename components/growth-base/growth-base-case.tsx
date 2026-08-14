@@ -2,6 +2,7 @@ import type { Locale } from '@/content/types';
 import { growthBaseCaseCopy } from '@/content/growth-base';
 
 import { GrowthBaseComparison } from './growth-base-comparison';
+import { GrowthBaseCampaignPosters } from './growth-base-campaign-posters';
 import { GrowthBaseLanguage } from './growth-base-language';
 import { GrowthBaseRewardLoop } from './growth-base-reward-loop';
 import { GrowthBaseTaskFocus } from './growth-base-task-focus';
@@ -70,6 +71,11 @@ export function GrowthBaseCase({ locale }: { readonly locale: Locale }) {
       <section id="personal-trainer" className={`${styles.personalTrainer} ${styles.desktopDecision}`}>
         <SectionHeader index="06" intro={copy.trainerIntro} label="PERSONAL TRAINER" title={copy.trainerTitle} />
         <GrowthBaseTrainerDemo locale={locale} />
+      </section>
+
+      <section id="campaign-posters" className={`${styles.campaignPosters} ${styles.desktopDecision}`}>
+        <SectionHeader index="07" intro={copy.campaignIntro} label="CAMPAIGN POSTERS" title={copy.campaignTitle} />
+        <GrowthBaseCampaignPosters locale={locale} />
       </section>
     </>
   );

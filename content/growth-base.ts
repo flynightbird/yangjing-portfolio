@@ -89,6 +89,39 @@ export const growthBaseLanguageMoments = {
   ],
 } as const;
 
+export const growthBaseCampaignPosters = [
+  {
+    id: 'campaign-key-visual',
+    src: '/images/growth-base/campaign-posters/campaign-key-visual.jpg',
+    width: 587,
+    height: 927,
+    alt: {
+      zh: '中田健身小程序系列宣传主视觉海报',
+      en: 'Zhongtian Fitness mini-program campaign key visual',
+    },
+  },
+  {
+    id: 'mini-program-launch',
+    src: '/images/growth-base/campaign-posters/mini-program-launch.jpg',
+    width: 617,
+    height: 930,
+    alt: {
+      zh: '中田健身小程序上线宣传海报',
+      en: 'Zhongtian Fitness mini-program launch poster',
+    },
+  },
+  {
+    id: 'wellness-theme',
+    src: '/images/growth-base/campaign-posters/wellness-theme.jpg',
+    width: 617,
+    height: 930,
+    alt: {
+      zh: '中田健身照顾好自己主题宣传海报',
+      en: 'Zhongtian Fitness Take Good Care of Yourself campaign poster',
+    },
+  },
+] as const;
+
 export const growthBaseCaseCopy = {
   zh: {
     comparisonTitle: '把健康打卡-信息展示的“运动工具”转向“生活方式和健康陪伴”。',
@@ -111,6 +144,8 @@ export const growthBaseCaseCopy = {
     clipsIntro: '我让生成式 IP 不只出现在任务完成时，也贯穿欢迎、冥想、备餐与烹饪等关键时刻。角色由单次反馈升级为连接一天健康行动的体验线索。',
     trainerTitle: '把私教预约收束成清晰的决策路径',
     trainerIntro: '在原方案与改版方案的对照中，高保真原型自动演示日期选择、时段选择与预约确认。重点不是增加步骤，而是让教练信息、可选时间与最终确认始终处在同一条清晰路径上。',
+    campaignTitle: '小程序上线与「照顾好自己」系列宣传海报',
+    campaignIntro: '小程序上线、产品卖点与日常健康主题的三张系列海报。',
   },
   en: {
     comparisonTitle: 'Turning health check-ins into a responsive companion',
@@ -133,5 +168,7 @@ export const growthBaseCaseCopy = {
     clipsIntro: 'I extended the generative character beyond task completion into arrival, meditation, meal preparation, and cooking. The character becomes a recurring thread across the day rather than a one-off reward.',
     trainerTitle: 'Reduce trainer booking to one clear decision path',
     trainerIntro: 'The high-fidelity prototype automatically demonstrates date selection, time selection, and confirmation alongside the original design. The goal was not to add more steps, but to keep trainer context, availability, and commitment clear from start to finish.',
+    campaignTitle: 'Mini-program launch and “Take Good Care of Yourself” campaign posters',
+    campaignIntro: 'Three campaign posters spanning launch communication, product value, and everyday wellness.',
   },
 } as const;

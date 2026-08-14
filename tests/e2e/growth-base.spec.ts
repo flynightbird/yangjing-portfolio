@@ -15,10 +15,12 @@ test.describe('Growth Base decision showcase', () => {
       'emotional-language',
       'scene-films',
       'personal-trainer',
+      'campaign-posters',
     ]);
     await expect(page.locator('[data-task-viewport]')).toBeVisible();
     await expect(page.locator('[data-film-shell]')).toHaveCount(2);
     await expect(page.getByTestId('growth-base-film')).toHaveCount(4);
+    await expect(page.locator('[data-campaign-poster]')).toHaveCount(3);
 
     await page.getByRole('button', { name: '领取静心帐篷' }).click();
     await expect(page.locator('[data-tent-demo]')).toHaveAttribute('data-state', 'claimed');
@@ -35,7 +37,7 @@ test.describe('Growth Base decision showcase', () => {
     await page.goto('/zh/work/growth-base/', { waitUntil: 'domcontentloaded' });
 
     await expect(page.locator('[data-growth-base-case] header').first()).toBeHidden();
-    await expect(page.locator('[class*="desktopDecision"]')).toHaveCount(5);
+    await expect(page.locator('[class*="desktopDecision"]')).toHaveCount(6);
     for (const decision of await page.locator('[class*="desktopDecision"]').all()) {
       await expect(decision).toBeHidden();
     }

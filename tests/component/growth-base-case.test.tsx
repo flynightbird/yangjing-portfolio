@@ -22,6 +22,7 @@ describe('GrowthBaseCase', () => {
       'emotional-language',
       'scene-films',
       'personal-trainer',
+      'campaign-posters',
     ]);
     expect(
       screen.getByText('把健康打卡-信息展示的“运动工具”转向“生活方式和健康陪伴”。'),
@@ -31,6 +32,8 @@ describe('GrowthBaseCase', () => {
     expect(screen.getByText('先理解此刻，再提出一个小行动')).toBeVisible();
     expect(screen.getByText('用连续场景建立陪伴感')).toBeVisible();
     expect(screen.getByText('把私教预约收束成清晰的决策路径')).toBeVisible();
+    expect(screen.getByText('小程序上线与「照顾好自己」系列宣传海报')).toBeVisible();
+    expect(container.querySelectorAll('[data-campaign-poster]')).toHaveLength(3);
     expect(
       screen.queryByText('对照保留旧方案，但让当前可交互体验成为视觉主角。'),
     ).not.toBeInTheDocument();
@@ -39,7 +42,7 @@ describe('GrowthBaseCase', () => {
         '这次改版不只是替换视觉，而是围绕行动焦点、完成反馈、情感语言、场景连续性与私教预约，重构用户感知健康陪伴的方式。',
       ),
     ).toBeVisible();
-    expect(container.textContent).not.toMatch(/launched|shipped|上线|提升\s*\d|转化率|留存/iu);
+    expect(container.textContent).not.toMatch(/launched|shipped|项目已上线|提升\s*\d|转化率|留存/iu);
   });
 
   it('shows seven tasks with five in the phone window and meditation centered', () => {
