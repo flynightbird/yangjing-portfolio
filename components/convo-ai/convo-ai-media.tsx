@@ -1,19 +1,21 @@
 'use client';
 /* eslint-disable @next/next/no-img-element */
 
-import { AlertCircle, ArrowLeft, ArrowRight, Monitor, RotateCcw, Smartphone } from 'lucide-react';
-import { type CSSProperties, useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
+import { AlertCircle, ArrowLeft, ArrowRight, RotateCcw } from 'lucide-react';
+import { type CSSProperties, type ReactNode, useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 
 import type { Locale } from '@/content/types';
+import { withBasePath } from '@/lib/i18n/locales';
+import { Lightbox } from '@/components/media/lightbox';
 import { getConvoAiMedia, getConvoAiMediaSizing, type ConvoAiMediaId } from './convo-ai-media-catalog';
 import styles from './convo-ai-media.module.css';
 import { ConvoAiViewportVideo } from './convo-ai-video';
 
 const appShowcaseSteps = [
-  { id: 'app-login', index: '01', label: '登录与进入', summary: '用短入口建立产品身份和移动端旅程起点。', enLabel: 'App entry and sign in', enSummary: 'A short entry establishes product identity and the start of the mobile journey.' },
-  { id: 'app-structure', index: '02', label: '产品结构', summary: '组织 Agent、个人入口与设备入口的主次关系。', enLabel: 'Product structure', enSummary: 'Organize the hierarchy between agents, profile entry, and device entry.' },
-  { id: 'app-profile-settings', index: '03', label: '个人设置', summary: '让修改、确认与返回形成连续反馈。', enLabel: 'Personal settings', enSummary: 'Make modification, confirmation, and return one continuous feedback loop.' },
-  { id: 'app-hardware-device', index: '04', label: '硬件设备', summary: '把环境准备与设备扫描组织成一条任务。', enLabel: 'Hardware device', enSummary: 'Organize environment preparation and device scanning as one task.' },
+  { id: 'app-login', index: '01', label: '登录与进入', summary: '登录后直接进入 Agent 浏览。', enLabel: 'App entry and sign in', enSummary: 'A short entry establishes product identity and the start of the mobile journey.' },
+  { id: 'app-structure', index: '02', label: '产品结构', summary: '以开始对话组织信息层级。', enLabel: 'Product structure', enSummary: 'Organize the hierarchy between agents, profile entry, and device entry.' },
+  { id: 'app-profile-settings', index: '03', label: '个人设置', summary: '在当前路径确认修改结果。', enLabel: 'Personal settings', enSummary: 'Make modification, confirmation, and return one continuous feedback loop.' },
+  { id: 'app-hardware-device', index: '04', label: '硬件设备', summary: '把系统权限整理成连接进度。', enLabel: 'Hardware device', enSummary: 'Organize environment preparation and device scanning as one task.' },
 ] as const satisfies readonly { readonly id: ConvoAiMediaId; readonly index: string; readonly label: string; readonly summary: string; readonly enLabel: string; readonly enSummary: string }[];
 
 type AppShowcaseId = (typeof appShowcaseSteps)[number]['id'];
@@ -59,20 +61,48 @@ function formatDuration(seconds: number) {
   return `${String(minutes).padStart(2, '0')}:${remaining}`;
 }
 
+export function ConvoAiContextOverview({ locale, children }: { readonly locale: Locale; readonly children: ReactNode }) {
+  const descriptionId = useId();
+  const description = locale === 'zh'
+    ? 'ConvoAI 移动端实时语音对话界面，展示连接、聆听与响应状态。'
+    : 'ConvoAI mobile real-time voice conversation interface showing connection, listening, and response states.';
+
+  return <div className={styles.contextOverview} data-convo-context-overview>
+    <figure className={styles.contextDevice}>
+      <div className={styles.contextDeviceTop} aria-hidden="true"><i /></div>
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="metadata"
+        poster={withBasePath('/images/convo-ai/posters/context-state-loop.webp?v=2')}
+        aria-describedby={descriptionId}
+      >
+        <source src={withBasePath('/videos/convo-ai/context-state-loop.mp4?v=2')} type="video/mp4" />
+      </video>
+      <figcaption id={descriptionId} className={styles.srOnly}>{description}</figcaption>
+    </figure>
+    <div className={styles.contextCopy}>{children}</div>
+  </div>;
+}
+
 const cpdiLabels: Record<Locale, Record<'context' | 'problem' | 'decision' | 'impact', string>> = {
   en: { context: 'Context', problem: 'Problem', decision: 'Decision', impact: 'Impact' },
-  zh: { context: '场景', problem: '问题', decision: '设计', impact: '作用' },
+  zh: { context: '场景', problem: '问题', decision: '判断', impact: '方案' },
 };
 
 function MediaError({ locale, onReload }: { readonly locale: Locale; readonly onReload: () => void }) {
   return <div className={styles.mediaError} role="status" aria-live="polite"><AlertCircle aria-hidden="true" size={18} /><span>{locale === 'zh' ? '媒体暂时无法加载' : 'Media unavailable'}</span><button type="button" onClick={onReload}><RotateCcw aria-hidden="true" size={16} />{locale === 'zh' ? '重新加载' : 'Reload'}</button></div>;
 }
 
-export function ConvoAiPlaylist({ ids, locale, appSize = 'standard' }: { readonly ids: readonly ConvoAiMediaId[]; readonly locale: Locale; readonly appSize?: 'standard' | 'compact' }) {
+export function ConvoAiPlaylist({ ids, locale, appSize = 'standard', showSceneList = true, navigationVariant = 'carousel' }: { readonly ids: readonly ConvoAiMediaId[]; readonly locale: Locale; readonly appSize?: 'standard' | 'compact'; readonly showSceneList?: boolean; readonly navigationVariant?: 'carousel' | 'tabs' }) {
   const [activeId, setActiveId] = useState(ids[0]);
   const [failed, setFailed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const descriptionId = useId();
+  const panelId = useId();
   const active = getConvoAiMedia(activeId);
   const copy = active.copy[locale];
   const activeIndex = ids.indexOf(activeId);
@@ -81,11 +111,47 @@ export function ConvoAiPlaylist({ ids, locale, appSize = 'standard' }: { readonl
     setFailed(false);
     setActiveId(ids[(activeIndex + offset + ids.length) % ids.length]);
   };
+  const selectTab = (id: ConvoAiMediaId, index: number) => {
+    setFailed(false);
+    setActiveId(id);
+    tabRefs.current[index]?.focus();
+  };
+  const handleTabKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    let nextIndex: number | undefined;
+    if (event.key === 'ArrowLeft') nextIndex = (index - 1 + ids.length) % ids.length;
+    if (event.key === 'ArrowRight') nextIndex = (index + 1) % ids.length;
+    if (event.key === 'Home') nextIndex = 0;
+    if (event.key === 'End') nextIndex = ids.length - 1;
+    if (nextIndex === undefined) return;
+    event.preventDefault();
+    selectTab(ids[nextIndex], nextIndex);
+  };
 
   return <div className={styles.playlist} data-convo-ai-playlist data-app-size={appSize}>
-    <div className={styles.playlistSurface} data-playlist-surface data-tone={activeIndex % 4}>
-      {hasMultipleItems ? <div className={styles.carouselHeader}>
+    {hasMultipleItems && navigationVariant === 'tabs' ? <nav className={styles.conversationNavigation} aria-label={locale === 'zh' ? '话轮场景' : 'Turn-taking scenes'} data-playlist-tabs>
+      <p>{locale === 'zh' ? '话轮场景' : 'Turn-taking scenes'}</p>
+      <div className={styles.conversationSteps} role="tablist">
+        {ids.map((id, index) => {
+          const media = getConvoAiMedia(id);
+          const selected = id === activeId;
+          return <button
+            key={id}
+            ref={(node) => { tabRefs.current[index] = node; }}
+            type="button"
+            role="tab"
+            aria-selected={selected}
+            aria-controls={panelId}
+            tabIndex={selected ? 0 : -1}
+            onClick={() => selectTab(id, index)}
+            onKeyDown={(event) => handleTabKeyDown(event, index)}
+          ><span>{String(index + 1).padStart(2, '0')}</span><strong>{media.copy[locale].title}</strong></button>;
+        })}
+      </div>
+    </nav> : null}
+    <div id={navigationVariant === 'tabs' ? panelId : undefined} role={navigationVariant === 'tabs' ? 'tabpanel' : undefined} className={styles.playlistSurface} data-playlist-surface data-tone={activeIndex % 4}>
+      {hasMultipleItems && navigationVariant === 'carousel' ? <div className={styles.carouselHeader}>
         <div aria-live="polite" data-carousel-position><strong>{String(activeIndex + 1).padStart(2, '0')}</strong><span> / {String(ids.length).padStart(2, '0')}</span></div>
+        <strong className={styles.carouselTitle} data-carousel-title aria-live="polite">{copy.title}</strong>
         <div className={styles.carouselControls}>
           <button type="button" aria-label={locale === 'zh' ? '上一段录屏' : 'Previous recording'} onClick={() => move(-1)}><ArrowLeft aria-hidden="true" size={20} /></button>
           <button type="button" aria-label={locale === 'zh' ? '下一段录屏' : 'Next recording'} onClick={() => move(1)}><ArrowRight aria-hidden="true" size={20} /></button>
@@ -100,7 +166,7 @@ export function ConvoAiPlaylist({ ids, locale, appSize = 'standard' }: { readonl
       </figure>
       <dl className={styles.cpdi}>{(['context', 'problem', 'decision', 'impact'] as const).map((key) => <div key={key}><dt>{cpdiLabels[locale][key]}</dt><dd>{copy[key]}</dd></div>)}</dl>
     </div>
-    {hasMultipleItems ? <div className={styles.playlistNavigation}>
+    {hasMultipleItems && showSceneList && navigationVariant === 'carousel' ? <div className={styles.playlistNavigation}>
       <p>{locale === 'zh' ? '场景列表' : 'Scene list'}</p>
       <div className={styles.queue} data-playlist-navigation aria-label={locale === 'zh' ? '场景列表' : 'Scene list'}>
         {ids.map((id, index) => { const media = getConvoAiMedia(id); return <button key={id} type="button" aria-pressed={id === activeId} onClick={() => { setFailed(false); setActiveId(id); }}><span>{String(index + 1).padStart(2, '0')}</span><strong>{media.copy[locale].title}</strong><small>{formatDuration(media.duration)}</small></button>; })}
@@ -117,50 +183,79 @@ export function ConvoAiConversationStart({ locale }: { readonly locale: Locale }
   const [failed, setFailed] = useState({ app: false, web: false });
   const appVideoRef = useRef<HTMLVideoElement>(null);
   const webVideoRef = useRef<HTMLVideoElement>(null);
+  const webStepRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const appDescriptionId = useId();
   const webDescriptionId = useId();
+  const webPanelId = useId();
   const app = getConvoAiMedia(startConversationAppId);
   const web = getConvoAiMedia(activeWebId);
   const webCopy = web.copy[locale];
+  const selectWebStep = (id: (typeof startConversationWebIds)[number], index: number) => {
+    setFailed((current) => ({ ...current, web: false }));
+    setActiveWebId(id);
+    webStepRefs.current[index]?.focus();
+  };
+  const handleWebStepKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    let nextIndex: number | undefined;
+    if (event.key === 'ArrowLeft') nextIndex = (index - 1 + startConversationWebIds.length) % startConversationWebIds.length;
+    if (event.key === 'ArrowRight') nextIndex = (index + 1) % startConversationWebIds.length;
+    if (event.key === 'Home') nextIndex = 0;
+    if (event.key === 'End') nextIndex = startConversationWebIds.length - 1;
+    if (nextIndex === undefined) return;
+    event.preventDefault();
+    selectWebStep(startConversationWebIds[nextIndex], nextIndex);
+  };
 
   return <div className={styles.conversationStart} data-convo-start>
-    <div className={styles.conversationStage} data-convo-start-stage>
-      <figure className={styles.conversationWeb} data-convo-start-web data-media-card={activeWebId}>
-        <div className={styles.conversationPlatformLabel}><span>WEB</span><strong>{locale === 'zh' ? '完整准备' : 'Complete setup'}</strong></div>
-        <div className={styles.conversationWebMedia} {...mediaSizingProps(web)}>
-          <ConvoAiViewportVideo key={activeWebId} id={activeWebId} locale={locale} describedBy={webDescriptionId} videoRef={webVideoRef} onError={() => setFailed((current) => ({ ...current, web: true }))} onLoadedData={() => setFailed((current) => ({ ...current, web: false }))} />
-          {failed.web ? <MediaError locale={locale} onReload={() => { setFailed((current) => ({ ...current, web: false })); webVideoRef.current?.load(); }} /> : null}
-        </div>
-        <figcaption id={webDescriptionId} aria-live="polite">{webCopy.description}</figcaption>
-      </figure>
-
-      <figure className={styles.conversationApp} data-convo-start-app data-media-card={startConversationAppId}>
-        <div className={styles.conversationPlatformLabel}><span>APP</span><strong>{locale === 'zh' ? '快速开始' : 'Quick start'}</strong></div>
-        <div className={styles.conversationPhone} {...mediaSizingProps(app)}>
-          <ConvoAiViewportVideo id={startConversationAppId} locale={locale} describedBy={appDescriptionId} videoRef={appVideoRef} onError={() => setFailed((current) => ({ ...current, app: true }))} onLoadedData={() => setFailed((current) => ({ ...current, app: false }))} />
-          {failed.app ? <MediaError locale={locale} onReload={() => { setFailed((current) => ({ ...current, app: false })); appVideoRef.current?.load(); }} /> : null}
-        </div>
-        <figcaption id={appDescriptionId}>{app.copy[locale].description}</figcaption>
-      </figure>
-    </div>
-
-    <dl className={styles.cpdi} data-convo-start-detail>
-      {(['context', 'problem', 'decision', 'impact'] as const).map((key) => <div key={key}><dt>{cpdiLabels[locale][key]}</dt><dd>{webCopy[key]}</dd></div>)}
-    </dl>
-
     <nav className={styles.conversationNavigation} aria-label={locale === 'zh' ? 'Web 启动路径' : 'Web launch path'} data-convo-start-navigation>
       <p>{locale === 'zh' ? 'Web 启动路径' : 'Web launch path'}</p>
-      <div className={styles.conversationSteps}>
+      <div className={styles.conversationSteps} role="tablist">
         {startConversationWebIds.map((id, index) => {
           const media = getConvoAiMedia(id);
-          return <button key={id} type="button" aria-pressed={id === activeWebId} onClick={() => { setFailed((current) => ({ ...current, web: false })); setActiveWebId(id); }}>
+          const active = id === activeWebId;
+          return <button
+            key={id}
+            ref={(node) => { webStepRefs.current[index] = node; }}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            aria-controls={webPanelId}
+            tabIndex={active ? 0 : -1}
+            onClick={() => selectWebStep(id, index)}
+            onKeyDown={(event) => handleWebStepKeyDown(event, index)}
+          >
             <span>{String(index + 1).padStart(2, '0')}</span>
             <strong>{media.copy[locale].title}</strong>
-            <small>{formatDuration(media.duration)}</small>
           </button>;
         })}
       </div>
     </nav>
+
+    <div className={styles.conversationCard} data-convo-start-card>
+      <div className={styles.conversationStage} data-convo-start-stage>
+        <figure id={webPanelId} className={styles.conversationWeb} role="tabpanel" data-convo-start-web data-media-card={activeWebId}>
+          <div className={styles.conversationPlatformLabel}><span>WEB</span><strong>{locale === 'zh' ? '完整准备' : 'Complete setup'}</strong></div>
+          <div className={styles.conversationWebMedia} {...mediaSizingProps(web)}>
+            <ConvoAiViewportVideo key={activeWebId} id={activeWebId} locale={locale} describedBy={webDescriptionId} videoRef={webVideoRef} onError={() => setFailed((current) => ({ ...current, web: true }))} onLoadedData={() => setFailed((current) => ({ ...current, web: false }))} />
+            {failed.web ? <MediaError locale={locale} onReload={() => { setFailed((current) => ({ ...current, web: false })); webVideoRef.current?.load(); }} /> : null}
+          </div>
+          <figcaption id={webDescriptionId} aria-live="polite">{webCopy.description}</figcaption>
+        </figure>
+
+        <figure className={styles.conversationApp} data-convo-start-app data-media-card={startConversationAppId}>
+          <div className={styles.conversationPlatformLabel}><span>APP</span><strong>{locale === 'zh' ? '快速开始' : 'Quick start'}</strong></div>
+          <div className={styles.conversationPhone} {...mediaSizingProps(app)}>
+            <ConvoAiViewportVideo id={startConversationAppId} locale={locale} describedBy={appDescriptionId} videoRef={appVideoRef} onError={() => setFailed((current) => ({ ...current, app: true }))} onLoadedData={() => setFailed((current) => ({ ...current, app: false }))} />
+            {failed.app ? <MediaError locale={locale} onReload={() => { setFailed((current) => ({ ...current, app: false })); appVideoRef.current?.load(); }} /> : null}
+          </div>
+          <figcaption id={appDescriptionId}>{app.copy[locale].description}</figcaption>
+        </figure>
+      </div>
+
+      <dl className={styles.cpdi} data-convo-start-detail>
+        {(['context', 'problem', 'decision', 'impact'] as const).map((key) => <div key={key}><dt>{cpdiLabels[locale][key]}</dt><dd>{webCopy[key]}</dd></div>)}
+      </dl>
+    </div>
   </div>;
 }
 
@@ -217,7 +312,6 @@ export function ConvoAiStage({
   labelledBy,
   describedBy,
 }: ConvoAiStageProps) {
-  const [activePlatform, setActivePlatform] = useState<'web' | 'app' | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const descriptionId = useId();
   const activeDescriptionId = mediaOnly && describedBy ? describedBy : descriptionId;
@@ -233,7 +327,7 @@ export function ConvoAiStage({
   };
   const resetTilt = () => { stageRef.current?.style.setProperty('--stage-x', '0deg'); stageRef.current?.style.setProperty('--stage-y', '0deg'); };
 
-  return <div ref={stageRef} className={styles.stage} data-convo-ai-stage data-active-platform={activePlatform ?? 'posters'} data-hero={hero ? 'true' : 'false'} aria-labelledby={mediaOnly ? labelledBy : undefined} aria-describedby={mediaOnly ? describedBy : undefined} onPointerMove={updateTilt} onPointerLeave={resetTilt}>
+  return <div ref={stageRef} className={styles.stage} data-convo-ai-stage data-active-platform="posters" data-hero={hero ? 'true' : 'false'} aria-labelledby={mediaOnly ? labelledBy : undefined} aria-describedby={mediaOnly ? describedBy : undefined} onPointerMove={updateTilt} onPointerLeave={resetTilt}>
     {mediaOnly ? null : <div className={styles.stageCopy}>
       <p>{eyebrow}</p>
       <span className={styles.stageDisplayTitle} data-stage-display-title aria-hidden="true">{title}</span>
@@ -243,7 +337,6 @@ export function ConvoAiStage({
     <div className={styles.terrain} aria-hidden="true"><i /><i /><i /></div>
     <div className={styles.webPlane} data-convo-web-plane {...mediaSizingProps(webMedia)}><ConvoAiViewportVideo id={webId} locale={locale} describedBy={activeDescriptionId} /></div>
     <div className={styles.appDevice} data-convo-app-device {...mediaSizingProps(appMedia)}><div><ConvoAiViewportVideo id={appId} locale={locale} describedBy={activeDescriptionId} /></div></div>
-    <div className={styles.stageControls}><button type="button" onClick={() => setActivePlatform('web')}><Monitor aria-hidden="true" size={17} />{locale === 'zh' ? '聚焦 Web 录屏' : 'Focus Web recording'}</button><button type="button" onClick={() => setActivePlatform('app')}><Smartphone aria-hidden="true" size={17} />{locale === 'zh' ? '聚焦 App 录屏' : 'Focus App recording'}</button></div>
   </div>;
 }
 
@@ -266,6 +359,26 @@ export function ConvoAiAvatarPair({ locale }: { readonly locale: Locale }) {
       </figure>;
     })}
   </div>;
+}
+
+export function ConvoAiHardwareSystemBoard({ locale }: { readonly locale: Locale }) {
+  const src = withBasePath('/images/convo-ai/hardware-device-system.webp');
+  const alt = locale === 'zh'
+    ? 'ConvoAI 硬件配对、设备管理、声纹设置与异常状态界面合集'
+    : 'ConvoAI hardware pairing, device management, voiceprint settings, and edge states';
+
+  return <figure className={styles.hardwareSystemBoard}>
+    <Lightbox
+      variant="creative"
+      src={src}
+      width={2451}
+      height={1198}
+      alt={alt}
+      triggerLabel={locale === 'zh' ? `放大查看：${alt}` : `Enlarge: ${alt}`}
+      dialogLabel={alt}
+      closeLabel={locale === 'zh' ? '关闭图片' : 'Close image'}
+    />
+  </figure>;
 }
 
 export function ConvoAiAppShowcase({ locale }: { readonly locale: Locale }) {

@@ -2,7 +2,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { StrictMode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ConvoAiAppShowcase, ConvoAiAvatarPair, ConvoAiConversationStart, ConvoAiPlaylist, ConvoAiStage, ConvoAiVoiceprintModes } from '@/components/convo-ai/convo-ai-media';
+import { ConvoAiAppShowcase, ConvoAiAvatarPair, ConvoAiContextOverview, ConvoAiConversationStart, ConvoAiPlaylist, ConvoAiStage, ConvoAiVoiceprintModes } from '@/components/convo-ai/convo-ai-media';
 import { getConvoAiMedia, getConvoAiMediaSizing } from '@/components/convo-ai/convo-ai-media-catalog';
 import { ConvoAiViewportVideo } from '@/components/convo-ai/convo-ai-video';
 
@@ -116,6 +116,21 @@ beforeEach(() => {
   vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
 });
 
+describe('ConvoAiContextOverview', () => {
+  it('renders the compressed context recording inside an accessible device shell', () => {
+    const { container } = render(<ConvoAiContextOverview locale="zh"><p>状态说明</p></ConvoAiContextOverview>);
+    const video = container.querySelector('video');
+
+    expect(container.querySelector('[data-convo-context-overview]')).toBeVisible();
+    expect(video).toHaveAttribute('autoplay');
+    expect(video).toHaveAttribute('loop');
+    expect(video).toHaveAttribute('playsinline');
+    expect(video).toHaveAttribute('poster', '/images/convo-ai/posters/context-state-loop.webp?v=2');
+    expect(video?.querySelector('source')).toHaveAttribute('src', '/videos/convo-ai/context-state-loop.mp4?v=2');
+    expect(screen.getByText('状态说明')).toBeVisible();
+  });
+});
+
 describe('getConvoAiMediaSizing', () => {
   it('describes source ratio and portrait orientation', () => {
     expect(getConvoAiMediaSizing(getConvoAiMedia('app-login'))).toEqual({
@@ -163,8 +178,8 @@ describe('ConvoAiViewportVideo', () => {
 
   it('renders sound control only for audio media and mutes other videos', () => {
     installMediaEnvironment();
-    const { rerender } = render(<ConvoAiViewportVideo id="app-login" locale="zh" />);
-    const first = screen.getByLabelText('App 登录与进入') as HTMLVideoElement;
+    const { rerender } = render(<ConvoAiViewportVideo id="app-caption-camera" locale="zh" />);
+    const first = screen.getByLabelText('多种反馈，共用一个话轮') as HTMLVideoElement;
     const other = document.createElement('video');
     other.dataset.convoAiVideo = 'true';
     other.muted = false;
@@ -182,7 +197,7 @@ describe('ConvoAiViewportVideo', () => {
 
   it('updates the previous sound button when another video is unmuted', () => {
     installMediaEnvironment();
-    render(<><ConvoAiViewportVideo id="app-login" locale="zh" /><ConvoAiViewportVideo id="app-structure" locale="zh" /></>);
+    render(<><ConvoAiViewportVideo id="app-caption-camera" locale="zh" /><ConvoAiViewportVideo id="app-voiceprint-lock" locale="zh" /></>);
     const soundButtons = screen.getAllByRole('button', { name: '开启声音' });
 
     fireEvent.click(soundButtons[0]);
@@ -191,6 +206,12 @@ describe('ConvoAiViewportVideo', () => {
     fireEvent.click(soundButtons[1]);
     expect(soundButtons[0]).toHaveAccessibleName('开启声音');
     expect(soundButtons[1]).toHaveAccessibleName('关闭声音');
+  });
+
+  it('hides sound controls on walkthroughs that do not need audio', () => {
+    render(<><ConvoAiViewportVideo id="app-login" locale="zh" /><ConvoAiViewportVideo id="app-structure" locale="zh" /></>);
+
+    expect(screen.queryByRole('button', { name: '开启声音' })).not.toBeInTheDocument();
   });
 });
 
@@ -243,9 +264,11 @@ describe('ConvoAiPlaylist', () => {
     const { container } = render(<ConvoAiPlaylist ids={['app-login', 'app-structure']} locale="en" />);
 
     expect(container.querySelector('[data-carousel-position]')).toHaveTextContent('01 / 02');
+    expect(container.querySelector('[data-carousel-title]')).toHaveTextContent('App entry and sign in');
     fireEvent.click(screen.getByRole('button', { name: 'Next recording' }));
     expect(screen.getByLabelText('Product structure')).toBeVisible();
     expect(container.querySelector('[data-carousel-position]')).toHaveTextContent('02 / 02');
+    expect(container.querySelector('[data-carousel-title]')).toHaveTextContent('Product structure');
     fireEvent.click(screen.getByRole('button', { name: 'Next recording' }));
     expect(screen.getByLabelText('App entry and sign in')).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Previous recording' }));
@@ -308,13 +331,39 @@ describe('ConvoAiPlaylist', () => {
     expect(navigation).toHaveAccessibleName('场景列表');
   });
 
+  it('can remove a duplicated scene list while keeping carousel controls', () => {
+    render(<ConvoAiPlaylist ids={['app-caption-camera', 'web-conversation']} locale="zh" showSceneList={false} />);
+
+    expect(screen.queryByText('场景列表')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '上一段录屏' })).toBeVisible();
+    expect(screen.getByRole('button', { name: '下一段录屏' })).toBeVisible();
+  });
+
+  it('uses capsule tabs above the recording and keeps its description in the same card', () => {
+    const { container } = render(<ConvoAiPlaylist ids={['app-caption-camera', 'web-conversation', 'web-interrupt']} locale="zh" navigationVariant="tabs" showSceneList={false} />);
+    const navigation = container.querySelector('[data-playlist-tabs]')!;
+    const surface = container.querySelector('[data-playlist-surface]')!;
+    const tabs = screen.getAllByRole('tab');
+
+    expect(navigation).toHaveAccessibleName('话轮场景');
+    expect(tabs).toHaveLength(3);
+    expect(surface).toContainElement(container.querySelector('dl'));
+    expect(screen.queryByRole('button', { name: '上一段录屏' })).not.toBeInTheDocument();
+    expect(screen.queryByText('场景列表')).not.toBeInTheDocument();
+
+    tabs[0].focus();
+    fireEvent.keyDown(tabs[0], { key: 'ArrowRight' });
+    expect(screen.getByRole('tab', { name: /让长对话仍有清楚的焦点/ })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByLabelText('让长对话仍有清楚的焦点')).toBeVisible();
+  });
+
   it('localizes CPDI labels for Chinese evidence', () => {
     render(<ConvoAiPlaylist ids={['app-caption-camera']} locale="zh" />);
 
     expect(screen.getByText('场景')).toBeInTheDocument();
     expect(screen.getByText('问题')).toBeInTheDocument();
-    expect(screen.getByText('设计')).toBeInTheDocument();
-    expect(screen.getByText('作用')).toBeInTheDocument();
+    expect(screen.getByText('判断')).toBeInTheDocument();
+    expect(screen.getByText('方案')).toBeInTheDocument();
     expect(screen.queryByText('context')).not.toBeInTheDocument();
   });
 
@@ -351,9 +400,11 @@ describe('ConvoAiConversationStart', () => {
     expect(container.querySelector('[data-convo-start-stage]')).toBeVisible();
     expect(container.querySelector('[data-convo-start-app]')).toBeVisible();
     expect(container.querySelector('[data-convo-start-web]')).toBeVisible();
-    expect(screen.getByLabelText('启动对话')).toHaveAttribute('src', '/videos/convo-ai/app-conversation-start.mp4');
+    expect(screen.getByLabelText('从点击到可以开口')).toHaveAttribute('src', '/videos/convo-ai/app-conversation-start.mp4');
     expect(screen.getByLabelText('Web 登录与进入')).toHaveAttribute('src', '/videos/convo-ai/web-login.mp4');
     expect(screen.getByRole('navigation', { name: 'Web 启动路径' })).toBeVisible();
+    expect(screen.getAllByRole('tab')).toHaveLength(4);
+    expect(screen.getByRole('tab', { name: /Web 登录与进入/ })).toHaveAttribute('aria-selected', 'true');
     expectMediaSizing(
       container.querySelector('[data-convo-start-web] [data-convo-media-frame]'),
       'web',
@@ -367,17 +418,33 @@ describe('ConvoAiConversationStart', () => {
       '592 / 1280',
     );
 
-    fireEvent.click(screen.getByRole('button', { name: /启动前 Agent 布局/ }));
-    expect(screen.getByLabelText('启动对话')).toBeInTheDocument();
-    expect(screen.getByLabelText('启动前 Agent 布局')).toHaveAttribute('src', '/videos/convo-ai/web-preflight-layout.mp4');
+    fireEvent.click(screen.getByRole('tab', { name: /在比较中保留启动入口/ }));
+    expect(screen.getByLabelText('从点击到可以开口')).toBeInTheDocument();
+    expect(screen.getByLabelText('在比较中保留启动入口')).toHaveAttribute('src', '/videos/convo-ai/web-preflight-layout.mp4');
   });
 
   it('keeps Web path navigation outside the active description surface', () => {
     const { container } = render(<ConvoAiConversationStart locale="zh" />);
     const detail = container.querySelector('[data-convo-start-detail]')!;
+    const card = container.querySelector('[data-convo-start-card]')!;
     const navigation = container.querySelector('[data-convo-start-navigation]')!;
 
     expect(detail).not.toContainElement(navigation);
+    expect(card).toContainElement(container.querySelector('[data-convo-start-stage]'));
+    expect(card).toContainElement(detail);
+    expect(card).not.toContainElement(navigation);
+    expect(navigation.compareDocumentPosition(container.querySelector('[data-convo-start-stage]')!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+
+  it('supports keyboard navigation across the capsule tabs', () => {
+    render(<ConvoAiConversationStart locale="en" />);
+    const firstTab = screen.getByRole('tab', { name: /Web entry and sign in/i });
+
+    firstTab.focus();
+    fireEvent.keyDown(firstTab, { key: 'ArrowRight' });
+
+    expect(screen.getByRole('tab', { name: /Web preflight/i })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: /Web preflight/i })).toHaveFocus();
   });
 });
 
@@ -433,8 +500,9 @@ describe('ConvoAiStage', () => {
       'aria-hidden',
       'true',
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Focus App recording' }));
-    expect(container.querySelector('[data-convo-ai-stage]')).toHaveAttribute('data-active-platform', 'app');
+    expect(screen.queryByRole('button', { name: 'Focus App recording' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Focus Web recording' })).not.toBeInTheDocument();
+    expect(container.querySelector('[data-convo-ai-stage]')).toHaveAttribute('data-active-platform', 'posters');
     expect(container.querySelector('[data-convo-web-plane] video')).toBeInTheDocument();
     expect(container.querySelector('[data-convo-app-device] video')).toBeInTheDocument();
   });
@@ -490,9 +558,9 @@ describe('ConvoAiAvatarPair', () => {
       expect(video.muted).toBe(true);
     });
     expect(screen.getByText('选择数字人')).toBeVisible();
-    expect(screen.getByText('数字人互动')).toBeVisible();
-    expect(screen.getByText('完整呈现数字人选择过程。')).toBeVisible();
-    expect(screen.getByText('完整呈现数字人连接、对话与摄像头过程。')).toBeVisible();
+    expect(screen.getByText('与数字人实时互动')).toBeVisible();
+    expect(screen.getByText('角色选择直接接回 Agent 配置。')).toBeVisible();
+    expect(screen.getByText('数字人为主画面，用户镜头进入画中画。')).toBeVisible();
     const frames = container.querySelectorAll('[data-convo-ai-avatar] [data-convo-media-frame]');
     expect(frames).toHaveLength(2);
     frames.forEach((frame) => {
@@ -565,7 +633,7 @@ describe('ConvoAiAppShowcase', () => {
       'app-login', 'app-structure', 'app-profile-settings', 'app-hardware-device',
     ]);
     expect(screen.getByText('登录与进入')).toBeVisible();
-    expect(screen.getByText('用短入口建立产品身份和移动端旅程起点。')).toBeVisible();
+    expect(screen.getByText('登录后直接进入 Agent 浏览。')).toBeVisible();
   });
 
   it('uses semantic scenes and describes each button with its adjacent summary', () => {
@@ -578,7 +646,7 @@ describe('ConvoAiAppShowcase', () => {
     expect(screen.getAllByRole('listitem')).toHaveLength(4);
     expect(button.querySelector('p')).toBeNull();
     expect(descriptionId).toBeTruthy();
-    expect(document.getElementById(descriptionId ?? '')).toHaveTextContent('用短入口建立产品身份和移动端旅程起点。');
+    expect(document.getElementById(descriptionId ?? '')).toHaveTextContent('登录后直接进入 Agent 浏览。');
   });
 
   it('hands media to an observer-selected scene and resets the prior video exactly once in StrictMode', () => {

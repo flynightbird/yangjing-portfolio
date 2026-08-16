@@ -1,9 +1,9 @@
-import { ConvoAiAppShowcase, ConvoAiAvatarPair, ConvoAiConversationStart, ConvoAiPlaylist, ConvoAiVoiceprintModes } from '@/components/convo-ai/convo-ai-media'
+import { ConvoAiAppShowcase, ConvoAiAvatarPair, ConvoAiContextOverview, ConvoAiConversationStart, ConvoAiHardwareSystemBoard, ConvoAiPlaylist, ConvoAiVoiceprintModes } from '@/components/convo-ai/convo-ai-media'
 
 export const metadata = {
   type: 'work', slug: 'convo-ai', locale: 'zh', translationKey: 'work.convo-ai',
-  title: 'ConvoAI：让实时 AI 对话可感知、可介入、可恢复',
-  proposition: '让连接、聆听、生成、回答与打断等实时状态，在 App 与 Web 上变得连续、可感知、可介入。',
+  title: 'ConvoAI：为实时 AI 对话建立清晰的话轮与控制',
+  proposition: '把连接、聆听、思考、回答和打断变成连续反馈，让用户随时知道：AI 是否听见、轮到谁、如何介入。',
   role: '独立负责产品设计', duration: '未公开',
   status: '已上线',
   heroMedia: '/images/convo-ai/figma/web-ready.png', evidenceLevel: 'delivered', featuredOrder: 3,
@@ -13,53 +13,57 @@ export const metadata = {
     { label: '场景', value: '1 对 1 实时 AI 对话' },
   ],
   chapters: [
-    { id: 'context-challenge', label: '背景与挑战' }, { id: 'app-product-structure', label: 'App 产品结构' },
-    { id: 'start-conversation', label: '开始实时对话' }, { id: 'conversation-control', label: '对话控制' },
-    { id: 'digital-human', label: '数字人互动' }, { id: 'realtime-chain', label: '实时链路' },
-    { id: 'delivery', label: '设计交付' },
+    { id: 'context-challenge', label: '核心问题' }, { id: 'app-product-structure', label: '组织主路径' },
+    { id: 'start-conversation', label: '建立就绪感' }, { id: 'conversation-control', label: '掌握话轮' },
+    { id: 'digital-human', label: '数字人互动' }, { id: 'realtime-chain', label: '理解实时链路' },
+    { id: 'delivery', label: '落地结果' },
   ],
 }
 
 <section id="context-challenge" data-convo-nav-tone="dark">
-  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="01">01</p><h2>实时对话的状态与控制</h2></header>
-  <div className="reading"><p className="lead">ConvoAI 是同时覆盖 App 与 Web 的 1 对 1 实时 AI 对话产品。与文字聊天不同，连接、聆听、生成、播放和打断会在同一次通话中连续切换。设计的核心，是让用户始终知道对话正在哪个阶段、系统是否正在响应，以及自己何时可以介入。</p><p>我独立负责产品设计，从产品结构、核心交互到跨端体验，统一梳理实时对话中的状态、反馈与控制方式。</p></div>
-  <div className="state-flow" aria-label="对话状态链"><div><span>01</span><strong>Connecting</strong></div><div><span>02</span><strong>Ready</strong></div><div><span>03</span><strong>Listening</strong></div><div><span>04</span><strong>Thinking</strong></div><div><span>05</span><strong>Speaking</strong></div><div><span>06</span><strong>Interrupted</strong></div><div><span>07</span><strong>Recovery</strong></div></div>
+  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="01">01</p><h2>一场对话，为什么会让人失去判断？</h2></header>
+  <ConvoAiContextOverview locale="zh">
+    <div className="reading"><p className="lead">实时语音没有输入框与发送键。连接、聆听、思考、回答和打断连续切换，反馈一旦滞后，用户就难以判断 AI 是否听见、此刻能否开口。</p><p>我先梳理六个关键状态，让声音、字幕、球体和控制区同步表达当前话轮。设计覆盖 App 与 Web。</p></div>
+    <div className="state-flow" aria-label="对话状态链"><div><span>01</span><strong>Connecting</strong></div><div><span>02</span><strong>Ready</strong></div><div><span>03</span><strong>Listening</strong></div><div><span>04</span><strong>Thinking</strong></div><div><span>05</span><strong>Speaking</strong></div><div><span>06</span><strong>Interrupted</strong></div></div>
+  </ConvoAiContextOverview>
 </section>
 
 <section id="app-product-structure" data-convo-nav-tone="dark">
-  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="02">02</p><h2>App 中的完整产品结构</h2></header>
-  <div className="reading"><p className="lead">实时通话是核心场景，但完整的 App 还需要承接登录、Agent 浏览、个人设置与硬件连接。通过清晰的信息层级和入口关系，把产品能力组织成连续的用户路径，而不是彼此孤立的功能页面。</p></div>
+  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="02">02</p><h2>先把复杂能力收进一条主路径</h2></header>
+  <div className="reading"><p className="lead">对话是主任务，但登录、Agent 选择、个人偏好和硬件连接都发生在它之前。入口同级，会迫使用户先理解产品结构。</p><p>因此以“找到 Agent 并开始对话”为主线，设置和设备归入准备与维护层。</p></div>
   <ConvoAiAppShowcase locale="zh" />
+  <ConvoAiHardwareSystemBoard locale="zh" />
 </section>
 
 <section id="start-conversation" data-convo-nav-tone="dark">
-  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="03">03</p><h2>实时对话的启动路径</h2></header>
-  <div className="reading"><p className="lead">开始对话前，用户需要经过权限、连接与就绪。App 用更短的路径尽快进入通话；Web 则承载 Agent、号码与布局等更完整的启动前配置。两端使用一致的状态语义，同时保留各自最合适的任务密度。</p></div>
+  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="03">03</p><h2>开口之前，先让用户知道“已经可以说了”</h2></header>
+  <div className="reading"><p className="lead">点击开始后，还要经过权限、连接与就绪。过程不可见，用户就容易重复点击或提前开口。</p><p>App 压缩准备步骤；Web 展开 Agent、号码和布局配置，但固定启动操作。布局不同，状态含义一致。</p></div>
   <ConvoAiConversationStart locale="zh" />
 </section>
 
 <section id="conversation-control" data-convo-nav-tone="dark">
-  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="04">04</p><h2>对话中的控制权</h2></header>
-  <div className="reading"><p className="lead">实时对话不能只展示 AI 在说什么，还要让用户随时改变话轮。字幕、球体、摄像头与稳定的控制区共同表达当前状态；语音打断和声纹模式则把“何时开口”与“听谁说话”的控制权交还给用户。</p></div>
-  <h3 className="convo-subheading">声纹如何定义“听谁说话”</h3>
+  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="04">04</p><h2>没有输入框，如何让用户掌握话轮？</h2></header>
+  <div className="reading"><p className="lead">用户打断 AI 时，声音、文本和状态必须同步变化，否则无法确认新意图是否生效。</p><p>插话后停止声音、保留旧文本并转入 Thinking，再接入新回答。字幕、球体和控制区同步；摄像头开启后，控制位置不变。</p></div>
+  <ConvoAiPlaylist locale="zh" appSize="compact" showSceneList={false} navigationVariant="tabs" ids={['app-caption-camera', 'web-conversation', 'web-interrupt']} />
+  <h3 className="convo-subheading">声纹解决的不是识别，而是“该听谁”</h3>
   <ConvoAiVoiceprintModes locale="zh" />
-  <ConvoAiPlaylist locale="zh" appSize="compact" ids={['app-caption-camera', 'web-conversation', 'web-interrupt', 'app-voiceprint-lock']} />
+  <ConvoAiPlaylist locale="zh" appSize="compact" ids={['app-voiceprint-lock']} />
 </section>
 
 <section id="digital-human" data-convo-nav-tone="dark">
-  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="05">05</p><h2>数字人选择与实时互动</h2></header>
-  <div className="reading"><p className="lead">数字人不只是视觉角色，它会放大用户对音画同步、话轮状态与镜头反馈的感知。从角色选择到进入对话，交互保持连续；进入通话后，主画面与画中画则维持清晰的视觉主次。</p></div>
+  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="05">05</p><h2>数字人越真实，越需要稳定的反馈</h2></header>
+  <div className="reading"><p className="lead">数字人越有临场感，延迟、音画不同步和话轮不清就越明显。</p><p>角色选择直接接回 Agent 配置；通话中以数字人为主画面、用户镜头为画中画，同时保留原有状态与控制位置。</p></div>
   <ConvoAiAvatarPair locale="zh" />
 </section>
 
 <section id="realtime-chain" data-convo-nav-tone="dark">
-  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="06">06</p><h2>实时回答的系统链路</h2></header>
-  <div className="reading"><p className="lead">用户听到的是一段连续回答，背后则依次经过 RTC、ASR、LLM 与 TTS 等处理环节。将这条实时链路与正在发生的对话并置，让连续的用户体验与背后的系统过程同时可读。</p></div>
+  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="06">06</p><h2>把后台链路翻译成可读的现场</h2></header>
+  <div className="reading"><p className="lead">一句回答会经过传输、识别、生成和合成。只看结果，很难判断等待发生在哪一段。</p><p>RTC、ASR、LLM、TTS 与 Voiceprint 按处理顺序放在对话旁，让响应与后台过程直接对应。</p></div>
   <div className="realtime-experience" data-convo-realtime><div className="realtime-media" data-realtime-media><ConvoAiPlaylist locale="zh" ids={['web-realtime-data']} /></div><div className="realtime-map"><article data-realtime-stage><strong>RTC</strong><p>媒体传输</p></article><article data-realtime-stage><strong>ASR</strong><p>语音识别</p></article><article data-realtime-stage><strong>LLM</strong><p>生成回答</p></article><article data-realtime-stage><strong>TTS</strong><p>语音合成</p></article><article data-realtime-stage><strong>Voiceprint</strong><p>说话人状态</p></article></div></div>
 </section>
 
 <section id="delivery" data-convo-nav-tone="dark">
-  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="07">07</p><h2>设计交付</h2></header>
-  <div className="reading"><p className="lead">项目已上线。我完成了 App 与 Web 的产品结构、核心互动与跨端体验设计，并系统化处理了对话状态、语音打断、声纹、硬件连接、数字人与实时数据的界面表达。</p></div>
-  <p className="evidence-note">整体设计覆盖 9 个 App 场景与 7 个 Web 场景，从进入产品到完成实时对话，建立了一致的状态与控制语言。</p>
+  <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="07">07</p><h2>从单点界面，落成一套跨端对话语言</h2></header>
+  <div className="reading"><p className="lead">上线版本以同一套状态和控制方式串起 App 与 Web：开始前判断是否就绪，对话中看懂话轮，需要时打断，并确认系统正在听谁。</p><p>设计覆盖产品结构、启动、对话、声纹、硬件、数字人与实时数据。两端布局不同，状态反馈一致。</p></div>
+  <p className="evidence-note">已上线范围覆盖 9 个 App 场景与 7 个 Web 场景。</p>
 </section>

@@ -1,7 +1,6 @@
 @media print {
   [data-convo-ai-case] video,
   [data-convo-ai-case] [class*='terrain'],
-  [data-convo-ai-case] [class*='stageControls'] { display: none !important; }
   [data-convo-ai-case] [data-stage-display-title],
   [data-convo-ai-case] .section-index::before { display: none !important; }
   [data-convo-ai-case], [data-convo-ai-case] section { background: #fff !important; color: #000 !important; }

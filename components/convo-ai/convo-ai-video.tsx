@@ -106,7 +106,7 @@ export function ConvoAiViewportVideo({ id, locale, describedBy, videoRef, onErro
       onError={onError}
       onLoadedData={onLoadedData}
     />
-    {media.audio ? <button
+    {media.audio && media.soundControl !== false ? <button
       className={styles.soundToggle}
       type="button"
       aria-label={locale === 'zh' ? (muted ? '开启声音' : '关闭声音') : (muted ? 'Turn sound on' : 'Turn sound off')}

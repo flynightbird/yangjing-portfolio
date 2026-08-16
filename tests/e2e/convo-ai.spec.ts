@@ -13,7 +13,7 @@ const chapterIds = {
 
 const projectTitles = {
   en: 'ConvoAI',
-  zh: 'ConvoAI：让实时 AI 对话可感知、可介入、可恢复',
+  zh: 'ConvoAI：为实时 AI 对话建立清晰的话轮与控制',
 } as const;
 
 const showcaseIds = ['app-login', 'app-structure', 'app-profile-settings', 'app-hardware-device'] as const;
@@ -28,7 +28,8 @@ const playlistIds = {
     ['web-realtime-data'],
   ],
   zh: [
-    ['app-caption-camera', 'web-conversation', 'web-interrupt', 'app-voiceprint-lock'],
+    ['app-caption-camera', 'web-conversation', 'web-interrupt'],
+    ['app-voiceprint-lock'],
     ['web-realtime-data'],
   ],
 } as const;
@@ -279,18 +280,19 @@ for (const locale of ['en', 'zh'] as const) {
         await page.reload({ waitUntil: 'domcontentloaded' });
       }
 
-      const playlist = page.locator('#conversation-control [data-convo-ai-playlist]');
-      await playlist.scrollIntoViewIfNeeded();
-      await playlist.getByRole('button', { name: /声纹锁定/ }).click();
-      const phone = playlist.locator('[data-media-card="app-voiceprint-lock"] [data-convo-media-frame]');
+      const section = page.locator('#conversation-control');
+      const voiceprintPlaylist = section.locator('[data-convo-ai-playlist]:has([data-media-card="app-voiceprint-lock"])');
+      await voiceprintPlaylist.scrollIntoViewIfNeeded();
+      const phone = voiceprintPlaylist.locator('[data-media-card="app-voiceprint-lock"] [data-convo-media-frame]');
       const phoneBox = await phone.boundingBox();
 
       expect(phoneBox).not.toBeNull();
       expect(phoneBox!.width).toBeLessThanOrEqual(289);
       await expectRenderedRatio(phone, 592 / 1280);
 
-      await playlist.getByRole('button', { name: /Web 连续对话/ }).click();
-      const web = playlist.locator('[data-media-card="web-conversation"] [data-convo-media-frame]');
+      const turnPlaylist = section.locator('[data-convo-ai-playlist]:has([data-playlist-tabs])');
+      await turnPlaylist.getByRole('tab', { name: /让长对话仍有清楚的焦点/ }).click();
+      const web = turnPlaylist.locator('[data-media-card="web-conversation"] [data-convo-media-frame]');
       if (testInfo.project.name === 'desktop') {
         expect((await web.boundingBox())!.width).toBeGreaterThan(288);
       }

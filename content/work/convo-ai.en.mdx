@@ -1,5 +1,5 @@
 import { EvidenceFigure } from '@/components/case-study/evidence-figure'
-import { ConvoAiPlaylist, ConvoAiStage, ConvoAiVoiceprintModes } from '@/components/convo-ai/convo-ai-media'
+import { ConvoAiContextOverview, ConvoAiPlaylist, ConvoAiStage, ConvoAiVoiceprintModes } from '@/components/convo-ai/convo-ai-media'
 
 export const metadata = {
   type: 'work', slug: 'convo-ai', locale: 'en', translationKey: 'work.convo-ai',
@@ -18,14 +18,16 @@ export const metadata = {
 
 <section id="context-thesis" data-convo-nav-tone="dark">
   <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="01">01</p><h2>Design real-time conversation as a legible system</h2></header>
-  <div className="reading"><p className="lead">ConvoAI is a one-to-one AI conversation product for App and Web. Its experience is shaped by continuous shifts between connection, listening, generation, playback, interruption, captions, video, and digital humans.</p><p>I was responsible for the product structure, core interaction, cross-platform experience, and interface language for real-time states.</p></div>
-  <div className="convo-principles"><article><span>01 / PERCEIVABLE</span><h3>Make state legible</h3><p>Distinguish connection, readiness, listening, and response.</p></article><article><span>02 / INTERRUPTIBLE</span><h3>Keep agency visible</h3><p>Turn interruption into a visible, recoverable turn transition.</p></article><article><span>03 / RECOVERABLE</span><h3>Preserve continuity</h3><p>Keep conversational context through mode changes.</p></article></div>
+  <ConvoAiContextOverview locale="en">
+    <div className="reading"><p className="lead">ConvoAI is a one-to-one AI conversation product for App and Web. Its experience is shaped by continuous shifts between connection, listening, generation, playback, interruption, captions, video, and digital humans.</p><p>I was responsible for the product structure, core interaction, cross-platform experience, and interface language for real-time states.</p></div>
+    <div className="convo-principles"><article><span>01 / PERCEIVABLE</span><h3>Make state legible</h3><p>Distinguish connection, readiness, listening, and response.</p></article><article><span>02 / INTERRUPTIBLE</span><h3>Keep agency visible</h3><p>Turn interruption into a visible, recoverable turn transition.</p></article><article><span>03 / RECOVERABLE</span><h3>Preserve continuity</h3><p>Keep conversational context through mode changes.</p></article></div>
+  </ConvoAiContextOverview>
 </section>
 
 <section id="ready" data-convo-nav-tone="dark">
   <header className="section-heading"><p className="section-index" aria-hidden="true" data-index="02">02</p><h2>Make readiness clear before the first turn</h2></header>
   <div className="reading"><p className="lead">App creates a short path to speaking. Web supports denser agent, phone-number, layout, and session choices. Each surface expresses the same real-time model at a different level of complexity.</p></div>
-  <div className="state-flow" aria-label="Conversation state chain"><div><span>01</span><strong>Connecting</strong></div><div><span>02</span><strong>Ready</strong></div><div><span>03</span><strong>Listening</strong></div><div><span>04</span><strong>Thinking</strong></div><div><span>05</span><strong>Speaking</strong></div><div><span>06</span><strong>Interrupted</strong></div><div><span>07</span><strong>Recovery</strong></div></div>
+  <div className="state-flow" aria-label="Conversation state chain"><div><span>01</span><strong>Connecting</strong></div><div><span>02</span><strong>Ready</strong></div><div><span>03</span><strong>Listening</strong></div><div><span>04</span><strong>Thinking</strong></div><div><span>05</span><strong>Speaking</strong></div><div><span>06</span><strong>Interrupted</strong></div></div>
   <ConvoAiStage locale="en" eyebrow="CROSS-PLATFORM / READINESS" title="Ready" description="Web carries configuration density; App carries the immediate speaking path. Both expose the same state truth." webId="web-preflight-layout" appId="app-conversation-start" />
   <ConvoAiPlaylist locale="en" ids={['app-login', 'app-structure', 'app-conversation-start', 'web-login', 'web-preflight', 'web-preflight-layout', 'web-join-exit']} />
 </section>
