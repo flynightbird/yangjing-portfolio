@@ -225,6 +225,10 @@ describe('ConvoAiPlaylist', () => {
       'data-app-size',
       'standard',
     );
+    expect(container.querySelector('[data-playlist-surface]')).toHaveAttribute(
+      'data-media-id',
+      'app-voiceprint-lock',
+    );
 
     rerender(
       <ConvoAiPlaylist
@@ -353,8 +357,8 @@ describe('ConvoAiPlaylist', () => {
 
     tabs[0].focus();
     fireEvent.keyDown(tabs[0], { key: 'ArrowRight' });
-    expect(screen.getByRole('tab', { name: /让长对话仍有清楚的焦点/ })).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByLabelText('让长对话仍有清楚的焦点')).toBeVisible();
+    expect(screen.getByRole('tab', { name: /对话轮次可“便捷”开启数据追踪/ })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByLabelText('对话轮次可“便捷”开启数据追踪')).toBeVisible();
   });
 
   it('localizes CPDI labels for Chinese evidence', () => {
@@ -455,10 +459,10 @@ describe('ConvoAiVoiceprintModes', () => {
 
     expect(accordion).toBeVisible();
     expect(screen.getAllByRole('button')).toHaveLength(3);
-    expect(screen.getByRole('button', { name: /Seamless/ })).toHaveAttribute('aria-expanded', 'true');
-    fireEvent.click(screen.getByRole('button', { name: /Personalized/ }));
     expect(screen.getByRole('button', { name: /Personalized/ })).toHaveAttribute('aria-expanded', 'true');
-    expect(accordion).toHaveAttribute('data-active-mode', 'personalized');
+    fireEvent.click(screen.getByRole('button', { name: /Seamless/ }));
+    expect(screen.getByRole('button', { name: /Seamless/ })).toHaveAttribute('aria-expanded', 'true');
+    expect(accordion).toHaveAttribute('data-active-mode', 'seamless');
   });
 });
 

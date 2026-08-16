@@ -291,7 +291,7 @@ for (const locale of ['en', 'zh'] as const) {
       await expectRenderedRatio(phone, 592 / 1280);
 
       const turnPlaylist = section.locator('[data-convo-ai-playlist]:has([data-playlist-tabs])');
-      await turnPlaylist.getByRole('tab', { name: /让长对话仍有清楚的焦点/ }).click();
+      await turnPlaylist.getByRole('tab', { name: /对话轮次可“便捷”开启数据追踪/ }).click();
       const web = turnPlaylist.locator('[data-media-card="web-conversation"] [data-convo-media-frame]');
       if (testInfo.project.name === 'desktop') {
         expect((await web.boundingBox())!.width).toBeGreaterThan(288);

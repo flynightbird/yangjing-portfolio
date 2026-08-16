@@ -148,7 +148,7 @@ export function ConvoAiPlaylist({ ids, locale, appSize = 'standard', showSceneLi
         })}
       </div>
     </nav> : null}
-    <div id={navigationVariant === 'tabs' ? panelId : undefined} role={navigationVariant === 'tabs' ? 'tabpanel' : undefined} className={styles.playlistSurface} data-playlist-surface data-tone={activeIndex % 4}>
+    <div id={navigationVariant === 'tabs' ? panelId : undefined} role={navigationVariant === 'tabs' ? 'tabpanel' : undefined} className={styles.playlistSurface} data-playlist-surface data-tone={activeIndex % 4} data-media-id={active.id}>
       {hasMultipleItems && navigationVariant === 'carousel' ? <div className={styles.carouselHeader}>
         <div aria-live="polite" data-carousel-position><strong>{String(activeIndex + 1).padStart(2, '0')}</strong><span> / {String(ids.length).padStart(2, '0')}</span></div>
         <strong className={styles.carouselTitle} data-carousel-title aria-live="polite">{copy.title}</strong>
@@ -273,7 +273,7 @@ const voiceprintModes = {
 } as const;
 
 export function ConvoAiVoiceprintModes({ locale }: { readonly locale: Locale }) {
-  const [activeMode, setActiveMode] = useState<(typeof voiceprintModes.en)[number]['id']>('seamless');
+  const [activeMode, setActiveMode] = useState<(typeof voiceprintModes.en)[number]['id']>('personalized');
   return <div className={styles.voiceprintModes} data-convo-voiceprint-modes data-active-mode={activeMode}>
     {voiceprintModes[locale].map((mode, index) => {
       const active = mode.id === activeMode;
