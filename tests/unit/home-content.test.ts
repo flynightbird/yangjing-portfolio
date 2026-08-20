@@ -93,7 +93,7 @@ describe('homepage project contract', () => {
 });
 
 describe('Visual Archive contract', () => {
-  it('adds IP and campaign series without changing the Visual Archive projects', () => {
+  it('keeps the IP series separate from the Visual Archive projects', () => {
     expect(archiveProjects).toHaveLength(4);
     expect(mediaSeries.map((series) => series.key)).toEqual(['guso-ip']);
     expect(mediaSeries[0].row).toBe(1);
@@ -110,8 +110,8 @@ describe('Visual Archive contract', () => {
       'image',
       'video',
       'image',
-      'video',
       'image',
+      'video',
       'image',
       'image',
     ]);

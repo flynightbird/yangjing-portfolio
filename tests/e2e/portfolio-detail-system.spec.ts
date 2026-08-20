@@ -30,13 +30,13 @@ const roleCases = [
   },
   {
     route: '/zh/work/meeting/',
-    roleSelector: '[data-meeting-case] #capability-impact h4',
+    roleSelector: '[data-meeting-case] #participation h4',
     expectedSize: 14,
   },
   {
     route: '/en/work/meeting/',
-    roleSelector: '[data-meeting-case] #capability-impact h3',
-    expectedSize: 29,
+    roleSelector: '[data-meeting-case] #participation h4',
+    expectedSize: 14,
   },
   {
     route: '/zh/build/stt-demo/',

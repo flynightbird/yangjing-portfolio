@@ -27,6 +27,7 @@ const requiredIds = [
   'meeting-whiteboard-annotation-app',
   'meeting-captions-app-poster',
   'meeting-captions-app',
+  'meeting-captions-feedback-app',
   'meeting-transcript-app-poster',
   'meeting-transcript-app',
   'meeting-interpretation-on-app-poster',

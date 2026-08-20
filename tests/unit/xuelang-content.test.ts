@@ -9,8 +9,7 @@ const en = readFileSync(path.join(root, 'content/work/xuelang.en.mdx'), 'utf8');
 const chapterIds = [
   'overview',
   'business',
-  'course-exploration',
-  'detail-structure',
+  'problem',
   'strategy',
   'decision-standard',
   'decision-purchase',
@@ -68,7 +67,9 @@ describe('Xuelang bilingual case content', () => {
     expect(section(zh, 'business')).toContain('年度 GMV 300 亿');
     expect(section(en, 'business')).toContain('500K DAU');
     expect(section(en, 'business')).toContain('RMB 30B annual GMV');
-    expect(section(zh, 'business')).toContain('长期学习关系');
+    for (const problem of ['识别低', '信任低', '难坚持']) {
+      expect(section(zh, 'problem')).toContain(problem);
+    }
     expect(section(zh, 'strategy')).toContain('一端建立课程质量标准，一端连接发现、决策、学习与个人学习资产。');
     expect(section(zh, 'results')).toContain('把质量标准写进用户的判断路径');
     expect(section(zh, 'results')).not.toMatch(/下一阶段|后续假设|更值得验证/);

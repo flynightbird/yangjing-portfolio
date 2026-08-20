@@ -87,6 +87,50 @@
   line-height: 1.58;
 }
 
+.thesis {
+  max-width: 32rem;
+  margin: 0.1rem 0 0;
+  color: var(--meeting-ink);
+  font-size: 0.98rem;
+  font-weight: 550;
+  line-height: 1.65;
+}
+
+.content :global(.meeting-principles) {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  max-width: 58rem;
+  margin: 2rem 0 0;
+  padding: 1px;
+  list-style: none;
+  border: 1px solid var(--meeting-line);
+  background: var(--meeting-line);
+}
+
+.content :global(.meeting-principles li) {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: clamp(1rem, 2vw, 1.45rem);
+  background: rgba(14, 19, 27, 0.96);
+}
+
+.content :global(.meeting-principles strong) {
+  color: var(--meeting-portfolio-accent);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.content :global(.meeting-principles span) {
+  color: var(--meeting-ink);
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
 .heroMeta {
   display: grid;
   gap: 0.42rem;
@@ -258,6 +302,9 @@
 }
 
 @media (max-width: 720px) {
+  .content :global(.meeting-principles) {
+    grid-template-columns: 1fr;
+  }
   .frame {
     width: min(100%, 48rem);
     padding-inline: 1rem;

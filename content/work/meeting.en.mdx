@@ -1,5 +1,4 @@
-import { CapabilitySystem, ContextPriorityModel, LanguageControlModel, MeetingStateMatrix, ParticipantPriorityStack } from '@/components/meeting/meeting-models'
-import { MeetingAdaptiveStageShowcase, MeetingLanguageShowcase, MeetingPolishShowcase, MeetingWhiteboardShowcase } from '@/components/meeting/meeting-showcase'
+import { MeetingSystemAdaptiveStageShowcase, MeetingSystemChatShowcase, MeetingSystemCollaborationShowcase, MeetingSystemLogicSummary, MeetingSystemParticipationShowcase, MeetingSystemStateShowcase } from '@/components/meeting/meeting-showcase'
 
 export const metadata = {
   type: 'work',
@@ -7,7 +6,7 @@ export const metadata = {
   locale: 'en',
   translationKey: 'work.meeting',
   title: 'Agora Meeting: a real-time collaboration system',
-  proposition: 'One meeting system across four platforms, adapting the stage, workspace, and information layer to live context.',
+  proposition: 'Designing a flexible space for complex collaboration',
   role: 'Independent Product Designer',
   duration: '2024-2026 · 1.5 years',
   status: 'Shipped',
@@ -16,102 +15,99 @@ export const metadata = {
   featuredOrder: 5,
   caseLabel: 'AGORA MEETING / ENTERPRISE MEETING aPaaS',
   chapters: [
-    { id: 'business-context', label: 'Business context' },
-    { id: 'design-challenge', label: 'Design challenge' },
-    { id: 'system-strategy', label: 'System strategy' },
-    { id: 'adaptive-stage', label: 'Adaptive stage' },
-    { id: 'whiteboard-workspace', label: 'Whiteboard' },
-    { id: 'information-layer', label: 'Information layer' },
-    { id: 'capability-impact', label: 'Capability & impact' },
+    { id: 'challenge', label: 'The challenge' },
+    { id: 'design-challenges', label: 'Design directions' },
+    { id: 'adaptive-canvas', label: 'Adaptive canvas' },
+    { id: 'visible-states', label: 'Visible states' },
+    { id: 'different-roles', label: 'Different roles' },
+    { id: 'chat-deep-dive', label: 'Chat deep dive' },
+    { id: 'logic-summary', label: 'Logic summary' },
     { id: 'reflection', label: 'Reflection' },
   ],
 }
 
-<section id="business-context">
+<section id="challenge">
   <header className="section-heading">
-    <h2>An embeddable meeting system for customer products</h2>
+    <h2>A meeting can change its state at any moment</h2>
   </header>
   <div className="reading">
-    <p className="lead">Agora Meeting was created for organizations that needed an embeddable meeting system, not another standalone meeting app.</p>
-    <p>From 2024 to 2026, I independently handled product design across Desktop, Web, Tablet, and Mobile, working with the wider team to turn broad requirements into a system customers could integrate and launch.</p>
+    <p className="lead">Conversation, sharing, whiteboarding, breakout groups, and chat each change the information priority and available actions.</p>
+    <p>Agora Meeting is an embeddable meeting product that customers configure with their own brand, capabilities, and permissions. From 2024 to 2026, I independently handled product design across Desktop, Web, Tablet, and Mobile, keeping the current state and next action clear as devices and tasks changed.</p>
   </div>
 </section>
 
-<section id="design-challenge">
+<section id="design-challenges">
   <header className="section-heading">
-    <h2>Live context, not viewport size, drives the interface</h2>
+    <h2>Designing for change, not just for a screen</h2>
   </header>
   <div className="reading">
-    <p className="lead">People, shared content, whiteboards, permissions, and language support all compete during the same session.</p>
-    <p>The design problem was to keep one recognizable interaction system while letting each platform make its own space and density tradeoffs.</p>
+    <p className="lead">These changes cannot be solved by adding a separate screen for every capability.</p>
+    <p>I organized the work around three decisions: redistribute space as the task changes; keep enabled capabilities visible and actionable; and give each role the view and control appropriate to its responsibility.</p>
   </div>
+  <ol className="meeting-principles" aria-label="Three design directions">
+    <li><strong>01 / Adaptive canvas</strong><span>One meeting space, multiple working layouts.</span></li>
+    <li><strong>02 / Visible states</strong><span>Keep meeting states visible, reachable, and actionable.</span></li>
+    <li><strong>03 / Role-based control</strong><span>One meeting, with distinct perspectives and action boundaries.</span></li>
+  </ol>
 </section>
 
-<section id="system-strategy">
+<section id="adaptive-canvas">
   <header className="section-heading">
-    <h2>Set the primary object before changing the layout</h2>
+    <h2>One meeting space, multiple layouts</h2>
   </header>
   <div className="reading">
-    <p className="lead">The system first identifies the current meeting context, then promotes the right object before changing the interface state.</p>
-    <p>That let the product behave like one meeting system across four platform categories instead of becoming a set of unrelated screen exceptions.</p>
+    <p className="lead">Without sharing, participants are primary. When sharing begins, content takes the largest area. In whiteboard collaboration, the room yields space to the work itself.</p>
+    <p>The stage, current meeting state, and core controls form a stable frame. Web, mobile landscape, and portrait do not scale equally: landscape lets people and content expand side by side, while portrait restacks the stage, participants, and controls. The whiteboard follows the same rule, prioritizing working space while preserving meeting awareness and controls when needed.</p>
   </div>
-  <ContextPriorityModel locale="en" />
+  <div className="reading">
+    <h3>Collaboration focus changes</h3>
+    <p>Regular meetings, whiteboards, and breakout rooms are not three separate interfaces. They rearrange the primary stage and supporting information within one meeting frame, using the same layout space to accommodate different information media.</p>
+  </div>
+  <MeetingSystemAdaptiveStageShowcase locale="en" />
+  <MeetingSystemCollaborationShowcase locale="en" />
 </section>
 
-<section id="adaptive-stage">
+<section id="visible-states">
   <header className="section-heading">
-    <h2>The stage changes with context instead of shrinking everything equally</h2>
+    <h2>Keep users aware of what is happening</h2>
   </header>
   <div className="reading">
-    <p className="lead">Share, speaker, and workspace states each deserve a different primary object.</p>
-    <p>The product switches the stage around the current meeting job rather than treating every state like the same canvas with smaller boxes.</p>
+    <p className="lead">When a capability starts, it changes the meeting environment. People need to know what is happening, what they can access, and what they can control.</p>
+    <p>I organized these moments as state, entry, context, and control. Breakout begins inside the meeting; captions make processing explicit; transcript keeps its active state and return path after the panel closes; member and safety actions remain connected to the current room.</p>
   </div>
-  <MeetingAdaptiveStageShowcase locale="en" />
-  <MeetingStateMatrix locale="en" />
+  <MeetingSystemStateShowcase locale="en" />
 </section>
 
-<section id="whiteboard-workspace">
+<section id="different-roles">
   <header className="section-heading">
-    <h2>Whiteboard becomes the workspace without losing meeting awareness</h2>
+    <h2>One meeting, different perspectives</h2>
   </header>
   <div className="reading">
-    <p className="lead">On larger surfaces, the board can expand. On mobile portrait, the board still needs one live participant channel to keep the room legible.</p>
-    <p>The same rule carries across devices, but each platform resolves it with its own spatial rhythm.</p>
+    <p className="lead">Permission is more than whether a button is visible. It changes what each person can see, do, and control as the meeting continues.</p>
+    <p>Hosts manage groups, members, and meeting-level capabilities. Co-hosts support room order and in-meeting management. Participants speak, chat, and use permitted collaboration capabilities. These boundaries stay visible in the room rather than being hidden in back-office rules.</p>
   </div>
-  <MeetingWhiteboardShowcase locale="en" />
-  <ParticipantPriorityStack locale="en" />
+  <MeetingSystemParticipationShowcase locale="en" />
 </section>
 
-<section id="information-layer">
-  <header className="section-heading">
-    <h2>Transcript, translation, and interpretation behave like one in-meeting layer</h2>
-  </header>
+<section id="chat-deep-dive">
+  <header className="section-heading"><h2>Making chat less disruptive</h2></header>
   <div className="reading">
-    <p className="lead">Understanding support had to stay inside the meeting instead of becoming a separate post-meeting artifact.</p>
-    <p>Live captions remain personal, while transcript activation and interpretation behave like meeting capabilities with different control scopes. Transcript data is exposed through the Customer API, but customer-built post-meeting storage is outside this project scope.</p>
+    <p className="lead">Chat is a parallel way to contribute during a meeting. It should not pull people away from video, shared content, or the live discussion.</p>
+    <p><strong>Quick input:</strong> input and private messages stay in the active meeting, reducing context switching. <br /><strong>Message density:</strong> the shipped message layout keeps content hierarchy and message actions legible in limited space; no verified density switch is claimed. <br /><strong>Gentle character-limit feedback:</strong> the interface signals the input limit while someone composes, so they can adjust before hitting it.</p>
   </div>
-  <MeetingLanguageShowcase locale="en" />
-  <LanguageControlModel locale="en" />
+  <MeetingSystemChatShowcase locale="en" />
 </section>
 
-<section id="capability-impact">
-  <header className="section-heading">
-    <h2>The shipped system also had to feel complete in everyday moments</h2>
-  </header>
-  <div className="reading">
-    <p className="lead">A coherent system also has to hold together in routine, high-frequency moments.</p>
-    <p>Chat, camera polish, member visibility, and safety controls extend the same meeting logic instead of branching into disconnected utilities.</p>
-  </div>
-  <MeetingPolishShowcase locale="en" />
-  <CapabilitySystem locale="en" />
+<section id="logic-summary">
+  <header className="section-heading"><h2>From complexity to a controllable experience</h2></header>
+  <div className="reading"><p className="lead">Roles, capabilities, and changing states make a meeting complex. Adaptive space, visible state, and role-based control turn that complexity into a predictable live room.</p></div>
+  <MeetingSystemLogicSummary locale="en" />
 </section>
 
 <section id="reflection">
-  <header className="section-heading">
-    <h2>Cross-platform coherence depends on explicit governance</h2>
-  </header>
+  <header className="section-heading"><h2>Design for complexity without making it feel complex</h2></header>
   <div className="reading">
-    <p className="lead">The product shipped across four platform categories, revealing how quickly shared components can diverge when state rules remain implicit.</p>
-    <p>Reusable state definitions, clear ownership, and documented exceptions are as important as shared components for keeping a cross-platform product coherent.</p>
+    <p className="lead">The goal was not to fit more features into a meeting. It was to make a changing meeting predictable: people know what is happening, what they can do, and what to do next.</p>
+    <p>Cross-platform work does not duplicate one screen. It applies the same meeting logic across devices, gives the active task appropriate space, and keeps a route to status and control in the room.</p>
   </div>
 </section>

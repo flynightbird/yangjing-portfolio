@@ -244,6 +244,14 @@
       "purpose": "Show participant-controlled live captions inside a mobile meeting."
     },
     {
+      "id": "meeting-captions-feedback-app",
+      "kind": "video",
+      "source": "evidence/meeting/source/imported/meeting-captions-feedback-app.mp4",
+      "output": "public/videos/meeting/meeting-captions-feedback-app.mp4",
+      "poster": "/images/meeting/meeting-captions-app-poster.webp",
+      "purpose": "Show a second live-caption feedback state while the mobile meeting remains active."
+    },
+    {
       "id": "meeting-transcript-app-poster",
       "kind": "image",
       "source": "evidence/meeting/source/imported/meeting-transcript-app-poster.png",

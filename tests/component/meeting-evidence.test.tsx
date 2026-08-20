@@ -4,8 +4,14 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   MeetingAdaptiveStageShowcase,
   MeetingHeroStage,
+  MeetingLayoutModeEvidence,
   MeetingLanguageShowcase,
+  MeetingWhiteboardToolingDeepDive,
   MeetingPolishShowcase,
+  MeetingSystemBreakoutFlow,
+  MeetingSystemCollaborationShowcase,
+  MeetingSystemLanguageShowcase,
+  MeetingSystemWhiteboardShowcase,
   MeetingWhiteboardShowcase,
 } from '@/components/meeting/meeting-showcase';
 
@@ -60,6 +66,83 @@ describe('Meeting showcase media', () => {
       '/videos/meeting/meeting-stage-landscape-app.mp4',
       '/videos/meeting/meeting-stage-portrait-app.mp4',
     ]));
+  });
+
+  it('keeps collaboration reorganization to four static evidence views', () => {
+    const { container } = render(<MeetingSystemCollaborationShowcase locale="zh" />);
+
+    expect(container.querySelectorAll('video')).toHaveLength(0);
+    expect(container.querySelectorAll('img')).toHaveLength(4);
+    expect(container.querySelector('img[src="/images/meeting/layout-mode-whiteboard-editing.png"]')).not.toBeNull();
+  });
+
+  it('pairs the whiteboard deep dive with the portrait whiteboard recording', () => {
+    const { container } = render(<MeetingWhiteboardToolingDeepDive locale="zh" />);
+
+    expect(screen.getByText('让工具栏被发现')).toBeVisible();
+    expect(screen.getByText('把切换压缩到一到两步')).toBeVisible();
+    expect(screen.getByText('提供可选的白板颜色')).toBeVisible();
+    expect(container.querySelector('video[src="/videos/meeting/meeting-whiteboard-app-1.mp4"]')).toHaveAttribute('data-pause-at-end-ms', '3000');
+  });
+
+  it('keeps the system whiteboard evidence as Web and portrait recordings', () => {
+    const { container } = render(<MeetingSystemWhiteboardShowcase locale="zh" />);
+    const sources = Array.from(container.querySelectorAll('video')).map((video) => video.getAttribute('src'));
+
+    expect(screen.getByText('白板占据主舞台，会议控制仍然可用')).toBeVisible();
+    expect(screen.getByText('白板上方保留更多参会者画面，也支持隐藏画面给白板更多的视觉空间')).toBeVisible();
+    expect(sources).toEqual([
+      '/videos/meeting/meeting-whiteboard-web.mp4',
+      '/videos/meeting/meeting-whiteboard-app-1.mp4',
+    ]);
+  });
+
+  it('groups two caption-feedback recordings under one shared caption', () => {
+    const { container } = render(<MeetingSystemLanguageShowcase locale="zh" />);
+    const captionFeedback = screen.getByText('字幕反馈');
+    const captionFeedbackText = screen.getByText('细化捕捉状态，点击字幕区即可快速设置');
+
+    expect(container.querySelector('video[src="/videos/meeting/meeting-captions-app.mp4"]')).not.toBeNull();
+    expect(container.querySelector('video[src="/videos/meeting/meeting-captions-feedback-app.mp4"]')).not.toBeNull();
+    expect(captionFeedback).toBeVisible();
+    expect(captionFeedbackText).toBeVisible();
+    expect(screen.getAllByText('字幕反馈')).toHaveLength(1);
+    expect(screen.getAllByText('细化捕捉状态，点击字幕区即可快速设置')).toHaveLength(1);
+  });
+
+  it('shows four collaboration states without presenting them as a breakout creation flow', () => {
+    const { container } = render(<MeetingLayoutModeEvidence locale="zh" />);
+    const images = Array.from(container.querySelectorAll('img')).map((image) => image.getAttribute('src'));
+
+    expect(screen.getByText('常规会议')).toBeVisible();
+    expect(screen.getByText('白板开启，未编辑')).toBeVisible();
+    expect(screen.getByText('白板编辑中')).toBeVisible();
+    expect(screen.getByText('分组讨论')).toBeVisible();
+    expect(images).toEqual([
+      '/images/meeting/layout-mode-regular.png',
+      '/images/meeting/layout-mode-whiteboard-idle.png',
+      '/images/meeting/layout-mode-whiteboard-editing.png',
+      '/images/meeting/layout-mode-breakout.png',
+    ]);
+  });
+
+  it('uses the shipped Breakout Room entry without placeholder screens', () => {
+    const { container } = render(<MeetingSystemBreakoutFlow locale="zh" />);
+
+    expect(screen.getByText('分组讨论：成员关系进入当前会议')).toBeVisible();
+    expect(screen.getByText('已上线：从会中应用菜单进入分组讨论')).toBeVisible();
+    expect(container.querySelector('img[src="/images/meeting/capability-system.webp"]')).not.toBeNull();
+    expect(container).not.toHaveTextContent(/页面待补|进入我的小组|回到主会场/);
+    expect(container.querySelector('[class*="placeholderPhone"]')).toBeNull();
+  });
+
+  it('keeps whiteboard tooling decisions beside the portrait recording', () => {
+    const { container } = render(<MeetingWhiteboardToolingDeepDive locale="zh" />);
+
+    expect(screen.getByText('让工具栏被发现')).toBeVisible();
+    expect(screen.getByText('把切换压缩到一到两步')).toBeVisible();
+    expect(screen.getByText('提供可选的白板颜色')).toBeVisible();
+    expect(container.querySelector('video[src="/videos/meeting/meeting-whiteboard-app-1.mp4"]')).toHaveAttribute('data-pause-at-end-ms', '3000');
   });
 
   it('keeps the language layer inside portrait mobile recordings', () => {

@@ -16,6 +16,7 @@ const copy = {
     status: 'Status',
     product: 'Product',
     productValue: 'Enterprise meeting aPaaS',
+    thesis: 'A meeting is not a static screen. It is a constantly changing workspace where roles, content, and functions need to coexist.',
   },
   zh: {
     eyebrow: 'AGORA MEETING / 企业会议 aPaaS',
@@ -26,6 +27,7 @@ const copy = {
     status: '状态',
     product: '产品',
     productValue: '企业会议 aPaaS',
+    thesis: '会议不是一个静态页面，而是一个不断变化的协作空间。不同角色、内容和功能需要在同一个空间里持续共存。',
   },
 } as const;
 
@@ -51,6 +53,7 @@ export function MeetingLayout({
                 <p className={styles.eyebrow}>{text.eyebrow}</p>
                 <h1 id={heroTitleId}>{meta.title}</h1>
                 <p id={heroPropositionId} className={styles.proposition}>{meta.proposition}</p>
+                <p className={styles.thesis}>{text.thesis}</p>
               </div>
               <div className={styles.heroMeta}>
                 <div className={styles.logoMotionRow} data-meeting-logo-row>

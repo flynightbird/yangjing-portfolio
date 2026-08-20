@@ -1,4 +1,4 @@
-import { MeetingSystemAdaptiveStageShowcase, MeetingSystemLanguageShowcase, MeetingSystemPolishShowcase, MeetingSystemWhiteboardShowcase } from '@/components/meeting/meeting-showcase'
+import { MeetingLayoutModeEvidence, MeetingSystemAdaptiveStageShowcase, MeetingSystemLanguageShowcase, MeetingSystemPolishShowcase, MeetingWhiteboardToolingDeepDive } from '@/components/meeting/meeting-showcase'
 
 export const metadata = {
   type: 'work',
@@ -46,23 +46,28 @@ export const metadata = {
 
 <section id="adaptive-stage">
   <header className="section-heading">
-    <h2>共享开始后，内容接管主舞台</h2>
+    <h2>一个会议空间，随协作重点重组</h2>
   </header>
   <div className="reading">
-    <p className="lead">没有共享时，参会者是主角；共享开始后，内容进入最大的区域；进入协作时，空间再让给白板和工具。</p>
-    <p>横屏可以把内容展开，竖屏则把主舞台、参会者和控制区上下重排。方向改变后，当前会议状态和常用控制仍然可见。</p>
+    <p className="lead">会议界面不按功能拆成多套页面，而是先判断当前协作重点，再重新安排主舞台、辅助信息与控制入口。</p>
+  </div>
+  <div className="reading">
+    <h3>屏幕变了，信息优先级不变</h3>
+    <p>横屏可以让内容与参会者并排展开；竖屏则把主舞台、参会者和控制区上下重排。空间形态改变后，当前会议状态和常用控制仍然可见。</p>
   </div>
   <MeetingSystemAdaptiveStageShowcase locale="zh" />
+  <div className="reading">
+    <h3>协作重点会变</h3>
+    <p>没有共享时，参会者是主角；共享开始后，内容进入最大的区域；进入协作时，空间再让给白板和工具。常规会议、白板和分组不是三套界面，而是在同一会议框架中重新安排主舞台与辅助信息，使用同一个布局空间去适配不同信息载体。</p>
+  </div>
+  <MeetingLayoutModeEvidence locale="zh" />
 </section>
 
 <section id="whiteboard-workspace">
   <header className="section-heading">
-    <h2>白板接管主舞台，参会者视窗按需收放</h2>
+    <h2>有限空间里，白板工具仍然可发现、可切换</h2>
   </header>
-  <div className="reading">
-    <p className="lead">白板打开后，所有人都围绕同一块内容协作。布局让白板内容占据主舞台，同时保留参会者视窗；需要更多操作空间时可以收起，需要确认现场时再展开。</p>
-  </div>
-  <MeetingSystemWhiteboardShowcase locale="zh" />
+  <MeetingWhiteboardToolingDeepDive locale="zh" />
 </section>
 
 <section id="information-layer">

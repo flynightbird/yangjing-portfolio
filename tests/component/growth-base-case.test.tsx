@@ -25,7 +25,7 @@ describe('GrowthBaseCase', () => {
       'campaign-posters',
     ]);
     expect(
-      screen.getByText('把健康打卡-信息展示的“运动工具”转向“生活方式和健康陪伴”。'),
+      screen.getByText('把健康打卡，从信息展示变成有回应的陪伴体验'),
     ).toBeVisible();
     expect(screen.getByText('让下一步行动一眼可见')).toBeVisible();
     expect(screen.getByText('让完成不再只是状态变化')).toBeVisible();

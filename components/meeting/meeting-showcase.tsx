@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { RotateCcw } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { Locale } from '@/content/types';
 import { withBasePath } from '@/lib/i18n/locales';
@@ -22,6 +22,7 @@ type MeetingMediaId =
   | 'whiteboard-app-2'
   | 'whiteboard-annotation-app'
   | 'captions-app'
+  | 'captions-feedback-app'
   | 'transcript-app'
   | 'interpretation-on-app'
   | 'interpretation-live-app'
@@ -195,6 +196,20 @@ const mediaCatalog: Record<MeetingMediaId, MediaDefinition> = {
     description: {
       en: 'Participants can enable captions without changing meeting-level settings.',
       zh: '参会者可在会中自行开启，不改变会议级设置。',
+    },
+  },
+  'captions-feedback-app': {
+    id: 'captions-feedback-app',
+    kind: 'phone',
+    src: '/videos/meeting/meeting-captions-feedback-app.mp4',
+    poster: '/images/meeting/meeting-captions-app-poster.webp',
+    width: 590,
+    height: 1280,
+    label: { en: 'Live captions', zh: '实时字幕' },
+    title: { en: 'Caption feedback stays visible', zh: '字幕反馈保持可见' },
+    description: {
+      en: 'Caption feedback remains available while people continue the meeting.',
+      zh: '字幕反馈持续留在当前会议中。',
     },
   },
   'transcript-app': {
@@ -377,6 +392,7 @@ function MeetingViewportVideo({
   media,
   locale,
   loop = true,
+  pauseAtEndMs,
   videoRef,
   className,
   describedBy,
@@ -384,12 +400,38 @@ function MeetingViewportVideo({
   readonly media: MediaDefinition;
   readonly locale: Locale;
   readonly loop?: boolean;
+  readonly pauseAtEndMs?: number;
   readonly videoRef?: React.RefObject<HTMLVideoElement | null>;
   readonly className?: string;
   readonly describedBy?: string;
 }) {
   const reduceMotion = useReducedMotionPreference();
   const [isLoaded, setIsLoaded] = useState(false);
+  const internalVideoRef = useRef<HTMLVideoElement>(null);
+  const restartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const activeVideoRef = videoRef ?? internalVideoRef;
+
+  useEffect(() => () => {
+    if (restartTimerRef.current) {
+      clearTimeout(restartTimerRef.current);
+    }
+  }, []);
+
+  const handleEnded = useCallback(() => {
+    if (!pauseAtEndMs || !activeVideoRef.current) {
+      return;
+    }
+
+    restartTimerRef.current = setTimeout(() => {
+      const video = activeVideoRef.current;
+      if (!video) {
+        return;
+      }
+
+      video.currentTime = 0;
+      void video.play().catch(() => undefined);
+    }, pauseAtEndMs);
+  }, [activeVideoRef, pauseAtEndMs]);
 
   if (reduceMotion) {
     return (
@@ -415,7 +457,7 @@ function MeetingViewportVideo({
         decoding="async"
       />
       <video
-        ref={videoRef}
+        ref={activeVideoRef}
         className={className}
         data-meeting-video
         aria-hidden="true"
@@ -426,9 +468,11 @@ function MeetingViewportVideo({
         autoPlay
         muted
         playsInline
-        loop={loop}
+        loop={pauseAtEndMs ? false : loop}
         preload="auto"
+        data-pause-at-end-ms={pauseAtEndMs}
         onLoadedData={() => setIsLoaded(true)}
+        onEnded={handleEnded}
       />
     </div>
   );
@@ -498,15 +542,19 @@ function PhoneShell({
   locale,
   className,
   loop = true,
+  pauseAtEndMs,
   videoRef,
   compactCaption,
+  hideCaption = false,
 }: {
   readonly mediaId: MeetingMediaId;
   readonly locale: Locale;
   readonly className?: string;
   readonly loop?: boolean;
+  readonly pauseAtEndMs?: number;
   readonly videoRef?: React.RefObject<HTMLVideoElement | null>;
   readonly compactCaption?: CompactCaption;
+  readonly hideCaption?: boolean;
 }) {
   const media = mediaCatalog[mediaId];
   const titleId = `${media.id}-${locale}-title`;
@@ -520,17 +568,20 @@ function PhoneShell({
             media={media}
             locale={locale}
             loop={loop}
+            pauseAtEndMs={pauseAtEndMs}
             videoRef={videoRef}
             className={styles.media}
             describedBy={compactCaption ? titleId : `${titleId} ${descriptionId}`}
           />
         </div>
       </div>
-      <figcaption>
-        <span>{compactCaption?.label ?? media.label[locale]}</span>
-        <strong id={titleId}>{compactCaption?.text ?? media.title[locale]}</strong>
-        {compactCaption ? null : <p id={descriptionId}>{media.description[locale]}</p>}
-      </figcaption>
+      {hideCaption ? null : (
+        <figcaption>
+          <span>{compactCaption?.label ?? media.label[locale]}</span>
+          <strong id={titleId}>{compactCaption?.text ?? media.title[locale]}</strong>
+          {compactCaption ? null : <p id={descriptionId}>{media.description[locale]}</p>}
+        </figcaption>
+      )}
     </figure>
   );
 }
@@ -707,6 +758,103 @@ export function MeetingSystemWhiteboardShowcase({ locale }: { readonly locale: L
   );
 }
 
+export function MeetingWhiteboardToolingDeepDive({ locale }: { readonly locale: Locale }) {
+  const zh = locale === 'zh';
+  const decisions = zh
+    ? [
+      ['让工具栏被发现', '工具栏在有限宽度下会延伸到屏幕外。白板加载后保留横向滑动的视觉暗示，让用户知道还有可继续探索的工具，而不是把它误认为固定的一排按钮。'],
+      ['把切换压缩到一到两步', '我将高频工具放在同一操作层，避免为了切换工具反复进入二级面板；在有限空间内完成布局与操作切换，保持会中协作的节奏。'],
+      ['提供可选的白板颜色', '白板颜色作为可选偏好，满足用户对标注、文字和绘制呈现的差异化需求；在工具区内即可快速切换。'],
+    ]
+    : [
+      ['Make the toolbar discoverable', 'The toolbar extends beyond the narrow screen. A horizontal-scroll affordance remains after the board loads, so people know more tools are available instead of reading the row as fixed.'],
+      ['Keep switching within one or two steps', 'High-frequency tools stay on one operating layer, avoiding repeated trips into secondary panels. Layout and tool switching stay compact enough for live collaboration.'],
+      ['Offer optional whiteboard colors', 'Optional board colors support different preferences for annotation, text, and drawing expression, while staying quick to switch from the tool area.'],
+    ];
+
+  return (
+    <div className={styles.whiteboardTooling}>
+      <div className={styles.whiteboardToolingCopy}>
+        <p className={styles.whiteboardToolingLead}>
+          {zh
+            ? '白板不仅要腾出工作空间，也要让工具在小屏上仍然找得到、切得快。'
+            : 'A whiteboard needs working space, but its tools must remain discoverable and quick to switch on a small screen.'}
+        </p>
+        <ol>
+          {decisions.map(([title, detail]) => (
+            <li key={title}>
+              <h3>{title}</h3>
+              <p>{detail}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <figure className={styles.whiteboardToolingFigure}>
+        <div className={styles.whiteboardToolingPhone}>
+          <PhoneShell
+            mediaId="whiteboard-app-1"
+            locale={locale}
+            pauseAtEndMs={3000}
+            compactCaption={{
+              label: zh ? '手机竖屏' : 'Mobile portrait',
+              text: zh ? '工具栏与颜色选择始终留在当前白板内' : 'Tooling and color choices stay within the active whiteboard',
+            }}
+          />
+        </div>
+        <figcaption>{zh ? '白板编辑中：在当前会议内选择、切换与调整工具' : 'Whiteboard editing: choose, switch, and adjust tools within the meeting'}</figcaption>
+      </figure>
+    </div>
+  );
+}
+
+export function MeetingSystemCollaborationShowcase({ locale }: { readonly locale: Locale }) {
+  return <MeetingLayoutModeEvidence locale={locale} />;
+}
+
+const layoutModeEvidence = [
+  { id: 'regular', src: '/images/meeting/layout-mode-regular.png', zh: '常规会议', en: 'Regular meeting' },
+  { id: 'whiteboard-idle', src: '/images/meeting/layout-mode-whiteboard-idle.png', zh: '白板开启，未编辑', en: 'Whiteboard open, before editing' },
+  { id: 'whiteboard-editing', src: '/images/meeting/layout-mode-whiteboard-editing.png', zh: '白板编辑中', en: 'Whiteboard editing' },
+  { id: 'breakout', src: '/images/meeting/layout-mode-breakout.png', zh: '分组讨论', en: 'Breakout rooms' },
+] as const;
+
+export function MeetingLayoutModeEvidence({ locale }: { readonly locale: Locale }) {
+  const zh = locale === 'zh';
+
+  return (
+    <div className={styles.layoutModeEvidence} aria-label={zh ? '同一会议空间的四种协作状态' : 'Four collaboration states in one meeting space'}>
+      {layoutModeEvidence.map((mode) => (
+        <figure key={mode.id} className={styles.layoutModeFigure}>
+          <img
+            src={withBasePath(mode.src)}
+            alt={zh ? `Agora Meeting ${mode.zh}布局` : `Agora Meeting ${mode.en} layout`}
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>{zh ? mode.zh : mode.en}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
+export function MeetingSystemBreakoutFlow({ locale }: { readonly locale: Locale }) {
+  const zh = locale === 'zh';
+
+  return (
+    <div className={styles.breakoutFlow}>
+      <div className={styles.breakoutFlowHeader}>
+        <h3>{zh ? '分组讨论：成员关系进入当前会议' : 'Breakout rooms: member relationships enter the active meeting'}</h3>
+        <p>{zh ? '分组管理从当前会议进入；成员分配、小组归属和返回主会场的路径保持在当前信息层级中。' : 'Breakout management begins in the active meeting. Allocation, group context, and the route back to the main room stay in the current information layer.'}</p>
+      </div>
+      <figure className={styles.breakoutEvidence}>
+        <img src={withBasePath('/images/meeting/capability-system.webp')} alt={zh ? 'Agora Meeting 会中应用菜单内的分组讨论入口' : 'Breakout Room entry in the Agora Meeting in-meeting application menu'} loading="lazy" decoding="async" />
+        <figcaption>{zh ? '已上线：从会中应用菜单进入分组讨论' : 'Shipped: Breakout Room opens from the in-meeting application menu'}</figcaption>
+      </figure>
+    </div>
+  );
+}
+
 export function MeetingLanguageShowcase({ locale }: { readonly locale: Locale }) {
   const text = copy[locale];
 
@@ -730,10 +878,105 @@ export function MeetingSystemLanguageShowcase({ locale }: { readonly locale: Loc
   const text = systemShowcaseCopy[locale];
 
   return (
-    <div className={styles.phoneGrid} data-columns="2">
-      <PhoneShell mediaId="captions-app" locale={locale} compactCaption={text.captions} />
+    <div className={styles.languageEvidenceGrid}>
+      <div className={styles.captionFeedbackGroup}>
+        <div className={styles.captionFeedbackVideos}>
+          <PhoneShell mediaId="captions-app" locale={locale} hideCaption />
+          <PhoneShell mediaId="captions-feedback-app" locale={locale} hideCaption />
+        </div>
+        <div className={styles.sharedEvidenceCaption}>
+          <span>{text.captions.label}</span>
+          <strong>{text.captions.text}</strong>
+        </div>
+      </div>
       <PhoneShell mediaId="transcript-app" locale={locale} compactCaption={text.transcript} />
     </div>
+  );
+}
+
+export function MeetingSystemParticipationShowcase({ locale }: { readonly locale: Locale }) {
+  const zh = locale === 'zh';
+  const roles = zh
+    ? [['主持人', '分组、成员与会议级能力'], ['协管', '辅助管理与会中秩序'], ['参与者', '发言、聊天与被授权的协作']]
+    : [['Host', 'Groups, members, and meeting-wide capability'], ['Co-host', 'Room support and in-meeting order'], ['Participant', 'Speaking, chat, and permitted collaboration']];
+
+  return (
+    <div className={styles.sectionStack}>
+      <div className={styles.roleBoundary}>
+        <div>
+          <h3>{zh ? '角色差异首先改变操作边界' : 'Roles first change the action boundary'}</h3>
+          <p>{zh ? '不把权限藏在后台规则里：在会中明确谁可以管理、谁可以协作，以及不可用操作的边界。' : 'Keep action boundaries visible in the room: who manages, who collaborates, and what remains unavailable.'}</p>
+        </div>
+        <dl>
+          {roles.map(([role, scope]) => (
+            <div key={role}>
+              <dt>{role}</dt>
+              <dd>{scope}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </div>
+  );
+}
+
+export function MeetingSystemChatShowcase({ locale }: { readonly locale: Locale }) {
+  const text = systemShowcaseCopy[locale];
+
+  return (
+    <div className={styles.capabilityGroup}>
+      <div className={styles.capabilityGroupHeader}>
+        <h3>{locale === 'zh' ? '让聊天留在会议节奏里' : 'Keep chat inside the meeting rhythm'}</h3>
+        <p>{locale === 'zh'
+          ? '现有界面证明了会中输入、消息操作和字数反馈；不把聊天带到另一个独立页面。'
+          : 'The shipped interface keeps input, message actions, and length feedback in the meeting rather than moving chat to a separate destination.'}</p>
+      </div>
+      <div className={`${styles.phoneGrid} ${styles.polishDeck}`} data-columns="2">
+        <PhoneShell mediaId="chat-1-app" locale={locale} compactCaption={text.privateChat} />
+        <PhoneShell mediaId="chat-2-app" locale={locale} compactCaption={text.chatActions} />
+      </div>
+    </div>
+  );
+}
+
+export function MeetingSystemStateShowcase({ locale }: { readonly locale: Locale }) {
+  const text = systemShowcaseCopy[locale];
+
+  return (
+    <div className={styles.sectionStack}>
+      <MeetingSystemBreakoutFlow locale={locale} />
+      <MeetingSystemLanguageShowcase locale={locale} />
+      <div className={styles.capabilityGroup}>
+        <div className={styles.capabilityGroupHeader}>
+          <h3>{locale === 'zh' ? '状态不仅被看见，也能继续操作' : 'A visible state also keeps its controls close'}</h3>
+          <p>{locale === 'zh'
+            ? '成员与安全操作从当前房间进入，避免把会议管理变成脱离现场的后台流程。'
+            : 'Member and safety actions open from the current room, so meeting management does not become a detached admin flow.'}</p>
+        </div>
+        <div className={`${styles.phoneGrid} ${styles.polishDeck}`} data-columns="2">
+          <PhoneShell mediaId="beauty-app" locale={locale} compactCaption={text.cameraSettings} />
+          <PhoneShell mediaId="safety-app" locale={locale} compactCaption={text.roomSafety} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function MeetingSystemLogicSummary({ locale }: { readonly locale: Locale }) {
+  const zh = locale === 'zh';
+  const columns = zh
+    ? [['复杂性', '角色 + 功能 + 变化状态'], ['设计原则', '自适应空间 + 状态可感知 + 角色控制'], ['体验', '清晰 + 可预期 + 可控制']]
+    : [['Complexity', 'Roles + functions + changing states'], ['Design principles', 'Adaptive space + visible states + role-based control'], ['Experience', 'Clear + predictable + controllable']];
+
+  return (
+    <dl className={styles.logicSummary} data-meeting-logic-summary>
+      {columns.map(([term, detail]) => (
+        <div key={term}>
+          <dt>{term}</dt>
+          <dd>{detail}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 

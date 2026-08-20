@@ -78,7 +78,7 @@ describe('Chinese portfolio editorial contract', () => {
 
   it('removes generic filler language from public Chinese prose', () => {
     const fillerPattern =
-      /赋能|打造|闭环|抓手|全链路|体验升级|能力建设|价值落地/;
+      /赋能|打造|沉淀|闭环|抓手|全链路|体验升级|能力建设|价值落地/;
 
     for (const { relativePath, source } of publicProse) {
       expect(source, relativePath).not.toMatch(fillerPattern);
