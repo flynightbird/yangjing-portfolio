@@ -7,7 +7,6 @@ import type { Locale } from '@/content/types';
 
 import { ConvoAiMedia } from './convo-ai-media';
 import { ConvoAiStudioWindow } from './convo-ai-studio-window';
-import { GrowthBaseHomeEntry } from './growth-base-home-entry';
 import { ProjectMeta } from './project-meta';
 import styles from './home.module.css';
 
@@ -33,17 +32,12 @@ interface FlagshipProjectsProps {
     readonly copy: FlagshipCopy;
     readonly href: string;
   };
-  readonly growthBase: {
-    readonly copy: FlagshipCopy;
-    readonly href: string;
-  };
 }
 
 export function FlagshipProjects({
   locale,
   callAgent,
   convoAi,
-  growthBase,
 }: FlagshipProjectsProps) {
   const [focus, setFocus] = useState<FlagshipFocus>('call-agent');
   const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -206,7 +200,6 @@ export function FlagshipProjects({
           </div>
         </article>
       </div>
-      <GrowthBaseHomeEntry copy={growthBase.copy} href={growthBase.href} />
     </div>
   );
 }

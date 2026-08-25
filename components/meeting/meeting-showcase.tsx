@@ -21,6 +21,7 @@ type MeetingMediaId =
   | 'whiteboard-app-1'
   | 'whiteboard-app-2'
   | 'whiteboard-annotation-app'
+  | 'screen-share-annotation-app'
   | 'captions-app'
   | 'captions-feedback-app'
   | 'transcript-app'
@@ -182,6 +183,20 @@ const mediaCatalog: Record<MeetingMediaId, MediaDefinition> = {
     description: {
       en: 'Annotation tools keep discussion attached to the content being shared.',
       zh: '共享过程中调用标注工具，让讨论直接发生在内容上。',
+    },
+  },
+  'screen-share-annotation-app': {
+    id: 'screen-share-annotation-app',
+    kind: 'phone',
+    src: '/videos/meeting/meeting-screen-share-annotation-app.mp4',
+    poster: '/images/meeting/meeting-whiteboard-annotation-app-poster.webp',
+    width: 590,
+    height: 1280,
+    label: { en: 'Screen-share annotation', zh: '屏幕共享标注' },
+    title: { en: 'Annotation stays out of the way until it is needed', zh: '标注工具按需出现，不打断共享' },
+    description: {
+      en: 'The toolbar can be hidden, resized, and moved so the shared content remains usable throughout the meeting.',
+      zh: '工具栏可隐藏、可伸缩、可移动，让共享内容始终保持可操作。',
     },
   },
   'captions-app': {
@@ -802,6 +817,53 @@ export function MeetingWhiteboardToolingDeepDive({ locale }: { readonly locale: 
           />
         </div>
         <figcaption>{zh ? '白板编辑中：在当前会议内选择、切换与调整工具' : 'Whiteboard editing: choose, switch, and adjust tools within the meeting'}</figcaption>
+      </figure>
+    </div>
+  );
+}
+
+export function MeetingScreenShareAnnotationShowcase({ locale }: { readonly locale: Locale }) {
+  const zh = locale === 'zh';
+  const decisions = zh
+    ? [
+      ['可隐藏', '不需要标注时收起工具栏，把共享内容还给主舞台。'],
+      ['可伸缩', '工具栏根据当前屏幕和任务调整尺寸，避免遮挡关键内容。'],
+      ['可移动', '工具栏可以移到合适的位置，跟随不同共享内容保持清晰。'],
+    ]
+    : [
+      ['Hide when inactive', 'Collapse the toolbar when annotation is not needed and return the space to shared content.'],
+      ['Resize for the task', 'Adjust the toolbar footprint to the screen and the content being discussed.'],
+      ['Move out of the way', 'Reposition the toolbar so controls stay reachable without covering the shared work.'],
+    ];
+
+  return (
+    <div className={styles.whiteboardTooling}>
+      <div className={styles.whiteboardToolingCopy}>
+        <p className={styles.whiteboardToolingLead}>
+          {zh ? '屏幕共享标注沿用白板的工具规则：控制可发现，但不应该成为新的遮挡。' : 'Screen-share annotation reuses the whiteboard rule: controls stay discoverable without becoming a new obstruction.'}
+        </p>
+        <ol>
+          {decisions.map(([title, detail]) => (
+            <li key={title}>
+              <h3>{title}</h3>
+              <p>{detail}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <figure className={styles.whiteboardToolingFigure}>
+        <div className={styles.whiteboardToolingPhone}>
+          <PhoneShell
+            mediaId="screen-share-annotation-app"
+            locale={locale}
+            pauseAtEndMs={3000}
+            compactCaption={{
+              label: zh ? '屏幕共享标注' : 'Screen-share annotation',
+              text: zh ? '工具栏不遮挡共享内容，也不脱离当前会议' : 'The toolbar stays movable, resizable, and attached to the active meeting',
+            }}
+          />
+        </div>
+        <figcaption>{zh ? '共享内容上直接标注：隐藏、伸缩、移动均遵循白板规则' : 'Annotate shared content with the same hide, resize, and move rules as the whiteboard'}</figcaption>
       </figure>
     </div>
   );

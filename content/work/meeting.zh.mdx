@@ -1,4 +1,4 @@
-import { MeetingLayoutModeEvidence, MeetingSystemAdaptiveStageShowcase, MeetingSystemLanguageShowcase, MeetingSystemPolishShowcase, MeetingWhiteboardToolingDeepDive } from '@/components/meeting/meeting-showcase'
+import { MeetingLayoutModeEvidence, MeetingScreenShareAnnotationShowcase, MeetingSystemAdaptiveStageShowcase, MeetingSystemLanguageShowcase, MeetingSystemPolishShowcase, MeetingWhiteboardToolingDeepDive } from '@/components/meeting/meeting-showcase'
 
 export const metadata = {
   type: 'work',
@@ -68,6 +68,17 @@ export const metadata = {
     <h2>有限空间里，白板工具仍然可发现、可切换</h2>
   </header>
   <MeetingWhiteboardToolingDeepDive locale="zh" />
+</section>
+
+<section id="screen-share-annotation">
+  <header className="section-heading">
+    <h2>共享内容上直接标注，但不影响操作</h2>
+  </header>
+  <div className="reading">
+    <p className="lead">标注工具栏可隐藏、可伸缩、可移动，全面避免遮挡共享内容或打断用户操作。</p>
+    <p>它和白板共用一套设定规则：工具保持可发现，空间保持可用。这样既让会中标注更顺手，也让前端只需维护一套工具行为。</p>
+  </div>
+  <MeetingScreenShareAnnotationShowcase locale="zh" />
 </section>
 
 <section id="information-layer">

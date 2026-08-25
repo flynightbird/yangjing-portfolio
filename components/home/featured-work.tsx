@@ -19,7 +19,12 @@ interface FeaturedWorkProps {
 export function FeaturedWork({ locale }: FeaturedWorkProps) {
   const copy = locale === 'zh' ? zhDictionary.home.projects : enDictionary.home.projects;
   const localeRoot = withBasePath(`/${locale}/`);
-  const [xuelang, callAgent, convoAi, growthBase, meeting, aidx, sttDemo] = homepageProjects;
+  const xuelang = homepageProjects.find((project) => project.id === 'xuelang')!;
+  const callAgent = homepageProjects.find((project) => project.id === 'call-agent')!;
+  const convoAi = homepageProjects.find((project) => project.id === 'convo-ai')!;
+  const meeting = homepageProjects.find((project) => project.id === 'meeting')!;
+  const aidx = homepageProjects.find((project) => project.id === 'aidx')!;
+  const sttDemo = homepageProjects.find((project) => project.id === 'stt-demo')!;
   const workIndex =
     locale === 'zh'
       ? {
@@ -77,10 +82,6 @@ export function FeaturedWork({ locale }: FeaturedWorkProps) {
           convoAi={{
             copy: copy.convoAi,
             href: `${localeRoot}${convoAi.href}`,
-          }}
-          growthBase={{
-            copy: copy.growthBase,
-            href: `${localeRoot}${growthBase.href}`,
           }}
         />
       </ScrollReveal>
